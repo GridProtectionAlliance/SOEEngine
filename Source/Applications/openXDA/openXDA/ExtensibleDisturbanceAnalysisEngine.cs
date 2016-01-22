@@ -750,9 +750,13 @@ namespace openXDA
                 ValidateFileCreationTime(filePath, systemSettings.MaxFileCreationTimeOffset);
 
                 using (DbAdapterContainer dbAdapterContainer = new DbAdapterContainer(systemSettings.DbConnectionString, systemSettings.DbTimeout))
+                using (DataReaderWrapper dataReaderWrapper = GetDataReader(dbAdapterContainer.GetAdapter<SystemInfoDataContext>(), systemSettings, filePath))
                 {
-                    meterKey = GetMeterKey(filePath, systemSettings.FilePattern);
-                    ValidateMeterKey(filePath, meterKey, dbAdapterContainer.GetAdapter<MeterInfoDataContext>());
+                    if ((object)dataReaderWrapper.DataObject.MeterDataSet != null)
+                    {
+                        meterKey = GetMeterKey(filePath, systemSettings.FilePattern);
+                        ValidateMeterKey(filePath, meterKey, dbAdapterContainer.GetAdapter<MeterInfoDataContext>());
+                    }
                 }
 
                 return true;
@@ -1166,6 +1170,28 @@ namespace openXDA
                     OnProcessException(new Exception(message, ex));
                 }
             }
+        }
+
+        // Gets the data reader used to process the file at the given file path.
+        private DataReaderWrapper GetDataReader(SystemInfoDataContext systemInfo, SystemSettings systemSettings, string filePath)
+        {
+            DataReader dataReader;
+
+            dataReader = systemInfo.DataReaders
+                .OrderBy(reader => reader.LoadOrder)
+                .AsEnumerable()
+                .FirstOrDefault(reader => FilePath.IsFilePatternMatch(reader.FilePattern, filePath, true));
+
+            if ((object)dataReader == null)
+            {
+                // Because the file processor is filtering files based on the DataReader file patterns,
+                // this should only ever occur if the configuration changes during runtime
+                UpdateFileProcessorFilter(systemSettings);
+
+                throw new FileSkippedException($"Skipped file \"{filePath}\" because no data reader could be found to process the file.");
+            }
+
+            return Wrap(dataReader);
         }
 
         // Updates the Filter property of the FileProcessor with the
