@@ -25,8 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FaultData.Database;
-using ChannelKey = System.Tuple<int, int, string, string, string, string>;
-using SeriesKey = System.Tuple<int, int, string, string, string, string, string>;
 
 namespace FaultData.DataAnalysis
 {
@@ -249,8 +247,8 @@ namespace FaultData.DataAnalysis
             DataContextLookup<string, Phase> phaseLookup;
             DataContextLookup<string, SeriesType> seriesTypeLookup;
 
-            SeriesKey seriesKey;
             ChannelKey channelKey;
+            SeriesKey seriesKey;
 
             lineID = dataGroup.Line.ID;
             measurementTypeName = measurementTypeNameLookup[index];
@@ -259,11 +257,11 @@ namespace FaultData.DataAnalysis
             seriesTypeName = "Values";
             channelName = string.Concat(measurementTypeName, " ", phaseName);
 
-            channelLookup = new DataContextLookup<ChannelKey, Channel>(meterInfo, GetChannelKey)
+            channelLookup = new DataContextLookup<ChannelKey, Channel>(meterInfo, channel => new ChannelKey(channel))
                 .WithFilterExpression(channel => channel.MeterID == meter.ID)
                 .WithFilterExpression(channel => channel.LineID == dataGroup.Line.ID);
 
-            seriesLookup = new DataContextLookup<SeriesKey, Series>(meterInfo, GetSeriesKey)
+            seriesLookup = new DataContextLookup<SeriesKey, Series>(meterInfo, series => new SeriesKey(series))
                 .WithFilterExpression(series => series.Channel.Meter.ID == meter.ID)
                 .WithFilterExpression(series => series.Channel.Line.ID == dataGroup.Line.ID);
 
@@ -272,8 +270,8 @@ namespace FaultData.DataAnalysis
             phaseLookup = new DataContextLookup<string, Phase>(meterInfo, phase => phase.Name);
             seriesTypeLookup = new DataContextLookup<string, SeriesType>(meterInfo, seriesType => seriesType.Name);
 
-            seriesKey = Tuple.Create(lineID, 0, channelName, measurementTypeName, measurementCharacteristicName, phaseName, seriesTypeName);
-            channelKey = Tuple.Create(lineID, 0, channelName, measurementTypeName, measurementCharacteristicName, phaseName);
+            channelKey = new ChannelKey(lineID, 0, 0, channelName, measurementTypeName, measurementCharacteristicName, phaseName);
+            seriesKey = new SeriesKey(channelKey, seriesTypeName);
 
             return seriesLookup.GetOrAdd(seriesKey, key =>
             {
@@ -338,31 +336,6 @@ namespace FaultData.DataAnalysis
             string key = string.Format("{0} {1}", measurementType, phase);
 
             return indexLookup.TryGetValue(key, out index) ? index : -1;
-        }
-
-        private static ChannelKey GetChannelKey(Channel channel)
-        {
-            return Tuple.Create(
-                channel.LineID,
-                channel.HarmonicGroup,
-                channel.Name,
-                channel.MeasurementType.Name,
-                channel.MeasurementCharacteristic.Name,
-                channel.Phase.Name);
-        }
-
-        private static SeriesKey GetSeriesKey(Series series)
-        {
-            Channel channel = series.Channel;
-
-            return Tuple.Create(
-                channel.LineID,
-                channel.HarmonicGroup,
-                channel.Name,
-                channel.MeasurementType.Name,
-                channel.MeasurementCharacteristic.Name,
-                channel.Phase.Name,
-                series.SeriesType.Name);
         }
 
         #endregion
