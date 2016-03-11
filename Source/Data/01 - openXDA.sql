@@ -227,7 +227,8 @@ CREATE TABLE Channel
     Name VARCHAR(200) NOT NULL,
     SamplesPerHour FLOAT NOT NULL,
     PerUnitValue FLOAT NULL,
-    HarmonicGroup INT NOT NULL,
+	LoadSide INT NOT NULL DEFAULT 0,
+    HarmonicGroup INT NOT NULL DEFAULT 0,
     Description VARCHAR(MAX) NULL,
     Enabled INT NOT NULL DEFAULT 1
 )

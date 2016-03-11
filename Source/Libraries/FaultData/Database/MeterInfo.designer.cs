@@ -51,9 +51,6 @@ namespace FaultData.Database
     partial void InsertSeries(Series instance);
     partial void UpdateSeries(Series instance);
     partial void DeleteSeries(Series instance);
-    partial void InsertChannel(Channel instance);
-    partial void UpdateChannel(Channel instance);
-    partial void DeleteChannel(Channel instance);
     partial void InsertMeasurementCharacteristic(MeasurementCharacteristic instance);
     partial void UpdateMeasurementCharacteristic(MeasurementCharacteristic instance);
     partial void DeleteMeasurementCharacteristic(MeasurementCharacteristic instance);
@@ -75,6 +72,9 @@ namespace FaultData.Database
     partial void InsertGroupMeter(GroupMeter instance);
     partial void UpdateGroupMeter(GroupMeter instance);
     partial void DeleteGroupMeter(GroupMeter instance);
+    partial void InsertChannel(Channel instance);
+    partial void UpdateChannel(Channel instance);
+    partial void DeleteChannel(Channel instance);
     #endregion
 		
 		public MeterInfoDataContext() : 
@@ -163,14 +163,6 @@ namespace FaultData.Database
 			}
 		}
 		
-		public System.Data.Linq.Table<Channel> Channels
-		{
-			get
-			{
-				return this.GetTable<Channel>();
-			}
-		}
-		
 		public System.Data.Linq.Table<MeasurementCharacteristic> MeasurementCharacteristics
 		{
 			get
@@ -224,6 +216,14 @@ namespace FaultData.Database
 			get
 			{
 				return this.GetTable<GroupMeter>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Channel> Channels
+		{
+			get
+			{
+				return this.GetTable<Channel>();
 			}
 		}
 	}
@@ -1487,593 +1487,6 @@ namespace FaultData.Database
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Channel")]
-	public partial class Channel : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _ID;
-		
-		private int _MeterID;
-		
-		private int _LineID;
-		
-		private int _MeasurementTypeID;
-		
-		private int _MeasurementCharacteristicID;
-		
-		private int _PhaseID;
-		
-		private string _Name;
-		
-		private double _SamplesPerHour;
-		
-		private System.Nullable<double> _PerUnitValue;
-		
-		private int _HarmonicGroup;
-		
-		private string _Description;
-		
-		private int _Enabled;
-		
-		private EntitySet<Series> _Series;
-		
-		private EntitySet<BreakerChannel> _BreakerChannels;
-		
-		private EntityRef<MeasurementType> _MeasurementType;
-		
-		private EntityRef<Phase> _Phase;
-		
-		private EntityRef<MeasurementCharacteristic> _MeasurementCharacteristic;
-		
-		private EntityRef<Line> _Line;
-		
-		private EntityRef<Meter> _Meter;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIDChanging(int value);
-    partial void OnIDChanged();
-    partial void OnMeterIDChanging(int value);
-    partial void OnMeterIDChanged();
-    partial void OnLineIDChanging(int value);
-    partial void OnLineIDChanged();
-    partial void OnMeasurementTypeIDChanging(int value);
-    partial void OnMeasurementTypeIDChanged();
-    partial void OnMeasurementCharacteristicIDChanging(int value);
-    partial void OnMeasurementCharacteristicIDChanged();
-    partial void OnPhaseIDChanging(int value);
-    partial void OnPhaseIDChanged();
-    partial void OnNameChanging(string value);
-    partial void OnNameChanged();
-    partial void OnSamplesPerHourChanging(double value);
-    partial void OnSamplesPerHourChanged();
-    partial void OnPerUnitValueChanging(System.Nullable<double> value);
-    partial void OnPerUnitValueChanged();
-    partial void OnHarmonicGroupChanging(int value);
-    partial void OnHarmonicGroupChanged();
-    partial void OnDescriptionChanging(string value);
-    partial void OnDescriptionChanged();
-    partial void OnEnabledChanging(int value);
-    partial void OnEnabledChanged();
-    #endregion
-		
-		public Channel()
-		{
-			this._Series = new EntitySet<Series>(new Action<Series>(this.attach_Series), new Action<Series>(this.detach_Series));
-			this._BreakerChannels = new EntitySet<BreakerChannel>(new Action<BreakerChannel>(this.attach_BreakerChannels), new Action<BreakerChannel>(this.detach_BreakerChannels));
-			this._MeasurementType = default(EntityRef<MeasurementType>);
-			this._Phase = default(EntityRef<Phase>);
-			this._MeasurementCharacteristic = default(EntityRef<MeasurementCharacteristic>);
-			this._Line = default(EntityRef<Line>);
-			this._Meter = default(EntityRef<Meter>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int ID
-		{
-			get
-			{
-				return this._ID;
-			}
-			set
-			{
-				if ((this._ID != value))
-				{
-					this.OnIDChanging(value);
-					this.SendPropertyChanging();
-					this._ID = value;
-					this.SendPropertyChanged("ID");
-					this.OnIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MeterID", DbType="Int NOT NULL")]
-		public int MeterID
-		{
-			get
-			{
-				return this._MeterID;
-			}
-			set
-			{
-				if ((this._MeterID != value))
-				{
-					if (this._Meter.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnMeterIDChanging(value);
-					this.SendPropertyChanging();
-					this._MeterID = value;
-					this.SendPropertyChanged("MeterID");
-					this.OnMeterIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_LineID", DbType="Int NOT NULL")]
-		public int LineID
-		{
-			get
-			{
-				return this._LineID;
-			}
-			set
-			{
-				if ((this._LineID != value))
-				{
-					if (this._Line.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnLineIDChanging(value);
-					this.SendPropertyChanging();
-					this._LineID = value;
-					this.SendPropertyChanged("LineID");
-					this.OnLineIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MeasurementTypeID", DbType="Int NOT NULL")]
-		public int MeasurementTypeID
-		{
-			get
-			{
-				return this._MeasurementTypeID;
-			}
-			set
-			{
-				if ((this._MeasurementTypeID != value))
-				{
-					if (this._MeasurementType.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnMeasurementTypeIDChanging(value);
-					this.SendPropertyChanging();
-					this._MeasurementTypeID = value;
-					this.SendPropertyChanged("MeasurementTypeID");
-					this.OnMeasurementTypeIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MeasurementCharacteristicID", DbType="Int NOT NULL")]
-		public int MeasurementCharacteristicID
-		{
-			get
-			{
-				return this._MeasurementCharacteristicID;
-			}
-			set
-			{
-				if ((this._MeasurementCharacteristicID != value))
-				{
-					if (this._MeasurementCharacteristic.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnMeasurementCharacteristicIDChanging(value);
-					this.SendPropertyChanging();
-					this._MeasurementCharacteristicID = value;
-					this.SendPropertyChanged("MeasurementCharacteristicID");
-					this.OnMeasurementCharacteristicIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PhaseID", DbType="Int NOT NULL")]
-		public int PhaseID
-		{
-			get
-			{
-				return this._PhaseID;
-			}
-			set
-			{
-				if ((this._PhaseID != value))
-				{
-					if (this._Phase.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnPhaseIDChanging(value);
-					this.SendPropertyChanging();
-					this._PhaseID = value;
-					this.SendPropertyChanged("PhaseID");
-					this.OnPhaseIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="VarChar(200) NOT NULL", CanBeNull=false)]
-		public string Name
-		{
-			get
-			{
-				return this._Name;
-			}
-			set
-			{
-				if ((this._Name != value))
-				{
-					this.OnNameChanging(value);
-					this.SendPropertyChanging();
-					this._Name = value;
-					this.SendPropertyChanged("Name");
-					this.OnNameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SamplesPerHour", DbType="Float NOT NULL")]
-		public double SamplesPerHour
-		{
-			get
-			{
-				return this._SamplesPerHour;
-			}
-			set
-			{
-				if ((this._SamplesPerHour != value))
-				{
-					this.OnSamplesPerHourChanging(value);
-					this.SendPropertyChanging();
-					this._SamplesPerHour = value;
-					this.SendPropertyChanged("SamplesPerHour");
-					this.OnSamplesPerHourChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PerUnitValue", DbType="Float")]
-		public System.Nullable<double> PerUnitValue
-		{
-			get
-			{
-				return this._PerUnitValue;
-			}
-			set
-			{
-				if ((this._PerUnitValue != value))
-				{
-					this.OnPerUnitValueChanging(value);
-					this.SendPropertyChanging();
-					this._PerUnitValue = value;
-					this.SendPropertyChanged("PerUnitValue");
-					this.OnPerUnitValueChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HarmonicGroup", DbType="Int NOT NULL")]
-		public int HarmonicGroup
-		{
-			get
-			{
-				return this._HarmonicGroup;
-			}
-			set
-			{
-				if ((this._HarmonicGroup != value))
-				{
-					this.OnHarmonicGroupChanging(value);
-					this.SendPropertyChanging();
-					this._HarmonicGroup = value;
-					this.SendPropertyChanged("HarmonicGroup");
-					this.OnHarmonicGroupChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Description", DbType="VarChar(MAX)")]
-		public string Description
-		{
-			get
-			{
-				return this._Description;
-			}
-			set
-			{
-				if ((this._Description != value))
-				{
-					this.OnDescriptionChanging(value);
-					this.SendPropertyChanging();
-					this._Description = value;
-					this.SendPropertyChanged("Description");
-					this.OnDescriptionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Enabled", DbType="Int NOT NULL")]
-		public int Enabled
-		{
-			get
-			{
-				return this._Enabled;
-			}
-			set
-			{
-				if ((this._Enabled != value))
-				{
-					this.OnEnabledChanging(value);
-					this.SendPropertyChanging();
-					this._Enabled = value;
-					this.SendPropertyChanged("Enabled");
-					this.OnEnabledChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Channel_Series", Storage="_Series", ThisKey="ID", OtherKey="ChannelID")]
-		public EntitySet<Series> Series
-		{
-			get
-			{
-				return this._Series;
-			}
-			set
-			{
-				this._Series.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Channel_BreakerChannel", Storage="_BreakerChannels", ThisKey="ID", OtherKey="ChannelID")]
-		public EntitySet<BreakerChannel> BreakerChannels
-		{
-			get
-			{
-				return this._BreakerChannels;
-			}
-			set
-			{
-				this._BreakerChannels.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MeasurementType_Channel", Storage="_MeasurementType", ThisKey="MeasurementTypeID", OtherKey="ID", IsForeignKey=true)]
-		public MeasurementType MeasurementType
-		{
-			get
-			{
-				return this._MeasurementType.Entity;
-			}
-			set
-			{
-				MeasurementType previousValue = this._MeasurementType.Entity;
-				if (((previousValue != value) 
-							|| (this._MeasurementType.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._MeasurementType.Entity = null;
-						previousValue.Channels.Remove(this);
-					}
-					this._MeasurementType.Entity = value;
-					if ((value != null))
-					{
-						value.Channels.Add(this);
-						this._MeasurementTypeID = value.ID;
-					}
-					else
-					{
-						this._MeasurementTypeID = default(int);
-					}
-					this.SendPropertyChanged("MeasurementType");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Phase_Channel", Storage="_Phase", ThisKey="PhaseID", OtherKey="ID", IsForeignKey=true)]
-		public Phase Phase
-		{
-			get
-			{
-				return this._Phase.Entity;
-			}
-			set
-			{
-				Phase previousValue = this._Phase.Entity;
-				if (((previousValue != value) 
-							|| (this._Phase.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Phase.Entity = null;
-						previousValue.Channels.Remove(this);
-					}
-					this._Phase.Entity = value;
-					if ((value != null))
-					{
-						value.Channels.Add(this);
-						this._PhaseID = value.ID;
-					}
-					else
-					{
-						this._PhaseID = default(int);
-					}
-					this.SendPropertyChanged("Phase");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MeasurementCharacteristic_Channel", Storage="_MeasurementCharacteristic", ThisKey="MeasurementCharacteristicID", OtherKey="ID", IsForeignKey=true)]
-		public MeasurementCharacteristic MeasurementCharacteristic
-		{
-			get
-			{
-				return this._MeasurementCharacteristic.Entity;
-			}
-			set
-			{
-				MeasurementCharacteristic previousValue = this._MeasurementCharacteristic.Entity;
-				if (((previousValue != value) 
-							|| (this._MeasurementCharacteristic.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._MeasurementCharacteristic.Entity = null;
-						previousValue.Channels.Remove(this);
-					}
-					this._MeasurementCharacteristic.Entity = value;
-					if ((value != null))
-					{
-						value.Channels.Add(this);
-						this._MeasurementCharacteristicID = value.ID;
-					}
-					else
-					{
-						this._MeasurementCharacteristicID = default(int);
-					}
-					this.SendPropertyChanged("MeasurementCharacteristic");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Line_Channel", Storage="_Line", ThisKey="LineID", OtherKey="ID", IsForeignKey=true)]
-		public Line Line
-		{
-			get
-			{
-				return this._Line.Entity;
-			}
-			set
-			{
-				Line previousValue = this._Line.Entity;
-				if (((previousValue != value) 
-							|| (this._Line.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Line.Entity = null;
-						previousValue.Channels.Remove(this);
-					}
-					this._Line.Entity = value;
-					if ((value != null))
-					{
-						value.Channels.Add(this);
-						this._LineID = value.ID;
-					}
-					else
-					{
-						this._LineID = default(int);
-					}
-					this.SendPropertyChanged("Line");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Meter_Channel", Storage="_Meter", ThisKey="MeterID", OtherKey="ID", IsForeignKey=true)]
-		public Meter Meter
-		{
-			get
-			{
-				return this._Meter.Entity;
-			}
-			set
-			{
-				Meter previousValue = this._Meter.Entity;
-				if (((previousValue != value) 
-							|| (this._Meter.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Meter.Entity = null;
-						previousValue.Channels.Remove(this);
-					}
-					this._Meter.Entity = value;
-					if ((value != null))
-					{
-						value.Channels.Add(this);
-						this._MeterID = value.ID;
-					}
-					else
-					{
-						this._MeterID = default(int);
-					}
-					this.SendPropertyChanged("Meter");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_Series(Series entity)
-		{
-			this.SendPropertyChanging();
-			entity.Channel = this;
-		}
-		
-		private void detach_Series(Series entity)
-		{
-			this.SendPropertyChanging();
-			entity.Channel = null;
-		}
-		
-		private void attach_BreakerChannels(BreakerChannel entity)
-		{
-			this.SendPropertyChanging();
-			entity.Channel = this;
-		}
-		
-		private void detach_BreakerChannels(BreakerChannel entity)
-		{
-			this.SendPropertyChanging();
-			entity.Channel = null;
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.MeasurementCharacteristic")]
 	public partial class MeasurementCharacteristic : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -2256,11 +1669,11 @@ namespace FaultData.Database
 		
 		private EntitySet<MeterLocationLine> _MeterLocationLines;
 		
-		private EntitySet<Channel> _Channels;
-		
 		private EntitySet<MeterLine> _MeterLines;
 		
 		private EntitySet<Structure> _Structures;
+		
+		private EntitySet<Channel> _Channels;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -2283,9 +1696,9 @@ namespace FaultData.Database
 		public Line()
 		{
 			this._MeterLocationLines = new EntitySet<MeterLocationLine>(new Action<MeterLocationLine>(this.attach_MeterLocationLines), new Action<MeterLocationLine>(this.detach_MeterLocationLines));
-			this._Channels = new EntitySet<Channel>(new Action<Channel>(this.attach_Channels), new Action<Channel>(this.detach_Channels));
 			this._MeterLines = new EntitySet<MeterLine>(new Action<MeterLine>(this.attach_MeterLines), new Action<MeterLine>(this.detach_MeterLines));
 			this._Structures = new EntitySet<Structure>(new Action<Structure>(this.attach_Structures), new Action<Structure>(this.detach_Structures));
+			this._Channels = new EntitySet<Channel>(new Action<Channel>(this.attach_Channels), new Action<Channel>(this.detach_Channels));
 			OnCreated();
 		}
 		
@@ -2422,19 +1835,6 @@ namespace FaultData.Database
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Line_Channel", Storage="_Channels", ThisKey="ID", OtherKey="LineID")]
-		public EntitySet<Channel> Channels
-		{
-			get
-			{
-				return this._Channels;
-			}
-			set
-			{
-				this._Channels.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Line_MeterLine", Storage="_MeterLines", ThisKey="ID", OtherKey="LineID")]
 		public EntitySet<MeterLine> MeterLines
 		{
@@ -2458,6 +1858,19 @@ namespace FaultData.Database
 			set
 			{
 				this._Structures.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Line_Channel", Storage="_Channels", ThisKey="ID", OtherKey="LineID")]
+		public EntitySet<Channel> Channels
+		{
+			get
+			{
+				return this._Channels;
+			}
+			set
+			{
+				this._Channels.Assign(value);
 			}
 		}
 		
@@ -2493,18 +1906,6 @@ namespace FaultData.Database
 			entity.Line = null;
 		}
 		
-		private void attach_Channels(Channel entity)
-		{
-			this.SendPropertyChanging();
-			entity.Line = this;
-		}
-		
-		private void detach_Channels(Channel entity)
-		{
-			this.SendPropertyChanging();
-			entity.Line = null;
-		}
-		
 		private void attach_MeterLines(MeterLine entity)
 		{
 			this.SendPropertyChanging();
@@ -2524,6 +1925,18 @@ namespace FaultData.Database
 		}
 		
 		private void detach_Structures(Structure entity)
+		{
+			this.SendPropertyChanging();
+			entity.Line = null;
+		}
+		
+		private void attach_Channels(Channel entity)
+		{
+			this.SendPropertyChanging();
+			entity.Line = this;
+		}
+		
+		private void detach_Channels(Channel entity)
 		{
 			this.SendPropertyChanging();
 			entity.Line = null;
@@ -2774,11 +2187,11 @@ namespace FaultData.Database
 		
 		private EntitySet<MeterFileGroup> _MeterFileGroups;
 		
-		private EntitySet<Channel> _Channels;
-		
 		private EntitySet<MeterLine> _MeterLines;
 		
 		private EntitySet<GroupMeter> _GroupMeters;
+		
+		private EntitySet<Channel> _Channels;
 		
 		private EntityRef<MeterLocation> _MeterLocation;
 		
@@ -2811,9 +2224,9 @@ namespace FaultData.Database
 		public Meter()
 		{
 			this._MeterFileGroups = new EntitySet<MeterFileGroup>(new Action<MeterFileGroup>(this.attach_MeterFileGroups), new Action<MeterFileGroup>(this.detach_MeterFileGroups));
-			this._Channels = new EntitySet<Channel>(new Action<Channel>(this.attach_Channels), new Action<Channel>(this.detach_Channels));
 			this._MeterLines = new EntitySet<MeterLine>(new Action<MeterLine>(this.attach_MeterLines), new Action<MeterLine>(this.detach_MeterLines));
 			this._GroupMeters = new EntitySet<GroupMeter>(new Action<GroupMeter>(this.attach_GroupMeters), new Action<GroupMeter>(this.detach_GroupMeters));
+			this._Channels = new EntitySet<Channel>(new Action<Channel>(this.attach_Channels), new Action<Channel>(this.detach_Channels));
 			this._MeterLocation = default(EntityRef<MeterLocation>);
 			OnCreated();
 		}
@@ -3035,19 +2448,6 @@ namespace FaultData.Database
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Meter_Channel", Storage="_Channels", ThisKey="ID", OtherKey="MeterID")]
-		public EntitySet<Channel> Channels
-		{
-			get
-			{
-				return this._Channels;
-			}
-			set
-			{
-				this._Channels.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Meter_MeterLine", Storage="_MeterLines", ThisKey="ID", OtherKey="MeterID")]
 		public EntitySet<MeterLine> MeterLines
 		{
@@ -3071,6 +2471,19 @@ namespace FaultData.Database
 			set
 			{
 				this._GroupMeters.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Meter_Channel", Storage="_Channels", ThisKey="ID", OtherKey="MeterID")]
+		public EntitySet<Channel> Channels
+		{
+			get
+			{
+				return this._Channels;
+			}
+			set
+			{
+				this._Channels.Assign(value);
 			}
 		}
 		
@@ -3140,18 +2553,6 @@ namespace FaultData.Database
 			entity.Meter = null;
 		}
 		
-		private void attach_Channels(Channel entity)
-		{
-			this.SendPropertyChanging();
-			entity.Meter = this;
-		}
-		
-		private void detach_Channels(Channel entity)
-		{
-			this.SendPropertyChanging();
-			entity.Meter = null;
-		}
-		
 		private void attach_MeterLines(MeterLine entity)
 		{
 			this.SendPropertyChanging();
@@ -3171,6 +2572,18 @@ namespace FaultData.Database
 		}
 		
 		private void detach_GroupMeters(GroupMeter entity)
+		{
+			this.SendPropertyChanging();
+			entity.Meter = null;
+		}
+		
+		private void attach_Channels(Channel entity)
+		{
+			this.SendPropertyChanging();
+			entity.Meter = this;
+		}
+		
+		private void detach_Channels(Channel entity)
 		{
 			this.SendPropertyChanging();
 			entity.Meter = null;
@@ -3675,6 +3088,617 @@ namespace FaultData.Database
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Channel")]
+	public partial class Channel : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _ID;
+		
+		private int _MeterID;
+		
+		private int _LineID;
+		
+		private int _MeasurementTypeID;
+		
+		private int _MeasurementCharacteristicID;
+		
+		private int _PhaseID;
+		
+		private string _Name;
+		
+		private double _SamplesPerHour;
+		
+		private System.Nullable<double> _PerUnitValue;
+		
+		private int _LoadSide;
+		
+		private int _HarmonicGroup;
+		
+		private string _Description;
+		
+		private int _Enabled;
+		
+		private EntitySet<Series> _Series;
+		
+		private EntitySet<BreakerChannel> _BreakerChannels;
+		
+		private EntityRef<Line> _Line;
+		
+		private EntityRef<MeasurementType> _MeasurementType;
+		
+		private EntityRef<MeasurementCharacteristic> _MeasurementCharacteristic;
+		
+		private EntityRef<Meter> _Meter;
+		
+		private EntityRef<Phase> _Phase;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIDChanging(int value);
+    partial void OnIDChanged();
+    partial void OnMeterIDChanging(int value);
+    partial void OnMeterIDChanged();
+    partial void OnLineIDChanging(int value);
+    partial void OnLineIDChanged();
+    partial void OnMeasurementTypeIDChanging(int value);
+    partial void OnMeasurementTypeIDChanged();
+    partial void OnMeasurementCharacteristicIDChanging(int value);
+    partial void OnMeasurementCharacteristicIDChanged();
+    partial void OnPhaseIDChanging(int value);
+    partial void OnPhaseIDChanged();
+    partial void OnNameChanging(string value);
+    partial void OnNameChanged();
+    partial void OnSamplesPerHourChanging(double value);
+    partial void OnSamplesPerHourChanged();
+    partial void OnPerUnitValueChanging(System.Nullable<double> value);
+    partial void OnPerUnitValueChanged();
+    partial void OnLoadSideChanging(int value);
+    partial void OnLoadSideChanged();
+    partial void OnHarmonicGroupChanging(int value);
+    partial void OnHarmonicGroupChanged();
+    partial void OnDescriptionChanging(string value);
+    partial void OnDescriptionChanged();
+    partial void OnEnabledChanging(int value);
+    partial void OnEnabledChanged();
+    #endregion
+		
+		public Channel()
+		{
+			this._Series = new EntitySet<Series>(new Action<Series>(this.attach_Series), new Action<Series>(this.detach_Series));
+			this._BreakerChannels = new EntitySet<BreakerChannel>(new Action<BreakerChannel>(this.attach_BreakerChannels), new Action<BreakerChannel>(this.detach_BreakerChannels));
+			this._Line = default(EntityRef<Line>);
+			this._MeasurementType = default(EntityRef<MeasurementType>);
+			this._MeasurementCharacteristic = default(EntityRef<MeasurementCharacteristic>);
+			this._Meter = default(EntityRef<Meter>);
+			this._Phase = default(EntityRef<Phase>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int ID
+		{
+			get
+			{
+				return this._ID;
+			}
+			set
+			{
+				if ((this._ID != value))
+				{
+					this.OnIDChanging(value);
+					this.SendPropertyChanging();
+					this._ID = value;
+					this.SendPropertyChanged("ID");
+					this.OnIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MeterID", DbType="Int NOT NULL")]
+		public int MeterID
+		{
+			get
+			{
+				return this._MeterID;
+			}
+			set
+			{
+				if ((this._MeterID != value))
+				{
+					if (this._Meter.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnMeterIDChanging(value);
+					this.SendPropertyChanging();
+					this._MeterID = value;
+					this.SendPropertyChanged("MeterID");
+					this.OnMeterIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_LineID", DbType="Int NOT NULL")]
+		public int LineID
+		{
+			get
+			{
+				return this._LineID;
+			}
+			set
+			{
+				if ((this._LineID != value))
+				{
+					if (this._Line.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnLineIDChanging(value);
+					this.SendPropertyChanging();
+					this._LineID = value;
+					this.SendPropertyChanged("LineID");
+					this.OnLineIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MeasurementTypeID", DbType="Int NOT NULL")]
+		public int MeasurementTypeID
+		{
+			get
+			{
+				return this._MeasurementTypeID;
+			}
+			set
+			{
+				if ((this._MeasurementTypeID != value))
+				{
+					if (this._MeasurementType.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnMeasurementTypeIDChanging(value);
+					this.SendPropertyChanging();
+					this._MeasurementTypeID = value;
+					this.SendPropertyChanged("MeasurementTypeID");
+					this.OnMeasurementTypeIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MeasurementCharacteristicID", DbType="Int NOT NULL")]
+		public int MeasurementCharacteristicID
+		{
+			get
+			{
+				return this._MeasurementCharacteristicID;
+			}
+			set
+			{
+				if ((this._MeasurementCharacteristicID != value))
+				{
+					if (this._MeasurementCharacteristic.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnMeasurementCharacteristicIDChanging(value);
+					this.SendPropertyChanging();
+					this._MeasurementCharacteristicID = value;
+					this.SendPropertyChanged("MeasurementCharacteristicID");
+					this.OnMeasurementCharacteristicIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PhaseID", DbType="Int NOT NULL")]
+		public int PhaseID
+		{
+			get
+			{
+				return this._PhaseID;
+			}
+			set
+			{
+				if ((this._PhaseID != value))
+				{
+					if (this._Phase.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnPhaseIDChanging(value);
+					this.SendPropertyChanging();
+					this._PhaseID = value;
+					this.SendPropertyChanged("PhaseID");
+					this.OnPhaseIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="VarChar(200) NOT NULL", CanBeNull=false)]
+		public string Name
+		{
+			get
+			{
+				return this._Name;
+			}
+			set
+			{
+				if ((this._Name != value))
+				{
+					this.OnNameChanging(value);
+					this.SendPropertyChanging();
+					this._Name = value;
+					this.SendPropertyChanged("Name");
+					this.OnNameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SamplesPerHour", DbType="Float NOT NULL")]
+		public double SamplesPerHour
+		{
+			get
+			{
+				return this._SamplesPerHour;
+			}
+			set
+			{
+				if ((this._SamplesPerHour != value))
+				{
+					this.OnSamplesPerHourChanging(value);
+					this.SendPropertyChanging();
+					this._SamplesPerHour = value;
+					this.SendPropertyChanged("SamplesPerHour");
+					this.OnSamplesPerHourChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PerUnitValue", DbType="Float")]
+		public System.Nullable<double> PerUnitValue
+		{
+			get
+			{
+				return this._PerUnitValue;
+			}
+			set
+			{
+				if ((this._PerUnitValue != value))
+				{
+					this.OnPerUnitValueChanging(value);
+					this.SendPropertyChanging();
+					this._PerUnitValue = value;
+					this.SendPropertyChanged("PerUnitValue");
+					this.OnPerUnitValueChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_LoadSide", DbType="Int NOT NULL")]
+		public int LoadSide
+		{
+			get
+			{
+				return this._LoadSide;
+			}
+			set
+			{
+				if ((this._LoadSide != value))
+				{
+					this.OnLoadSideChanging(value);
+					this.SendPropertyChanging();
+					this._LoadSide = value;
+					this.SendPropertyChanged("LoadSide");
+					this.OnLoadSideChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HarmonicGroup", DbType="Int NOT NULL")]
+		public int HarmonicGroup
+		{
+			get
+			{
+				return this._HarmonicGroup;
+			}
+			set
+			{
+				if ((this._HarmonicGroup != value))
+				{
+					this.OnHarmonicGroupChanging(value);
+					this.SendPropertyChanging();
+					this._HarmonicGroup = value;
+					this.SendPropertyChanged("HarmonicGroup");
+					this.OnHarmonicGroupChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Description", DbType="VarChar(MAX)")]
+		public string Description
+		{
+			get
+			{
+				return this._Description;
+			}
+			set
+			{
+				if ((this._Description != value))
+				{
+					this.OnDescriptionChanging(value);
+					this.SendPropertyChanging();
+					this._Description = value;
+					this.SendPropertyChanged("Description");
+					this.OnDescriptionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Enabled", DbType="Int NOT NULL")]
+		public int Enabled
+		{
+			get
+			{
+				return this._Enabled;
+			}
+			set
+			{
+				if ((this._Enabled != value))
+				{
+					this.OnEnabledChanging(value);
+					this.SendPropertyChanging();
+					this._Enabled = value;
+					this.SendPropertyChanged("Enabled");
+					this.OnEnabledChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Channel_Series", Storage="_Series", ThisKey="ID", OtherKey="ChannelID")]
+		public EntitySet<Series> Series
+		{
+			get
+			{
+				return this._Series;
+			}
+			set
+			{
+				this._Series.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Channel_BreakerChannel", Storage="_BreakerChannels", ThisKey="ID", OtherKey="ChannelID")]
+		public EntitySet<BreakerChannel> BreakerChannels
+		{
+			get
+			{
+				return this._BreakerChannels;
+			}
+			set
+			{
+				this._BreakerChannels.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Line_Channel", Storage="_Line", ThisKey="LineID", OtherKey="ID", IsForeignKey=true)]
+		public Line Line
+		{
+			get
+			{
+				return this._Line.Entity;
+			}
+			set
+			{
+				Line previousValue = this._Line.Entity;
+				if (((previousValue != value) 
+							|| (this._Line.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Line.Entity = null;
+						previousValue.Channels.Remove(this);
+					}
+					this._Line.Entity = value;
+					if ((value != null))
+					{
+						value.Channels.Add(this);
+						this._LineID = value.ID;
+					}
+					else
+					{
+						this._LineID = default(int);
+					}
+					this.SendPropertyChanged("Line");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MeasurementType_Channel", Storage="_MeasurementType", ThisKey="MeasurementTypeID", OtherKey="ID", IsForeignKey=true)]
+		public MeasurementType MeasurementType
+		{
+			get
+			{
+				return this._MeasurementType.Entity;
+			}
+			set
+			{
+				MeasurementType previousValue = this._MeasurementType.Entity;
+				if (((previousValue != value) 
+							|| (this._MeasurementType.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._MeasurementType.Entity = null;
+						previousValue.Channels.Remove(this);
+					}
+					this._MeasurementType.Entity = value;
+					if ((value != null))
+					{
+						value.Channels.Add(this);
+						this._MeasurementTypeID = value.ID;
+					}
+					else
+					{
+						this._MeasurementTypeID = default(int);
+					}
+					this.SendPropertyChanged("MeasurementType");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MeasurementCharacteristic_Channel", Storage="_MeasurementCharacteristic", ThisKey="MeasurementCharacteristicID", OtherKey="ID", IsForeignKey=true)]
+		public MeasurementCharacteristic MeasurementCharacteristic
+		{
+			get
+			{
+				return this._MeasurementCharacteristic.Entity;
+			}
+			set
+			{
+				MeasurementCharacteristic previousValue = this._MeasurementCharacteristic.Entity;
+				if (((previousValue != value) 
+							|| (this._MeasurementCharacteristic.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._MeasurementCharacteristic.Entity = null;
+						previousValue.Channels.Remove(this);
+					}
+					this._MeasurementCharacteristic.Entity = value;
+					if ((value != null))
+					{
+						value.Channels.Add(this);
+						this._MeasurementCharacteristicID = value.ID;
+					}
+					else
+					{
+						this._MeasurementCharacteristicID = default(int);
+					}
+					this.SendPropertyChanged("MeasurementCharacteristic");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Meter_Channel", Storage="_Meter", ThisKey="MeterID", OtherKey="ID", IsForeignKey=true)]
+		public Meter Meter
+		{
+			get
+			{
+				return this._Meter.Entity;
+			}
+			set
+			{
+				Meter previousValue = this._Meter.Entity;
+				if (((previousValue != value) 
+							|| (this._Meter.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Meter.Entity = null;
+						previousValue.Channels.Remove(this);
+					}
+					this._Meter.Entity = value;
+					if ((value != null))
+					{
+						value.Channels.Add(this);
+						this._MeterID = value.ID;
+					}
+					else
+					{
+						this._MeterID = default(int);
+					}
+					this.SendPropertyChanged("Meter");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Phase_Channel", Storage="_Phase", ThisKey="PhaseID", OtherKey="ID", IsForeignKey=true)]
+		public Phase Phase
+		{
+			get
+			{
+				return this._Phase.Entity;
+			}
+			set
+			{
+				Phase previousValue = this._Phase.Entity;
+				if (((previousValue != value) 
+							|| (this._Phase.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Phase.Entity = null;
+						previousValue.Channels.Remove(this);
+					}
+					this._Phase.Entity = value;
+					if ((value != null))
+					{
+						value.Channels.Add(this);
+						this._PhaseID = value.ID;
+					}
+					else
+					{
+						this._PhaseID = default(int);
+					}
+					this.SendPropertyChanged("Phase");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_Series(Series entity)
+		{
+			this.SendPropertyChanging();
+			entity.Channel = this;
+		}
+		
+		private void detach_Series(Series entity)
+		{
+			this.SendPropertyChanging();
+			entity.Channel = null;
+		}
+		
+		private void attach_BreakerChannels(BreakerChannel entity)
+		{
+			this.SendPropertyChanging();
+			entity.Channel = this;
+		}
+		
+		private void detach_BreakerChannels(BreakerChannel entity)
+		{
+			this.SendPropertyChanging();
+			entity.Channel = null;
 		}
 	}
 }

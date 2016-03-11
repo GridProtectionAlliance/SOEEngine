@@ -65,29 +65,6 @@
       <Association Name="Channel_Series" Member="Channel" ThisKey="ChannelID" OtherKey="ID" Type="Channel" IsForeignKey="true" />
     </Type>
   </Table>
-  <Table Name="dbo.Channel" Member="Channels">
-    <Type Name="Channel">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="MeterID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="LineID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="MeasurementTypeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="MeasurementCharacteristicID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="PhaseID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Name" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
-      <Column Name="SamplesPerHour" Type="System.Double" DbType="Float NOT NULL" CanBeNull="false" />
-      <Column Name="PerUnitValue" Type="System.Double" DbType="Float" CanBeNull="true" />
-      <Column Name="HarmonicGroup" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Description" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
-      <Column Name="Enabled" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Association Name="Channel_Series" Member="Series" ThisKey="ID" OtherKey="ChannelID" Type="Series" />
-      <Association Name="Channel_BreakerChannel" Member="BreakerChannels" ThisKey="ID" OtherKey="ChannelID" Type="BreakerChannel" />
-      <Association Name="MeasurementType_Channel" Member="MeasurementType" ThisKey="MeasurementTypeID" OtherKey="ID" Type="MeasurementType" IsForeignKey="true" />
-      <Association Name="Phase_Channel" Member="Phase" ThisKey="PhaseID" OtherKey="ID" Type="Phase" IsForeignKey="true" />
-      <Association Name="MeasurementCharacteristic_Channel" Member="MeasurementCharacteristic" ThisKey="MeasurementCharacteristicID" OtherKey="ID" Type="MeasurementCharacteristic" IsForeignKey="true" />
-      <Association Name="Line_Channel" Member="Line" ThisKey="LineID" OtherKey="ID" Type="Line" IsForeignKey="true" />
-      <Association Name="Meter_Channel" Member="Meter" ThisKey="MeterID" OtherKey="ID" Type="Meter" IsForeignKey="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.MeasurementCharacteristic" Member="MeasurementCharacteristics">
     <Type Name="MeasurementCharacteristic">
       <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -106,9 +83,9 @@
       <Column Name="Length" Type="System.Double" DbType="Float NOT NULL" CanBeNull="false" />
       <Column Name="Description" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
       <Association Name="Line_MeterLocationLine" Member="MeterLocationLines" ThisKey="ID" OtherKey="LineID" Type="MeterLocationLine" />
-      <Association Name="Line_Channel" Member="Channels" ThisKey="ID" OtherKey="LineID" Type="Channel" />
       <Association Name="Line_MeterLine" Member="MeterLines" ThisKey="ID" OtherKey="LineID" Type="MeterLine" />
       <Association Name="Line_Structure" Member="Structures" ThisKey="ID" OtherKey="LineID" Type="Structure" />
+      <Association Name="Line_Channel" Member="Channels" ThisKey="ID" OtherKey="LineID" Type="Channel" />
     </Type>
   </Table>
   <Table Name="dbo.MeterLine" Member="MeterLines">
@@ -134,9 +111,9 @@
       <Column Name="TimeZone" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
       <Column Name="Description" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
       <Association Name="Meter_MeterFileGroup" Member="MeterFileGroups" ThisKey="ID" OtherKey="MeterID" Type="MeterFileGroup" />
-      <Association Name="Meter_Channel" Member="Channels" ThisKey="ID" OtherKey="MeterID" Type="Channel" />
       <Association Name="Meter_MeterLine" Member="MeterLines" ThisKey="ID" OtherKey="MeterID" Type="MeterLine" />
       <Association Name="Meter_GroupMeter" Member="GroupMeters" ThisKey="ID" OtherKey="MeterID" Type="GroupMeter" />
+      <Association Name="Meter_Channel" Member="Channels" ThisKey="ID" OtherKey="MeterID" Type="Channel" />
       <Association Name="MeterLocation_Meter" Member="MeterLocation" ThisKey="MeterLocationID" OtherKey="ID" Type="MeterLocation" IsForeignKey="true" />
     </Type>
   </Table>
@@ -164,6 +141,30 @@
       <Column Name="GroupID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="MeterID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Association Name="Meter_GroupMeter" Member="Meter" ThisKey="MeterID" OtherKey="ID" Type="Meter" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Channel" Member="Channels">
+    <Type Name="Channel">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="MeterID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="LineID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="MeasurementTypeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="MeasurementCharacteristicID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="PhaseID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
+      <Column Name="SamplesPerHour" Type="System.Double" DbType="Float NOT NULL" CanBeNull="false" />
+      <Column Name="PerUnitValue" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="LoadSide" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="HarmonicGroup" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Description" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
+      <Column Name="Enabled" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="Channel_Series" Member="Series" ThisKey="ID" OtherKey="ChannelID" Type="Series" />
+      <Association Name="Channel_BreakerChannel" Member="BreakerChannels" ThisKey="ID" OtherKey="ChannelID" Type="BreakerChannel" />
+      <Association Name="Line_Channel" Member="Line" ThisKey="LineID" OtherKey="ID" Type="Line" IsForeignKey="true" />
+      <Association Name="MeasurementType_Channel" Member="MeasurementType" ThisKey="MeasurementTypeID" OtherKey="ID" Type="MeasurementType" IsForeignKey="true" />
+      <Association Name="MeasurementCharacteristic_Channel" Member="MeasurementCharacteristic" ThisKey="MeasurementCharacteristicID" OtherKey="ID" Type="MeasurementCharacteristic" IsForeignKey="true" />
+      <Association Name="Meter_Channel" Member="Meter" ThisKey="MeterID" OtherKey="ID" Type="Meter" IsForeignKey="true" />
+      <Association Name="Phase_Channel" Member="Phase" ThisKey="PhaseID" OtherKey="ID" Type="Phase" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>
