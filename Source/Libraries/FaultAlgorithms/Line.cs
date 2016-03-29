@@ -28,7 +28,6 @@
 //
 //******************************************************************************************************
 
-using System.Collections.Generic;
 using System.Xml.Linq;
 
 namespace FaultAlgorithms
@@ -53,13 +52,6 @@ namespace FaultAlgorithms
         private double m_x1;
         private double m_r0;
         private double m_x0;
-
-        private FaultTriggerAlgorithm m_faultTriggerAlgorithm;
-        private FaultTypeAlgorithm m_faultTypeAlgorithm;
-        private FaultLocationAlgorithm m_faultLocationAlgorithm;
-        private string m_faultTriggerParameters;
-        private string m_faultTypeParameters;
-        private string m_faultLocationParameters;
 
         private XElement m_channelsElement;
         private FaultAlgorithmsSet m_faultAlgorithmsSet;

@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using FaultData.DataAnalysis;
+using FaultData.Database;
 using FaultData.DataSets;
 
 namespace FaultData.DataResources
@@ -34,8 +35,19 @@ namespace FaultData.DataResources
         #region [ Members ]
 
         // Fields
+        private DbAdapterContainer m_dbAdapterContainer;
+
         private double m_systemFrequency;
         private Dictionary<DataGroup, List<Disturbance>> m_swells;
+
+        #endregion
+
+        #region [ Constructors ]
+
+        private SwellDataResource(DbAdapterContainer dbAdapterContainer)
+        {
+            m_dbAdapterContainer = dbAdapterContainer;
+        }
 
         #endregion
 
@@ -71,7 +83,7 @@ namespace FaultData.DataResources
             VoltageDisturbanceAnalyzer voltageDisturbanceAnalyzer;
 
             voltageDisturbanceAnalyzer = new VoltageDisturbanceAnalyzer(IsSwell, GetMagnitude, GetVAllPoint, EventClassification.Swell);
-            voltageDisturbanceAnalyzer.Initialize(meterDataSet);
+            voltageDisturbanceAnalyzer.Initialize(meterDataSet, m_dbAdapterContainer);
 
             m_swells = voltageDisturbanceAnalyzer.Disturbances;
         }
@@ -95,6 +107,16 @@ namespace FaultData.DataResources
                 return vb;
 
             return vc;
+        }
+
+        #endregion
+
+        #region [ Static ]
+
+        // Static Methods
+        public static SwellDataResource GetResource(MeterDataSet meterDataSet, DbAdapterContainer dbAdapterContainer)
+        {
+            return meterDataSet.GetResource(() => new SwellDataResource(dbAdapterContainer));
         }
 
         #endregion

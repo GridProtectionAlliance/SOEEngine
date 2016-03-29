@@ -48,7 +48,6 @@ namespace openXDA.Configuration
         private string m_resultsPath;
         private string m_filePattern;
 
-        private double m_waitPeriod;
         private double m_timeTolerance;
         private string m_defaultMeterTimeZone;
         private string m_xdaTimeZone;

@@ -52,7 +52,7 @@ namespace FaultData.DataResources
 
         #region [ Constructors ]
 
-        public EventClassificationResource(DbAdapterContainer dbAdapterContainer)
+        private EventClassificationResource(DbAdapterContainer dbAdapterContainer)
         {
             m_dbAdapterContainer = dbAdapterContainer;
             m_classifications = new Dictionary<DataGroup, EventClassification>();
@@ -76,8 +76,8 @@ namespace FaultData.DataResources
 
         public override void Initialize(MeterDataSet meterDataSet)
         {
-            CycleDataResource cycleDataResource = meterDataSet.GetResource<CycleDataResource>();
-            FaultDataResource faultDataResource = meterDataSet.GetResource(() => new FaultDataResource(m_dbAdapterContainer));
+            CycleDataResource cycleDataResource = CycleDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
+            FaultDataResource faultDataResource = FaultDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
             FaultGroup faultGroup;
 
             DataGroup dataGroup;
@@ -168,6 +168,16 @@ namespace FaultData.DataResources
             }
 
             return false;
+        }
+
+        #endregion
+
+        #region [ Static ]
+
+        // Static Methods
+        public static EventClassificationResource GetResource(MeterDataSet meterDataSet, DbAdapterContainer dbAdapterContainer)
+        {
+            return meterDataSet.GetResource<EventClassificationResource>(() => new EventClassificationResource(dbAdapterContainer));
         }
 
         #endregion

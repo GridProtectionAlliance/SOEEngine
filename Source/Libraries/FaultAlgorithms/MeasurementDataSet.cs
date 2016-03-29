@@ -174,6 +174,10 @@ namespace FaultAlgorithms
             }
         }
 
+        /// <summary>
+        /// Exports data to the CSV file with the given file name.
+        /// </summary>
+        /// <param name="fileName">The name of the CSV file.</param>
         public void ExportCurrentDataToCSV(string fileName)
         {
             const string Header = "Time,AN,BN,CN";
@@ -228,6 +232,12 @@ namespace FaultAlgorithms
 
         // Static Methods
 
+        /// <summary>
+        /// Exports data to the given CSV file.
+        /// </summary>
+        /// <param name="fileName">The name of the CSV file.</param>
+        /// <param name="voltageData">The voltage data to be exported.</param>
+        /// <param name="currentData">The current data to be exported.</param>
         public static void ExportToCSV(string fileName, MeasurementDataSet voltageData, MeasurementDataSet currentData)
         {
             const string Header = "Time,AN V,BN V,CN V,AB V,BC V,CA V,AN I,BN I,CN I";

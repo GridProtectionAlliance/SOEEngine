@@ -368,8 +368,8 @@ namespace FaultData.DataOperations
 
         public override void Execute(MeterDataSet meterDataSet)
         {
-            FaultDataResource faultDataResource = meterDataSet.GetResource(() => new FaultDataResource(m_dbAdapterContainer));
-            CycleDataResource cycleDataResource = meterDataSet.GetResource<CycleDataResource>();
+            FaultDataResource faultDataResource = FaultDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
+            CycleDataResource cycleDataResource = CycleDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
             FaultGroup faultGroup;
 
             Log.Info("Executing operation to load fault location data into the database...");

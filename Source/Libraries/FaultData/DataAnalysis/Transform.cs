@@ -43,14 +43,7 @@ namespace FaultData.DataAnalysis
             return combination;
         }
 
-        public static VICycleDataGroup ToVICycleDataGroup(VIDataGroup dataGroup, double frequency)
-        {
-            return new VICycleDataGroup(dataGroup.ToDataGroup().DataSeries
-                .Select(dataSeries => ToCycleDataGroup(dataSeries, frequency))
-                .ToList());
-        }
-
-        public static CycleDataGroup ToCycleDataGroup(DataSeries dataSeries, double frequency)
+        public static DataGroup ToCycleDataGroup(DataSeries dataSeries, double frequency)
         {
             DataGroup dataGroup = new DataGroup();
 
@@ -68,7 +61,7 @@ namespace FaultData.DataAnalysis
             SineWave sineFit;
 
             if ((object)dataSeries == null)
-                return new CycleDataGroup(dataGroup);
+                return null;
 
             // Set series info to the source series info
             rmsSeries.SeriesInfo = dataSeries.SeriesInfo;
@@ -136,7 +129,7 @@ namespace FaultData.DataAnalysis
             dataGroup.Add(peakSeries);
             dataGroup.Add(errorSeries);
 
-            return new CycleDataGroup(dataGroup);
+            return dataGroup;
         }
 
         public static List<double> ToValues(DataSeries series)

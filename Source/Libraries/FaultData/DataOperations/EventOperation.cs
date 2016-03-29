@@ -105,8 +105,8 @@ namespace FaultData.DataOperations
 
             Log.Info("Executing operation to load event data into the database...");
 
-            cycleDataResource = meterDataSet.GetResource<CycleDataResource>();
-            eventClassificationResource = meterDataSet.GetResource(() => new EventClassificationResource(m_dbAdapterContainer));
+            cycleDataResource = CycleDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
+            eventClassificationResource = EventClassificationResource.GetResource(meterDataSet, m_dbAdapterContainer);
             LoadEvents(meterDataSet, cycleDataResource.DataGroups, cycleDataResource.VICycleDataGroups, eventClassificationResource.Classifications);
             LoadDisturbances(meterDataSet, cycleDataResource.DataGroups);
 
@@ -242,9 +242,9 @@ namespace FaultData.DataOperations
 
         private void LoadDisturbances(MeterDataSet meterDataSet, List<DataGroup> dataGroups)
         {
-            SagDataResource sagDataResource = meterDataSet.GetResource<SagDataResource>();
-            SwellDataResource swellDataResource = meterDataSet.GetResource<SwellDataResource>();
-            InterruptionDataResource interruptionDataResource = meterDataSet.GetResource<InterruptionDataResource>();
+            SagDataResource sagDataResource = SagDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
+            SwellDataResource swellDataResource = SwellDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
+            InterruptionDataResource interruptionDataResource = InterruptionDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
 
             EventKey eventKey;
             List<Disturbance> disturbances;

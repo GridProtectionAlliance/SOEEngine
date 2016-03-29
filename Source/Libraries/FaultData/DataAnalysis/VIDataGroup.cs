@@ -32,16 +32,15 @@ namespace FaultData.DataAnalysis
     {
         #region [ Members ]
 
-        // Constants
-        private const int VAIndex = 0;
-        private const int VBIndex = 1;
-        private const int VCIndex = 2;
-        private const int IAIndex = 3;
-        private const int IBIndex = 4;
-        private const int ICIndex = 5;
-        private const int IRIndex = 6;
-
         // Fields
+        private int m_vaIndex;
+        private int m_vbIndex;
+        private int m_vcIndex;
+        private int m_iaIndex;
+        private int m_ibIndex;
+        private int m_icIndex;
+        private int m_irIndex;
+
         private DataGroup m_dataGroup;
 
         #endregion
@@ -50,18 +49,58 @@ namespace FaultData.DataAnalysis
 
         public VIDataGroup(DataGroup dataGroup)
         {
-            // Get all necessary voltage and current channels in the proper order
-            List<DataSeries> viSeriesList = Enumerable.Range(0, 7)
-                .GroupJoin(dataGroup.DataSeries.Where(IsInstantaneous), i => i, GetIndex, (i, series) => series.FirstOrDefault())
-                .ToList();
+            string[] instantaneousSeriesTypes = { "Values", "Instantaneous" };
 
-            // Validate that no channels are missing
-            if (viSeriesList.Any(series => (object)series == null))
-                throw new InvalidOperationException("Cannot create VIDataGroup from an incomplete set of voltage/current channels");
+            // Initialize each of
+            // the indexes to -1
+            m_vaIndex = -1;
+            m_vbIndex = -1;
+            m_vcIndex = -1;
+            m_iaIndex = -1;
+            m_ibIndex = -1;
+            m_icIndex = -1;
+            m_irIndex = -1;
 
-            // Create the data group from the complete
-            // set of voltage/current channels
-            m_dataGroup = new DataGroup(viSeriesList);
+            // Initialize the data group
+            m_dataGroup = dataGroup;
+
+            for (int i = 0; i < dataGroup.DataSeries.Count; i++)
+            {
+                // If the data group is not instantaneous, do not use it in the VIDataGroup
+                if (dataGroup[i].SeriesInfo.Channel.MeasurementCharacteristic.Name != "Instantaneous")
+                    continue;
+
+                // If the data group is not instantaneous, do not use it in the VIDataGroup
+                if (!instantaneousSeriesTypes.Contains(dataGroup[i].SeriesInfo.SeriesType.Name))
+                    continue;
+
+                // Assign the proper indexes for the seven VIDataGroup channels by checking the
+                // measurement type and phase. Channels which are not measured load-side take precedence
+                if (dataGroup[i].SeriesInfo.Channel.MeasurementType.Name == "Voltage")
+                {
+                    if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "AN")
+                        m_vaIndex = (m_vaIndex >= 0 && dataGroup[i].SeriesInfo.Channel.LoadSide != 0) ? m_vaIndex : i;
+                    else if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "BN")
+                        m_vbIndex = (m_vbIndex >= 0 && dataGroup[i].SeriesInfo.Channel.LoadSide != 0) ? m_vbIndex : i;
+                    else if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "CN")
+                        m_vcIndex = (m_vcIndex >= 0 && dataGroup[i].SeriesInfo.Channel.LoadSide != 0) ? m_vcIndex : i;
+                }
+                else if (dataGroup[i].SeriesInfo.Channel.MeasurementType.Name == "Current")
+                {
+                    if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "AN")
+                        m_iaIndex = (m_iaIndex >= 0 && dataGroup[i].SeriesInfo.Channel.LoadSide != 0) ? m_iaIndex : i;
+                    else if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "BN")
+                        m_ibIndex = (m_ibIndex >= 0 && dataGroup[i].SeriesInfo.Channel.LoadSide != 0) ? m_ibIndex : i;
+                    else if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "CN")
+                        m_icIndex = (m_icIndex >= 0 && dataGroup[i].SeriesInfo.Channel.LoadSide != 0) ? m_icIndex : i;
+                    else if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "RES")
+                        m_irIndex = (m_irIndex >= 0 && dataGroup[i].SeriesInfo.Channel.LoadSide != 0) ? m_irIndex : i;
+                }
+            }
+        }
+
+        private VIDataGroup()
+        {
         }
 
         #endregion
@@ -72,7 +111,7 @@ namespace FaultData.DataAnalysis
         {
             get
             {
-                return m_dataGroup[VAIndex];
+                return (m_vaIndex >= 0) ? m_dataGroup[m_vaIndex] : null;
             }
         }
 
@@ -80,7 +119,7 @@ namespace FaultData.DataAnalysis
         {
             get
             {
-                return m_dataGroup[VBIndex];
+                return (m_vbIndex >= 0) ? m_dataGroup[m_vbIndex] : null;
             }
         }
 
@@ -88,7 +127,7 @@ namespace FaultData.DataAnalysis
         {
             get
             {
-                return m_dataGroup[VCIndex];
+                return (m_vcIndex >= 0) ? m_dataGroup[m_vcIndex] : null;
             }
         }
 
@@ -96,7 +135,7 @@ namespace FaultData.DataAnalysis
         {
             get
             {
-                return m_dataGroup[IAIndex];
+                return (m_iaIndex >= 0) ? m_dataGroup[m_iaIndex] : null;
             }
         }
 
@@ -104,7 +143,7 @@ namespace FaultData.DataAnalysis
         {
             get
             {
-                return m_dataGroup[IBIndex];
+                return (m_ibIndex >= 0) ? m_dataGroup[m_ibIndex] : null;
             }
         }
 
@@ -112,7 +151,7 @@ namespace FaultData.DataAnalysis
         {
             get
             {
-                return m_dataGroup[ICIndex];
+                return (m_icIndex >= 0) ? m_dataGroup[m_icIndex] : null;
             }
         }
 
@@ -120,7 +159,49 @@ namespace FaultData.DataAnalysis
         {
             get
             {
-                return m_dataGroup[IRIndex];
+                return (m_irIndex >= 0) ? m_dataGroup[m_irIndex] : null;
+            }
+        }
+
+        public int DefinedVoltages
+        {
+            get
+            {
+                return VoltageIndexes.Count(index => index >= 0);
+            }
+        }
+
+        public int DefinedCurrents
+        {
+            get
+            {
+                return CurrentIndexes.Count(index => index >= 0);
+            }
+        }
+
+        public bool AllVIChannelsDefined
+        {
+            get
+            {
+                return VoltageIndexes
+                    .Concat(CurrentIndexes)
+                    .All(index => index >= 0);
+            }
+        }
+
+        private int[] VoltageIndexes
+        {
+            get
+            {
+                return new int[] { m_vaIndex, m_vbIndex, m_vcIndex };
+            }
+        }
+
+        private int[] CurrentIndexes
+        {
+            get
+            {
+                return new int[] { m_iaIndex, m_ibIndex, m_icIndex, m_irIndex };
             }
         }
 
@@ -128,14 +209,79 @@ namespace FaultData.DataAnalysis
 
         #region [ Methods ]
 
+        /// <summary>
+        /// Given three of the four current channels, calculates the
+        /// missing channel based on the relationship IR = IA + IB + IC.
+        /// </summary>
+        /// <param name="meterInfo">Data context for accessing configuration tables in the database.</param>
+        public void AddMissingCurrentChannel(MeterInfoDataContext meterInfo)
+        {
+            Meter meter;
+            DataSeries missingSeries;
+
+            // If the data group does not have exactly 3 channels,
+            // then there is no missing channel or there is not
+            // enough data to calculate the missing channel
+            if (DefinedCurrents != 3)
+                return;
+
+            // Get the meter associated with the channels in this data group
+            meter = (IA ?? IB).SeriesInfo.Channel.Meter;
+
+            if (m_iaIndex == -1)
+            {
+                // Calculate IA = IR - IB - IC
+                missingSeries = IR.Add(IB.Negate()).Add(IC.Negate());
+                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, m_dataGroup, "Current", "AN");
+                m_iaIndex = m_dataGroup.DataSeries.Count;
+                m_dataGroup.Add(missingSeries);
+            }
+            else if (m_ibIndex == -1)
+            {
+                // Calculate IB = IR - IA - IC
+                missingSeries = IR.Add(IA.Negate()).Add(IC.Negate());
+                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, m_dataGroup, "Current", "BN");
+                m_iaIndex = m_dataGroup.DataSeries.Count;
+                m_dataGroup.Add(missingSeries);
+            }
+            else if (m_icIndex == -1)
+            {
+                // Calculate IC = IR - IA - IB
+                missingSeries = IR.Add(IA.Negate()).Add(IB.Negate());
+                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, m_dataGroup, "Current", "CN");
+                m_iaIndex = m_dataGroup.DataSeries.Count;
+                m_dataGroup.Add(missingSeries);
+            }
+            else
+            {
+                // Calculate IR = IA + IB + IC
+                missingSeries = IA.Add(IB).Add(IC);
+                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, m_dataGroup, "Current", "RES");
+                m_iaIndex = m_dataGroup.DataSeries.Count;
+                m_dataGroup.Add(missingSeries);
+            }
+        }
+
         public DataGroup ToDataGroup()
         {
-            return m_dataGroup;
+            return new DataGroup(m_dataGroup.DataSeries);
         }
 
         public VIDataGroup ToSubGroup(int startIndex, int endIndex)
         {
-            return new VIDataGroup(m_dataGroup.ToSubGroup(startIndex, endIndex));
+            VIDataGroup subGroup = new VIDataGroup();
+
+            subGroup.m_vaIndex = m_vaIndex;
+            subGroup.m_vbIndex = m_vbIndex;
+            subGroup.m_vcIndex = m_vcIndex;
+            subGroup.m_iaIndex = m_iaIndex;
+            subGroup.m_ibIndex = m_ibIndex;
+            subGroup.m_icIndex = m_icIndex;
+            subGroup.m_irIndex = m_irIndex;
+
+            subGroup.m_dataGroup = m_dataGroup.ToSubGroup(startIndex, endIndex);
+
+            return subGroup;
         }
 
         #endregion
@@ -143,101 +289,15 @@ namespace FaultData.DataAnalysis
         #region [ Static ]
 
         // Static Methods
-        public static DataSeries AddMissingCurrentSeries(MeterInfoDataContext meterInfo, Meter meter, DataGroup dataGroup)
+        private static Series GetSeriesInfo(MeterInfoDataContext meterInfo, Meter meter, DataGroup dataGroup, string measurementTypeName, string phaseName)
         {
-            DataSeries missingSeries = null;
-
-            // Get all necessary voltage and current channels in the proper order
-            List<DataSeries> viSeriesList = Enumerable.Range(VAIndex, IRIndex + 1)
-                .GroupJoin(dataGroup.DataSeries.Where(IsInstantaneous), i => i, GetIndex, (i, series) => series.FirstOrDefault())
-                .ToList();
-
-            // Validate that no more than one current channel is missing
-            if (viSeriesList.Count(series => (object)series == null) > 1)
-                return null;
-
-            // Attempt to fill in missing current channels
-            // based on the relation IR = IA + IB + IC
-            if ((object)viSeriesList[IAIndex] == null)
-            {
-                missingSeries = viSeriesList[IRIndex];
-                missingSeries = missingSeries.Add(viSeriesList[IBIndex].Negate());
-                missingSeries = missingSeries.Add(viSeriesList[ICIndex].Negate());
-
-                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, dataGroup, IAIndex);
-                missingSeries.SeriesInfo.Channel.Line = viSeriesList[IBIndex].SeriesInfo.Channel.Line;
-
-                viSeriesList[IAIndex] = missingSeries;
-            }
-            else if ((object)viSeriesList[IBIndex] == null)
-            {
-                missingSeries = viSeriesList[IRIndex];
-                missingSeries = missingSeries.Add(viSeriesList[IAIndex].Negate());
-                missingSeries = missingSeries.Add(viSeriesList[ICIndex].Negate());
-
-                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, dataGroup, IBIndex);
-                missingSeries.SeriesInfo.Channel.Line = viSeriesList[IAIndex].SeriesInfo.Channel.Line;
-
-                viSeriesList[IBIndex] = missingSeries;
-            }
-            else if ((object)viSeriesList[ICIndex] == null)
-            {
-                missingSeries = viSeriesList[IRIndex];
-                missingSeries = missingSeries.Add(viSeriesList[IAIndex].Negate());
-                missingSeries = missingSeries.Add(viSeriesList[IBIndex].Negate());
-
-                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, dataGroup, ICIndex);
-                missingSeries.SeriesInfo.Channel.Line = viSeriesList[IAIndex].SeriesInfo.Channel.Line;
-
-                viSeriesList[ICIndex] = missingSeries;
-            }
-            else if ((object)viSeriesList[IRIndex] == null)
-            {
-                missingSeries = viSeriesList[IAIndex];
-                missingSeries = missingSeries.Add(viSeriesList[IBIndex]);
-                missingSeries = missingSeries.Add(viSeriesList[ICIndex]);
-
-                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, dataGroup, IRIndex);
-                missingSeries.SeriesInfo.Channel.Line = viSeriesList[IAIndex].SeriesInfo.Channel.Line;
-
-                viSeriesList[IRIndex] = missingSeries;
-            }
-
-            if ((object)missingSeries != null)
-                dataGroup.Add(missingSeries);
-
-            return missingSeries;
-        }
-
-        private static Series GetSeriesInfo(MeterInfoDataContext meterInfo, Meter meter, DataGroup dataGroup, int index)
-        {
-            Dictionary<int, string> measurementTypeNameLookup = new Dictionary<int, string>()
-            {
-                { VAIndex, "Voltage" },
-                { VBIndex, "Voltage" },
-                { VCIndex, "Voltage" },
-                { IAIndex, "Current" },
-                { IBIndex, "Current" },
-                { ICIndex, "Current" },
-                { IRIndex, "Current" }
-            };
-
-            Dictionary<int, string> phaseNameLookup = new Dictionary<int, string>()
-            {
-                { VAIndex, "AN" },
-                { VBIndex, "BN" },
-                { VCIndex, "CN" },
-                { IAIndex, "AN" },
-                { IBIndex, "BN" },
-                { ICIndex, "CN" },
-                { IRIndex, "RES" }
-            };
-
             int lineID;
-            string measurementTypeName;
+            string remoteMeterName;
             string measurementCharacteristicName;
-            string phaseName;
             string seriesTypeName;
+
+            char typeDesignation;
+            char phaseDesignation;
             string channelName;
 
             DataContextLookup<ChannelKey, Channel> channelLookup;
@@ -251,11 +311,13 @@ namespace FaultData.DataAnalysis
             SeriesKey seriesKey;
 
             lineID = dataGroup.Line.ID;
-            measurementTypeName = measurementTypeNameLookup[index];
+            remoteMeterName = GetRemoteMeterName(meter, dataGroup.Line);
             measurementCharacteristicName = "Instantaneous";
-            phaseName = phaseNameLookup[index];
             seriesTypeName = "Values";
-            channelName = string.Concat(measurementTypeName, " ", phaseName);
+
+            typeDesignation = (measurementTypeName == "Current") ? 'I' : measurementTypeName[0];
+            phaseDesignation = (phaseName == "RES") ? 'R' : phaseName[0];
+            channelName = string.Concat(remoteMeterName, " ", typeDesignation, phaseDesignation).Trim();
 
             channelLookup = new DataContextLookup<ChannelKey, Channel>(meterInfo, channel => new ChannelKey(channel))
                 .WithFilterExpression(channel => channel.MeterID == meter.ID)
@@ -317,25 +379,17 @@ namespace FaultData.DataAnalysis
                    (seriesTypeName == "Values" || seriesTypeName == "Instantaneous");
         }
 
-        private static int GetIndex(DataSeries dataSeries)
+        private static string GetRemoteMeterName(Meter meter, Line line)
         {
-            Dictionary<string, int> indexLookup = new Dictionary<string, int>()
-            {
-                { "Voltage AN", VAIndex },
-                { "Voltage BN", VBIndex },
-                { "Voltage CN", VCIndex },
-                { "Current AN", IAIndex },
-                { "Current BN", IBIndex },
-                { "Current CN", ICIndex },
-                { "Current RES", IRIndex }
-            };
+            List<Meter> remoteMeters = line.MeterLocationLines
+                .SelectMany(meterLocationLine => meterLocationLine.MeterLocation.Meters)
+                .Where(m => m.ID != meter.ID)
+                .ToList();
 
-            int index;
-            string measurementType = dataSeries.SeriesInfo.Channel.MeasurementType.Name;
-            string phase = dataSeries.SeriesInfo.Channel.Phase.Name;
-            string key = string.Format("{0} {1}", measurementType, phase);
+            if (remoteMeters.Count == 1)
+                return remoteMeters.Single().Name;
 
-            return indexLookup.TryGetValue(key, out index) ? index : -1;
+            return null;
         }
 
         #endregion

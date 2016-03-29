@@ -121,6 +121,10 @@ namespace openXDA
                 string message = $"Exception occurred while disposing {t.FullName}: {ex.Message}";
                 Log.Error(new Exception(message, ex));
             }
+            finally
+            {
+                m_disposed = true;
+            }
         }
 
         #endregion

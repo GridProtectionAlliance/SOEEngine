@@ -232,7 +232,7 @@ namespace FaultData.DataResources
 
         #region [ Constructors ]
 
-        public FaultDataResource(DbAdapterContainer dbAdapterContainer)
+        private FaultDataResource(DbAdapterContainer dbAdapterContainer)
         {
             m_dbAdapterContainer = dbAdapterContainer;
             m_faultLocationSettings = new FaultLocationSettings();
@@ -337,7 +337,7 @@ namespace FaultData.DataResources
             Stopwatch stopwatch;
 
             stopwatch = new Stopwatch();
-            cycleDataResource = meterDataSet.GetResource<CycleDataResource>();
+            cycleDataResource = CycleDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
             faultLocationAlgorithms = GetFaultLocationAlgorithms(m_dbAdapterContainer.GetAdapter<FaultLocationInfoDataContext>());
 
             Log.Info(string.Format("Executing fault location analysis on {0} events.", cycleDataResource.DataGroups.Count));
@@ -1240,6 +1240,12 @@ namespace FaultData.DataResources
 
         // Static Fields
         private static readonly ILog Log = LogManager.GetLogger(typeof(FaultDataResource));
+
+        // Static Methods
+        public static FaultDataResource GetResource(MeterDataSet meterDataSet, DbAdapterContainer dbAdapterContainer)
+        {
+            return meterDataSet.GetResource(() => new FaultDataResource(dbAdapterContainer));
+        }
 
         #endregion
     }

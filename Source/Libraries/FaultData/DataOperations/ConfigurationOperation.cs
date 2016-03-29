@@ -76,7 +76,6 @@ namespace FaultData.DataOperations
             Meter meter;
             List<Series> seriesList;
             Dictionary<SeriesKey, Series> seriesLookup;
-            DataSeries dataSeries;
             Series seriesInfo;
 
             Log.Info("Executing operation to locate meter in database...");
@@ -155,18 +154,6 @@ namespace FaultData.DataOperations
                 // Remove data series that were not defined in the configuration
                 // since configuration information cannot be added for it
                 RemoveUndefinedDataSeries(meterDataSet);
-            }
-
-            foreach (DataGroup dataGroup in meterDataSet.GetResource<DataGroupsResource>().DataGroups)
-            {
-                if (dataGroup.Classification != DataClassification.Event)
-                    continue;
-
-                // Add missing current series based on IR = IA + IB + IC
-                dataSeries = VIDataGroup.AddMissingCurrentSeries(m_meterInfo, meterDataSet.Meter, dataGroup);
-
-                if ((object)dataSeries != null)
-                    meterDataSet.DataSeries.Add(dataSeries);
             }
         }
 

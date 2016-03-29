@@ -59,7 +59,6 @@ namespace FaultData.DataWriters
         // Fields
         private string m_dbConnectionString;
         private double m_timeTolerance;
-        private double m_waitPeriod;
         private string m_xdaTimeZone;
         private string m_lengthUnits;
         private EmailSettings m_emailSettings;
