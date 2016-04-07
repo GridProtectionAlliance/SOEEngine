@@ -26,8 +26,8 @@ using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using FaultData.DataReaders;
-using FaultData.DataSets;
+using SOEDataProcessing.DataReaders;
+using SOEDataProcessing.DataSets;
 using GSF.Configuration;
 
 namespace IntelliRupters

@@ -87,9 +87,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\FaultData\FaultData.csproj">
+    <ProjectReference Include="..\..\Libraries\SOEDataProcessing\SOEDataProcessing.csproj">
       <Project>{11ae594d-2b2b-473c-8550-6bf62914c3e2}</Project>
-      <Name>FaultData</Name>
+      <Name>SOEDataProcessing</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

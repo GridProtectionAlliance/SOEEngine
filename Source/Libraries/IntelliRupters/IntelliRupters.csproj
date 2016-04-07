@@ -57,13 +57,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FaultData\FaultData.csproj">
-      <Project>{11ae594d-2b2b-473c-8550-6bf62914c3e2}</Project>
-      <Name>FaultData</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\SOEDataProcessing\SOEDataProcessing.csproj">
+      <Project>{11ae594d-2b2b-473c-8550-6bf62914c3e2}</Project>
+      <Name>SOEDataProcessing</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

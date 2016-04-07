@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Product Id="{DC23329D-77B2-4C41-B1A6-46F878475E63}" Name="SOEEngine" Language="1033" Version="!(bind.FileVersion.SOEService.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{EDB9D2AA-F21E-475F-9782-E2C95BF072C0}">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <PropertyRef Id="WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED"/>
+    <Condition Message='This setup requires Microsoft .NET Framework 4.6 or greater - this will need to be installed before installation can continue.'>
+      <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_46_OR_LATER_INSTALLED]]>
+    </Condition>
+
+    <Feature Id="AllProducts" Title="All Products" Level="1" Display="expand" ConfigurableDirectory="INSTALLFOLDER" AllowAdvertise="no" Description="All components of the SOEEngine installation.">
+      <!-- SOE Database-->
+      <Feature Id="DatabaseFeature" Title="SOE Database" AllowAdvertise="no" Description="Installs the SOE database schema to a SQL Server database.">
+        <ComponentGroupRef Id="DatabaseComponents" />
+      </Feature>
+      
+      <!-- SOE Service -->
+      <Feature Id="ServiceFeature" Title="SOE Service" AllowAdvertise="no" Description="Installs the SOE Windows service to perform data analytics.">
+        <ComponentGroupRef Id="ServiceComponents" />
+      </Feature>
+
+      <!-- SOE Console -->
+      <Feature Id="ConsoleFeature" Title="SOE Remote Console" AllowAdvertise="no" Description="Installs the SOE remote console used to monitor and interact with the SOE service.">
+        <ComponentGroupRef Id="ConsoleComponents" />
+      </Feature>
+    </Feature>
+
+    <UI>
+      <!-- User Interface -->
+      <UIRef Id="WixUI_FeatureTree" />
+      <UIRef Id="WixUI_ErrorProgressText" />
+      <DialogRef Id="DatabaseConnectionDialog" />
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="DatabaseConnectionDialog"><![CDATA[&ServiceFeature=3 OR &DatabaseFeature=3]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[NOT(&ServiceFeature=3 OR &DatabaseFeature=3)]]></Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="DatabaseConnectionDialog">NOT Installed AND <![CDATA[&ServiceFeature=3 OR &DatabaseFeature=3]]></Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg">NOT Installed AND <![CDATA[NOT(&ServiceFeature=3 OR &DatabaseFeature=3)]]></Publish>
+    </UI>
+    
+    <Icon Id="SOEService.ico.exe" SourceFile="$(var.SOEService.TargetPath)" />
+    <Icon Id="SOEConsole.ico.exe" SourceFile="$(var.SOEConsole.TargetPath)" />
+    
+    <Property Id="SERVICENAME" Value="$(var.SOEService.TargetName)" />
+    <Property Id="DATABASENAME" Value="SOEdb" />
+    <Property Id="SERVERNAME" Value="localhost" />
+    <Property Id="WINDOWSAUTH" Value="1" />
+    <Property Id="DATAPROVIDERSTRING" Value="AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089};; ConnectionType=System.Data.SqlClient.SqlConnection;; AdapterType=System.Data.SqlClient.SqlDataAdapter" />
+    <!--<WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\SOESetupBanner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\SOESetupDialog.bmp" />-->
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\INSTALL_LICENSE.rtf" />
+    
+    <!-- Add/Remove Programs Properties -->
+    <Property Id="ARPPRODUCTICON" Value="SOEService.ico.exe" />
+    <Property Id="ARPNOREPAIR" Value="yes" Secure="yes" />
+    <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" />
+    
+    <!-- Custom Actions -->
+    <Binary Id="InstallerActions" SourceFile="$(var.SolutionDir)\Dependencies\GSF\GSF.InstallerActions.CA.dll" />
+    
+    <CustomAction Id="PasswordGenerationAction" BinaryKey="InstallerActions" DllEntry="PasswordGenerationAction" Execute="immediate" />
+    <CustomAction Id="TestDatabaseConnectionAction" BinaryKey="InstallerActions" DllEntry="TestDatabaseConnectionAction" Execute="immediate" />
+    
+    <CustomAction Id="ConfigureServiceAction.SetProperty" Property="ConfigureServiceAction" Value="SERVICENAME=[SERVICENAME]" />
+    <CustomAction Id="ConfigureServiceAction" BinaryKey="InstallerActions" DllEntry="ConfigureServiceAction" Execute="deferred" Impersonate="no" />
+    
+    <CustomAction Id="CreateDatabase.SetProperty" Property="CreateDatabase" Value="SERVICENAME=SOEEngine;CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[CREATEDBQUERY]" />
+    <CustomAction Id="CreateDatabase" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+    <CustomAction Id="AlterDatabase.SetProperty" Property="AlterDatabase" Value="SERVICENAME=SOEEngine;CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[ALTERDBQUERY]" />
+    <CustomAction Id="AlterDatabase" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+    <CustomAction Id="CreateDBLogin.SetProperty" Property="CreateDBLogin" Value="SERVICENAME=SOEEngine;CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[CREATEDBLOGINQUERY]" />
+    <CustomAction Id="CreateDBLogin" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+    <CustomAction Id="AlterDBLogin.SetProperty" Property="AlterDBLogin" Value="SERVICENAME=SOEEngine;CONNECTIONSTRING=[SERVERCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[ALTERDBLOGINQUERY]" />
+    <CustomAction Id="AlterDBLogin" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+    <CustomAction Id="CreateDBUser.SetProperty" Property="CreateDBUser" Value="SERVICENAME=SOEEngine;CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[CREATEDBUSERQUERY]" />
+    <CustomAction Id="CreateDBUser" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+    <CustomAction Id="GrantDBPermissions.SetProperty" Property="GrantDBPermissions" Value="SERVICENAME=SOEEngine;CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];DBQUERY=[DBPERMISSIONSQUERY]" />
+    <CustomAction Id="GrantDBPermissions" BinaryKey="InstallerActions" DllEntry="DatabaseQueryAction" Execute="deferred" Impersonate="yes" />
+    <CustomAction Id="SOESchema.sql.SetProperty" Property="SOESchema.sql" Value="SERVICENAME=SOEEngine;CONNECTIONSTRING=[DBCONNECTIONSTRING];DATAPROVIDERSTRING=[DATAPROVIDERSTRING];SCRIPTPATH=[#SOESchema.sql]" />
+    <CustomAction Id="SOESchema.sql" BinaryKey="InstallerActions" DllEntry="DatabaseScriptAction" Execute="deferred" Impersonate="yes" />
+
+    <InstallExecuteSequence>
+      <Custom Action="ConfigureServiceAction.SetProperty" After="InstallServices">NOT REMOVE AND <![CDATA[&ServiceFeature=3]]></Custom>
+      <Custom Action="ConfigureServiceAction" After="ConfigureServiceAction.SetProperty">NOT REMOVE AND <![CDATA[&ServiceFeature=3]]></Custom>
+      
+      <Custom Action="CreateDatabase.SetProperty" After="InstallFiles">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="CreateDatabase" After="CreateDatabase.SetProperty">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="AlterDatabase.SetProperty" After="CreateDatabase">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="AlterDatabase" After="AlterDatabase.SetProperty">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="CreateDBLogin.SetProperty" After="AlterDatabase">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="CreateDBLogin" After="CreateDBLogin.SetProperty">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="AlterDBLogin.SetProperty" After="CreateDBLogin">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="AlterDBLogin" After="AlterDBLogin.SetProperty">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="CreateDBUser.SetProperty" After="AlterDBLogin">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="CreateDBUser" After="CreateDBUser.SetProperty">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="GrantDBPermissions.SetProperty" After="CreateDBUser">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="GrantDBPermissions" After="GrantDBPermissions.SetProperty">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="SOESchema.sql.SetProperty" After="GrantDBPermissions">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+      <Custom Action="SOESchema.sql" After="SOESchema.sql.SetProperty">NOT REMOVE AND <![CDATA[&DatabaseFeature=3]]></Custom>
+    </InstallExecuteSequence>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <?if $(var.Platform) = x64 ?>
+        <Directory Id="ProgramFiles64Folder">
+          <!-- C:\Program Files\SOEEngine -->
+          <Directory Id="INSTALLFOLDER" Name="SOEEngine">
+            <Directory Id="DEBUGFOLDER" Name="Debug" />
+            <Directory Id="RESULTSFOLDER" Name="Results" />
+            <Directory Id="WATCHFOLDER" Name="Watch" />
+          </Directory>
+        </Directory>
+      <?else ?>
+        <Directory Id="ProgramFilesFolder">
+          <!-- C:\Program Files (x86)\SOEEngine -->
+          <Directory Id="INSTALLFOLDER" Name="SOEEngine">
+            <Directory Id="DEBUGFOLDER" Name="Debug" />
+            <Directory Id="RESULTSFOLDER" Name="Results" />
+            <Directory Id="WATCHFOLDER" Name="Watch" />
+          </Directory>
+        </Directory>
+      <?endif ?>
+
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="SOEEngine" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <!-- Database Components -->
+    <ComponentGroup Id="DatabaseComponents" Directory="INSTALLFOLDER">
+      <!-- Database Scripts -->
+      <Component Id="DBScript">
+        <File Id="SOESchema.sql" Name="SOESchema.sql" Source="$(var.SolutionDir)\Data\SOESchema.sql" />
+      </Component>
+    </ComponentGroup>
+    
+    <!-- Service Components -->
+    <ComponentGroup Id="ServiceComponents" Directory="INSTALLFOLDER">
+      <!-- Service Applications -->
+      <Component Id="SOEService">
+        <File Id="SOEService.exe" Name="$(var.SOEService.TargetFileName)" Source="$(var.SOEService.TargetPath)" />
+        <ServiceInstall Id="SOEService" Name="SOEService" Type="ownProcess" Start="auto" ErrorControl="normal" Description="Engine for detecting and locating faults by analyzing power quality data files." />
+        <ServiceControl Id="SOEServiceControl" Name="SOEService" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
+      </Component>
+      <Component Id="SOEServiceConfig">
+        <File Id="SOEService.exe.config" Name="$(var.SOEService.TargetFileName).config" Source="$(var.SOEService.TargetPath).config" />
+        <util:XmlFile Id="SetDBConnectionString" Action="setValue" ElementPath="/configuration/categorizedSettings/systemSettings/add[\[]@name='ConnectionString'[\]]/@value" Value="[XDACONNECTIONSTRING]" File="[#SOEService.exe.config]" SelectionLanguage="XPath" Sequence="1" />
+      </Component>
+      <Component Id="DeviceDefinitionsMigrator">
+        <File Id="DeviceDefinitionsMigrator.exe" Name="$(var.DeviceDefinitionsMigrator.TargetFileName)" Source="$(var.DeviceDefinitionsMigrator.TargetPath)" />
+      </Component>
+      <Component Id="ldconfig.bat">
+        <File Id="ldconfig.bat" Name="ldconfig.bat" Source="$(var.DeviceDefinitionsMigrator.ProjectDir)\ldconfig.bat" />
+      </Component>
+      <Component Id="ldconfig.ps1">
+        <File Id="ldconfig.ps1" Name="ldconfig.ps1" Source="$(var.DeviceDefinitionsMigrator.ProjectDir)\ldconfig.ps1" />
+      </Component>
+      
+      <!-- XDA Libraries -->
+      <ComponentRef Id="SOEDataProcessing" />
+
+      <!-- DotNetZip Dependencies -->
+      <ComponentRef Id="Ionic.Zlib" />
+
+      <!-- log4net Dependencies -->
+      <ComponentRef Id="log4net" />
+
+      <!-- GSF Dependencies -->
+      <ComponentRef Id="Antlr3.Runtime" />
+      <ComponentRef Id="ExpressionEvaluator" />
+      <ComponentRef Id="GSF.COMTRADE" />
+      <ComponentRef Id="GSF.Communication" />
+      <ComponentRef Id="GSF.Core" />
+      <ComponentRef Id="GSF.PhasorProtocols" />
+      <ComponentRef Id="GSF.PQDIF" />
+      <ComponentRef Id="GSF.Security" />
+      <ComponentRef Id="GSF.ServiceProcess" />
+      <ComponentRef Id="GSF.TimeSeries" />
+      <ComponentRef Id="TagDefinitions" />
+
+      <!-- openHistorian Dependencies -->
+      <ComponentRef Id="crypto" />
+      <ComponentRef Id="GSF.SortedTreeStore" />
+      <ComponentRef Id="openHistorian.Core" />
+
+      <!-- Cleanup -->
+      <Component Id="Cleanup" Guid="{C8EBB158-C708-4C94-87C1-F5DBC77D7BDE}">
+        <CreateFolder />
+        <RemoveFolder Id="RemoveDebugFolder" Directory="DEBUGFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveResultsFolder" Directory="RESULTSFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveWatchFolder" Directory="WATCHFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Console Components -->
+    <ComponentGroup Id="ConsoleComponents" Directory="INSTALLFOLDER">
+      <!-- Remote Console Applications -->
+      <Component Id="SOEConsole">
+        <File Id="SOEConsole.exe" Name="$(var.SOEConsole.TargetFileName)" Source="$(var.SOEConsole.TargetPath)" />
+        <Shortcut Id="SOEConsoleStartMenuShortcut" Name="SOE Console" Icon="SOEConsole.ico.exe" Description="Console application to monitor the SOE service." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="SOEConsoleConfig">
+        <File Id="SOEConsole.exe.config" Name="$(var.SOEConsole.TargetFileName).config" Source="$(var.SOEConsole.TargetPath).config" />
+      </Component>
+
+      <!-- GSF Dependencies -->
+      <ComponentRef Id="GSF.Communication" />
+      <ComponentRef Id="GSF.Core" />
+      <ComponentRef Id="GSF.Security" />
+      <ComponentRef Id="GSF.ServiceProcess" />
+    </ComponentGroup>
+
+    <!-- Library Components -->
+    <ComponentGroup Id="LibraryComponents" Directory="INSTALLFOLDER">
+      <!-- XDA Libraries -->
+      <Component Id="SOEDataProcessing">
+        <File Id="SOEDataProcessing.dll" Name="$(var.SOEDataProcessing.TargetFileName)" Source="$(var.SOEDataProcessing.TargetPath)" />
+      </Component>
+      
+      <!-- DotNetZip Dependencies -->
+      <Component Id="Ionic.Zlib">
+        <File Id="Ionic.Zlib.dll" Name="Ionic.Zlib.dll" Source="$(var.SolutionDir)\Dependencies\DotNetZip\Ionic.Zlib.dll" />
+      </Component>
+      
+      <!-- log4net Dependencies -->
+      <Component Id="log4net">
+        <File Id="log4net.dll" Name="log4net.dll" Source="$(var.SolutionDir)\Dependencies\NuGet\log4net.2.0.3\lib\net40-full\log4net.dll" />
+      </Component>
+
+      <!-- GSF Dependencies -->
+      <Component Id="Antlr3.Runtime">
+        <File Id="Antlr3.Runtime.dll" Name="Antlr3.Runtime.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Antlr3.Runtime.dll" />
+      </Component>
+      <Component Id="ExpressionEvaluator">
+        <File Id="ExpressionEvaluator.dll" Name="ExpressionEvaluator.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ExpressionEvaluator.dll" />
+      </Component>
+      <Component Id="GSF.COMTRADE">
+        <File Id="GSF.COMTRADE.dll" Name="GSF.COMTRADE.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.COMTRADE.dll" />
+      </Component>
+      <Component Id="GSF.Communication">
+        <File Id="GSF.Communication.dll" Name="GSF.Communication.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Communication.dll" />
+      </Component>
+      <Component Id="GSF.Core">
+        <File Id="GSF.Core.dll" Name="GSF.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Core.dll" />
+      </Component>
+      <Component Id="GSF.PhasorProtocols">
+        <File Id="GSF.PhasorProtocols.dll" Name="GSF.PhasorProtocols.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.dll" />
+      </Component>
+      <Component Id="GSF.PQDIF">
+        <File Id="GSF.PQDIF.dll" Name="GSF.PQDIF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PQDIF.dll" />
+      </Component>
+      <Component Id="GSF.Security">
+        <File Id="GSF.Security.dll" Name="GSF.Security.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Security.dll" />
+      </Component>
+      <Component Id="GSF.ServiceProcess">
+        <File Id="GSF.ServiceProcess.dll" Name="GSF.ServiceProcess.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceProcess.dll" />
+      </Component>
+      <Component Id="GSF.TimeSeries">
+        <File Id="GSF.TimeSeries.dll" Name="GSF.TimeSeries.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.dll" />
+      </Component>
+      <Component Id="TagDefinitions">
+        <File Id="TagDefinitions.xml" Name="TagDefinitions.xml" Source="$(var.SolutionDir)\Dependencies\GSF\TagDefinitions.xml" />
+      </Component>
+
+      <!-- openHistorian Dependencies -->
+      <Component Id="crypto">
+        <File Id="crypto.dll" Name="crypto.dll" Source="$(var.SolutionDir)\Dependencies\openHistorian\crypto.dll" />
+      </Component>
+      <Component Id="GSF.SortedTreeStore">
+        <File Id="GSF.SortedTreeStore.dll" Name="GSF.SortedTreeStore.dll" Source="$(var.SolutionDir)\Dependencies\openHistorian\GSF.SortedTreeStore.dll" />
+      </Component>
+      <Component Id="openHistorian.Core">
+        <File Id="openHistorian.Core.dll" Name="openHistorian.Core.dll" Source="$(var.SolutionDir)\Dependencies\openHistorian\openHistorian.Core.dll" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <!-- Custom Dialogs -->
+  <Fragment>
+    <UI>
+      <!-- Database Connection Dialog -->
+      <Dialog Id="DatabaseConnectionDialog" Width="370" Height="270" Title="[ProductName] Setup">
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\WixUI_Font_Title}Database Connection</Text>
+        </Control>
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>Configure your database connection.</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="ServerNameLabel" Type="Text" X="95" Y="53" Width="100" Height="13" TabSkip="no" Text="&amp;Server name:" />
+        <Control Id="ServerNameEdit" Type="Edit" X="95" Y="65" Width="170" Height="18" Property="SERVERNAME" Text="{80}" />
+        <Control Id="DatabaseNameLabel" Type="Text" X="95" Y="88" Width="100" Height="13" TabSkip="no" Text="&amp;Database name:" />
+        <Control Id="DatabaseNameEdit" Type="Edit" X="95" Y="100" Width="170" Height="18" Property="DATABASENAME" Text="{80}" />
+        <Control Id="WindowsAuthenticationCheckBox" Type="CheckBox" X="85" Y="125" Width="200" Height="17" Property="WINDOWSAUTH" CheckBoxValue="1" Text="Use Windows Authentication" />
+        <Control Id="UsernameLabel" Type="Text" X="95" Y="143" Width="100" Height="13" TabSkip="no" Text="&amp;Username:">
+          <Condition Action="enable">NOT WINDOWSAUTH</Condition>
+          <Condition Action="disable">WINDOWSAUTH</Condition>
+        </Control>
+        <Control Id="UsernameEdit" Type="Edit" X="95" Y="155" Width="170" Height="18" Property="DBUSERNAME" Text="{80}">
+          <Condition Action="enable">NOT WINDOWSAUTH</Condition>
+          <Condition Action="disable">WINDOWSAUTH</Condition>
+        </Control>
+        <Control Id="PasswordLabel" Type="Text" X="95" Y="178" Width="100" Height="13" TabSkip="no" Text="&amp;Password:">
+          <Condition Action="enable">NOT WINDOWSAUTH</Condition>
+          <Condition Action="disable">WINDOWSAUTH</Condition>
+        </Control>
+        <Control Id="PasswordEdit" Type="Edit" X="95" Y="190" Width="170" Height="18" Property="DBPASSWORD" Text="{80}" Password="yes">
+          <Condition Action="enable">NOT WINDOWSAUTH</Condition>
+          <Condition Action="disable">WINDOWSAUTH</Condition>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
+          <Publish Event="NewDialog" Value="CustomizeDlg">1</Publish>
+        </Control>
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
+          <!-- Set up the queries to create the database. -->
+          <Publish Property="GENPASSWORDLENGTH" Value="20">1</Publish>
+          <Publish Event="DoAction" Value="PasswordGenerationAction">NOT XDASERVICEPASSWORD</Publish>
+          <Publish Property="XDASERVICELOGIN" Value="XDAService">1</Publish>
+          <Publish Property="XDASERVICEPASSWORD" Value="[GENERATEDPASSWORD]">NOT XDASERVICEPASSWORD</Publish>
+          <Publish Property="CREATEDBQUERY" Value="CREATE DATABASE [\[][DATABASENAME][\]]">1</Publish>
+          <Publish Property="ALTERDBQUERY" Value="ALTER DATABASE [\[][DATABASENAME][\]] SET TRUSTWORTHY ON">1</Publish>
+          <Publish Property="CREATEDBLOGINQUERY" Value="IF NOT EXISTS (SELECT * FROM master.dbo.syslogins WHERE loginname = '[XDASERVICELOGIN]') CREATE LOGIN [\[][XDASERVICELOGIN][\]] WITH PASSWORD = '[XDASERVICEPASSWORD]', CHECK_EXPIRATION = OFF, CHECK_POLICY = OFF">1</Publish>
+          <Publish Property="ALTERDBLOGINQUERY" Value="ALTER LOGIN [\[][XDASERVICELOGIN][\]] WITH PASSWORD = '[XDASERVICEPASSWORD]'">1</Publish>
+          <Publish Property="CREATEDBUSERQUERY" Value="CREATE USER [\[][XDASERVICELOGIN][\]] FOR LOGIN [\[][XDASERVICELOGIN][\]]">1</Publish>
+          <Publish Property="DBPERMISSIONSQUERY" Value="EXEC sp_addrolemember N'db_owner', N'[XDASERVICELOGIN]'">1</Publish>
+          
+          <!-- Set up the authentication part of the connection string based on user input. -->
+          <Publish Property="AUTHSTRING" Value="Integrated Security=SSPI">WINDOWSAUTH</Publish>
+          <Publish Property="AUTHSTRING" Value="User Id=[DBUSERNAME];;Password=[DBPASSWORD]">NOT WINDOWSAUTH</Publish>
+          <Publish Property="XDAAUTHSTRING" Value="Integrated Security=SSPI"><![CDATA[NOT(&DatabaseFeature=3)]]> AND WINDOWSAUTH</Publish>
+          <Publish Property="XDAAUTHSTRING" Value="User Id=[DBUSERNAME];Password=[DBPASSWORD]"><![CDATA[NOT(&DatabaseFeature=3)]]> AND NOT WINDOWSAUTH</Publish>
+          <Publish Property="XDAAUTHSTRING" Value="User Id=[XDASERVICELOGIN];Password=[XDASERVICEPASSWORD]"><![CDATA[&DatabaseFeature=3]]></Publish>
+          
+          <!-- Set up connection strings for connecting to server and database. -->
+          <Publish Property="SERVERCONNECTIONSTRING" Value="Data Source=[SERVERNAME];;[AUTHSTRING]">1</Publish>
+          <Publish Property="DBCONNECTIONSTRING" Value="Data Source=[SERVERNAME];;Initial Catalog=[DATABASENAME];;[AUTHSTRING]">1</Publish>
+          <Publish Property="XDACONNECTIONSTRING" Value="Data Source=[SERVERNAME];Initial Catalog=[DATABASENAME];[XDAAUTHSTRING]">1</Publish>
+          
+          <!-- Determine whether we can connect to the database server. -->
+          <Publish Property="CONNECTIONSTRING" Value="[SERVERCONNECTIONSTRING]">1</Publish>
+          <Publish Event="DoAction" Value="TestDatabaseConnectionAction">1</Publish>
+          <Publish Property="DBSERVERCONNECTS">NOT DATABASECONNECTED</Publish>
+          <Publish Property="DBSERVERCONNECTS" Value="1">DATABASECONNECTED</Publish>
+          <Publish Property="ERRORMESSAGE" Value="Unable to connect to the database. Please verify the connection configuration and try again.">NOT DBSERVERCONNECTS</Publish>
+          <Publish Event="SpawnDialog" Value="ModalErrorDialog">NOT DBSERVERCONNECTS</Publish>
+          
+          <!-- Determine whether the database already exists on the server. -->
+          <Publish Property="CONNECTIONSTRING" Value="[DBCONNECTIONSTRING]">DBSERVERCONNECTS</Publish>
+          <Publish Event="DoAction" Value="TestDatabaseConnectionAction">DBSERVERCONNECTS</Publish>
+          <Publish Property="DBEXISTS">NOT DATABASECONNECTED</Publish>
+          <Publish Property="DBEXISTS" Value="1">DATABASECONNECTED</Publish>
+          <Publish Property="ERRORMESSAGE" Value="Database [DATABASENAME] already exists on the server. Enter a different database name or drop the existing database, then try again. If you do not wish to install the database, return to the Custom Setup screen and modify your feature selections."><![CDATA[&DatabaseFeature=3]]> AND DBSERVERCONNECTS AND DBEXISTS</Publish>
+          <Publish Property="ERRORMESSAGE" Value="Database [DATABASENAME] does not exist on the server. Enter the name of an existing database, then try again. If you wish to install the database, return to the Custom Setup screen and modify your feature selections."><![CDATA[NOT(&DatabaseFeature=3)]]> AND DBSERVERCONNECTS AND NOT DBEXISTS</Publish>
+          <Publish Event="SpawnDialog" Value="ModalErrorDialog">DBSERVERCONNECTS AND ((<![CDATA[&DatabaseFeature=3]]> AND DBEXISTS) OR (<![CDATA[NOT(&DatabaseFeature=3)]]> AND NOT DBEXISTS))</Publish>
+
+          <!-- Move to the next dialog if the validation checks out. -->
+          <Publish Event="NewDialog" Value="VerifyReadyDlg">DBSERVERCONNECTS AND ((<![CDATA[&DatabaseFeature=3]]> AND NOT DBEXISTS) OR (<![CDATA[NOT(&DatabaseFeature=3)]]> AND DBEXISTS))</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+      </Dialog>
+
+      <!-- Modal dialog to display error messages. -->
+      <Dialog Id="ModalErrorDialog" Width="250" Height="100" Title="Database Connection Error">
+        <Control Id="ErrorMessageLabel" Type="Text" X="10" Y="10" Width="230" Height="50" TabSkip="no" Text="[ERRORMESSAGE]" />
+        <Control Id="OKButton" Type="PushButton" X="82" Y="70" Width="56" Height="17" Default="yes" Cancel="yes" Text="&amp;OK">
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+      </Dialog>
+    </UI>
+  </Fragment>
+</Wix>

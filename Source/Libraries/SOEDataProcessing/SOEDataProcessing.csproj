@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{11AE594D-2B2B-473C-8550-6BF62914C3E2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SOEDataProcessing</RootNamespace>
+    <AssemblyName>SOEDataProcessing</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Build\Output\Debug\Libraries\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Build\Output\Release\Libraries\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GSF.COMTRADE">
+      <HintPath>..\..\Dependencies\GSF\GSF.COMTRADE.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.Core, Version=2.0.195.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.EMAX">
+      <HintPath>..\..\Dependencies\GSF\GSF.EMAX.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.PQDIF">
+      <HintPath>..\..\Dependencies\GSF\GSF.PQDIF.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.SELEventParser">
+      <HintPath>..\..\Dependencies\GSF\GSF.SELEventParser.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zlib">
+      <HintPath>..\..\Dependencies\DotNetZip\Ionic.Zlib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\Dependencies\NuGet\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\BreakerSettings.cs" />
+    <Compile Include="Configuration\EmailSettings.cs" />
+    <Compile Include="Configuration\FaultEmailSettings.cs" />
+    <Compile Include="Configuration\FaultLocationSettings.cs" />
+    <Compile Include="Configuration\HistorianSettings.cs" />
+    <Compile Include="DataAnalysis\CycleDataGroup.cs" />
+    <Compile Include="DataAnalysis\DataGroup.cs" />
+    <Compile Include="DataAnalysis\DataPoint.cs" />
+    <Compile Include="DataAnalysis\DataSeries.cs" />
+    <Compile Include="DataAnalysis\Disturbance.cs" />
+    <Compile Include="DataAnalysis\VoltageDisturbanceAnalyzer.cs" />
+    <Compile Include="DataAnalysis\Transform.cs" />
+    <Compile Include="DataAnalysis\VICycleDataGroup.cs" />
+    <Compile Include="DataAnalysis\VIDataGroup.cs" />
+    <Compile Include="Database\BulkLoader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Database\DataContextLookup.cs" />
+    <Compile Include="Database\DbAdapterContainer.cs" />
+    <Compile Include="Database\FileInfo.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FileInfo.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="Database\MeterData.cs">
+      <DependentUpon>MeterData.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Database\MeterData.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MeterData.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Database\MeterInfo.cs">
+      <DependentUpon>MeterInfo.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="Database\MeterInfo.designer.cs">
+      <DependentUpon>MeterInfo.dbml</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Database\SystemInfo.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SystemInfo.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="DataOperations\ConfigurationOperation.cs" />
+    <Compile Include="DataOperations\DataOperationBase.cs" />
+    <Compile Include="DataResources\CycleDataResource.cs" />
+    <Compile Include="DataResources\EventClassificationResource.cs" />
+    <Compile Include="DataResources\DataGroupsResource.cs" />
+    <Compile Include="DataResources\DataResourceBase.cs" />
+    <Compile Include="DataOperations\EventOperation.cs" />
+    <Compile Include="DataOperations\IDataOperation.cs" />
+    <Compile Include="DataResources\IDataResource.cs" />
+    <Compile Include="DataResources\InterruptionDataResource.cs" />
+    <Compile Include="DataResources\SagDataResource.cs" />
+    <Compile Include="DataResources\SwellDataResource.cs" />
+    <Compile Include="DataResources\SystemEventResource.cs" />
+    <Compile Include="DataSets\IDataSet.cs" />
+    <Compile Include="DataReaders\COMTRADEReader.cs" />
+    <Compile Include="DataReaders\IDataReader.cs" />
+    <Compile Include="DataWriters\IDataWriter.cs" />
+    <Compile Include="DataSets\MeterDataSet.cs" />
+    <Compile Include="Configuration\IConfigurationLoader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Database\FileInfo.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>FileInfo.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Database\MeterData.xsc">
+      <DependentUpon>MeterData.xsd</DependentUpon>
+    </None>
+    <None Include="Database\MeterData.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>MeterData.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Database\MeterData.xss">
+      <DependentUpon>MeterData.xsd</DependentUpon>
+    </None>
+    <None Include="Database\MeterInfo.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>MeterInfo.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Database\SystemInfo.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>SystemInfo.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Database\FileInfo.dbml.layout">
+      <DependentUpon>FileInfo.dbml</DependentUpon>
+    </None>
+    <None Include="Database\MeterInfo.dbml.layout">
+      <DependentUpon>MeterInfo.dbml</DependentUpon>
+    </None>
+    <None Include="Database\SystemInfo.dbml.layout">
+      <DependentUpon>SystemInfo.dbml</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\Dependencies\GSF\TagDefinitions.xml">
+      <Link>TagDefinitions.xml</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
