@@ -76,7 +76,7 @@ namespace SOEDataProcessing.DataAnalysis
             yValues = new double[samplesPerCycle];
             tValues = new double[samplesPerCycle];
 
-            for (int i = 0; i <= dataSeries.DataPoints.Count - samplesPerCycle; i++)
+            for (int i = 0; i <= dataSeries.DataPoints.Count - samplesPerCycle; i += samplesPerCycle)
             {
                 // Use the time of the first data point in the cycle as the time of the cycle
                 cycleTime = dataSeries.DataPoints[i].Time;
