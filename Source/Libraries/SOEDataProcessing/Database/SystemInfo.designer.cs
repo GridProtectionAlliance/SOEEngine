@@ -51,7 +51,7 @@ namespace SOEDataProcessing.Database
     #endregion
 		
 		public SystemInfoDataContext() : 
-				base(global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString, mappingSource)
+				base(global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString, mappingSource)
 		{
 			OnCreated();
 		}

@@ -32,12 +32,15 @@ namespace SOEDataProcessing.DataAnalysis
         #region [ Members ]
 
         // Fields
-        private int m_vaIndex;
-        private int m_vbIndex;
-        private int m_vcIndex;
-        private int m_iaIndex;
-        private int m_ibIndex;
-        private int m_icIndex;
+        private int m_vx1Index;
+        private int m_vx2Index;
+        private int m_vx3Index;
+        private int m_vy1Index;
+        private int m_vy2Index;
+        private int m_vy3Index;
+        private int m_i1Index;
+        private int m_i2Index;
+        private int m_i3Index;
         private int m_irIndex;
 
         private DataGroup m_dataGroup;
@@ -52,12 +55,15 @@ namespace SOEDataProcessing.DataAnalysis
 
             // Initialize each of
             // the indexes to -1
-            m_vaIndex = -1;
-            m_vbIndex = -1;
-            m_vcIndex = -1;
-            m_iaIndex = -1;
-            m_ibIndex = -1;
-            m_icIndex = -1;
+            m_vx1Index = -1;
+            m_vx2Index = -1;
+            m_vx3Index = -1;
+            m_vy1Index = -1;
+            m_vy2Index = -1;
+            m_vy3Index = -1;
+            m_i1Index = -1;
+            m_i2Index = -1;
+            m_i3Index = -1;
             m_irIndex = -1;
 
             // Initialize the data group
@@ -73,28 +79,26 @@ namespace SOEDataProcessing.DataAnalysis
                 if (!instantaneousSeriesTypes.Contains(dataGroup[i].SeriesInfo.SeriesType.Name))
                     continue;
 
-                // Assign the proper indexes for the seven VIDataGroup channels by checking the
-                // measurement type and phase. Primary channels take precedence
-                if (dataGroup[i].SeriesInfo.Channel.MeasurementType.Name == "Voltage")
-                {
-                    if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "AN")
-                        m_vaIndex = (m_vaIndex >= 0 && dataGroup[i].SeriesInfo.Channel.Primary == 0) ? m_vaIndex : i;
-                    else if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "BN")
-                        m_vbIndex = (m_vbIndex >= 0 && dataGroup[i].SeriesInfo.Channel.Primary == 0) ? m_vbIndex : i;
-                    else if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "CN")
-                        m_vcIndex = (m_vcIndex >= 0 && dataGroup[i].SeriesInfo.Channel.Primary == 0) ? m_vcIndex : i;
-                }
-                else if (dataGroup[i].SeriesInfo.Channel.MeasurementType.Name == "Current")
-                {
-                    if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "AN")
-                        m_iaIndex = (m_iaIndex >= 0 && dataGroup[i].SeriesInfo.Channel.Primary == 0) ? m_iaIndex : i;
-                    else if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "BN")
-                        m_ibIndex = (m_ibIndex >= 0 && dataGroup[i].SeriesInfo.Channel.Primary == 0) ? m_ibIndex : i;
-                    else if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "CN")
-                        m_icIndex = (m_icIndex >= 0 && dataGroup[i].SeriesInfo.Channel.Primary == 0) ? m_icIndex : i;
-                    else if (dataGroup[i].SeriesInfo.Channel.Phase.Name == "RES")
-                        m_irIndex = (m_irIndex >= 0 && dataGroup[i].SeriesInfo.Channel.Primary == 0) ? m_irIndex : i;
-                }
+                // Assign the proper indexes for the seven VIDataGroup
+                // channels by checking the name of the channel
+                if (dataGroup[i].SeriesInfo.Channel.Name == "VX1")
+                    m_vx1Index = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "VX2")
+                    m_vx2Index = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "VX3")
+                    m_vx3Index = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "VY1")
+                    m_vy1Index = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "VY2")
+                    m_vy2Index = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "VY3")
+                    m_vy3Index = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "I1")
+                    m_i1Index = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "I2")
+                    m_i2Index = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "I3")
+                    m_i3Index = i;
             }
         }
 
@@ -106,51 +110,75 @@ namespace SOEDataProcessing.DataAnalysis
 
         #region [ Properties ]
 
-        public DataSeries VA
+        public DataSeries VX1
         {
             get
             {
-                return (m_vaIndex >= 0) ? m_dataGroup[m_vaIndex] : null;
+                return (m_vx1Index >= 0) ? m_dataGroup[m_vx1Index] : null;
             }
         }
 
-        public DataSeries VB
+        public DataSeries VX2
         {
             get
             {
-                return (m_vbIndex >= 0) ? m_dataGroup[m_vbIndex] : null;
+                return (m_vx2Index >= 0) ? m_dataGroup[m_vx2Index] : null;
             }
         }
 
-        public DataSeries VC
+        public DataSeries VX3
         {
             get
             {
-                return (m_vcIndex >= 0) ? m_dataGroup[m_vcIndex] : null;
+                return (m_vx3Index >= 0) ? m_dataGroup[m_vx3Index] : null;
             }
         }
 
-        public DataSeries IA
+        public DataSeries VY1
         {
             get
             {
-                return (m_iaIndex >= 0) ? m_dataGroup[m_iaIndex] : null;
+                return (m_vy1Index >= 0) ? m_dataGroup[m_vy1Index] : null;
             }
         }
 
-        public DataSeries IB
+        public DataSeries VY2
         {
             get
             {
-                return (m_ibIndex >= 0) ? m_dataGroup[m_ibIndex] : null;
+                return (m_vy2Index >= 0) ? m_dataGroup[m_vy2Index] : null;
             }
         }
 
-        public DataSeries IC
+        public DataSeries VY3
         {
             get
             {
-                return (m_icIndex >= 0) ? m_dataGroup[m_icIndex] : null;
+                return (m_vy3Index >= 0) ? m_dataGroup[m_vy3Index] : null;
+            }
+        }
+
+        public DataSeries I1
+        {
+            get
+            {
+                return (m_i1Index >= 0) ? m_dataGroup[m_i1Index] : null;
+            }
+        }
+
+        public DataSeries I2
+        {
+            get
+            {
+                return (m_i2Index >= 0) ? m_dataGroup[m_i2Index] : null;
+            }
+        }
+
+        public DataSeries I3
+        {
+            get
+            {
+                return (m_i3Index >= 0) ? m_dataGroup[m_i3Index] : null;
             }
         }
 
@@ -192,7 +220,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
-                return new int[] { m_vaIndex, m_vbIndex, m_vcIndex };
+                return new int[] { m_vx1Index, m_vx2Index, m_vx3Index };
             }
         }
 
@@ -200,7 +228,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
-                return new int[] { m_iaIndex, m_ibIndex, m_icIndex, m_irIndex };
+                return new int[] { m_i1Index, m_i2Index, m_i3Index, m_irIndex };
             }
         }
 
@@ -225,38 +253,38 @@ namespace SOEDataProcessing.DataAnalysis
                 return;
 
             // Get the meter associated with the channels in this data group
-            meter = (IA ?? IB).SeriesInfo.Channel.Meter;
+            meter = (I1 ?? I2).SeriesInfo.Channel.Meter;
 
-            if (m_iaIndex == -1)
+            if (m_i1Index == -1)
             {
-                // Calculate IA = IR - IB - IC
-                missingSeries = IR.Add(IB.Negate()).Add(IC.Negate());
-                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, m_dataGroup, "Current", "AN");
-                m_iaIndex = m_dataGroup.DataSeries.Count;
+                // Calculate I1 = IR - I2 - I3
+                missingSeries = IR.Add(I2.Negate()).Add(I3.Negate());
+                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, m_dataGroup, "Current", "General1");
+                m_i1Index = m_dataGroup.DataSeries.Count;
                 m_dataGroup.Add(missingSeries);
             }
-            else if (m_ibIndex == -1)
+            else if (m_i2Index == -1)
             {
-                // Calculate IB = IR - IA - IC
-                missingSeries = IR.Add(IA.Negate()).Add(IC.Negate());
-                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, m_dataGroup, "Current", "BN");
-                m_iaIndex = m_dataGroup.DataSeries.Count;
+                // Calculate I2 = IR - I1 - I3
+                missingSeries = IR.Add(I1.Negate()).Add(I3.Negate());
+                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, m_dataGroup, "Current", "General2");
+                m_i1Index = m_dataGroup.DataSeries.Count;
                 m_dataGroup.Add(missingSeries);
             }
-            else if (m_icIndex == -1)
+            else if (m_i3Index == -1)
             {
-                // Calculate IC = IR - IA - IB
-                missingSeries = IR.Add(IA.Negate()).Add(IB.Negate());
-                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, m_dataGroup, "Current", "CN");
-                m_iaIndex = m_dataGroup.DataSeries.Count;
+                // Calculate I3 = IR - I1 - I2
+                missingSeries = IR.Add(I1.Negate()).Add(I2.Negate());
+                missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, m_dataGroup, "Current", "General3");
+                m_i1Index = m_dataGroup.DataSeries.Count;
                 m_dataGroup.Add(missingSeries);
             }
             else
             {
-                // Calculate IR = IA + IB + IC
-                missingSeries = IA.Add(IB).Add(IC);
+                // Calculate IR = I1 + I2 + I3
+                missingSeries = I1.Add(I2).Add(I3);
                 missingSeries.SeriesInfo = GetSeriesInfo(meterInfo, meter, m_dataGroup, "Current", "RES");
-                m_iaIndex = m_dataGroup.DataSeries.Count;
+                m_i1Index = m_dataGroup.DataSeries.Count;
                 m_dataGroup.Add(missingSeries);
             }
         }
@@ -270,12 +298,15 @@ namespace SOEDataProcessing.DataAnalysis
         {
             VIDataGroup subGroup = new VIDataGroup();
 
-            subGroup.m_vaIndex = m_vaIndex;
-            subGroup.m_vbIndex = m_vbIndex;
-            subGroup.m_vcIndex = m_vcIndex;
-            subGroup.m_iaIndex = m_iaIndex;
-            subGroup.m_ibIndex = m_ibIndex;
-            subGroup.m_icIndex = m_icIndex;
+            subGroup.m_vx1Index = m_vx1Index;
+            subGroup.m_vx2Index = m_vx2Index;
+            subGroup.m_vx3Index = m_vx3Index;
+            subGroup.m_vy1Index = m_vy1Index;
+            subGroup.m_vy2Index = m_vy2Index;
+            subGroup.m_vy3Index = m_vy3Index;
+            subGroup.m_i1Index = m_i1Index;
+            subGroup.m_i2Index = m_i2Index;
+            subGroup.m_i3Index = m_i3Index;
             subGroup.m_irIndex = m_irIndex;
 
             subGroup.m_dataGroup = m_dataGroup.ToSubGroup(startIndex, endIndex);
@@ -291,7 +322,6 @@ namespace SOEDataProcessing.DataAnalysis
         private static Series GetSeriesInfo(MeterInfoDataContext meterInfo, Meter meter, DataGroup dataGroup, string measurementTypeName, string phaseName)
         {
             int lineID;
-            string remoteMeterName;
             string measurementCharacteristicName;
             string seriesTypeName;
 
@@ -310,13 +340,12 @@ namespace SOEDataProcessing.DataAnalysis
             SeriesKey seriesKey;
 
             lineID = dataGroup.Line.ID;
-            remoteMeterName = GetRemoteMeterName(meter, dataGroup.Line);
             measurementCharacteristicName = "Instantaneous";
             seriesTypeName = "Values";
 
             typeDesignation = (measurementTypeName == "Current") ? 'I' : measurementTypeName[0];
             phaseDesignation = (phaseName == "RES") ? 'R' : phaseName[0];
-            channelName = string.Concat(remoteMeterName, " ", typeDesignation, phaseDesignation).Trim();
+            channelName = string.Concat(typeDesignation, phaseDesignation);
 
             channelLookup = new DataContextLookup<ChannelKey, Channel>(meterInfo, channel => new ChannelKey(channel))
                 .WithFilterExpression(channel => channel.MeterID == meter.ID)
@@ -331,7 +360,7 @@ namespace SOEDataProcessing.DataAnalysis
             phaseLookup = new DataContextLookup<string, Phase>(meterInfo, phase => phase.Name);
             seriesTypeLookup = new DataContextLookup<string, SeriesType>(meterInfo, seriesType => seriesType.Name);
 
-            channelKey = new ChannelKey(lineID, 0, 0, channelName, measurementTypeName, measurementCharacteristicName, phaseName);
+            channelKey = new ChannelKey(lineID, 0, channelName, measurementTypeName, measurementCharacteristicName, phaseName);
             seriesKey = new SeriesKey(channelKey, seriesTypeName);
 
             return seriesLookup.GetOrAdd(seriesKey, key =>
@@ -367,19 +396,6 @@ namespace SOEDataProcessing.DataAnalysis
                     SourceIndexes = string.Empty
                 };
             });
-        }
-
-        private static string GetRemoteMeterName(Meter meter, Line line)
-        {
-            List<Meter> remoteMeters = line.MeterLocationLines
-                .SelectMany(meterLocationLine => meterLocationLine.MeterLocation.Meters)
-                .Where(m => m.ID != meter.ID)
-                .ToList();
-
-            if (remoteMeters.Count == 1)
-                return remoteMeters.Single().Name;
-
-            return null;
         }
 
         #endregion

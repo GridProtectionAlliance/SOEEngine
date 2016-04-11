@@ -5451,7 +5451,7 @@ namespace SOEDataProcessing.Database.MeterDataTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString;
+            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -5799,7 +5799,7 @@ SELECT ID, ChannelID, Average, MeanSquare, StandardDeviation, Count FROM Channel
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString;
+            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -6142,7 +6142,7 @@ SELECT ID, ChannelID, Time, Minimum, Maximum, Average, ValidCount, InvalidCount 
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString;
+            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -6548,7 +6548,7 @@ SELECT ID, ChannelID, Date, Minimum, Maximum, Average, ValidCount, InvalidCount 
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString;
+            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -7003,7 +7003,7 @@ WHEN NOT MATCHED THEN
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString;
+            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -7414,7 +7414,7 @@ SELECT ID, EventID, PhaseID, BreakerOperationTypeID, BreakerNumber, TripCoilEner
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString;
+            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -7913,7 +7913,7 @@ SELECT ID, FileGroupID, MeterID, LineID, EventTypeID, EventDataID, Name, Alias, 
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString;
+            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -8641,7 +8641,7 @@ SELECT ID, FileGroupID, RuntimeID, TimeDomainData, FrequencyDomainData, MarkedFo
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString;
+            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -9191,7 +9191,7 @@ SELECT ID, EventID, EventTypeID, PhaseID, Magnitude, PerUnitMagnitude, StartTime
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString;
+            this._connection.ConnectionString = global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

@@ -26,11 +26,10 @@ namespace SOEDataProcessing.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=localhost\\SQLEXPRESS; Initial Catalog=openXDA; Integrated Security=SS" +
-            "PI")]
-        public string openXDAConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=localhost; Initial Catalog=SOEdb; Integrated Security=True")]
+        public string SOEConnectionString {
             get {
-                return ((string)(this["openXDAConnectionString"]));
+                return ((string)(this["SOEConnectionString"]));
             }
         }
     }

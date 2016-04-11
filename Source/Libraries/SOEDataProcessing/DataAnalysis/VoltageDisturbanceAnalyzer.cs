@@ -128,14 +128,14 @@ namespace SOEDataProcessing.DataAnalysis
             double nominalVoltageReciprocal = 1.0D / nominalVoltage;
             DataSeries vAll = GetVAllSeries(viCycleDataGroup);
 
-            List<Range<int>> aPhaseDisturbanceRanges = DetectDisturbanceRanges(viCycleDataGroup.VA.RMS.Multiply(nominalVoltageReciprocal));
-            List<Range<int>> bPhaseDisturbanceRanges = DetectDisturbanceRanges(viCycleDataGroup.VB.RMS.Multiply(nominalVoltageReciprocal));
-            List<Range<int>> cPhaseDisturbanceRanges = DetectDisturbanceRanges(viCycleDataGroup.VC.RMS.Multiply(nominalVoltageReciprocal));
+            List<Range<int>> phase1DisturbanceRanges = DetectDisturbanceRanges(viCycleDataGroup.VX1.RMS.Multiply(nominalVoltageReciprocal));
+            List<Range<int>> phase2DisturbanceRanges = DetectDisturbanceRanges(viCycleDataGroup.VX2.RMS.Multiply(nominalVoltageReciprocal));
+            List<Range<int>> phase3DisturbanceRanges = DetectDisturbanceRanges(viCycleDataGroup.VX3.RMS.Multiply(nominalVoltageReciprocal));
             List<Range<int>> allDisturbanceRanges = DetectDisturbanceRanges(vAll.Multiply(nominalVoltageReciprocal));
 
-            List<Disturbance> disturbanceList = aPhaseDisturbanceRanges.Select(range => ToDisturbance(viCycleDataGroup.VA.RMS, range, Phase.AN))
-                .Concat(bPhaseDisturbanceRanges.Select(range => ToDisturbance(viCycleDataGroup.VB.RMS, range, Phase.BN)))
-                .Concat(cPhaseDisturbanceRanges.Select(range => ToDisturbance(viCycleDataGroup.VC.RMS, range, Phase.CN)))
+            List<Disturbance> disturbanceList = phase1DisturbanceRanges.Select(range => ToDisturbance(viCycleDataGroup.VX1.RMS, range, Phase.AN))
+                .Concat(phase2DisturbanceRanges.Select(range => ToDisturbance(viCycleDataGroup.VX2.RMS, range, Phase.BN)))
+                .Concat(phase3DisturbanceRanges.Select(range => ToDisturbance(viCycleDataGroup.VX3.RMS, range, Phase.CN)))
                 .Concat(allDisturbanceRanges.Select(range => ToDisturbance(vAll, range, Phase.None)))
                 .ToList();
 
@@ -146,8 +146,8 @@ namespace SOEDataProcessing.DataAnalysis
         {
             DataSeries dataSeries = new DataSeries();
 
-            for (int i = 0; i < viCycleDataGroup.VA.RMS.DataPoints.Count; i++)
-                dataSeries.DataPoints.Add(m_getVAllPoint(viCycleDataGroup.VA.RMS[i], viCycleDataGroup.VB.RMS[i], viCycleDataGroup.VC.RMS[i]));
+            for (int i = 0; i < viCycleDataGroup.VX1.RMS.DataPoints.Count; i++)
+                dataSeries.DataPoints.Add(m_getVAllPoint(viCycleDataGroup.VX1.RMS[i], viCycleDataGroup.VX2.RMS[i], viCycleDataGroup.VX3.RMS[i]));
 
             return dataSeries;
         }

@@ -168,7 +168,7 @@ namespace SOEDataProcessing.DataAnalysis
             phaseLookup = new DataContextLookup<string, Phase>(meterInfo, phase => phase.Name);
             seriesTypeLookup = new DataContextLookup<string, SeriesType>(meterInfo, seriesType => seriesType.Name);
 
-            channelKey = new ChannelKey(lineID, 0, 0, channelName, measurementTypeName, measurementCharacteristicName, phaseName);
+            channelKey = new ChannelKey(lineID, 0, channelName, measurementTypeName, measurementCharacteristicName, phaseName);
             seriesKey = new SeriesKey(channelKey, seriesTypeName);
 
             return seriesLookup.GetOrAdd(seriesKey, key =>

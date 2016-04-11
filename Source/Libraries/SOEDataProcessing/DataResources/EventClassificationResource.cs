@@ -84,32 +84,32 @@ namespace SOEDataProcessing.DataResources
             {
                 dataGroup = cycleDataResource.DataGroups[i];
                 viCycleDataGroup = cycleDataResource.VICycleDataGroups[i];
-                m_classifications.Add(dataGroup, Classify(meterDataSet, dataGroup, viCycleDataGroup));
+                m_classifications.Add(dataGroup, Classify(dataGroup, viCycleDataGroup));
             }
         }
 
-        private EventClassification Classify(MeterDataSet meterDataSet, DataGroup dataGroup, VICycleDataGroup viCycleDataGroup)
+        private EventClassification Classify(DataGroup dataGroup, VICycleDataGroup viCycleDataGroup)
         {
             double nominalVoltage;
-            DataSeries va;
-            DataSeries vb;
-            DataSeries vc;
+            DataSeries v1;
+            DataSeries v2;
+            DataSeries v3;
 
             // Get the line-to-neutral nominal voltage in volts
             nominalVoltage = dataGroup.Line.VoltageKV * 1000.0D / Math.Sqrt(3.0D);
 
             // Per-unit voltage waveforms based on nominal voltage
-            va = viCycleDataGroup.VA.RMS.Multiply(1.0D / nominalVoltage);
-            vb = viCycleDataGroup.VB.RMS.Multiply(1.0D / nominalVoltage);
-            vc = viCycleDataGroup.VC.RMS.Multiply(1.0D / nominalVoltage);
+            v1 = viCycleDataGroup.VX1.RMS.Multiply(1.0D / nominalVoltage);
+            v2 = viCycleDataGroup.VX2.RMS.Multiply(1.0D / nominalVoltage);
+            v3 = viCycleDataGroup.VX3.RMS.Multiply(1.0D / nominalVoltage);
 
-            if (HasInterruption(va, vb, vc))
+            if (HasInterruption(v1, v2, v3))
                 return EventClassification.Interruption;
 
-            if (HasSwell(va, vb, vc))
+            if (HasSwell(v1, v2, v3))
                 return EventClassification.Swell;
 
-            if (HasSag(va, vb, vc))
+            if (HasSag(v1, v2, v3))
                 return EventClassification.Sag;
 
             return EventClassification.Other;
@@ -167,7 +167,7 @@ namespace SOEDataProcessing.DataResources
         // Static Methods
         public static EventClassificationResource GetResource(MeterDataSet meterDataSet, DbAdapterContainer dbAdapterContainer)
         {
-            return meterDataSet.GetResource<EventClassificationResource>(() => new EventClassificationResource(dbAdapterContainer));
+            return meterDataSet.GetResource(() => new EventClassificationResource(dbAdapterContainer));
         }
 
         #endregion

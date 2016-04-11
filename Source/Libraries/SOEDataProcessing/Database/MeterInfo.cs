@@ -9,19 +9,19 @@ namespace SOEDataProcessing.Database
         #region [ Members ]
 
         // Fields
-        private readonly Tuple<int, int, int, string, string, string, string> m_tuple;
+        private readonly Tuple<int, int, string, string, string, string> m_tuple;
 
         #endregion
 
         #region [ Constructors ]
 
-        public ChannelKey(int lineID, int primary, int harmonicGroup, string name, string measurementType, string measurementCharacteristic, string phase)
+        public ChannelKey(int lineID, int harmonicGroup, string name, string measurementType, string measurementCharacteristic, string phase)
         {
-            m_tuple = Tuple.Create(lineID, primary, harmonicGroup, name, measurementType, measurementCharacteristic, phase);
+            m_tuple = Tuple.Create(lineID, harmonicGroup, name, measurementType, measurementCharacteristic, phase);
         }
 
         public ChannelKey(Channel channel)
-            : this(channel.Line.ID, channel.Primary, channel.HarmonicGroup, channel.Name, channel.MeasurementType.Name, channel.MeasurementCharacteristic.Name, channel.Phase.Name)
+            : this(channel.Line.ID, channel.HarmonicGroup, channel.Name, channel.MeasurementType.Name, channel.MeasurementCharacteristic.Name, channel.Phase.Name)
         {
         }
 
@@ -37,7 +37,7 @@ namespace SOEDataProcessing.Database
             }
         }
 
-        public int Primary
+        public int HarmonicGroup
         {
             get
             {
@@ -45,7 +45,7 @@ namespace SOEDataProcessing.Database
             }
         }
 
-        public int HarmonicGroup
+        public string Name
         {
             get
             {
@@ -53,7 +53,7 @@ namespace SOEDataProcessing.Database
             }
         }
 
-        public string Name
+        public string MeasurementType
         {
             get
             {
@@ -61,7 +61,7 @@ namespace SOEDataProcessing.Database
             }
         }
 
-        public string MeasurementType
+        public string MeasurementCharacteristic
         {
             get
             {
@@ -69,19 +69,11 @@ namespace SOEDataProcessing.Database
             }
         }
 
-        public string MeasurementCharacteristic
-        {
-            get
-            {
-                return m_tuple.Item6;
-            }
-        }
-
         public string Phase
         {
             get
             {
-                return m_tuple.Item7;
+                return m_tuple.Item6;
             }
         }
 

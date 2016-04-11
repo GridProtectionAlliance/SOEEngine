@@ -227,7 +227,6 @@ CREATE TABLE Channel
     Name VARCHAR(200) NOT NULL,
     SamplesPerHour FLOAT NOT NULL,
     PerUnitValue FLOAT NULL,
-    [Primary] INT NOT NULL DEFAULT 1,
     HarmonicGroup INT NOT NULL DEFAULT 0,
     Description VARCHAR(MAX) NULL,
     Enabled INT NOT NULL DEFAULT 1
@@ -449,6 +448,40 @@ CREATE NONCLUSTERED INDEX IX_Disturbance_EventTypeID
 ON Disturbance(EventTypeID ASC)
 GO
 
+CREATE TABLE SOECycleData
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    EventID INT NOT NULL REFERENCES Event(ID),
+    CycleNumber INT NOT NULL,
+    SampleNumber INT NOT NULL,
+    Timestamp DATETIME2 NOT NULL,
+    VAxRMS FLOAT NOT NULL,
+    VAxPhase FLOAT NOT NULL,
+    VAxPeak FLOAT NOT NULL,
+    VBxRMS FLOAT NOT NULL,
+    VBxPhase FLOAT NOT NULL,
+    VBxPeak FLOAT NOT NULL,
+    VCxRMS FLOAT NOT NULL,
+    VCxPhase FLOAT NOT NULL,
+    VCxPeak FLOAT NOT NULL,
+    IAxRMS FLOAT NOT NULL,
+    IAxPhase FLOAT NOT NULL,
+    IAxPeak FLOAT NOT NULL,
+    IA2T FLOAT NOT NULL,
+    IBxRMS FLOAT NOT NULL,
+    IBxPhase FLOAT NOT NULL,
+    IBxPeak FLOAT NOT NULL,
+    IB2T FLOAT NOT NULL,
+    ICxRMS FLOAT NOT NULL,
+    ICxPhase FLOAT NOT NULL,
+    ICxPeak FLOAT NOT NULL,
+    IC2T FLOAT NOT NULL,
+    IRxRMS FLOAT NOT NULL,
+    IRxPhase FLOAT NOT NULL,
+    IRxPeak FLOAT NOT NULL
+)
+GO
+
 ----- FUNCTIONS -----
 
 CREATE FUNCTION AdjustDateTime2
@@ -534,52 +567,6 @@ WITH TimeTolerance AS
     FROM
         (SELECT 'TimeTolerance' AS Name) AS SettingName LEFT OUTER JOIN
         Setting ON SettingName.Name = Setting.Name
-),
-SelectedSummary AS
-(
-    SELECT *
-    FROM FaultSummary
-    WHERE IsSelectedAlgorithm <> 0 AND IsSuppressed = 0
-),
-SummaryData AS
-(
-    SELECT
-        SelectedSummary.ID AS FaultSummaryID,
-        Meter.AssetKey AS MeterKey,
-        MeterLocation.Name AS StationName,
-        MeterLine.LineName,
-        SelectedSummary.FaultType,
-        SelectedSummary.Inception,
-        SelectedSummary.DurationCycles,
-        SelectedSummary.DurationSeconds * 1000.0 AS DurationMilliseconds,
-        SelectedSummary.CurrentMagnitude AS FaultCurrent,
-        SelectedSummary.Algorithm,
-        SelectedSummary.Distance AS SingleEndedDistance,
-        DoubleEndedFaultSummary.Distance AS DoubleEndedDistance,
-        DoubleEndedFaultSummary.Angle AS DoubleEndedAngle,
-        SelectedSummary.EventID,
-        Event.StartTime AS EventStartTime,
-        Event.EndTime AS EventEndTime
-    FROM
-        SelectedSummary JOIN
-        Event ON SelectedSummary.EventID = Event.ID JOIN
-        Meter ON Event.MeterID = Meter.ID JOIN
-        MeterLocation ON Meter.MeterLocationID = MeterLocation.ID JOIN
-        MeterLine ON MeterLine.MeterID = Meter.ID AND MeterLine.LineID = Event.LineID LEFT OUTER JOIN
-        DoubleEndedFaultDistance ON DoubleEndedFaultDistance.LocalFaultSummaryID = SelectedSummary.ID LEFT OUTER JOIN
-        DoubleEndedFaultSummary ON DoubleEndedFaultSummary.ID = DoubleEndedFaultDistance.ID
-),
-SummaryIDs AS
-(
-    SELECT
-        SelectedSummary.ID AS FaultSummaryID,
-        EventID,
-        LineID,
-        MeterID AS PartitionID,
-        Inception AS OrderID
-    FROM
-        SelectedSummary JOIN
-        Event ON SelectedSummary.EventID = Event.ID
 )
 SELECT
     Event.ID AS EventID,
@@ -589,49 +576,6 @@ SELECT
             Event.StartTime AS [Event/StartTime],
             Event.EndTime AS [Event/EndTime],
             EventType.Name AS [Event/Type],
-            (
-                SELECT
-                    FaultNumber AS [@num],
-                    (
-                        SELECT
-                            MeterKey,
-                            StationName,
-                            LineName,
-                            FaultType,
-                            Inception,
-                            DurationCycles,
-                            DurationMilliseconds,
-                            FaultCurrent,
-                            Algorithm,
-                            SingleEndedDistance,
-                            DoubleEndedDistance,
-                            DoubleEndedAngle,
-                            EventStartTime,
-                            EventEndTime,
-                            EventID,
-                            FaultSummaryID AS FaultID
-                        FROM SummaryData
-                        WHERE FaultSummaryID IN
-                        (
-                            SELECT FaultSummaryID
-                            FROM
-                            (
-                                SELECT FaultSummaryID, ROW_NUMBER() OVER(PARTITION BY PartitionID ORDER BY OrderID) AS FaultNumber
-                                FROM SummaryIDs
-                                WHERE SummaryIDs.LineID = Event.LineID AND SummaryIDs.EventID IN (SELECT * FROM dbo.GetSystemEventIDs(Event.StartTime, Event.EndTime, (SELECT * FROM TimeTolerance)))
-                            ) InnerFaultNumber
-                            WHERE InnerFaultNumber.FaultNumber = OuterFaultNumber.FaultNumber
-                        )
-                        FOR XML PATH('SummaryData'), TYPE
-                    )
-                FROM
-                (
-                    SELECT DISTINCT ROW_NUMBER() OVER(PARTITION BY PartitionID ORDER BY OrderID) AS FaultNumber
-                    FROM SummaryIDs
-                    WHERE SummaryIDs.LineID = Event.LineID AND SummaryIDs.EventID IN (SELECT * FROM dbo.GetSystemEventIDs(Event.StartTime, Event.EndTime, (SELECT * FROM TimeTolerance)))
-                ) OuterFaultNumber
-                FOR XML PATH('Fault'), TYPE
-            ) AS [Faults],
             Meter.AssetKey AS [Meter/AssetKey],
             Meter.Name AS [Meter/Name],
             Meter.ShortName AS [Meter/ShortName],
@@ -642,23 +586,9 @@ SELECT
             MeterLocation.Name AS [MeterLocation/Name],
             MeterLocation.ShortName AS [MeterLocation/ShortName],
             MeterLocation.Alias AS [MeterLocation/Alias],
-            SourceImpedance.RSrc AS [MeterLocation/RSrc],
-            SourceImpedance.XSrc AS [MeterLocation/XSrc],
             Line.AssetKey AS [Line/AssetKey],
             MeterLine.LineName AS [Line/Name],
             FORMAT(Line.Length, '0.##########') AS [Line/Length],
-            FORMAT(SQRT(LineImpedance.R1 * LineImpedance.R1 + LineImpedance.X1 * LineImpedance.X1), '0.##########') AS [Line/Z1],
-            FORMAT(ATN2(LineImpedance.X1, LineImpedance.R1) * 180 / PI(), '0.##########') AS [Line/A1],
-            FORMAT(LineImpedance.R1, '0.##########') AS [Line/R1],
-            FORMAT(LineImpedance.X1, '0.##########') AS [Line/X1],
-            FORMAT(SQRT(LineImpedance.R0 * LineImpedance.R0 + LineImpedance.X0 * LineImpedance.X0), '0.##########') AS [Line/Z0],
-            FORMAT(ATN2(LineImpedance.X0, LineImpedance.R0) * 180 / PI(), '0.##########') AS [Line/A0],
-            FORMAT(LineImpedance.R0, '0.##########') AS [Line/R0],
-            FORMAT(LineImpedance.X0, '0.##########') AS [Line/X0],
-            FORMAT(SQRT(POWER((2.0 * LineImpedance.R1 + LineImpedance.R0) / 3.0, 2) + POWER((2.0 * LineImpedance.X1 + LineImpedance.X0) / 3.0, 2)), '0.##########') AS [Line/ZS],
-            FORMAT(ATN2((2.0 * LineImpedance.X1 + LineImpedance.X0) / 3.0, (2.0 * LineImpedance.R1 + LineImpedance.R0) / 3.0) * 180 / PI(), '0.##########') AS [Line/AS],
-            FORMAT((2.0 * LineImpedance.R1 + LineImpedance.R0) / 3.0, '0.##########') AS [Line/RS],
-            FORMAT((2.0 * LineImpedance.X1 + LineImpedance.X0) / 3.0, '0.##########') AS [Line/XS],
             (
                 CAST((SELECT '<TimeTolerance>' + CAST((SELECT * FROM TimeTolerance) AS VARCHAR) + '</TimeTolerance>') AS XML)
             ) AS [Settings]
@@ -668,8 +598,6 @@ SELECT
             MeterLocation ON Meter.MeterLocationID = MeterLocation.ID LEFT OUTER JOIN
             MeterLine ON MeterLine.MeterID = Meter.ID AND MeterLine.LineID = Line.ID LEFT OUTER JOIN
             MeterLocationLine ON MeterLocationLine.MeterLocationID = MeterLocation.ID AND MeterLocationLine.LineID = Line.ID LEFT OUTER JOIN
-            SourceImpedance ON SourceImpedance.MeterLocationLineID = MeterLocationLine.ID LEFT OUTER JOIN
-            LineImpedance ON LineImpedance.LineID = Line.ID LEFT OUTER JOIN
             EventType ON Event.EventTypeID = EventType.ID
         WHERE
             Event.MeterID = Meter.ID AND

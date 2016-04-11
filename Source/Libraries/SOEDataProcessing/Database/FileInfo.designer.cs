@@ -39,7 +39,7 @@ namespace SOEDataProcessing.Database
     #endregion
 		
 		public FileInfoDataContext() : 
-				base(global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString, mappingSource)
+				base(global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString, mappingSource)
 		{
 			OnCreated();
 		}

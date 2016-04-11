@@ -22,7 +22,7 @@ namespace SOEDataProcessing.Database
 	using System;
 	
 	
-	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="openXDA")]
+	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="SOEdb")]
 	public partial class MeterInfoDataContext : System.Data.Linq.DataContext
 	{
 		
@@ -78,7 +78,7 @@ namespace SOEDataProcessing.Database
     #endregion
 		
 		public MeterInfoDataContext() : 
-				base(global::SOEDataProcessing.Properties.Settings.Default.openXDAConnectionString, mappingSource)
+				base(global::SOEDataProcessing.Properties.Settings.Default.SOEConnectionString, mappingSource)
 		{
 			OnCreated();
 		}
@@ -3115,8 +3115,6 @@ namespace SOEDataProcessing.Database
 		
 		private System.Nullable<double> _PerUnitValue;
 		
-		private int _Primary;
-		
 		private int _HarmonicGroup;
 		
 		private string _Description;
@@ -3159,8 +3157,6 @@ namespace SOEDataProcessing.Database
     partial void OnSamplesPerHourChanged();
     partial void OnPerUnitValueChanging(System.Nullable<double> value);
     partial void OnPerUnitValueChanged();
-    partial void OnPrimaryChanging(int value);
-    partial void OnPrimaryChanged();
     partial void OnHarmonicGroupChanging(int value);
     partial void OnHarmonicGroupChanged();
     partial void OnDescriptionChanging(string value);
@@ -3377,26 +3373,6 @@ namespace SOEDataProcessing.Database
 					this._PerUnitValue = value;
 					this.SendPropertyChanged("PerUnitValue");
 					this.OnPerUnitValueChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="[Primary]", Storage="_Primary", DbType="Int NOT NULL")]
-		public int Primary
-		{
-			get
-			{
-				return this._Primary;
-			}
-			set
-			{
-				if ((this._Primary != value))
-				{
-					this.OnPrimaryChanging(value);
-					this.SendPropertyChanging();
-					this._Primary = value;
-					this.SendPropertyChanged("Primary");
-					this.OnPrimaryChanged();
 				}
 			}
 		}

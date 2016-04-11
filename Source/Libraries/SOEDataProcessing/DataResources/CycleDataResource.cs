@@ -169,7 +169,7 @@ namespace SOEDataProcessing.DataResources
             phaseName = timeDomainSeries.Channel.Phase.Name;
             seriesTypeName = timeDomainSeries.SeriesType.Name;
 
-            channelKey = new ChannelKey(timeDomainSeries.Channel.LineID, 0, 0, channelName, measurementTypeName, measurementCharacteristicName, phaseName);
+            channelKey = new ChannelKey(timeDomainSeries.Channel.LineID, 0, channelName, measurementTypeName, measurementCharacteristicName, phaseName);
             seriesKey = new SeriesKey(channelKey, seriesTypeName);
 
             return GetSeriesInfo(timeDomainSeries.Channel.Meter, channelKey, seriesKey);
