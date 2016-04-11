@@ -308,8 +308,6 @@ namespace DeviceDefinitionsMigrator
             Series series;
             Channel channel;
 
-            string channelKey;
-
             XDocument document = XDocument.Load(deviceDefinitionsFile);
             List<XElement> deviceElements = document.Elements().Elements("device").ToList();
             XElement deviceAttributes;
@@ -368,35 +366,22 @@ namespace DeviceDefinitionsMigrator
                             // Provide a link between this line and the remote location
                             Link(remoteMeterLocation, line, lookupTables.MeterLocationLineLookup);
                         }
-                        else
-                        {
-                            // Set remote meter location to null so we
-                            // know later that there isn't one defined
-                            remoteMeterLocation = null;
-                        }
 
                         // Get a lookup table for the channels monitoring this line
                         channelLookup = lookupTables.GetChannelLookup(meter, line);
 
-                        foreach (XElement channelElement in lineElement.Elements("channels").Elements())
+                        foreach (string channelName in new[] { "VX1", "VX2", "VX3", "VY1", "VY2", "VY3", "I1", "I2", "I3" })
                         {
-                            channelKey = channelElement.Name.LocalName;
+                            if (channelLookup.ContainsKey(channelName))
+                                continue;
 
-                            // Attempt to find an existing channel corresponding to this element
-                            if (channelLookup.TryGetValue(channelKey, out channel))
-                            {
-                                series = channel.Series.First();
-                            }
-                            else
-                            {
-                                channel = new Channel();
-                                series = new Series();
-                                channelLookup.Add(channelKey, channel);
-                            }
+                            channel = new Channel();
+                            series = new Series();
+                            channelLookup.Add(channelName, channel);
 
                             // Load updates to channel configuration into the database
-                            LoadChannelAttributes(meter, line, remoteMeterLocation, channel, channelKey, lookupTables);
-                            LoadSeriesAttributes(channel, series, channelElement, lookupTables);
+                            LoadChannelAttributes(meter, line, channel, channelName, lookupTables);
+                            LoadSeriesAttributes(channel, series, lookupTables);
                         }
                     }
 
@@ -511,74 +496,28 @@ namespace DeviceDefinitionsMigrator
             return meterLocationLine;
         }
 
-        private static void LoadChannelAttributes(Meter meter, Line line, MeterLocation remoteMeterLocation, Channel channel, string channelKey, LookupTables lookupTables)
+        private static void LoadChannelAttributes(Meter meter, Line line, Channel channel, string channelName, LookupTables lookupTables)
         {
-            if ((object)remoteMeterLocation != null)
-                channel.Description = $"{remoteMeterLocation.Name}({line.AssetKey}) {channelKey}";
-            else
-                channel.Description = $"({line.AssetKey}) {channelKey}";
+            string measurementType = (channelName[0] == 'V') ? "Voltage" : "Current";
+            string measurementCharacteristic = "Instantaneous";
+            string phase = "General" + channelName.Last();
 
-            channel.Name = channelKey;
+            channel.Name = channelName;
+            channel.Description = channelName;
             channel.HarmonicGroup = 0;
-            channel.MeasurementType = lookupTables.MeasurementTypeLookup.GetOrAdd(GetMeasurementTypeName(channelKey), name => new MeasurementType() { Name = name, Description = name });
-            channel.MeasurementCharacteristic = lookupTables.MeasurementCharacteristicLookup.GetOrAdd("Instantaneous", name => new MeasurementCharacteristic() { Name = name, Description = name });
-            channel.Phase = lookupTables.PhaseLookup.GetOrAdd(GetPhaseName(channelKey), name => new Phase() { Name = name, Description = name });
+            channel.MeasurementType = lookupTables.MeasurementTypeLookup.GetOrAdd(measurementType, name => new MeasurementType() { Name = name, Description = name });
+            channel.MeasurementCharacteristic = lookupTables.MeasurementCharacteristicLookup.GetOrAdd(measurementCharacteristic, name => new MeasurementCharacteristic() { Name = name, Description = name });
+            channel.Phase = lookupTables.PhaseLookup.GetOrAdd(phase, name => new Phase() { Name = name, Description = name });
 
             channel.Meter = meter;
             channel.Line = line;
         }
 
-        private static void LoadSeriesAttributes(Channel channel, Series series, XElement channelElement, LookupTables lookupTables)
+        private static void LoadSeriesAttributes(Channel channel, Series series, LookupTables lookupTables)
         {
             series.SeriesType = lookupTables.SeriesTypeLookup.GetOrAdd("Values", name => new SeriesType() { Name = name, Description = name });
             series.Channel = channel;
-            series.SourceIndexes = (string)channelElement ?? string.Empty;
+            series.SourceIndexes = string.Empty;
         }
-
-        private static string GetMeasurementTypeName(string channelName)
-        {
-            string measurementTypeName;
-
-            if (!MeasurementTypeNameLookup.TryGetValue(channelName, out measurementTypeName))
-                measurementTypeName = "Unknown";
-
-            return measurementTypeName;
-        }
-
-        private static string GetPhaseName(string channelName)
-        {
-            string phaseName;
-
-            if (!PhaseNameLookup.TryGetValue(channelName, out phaseName))
-                phaseName = "Unknown";
-
-            return phaseName;
-        }
-
-        private static readonly Dictionary<string, string> MeasurementTypeNameLookup = new Dictionary<string, string>()
-        {
-            { "VA", "Voltage" },
-            { "VB", "Voltage" },
-            { "VC", "Voltage" },
-            { "IA", "Current" },
-            { "IB", "Current" },
-            { "IC", "Current" },
-            { "IR", "Current" },
-            { "IN", "Current" },
-            { "IG", "Current" }
-        };
-
-        private static readonly Dictionary<string, string> PhaseNameLookup = new Dictionary<string, string>()
-        {
-            { "VA", "AN" },
-            { "VB", "BN" },
-            { "VC", "CN" },
-            { "IA", "AN" },
-            { "IB", "BN" },
-            { "IC", "CN" },
-            { "IR", "RES" },
-            { "IN", "NG" },
-            { "IG", "NG" }
-        };
     }
 }
