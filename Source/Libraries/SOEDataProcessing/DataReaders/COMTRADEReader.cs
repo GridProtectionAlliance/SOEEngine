@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -225,6 +224,7 @@ namespace SOEDataProcessing.DataReaders
             Series series = new Series();
 
             channel.Name = analogChannel.ChannelName;
+            channel.Description = analogChannel.CircuitComponent;
             channel.HarmonicGroup = 0;
             channel.MeasurementType = new MeasurementType();
             channel.MeasurementType.Name = "Unknown";
@@ -247,6 +247,7 @@ namespace SOEDataProcessing.DataReaders
             Series series = new Series();
 
             channel.Name = digitalChannel.ChannelName;
+            channel.Description = digitalChannel.CircuitComponent;
             channel.HarmonicGroup = 0;
             channel.MeasurementType = new MeasurementType();
             channel.MeasurementType.Name = "Digital";
