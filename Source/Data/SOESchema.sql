@@ -334,6 +334,9 @@ GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.EventOperation', 2)
 GO
 
+INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.SOEOperation', 3)
+GO
+
 -- ------ --
 -- Events --
 -- ------ --
@@ -455,30 +458,36 @@ CREATE TABLE SOECycleData
     CycleNumber INT NOT NULL,
     SampleNumber INT NOT NULL,
     Timestamp DATETIME2 NOT NULL,
-    VAxRMS FLOAT NOT NULL,
-    VAxPhase FLOAT NOT NULL,
-    VAxPeak FLOAT NOT NULL,
-    VBxRMS FLOAT NOT NULL,
-    VBxPhase FLOAT NOT NULL,
-    VBxPeak FLOAT NOT NULL,
-    VCxRMS FLOAT NOT NULL,
-    VCxPhase FLOAT NOT NULL,
-    VCxPeak FLOAT NOT NULL,
-    IAxRMS FLOAT NOT NULL,
-    IAxPhase FLOAT NOT NULL,
-    IAxPeak FLOAT NOT NULL,
-    IA2T FLOAT NOT NULL,
-    IBxRMS FLOAT NOT NULL,
-    IBxPhase FLOAT NOT NULL,
-    IBxPeak FLOAT NOT NULL,
-    IB2T FLOAT NOT NULL,
-    ICxRMS FLOAT NOT NULL,
-    ICxPhase FLOAT NOT NULL,
-    ICxPeak FLOAT NOT NULL,
-    IC2T FLOAT NOT NULL,
-    IRxRMS FLOAT NOT NULL,
-    IRxPhase FLOAT NOT NULL,
-    IRxPeak FLOAT NOT NULL
+    VX1RMS FLOAT NOT NULL,
+    VX1Phase FLOAT NOT NULL,
+    VX1Peak FLOAT NOT NULL,
+    VX2RMS FLOAT NOT NULL,
+    VX2Phase FLOAT NOT NULL,
+    VX2Peak FLOAT NOT NULL,
+    VX3RMS FLOAT NOT NULL,
+    VX3Phase FLOAT NOT NULL,
+    VX3Peak FLOAT NOT NULL,
+    VY1RMS FLOAT NOT NULL,
+    VY1Phase FLOAT NOT NULL,
+    VY1Peak FLOAT NOT NULL,
+    VY2RMS FLOAT NOT NULL,
+    VY2Phase FLOAT NOT NULL,
+    VY2Peak FLOAT NOT NULL,
+    VY3RMS FLOAT NOT NULL,
+    VY3Phase FLOAT NOT NULL,
+    VY3Peak FLOAT NOT NULL,
+    I1RMS FLOAT NOT NULL,
+    I1Phase FLOAT NOT NULL,
+    I1Peak FLOAT NOT NULL,
+    I2RMS FLOAT NOT NULL,
+    I2Phase FLOAT NOT NULL,
+    I2Peak FLOAT NOT NULL,
+    I3RMS FLOAT NOT NULL,
+    I3Phase FLOAT NOT NULL,
+    I3Peak FLOAT NOT NULL,
+    IRRMS FLOAT NOT NULL,
+    IRPhase FLOAT NOT NULL,
+    IRPeak FLOAT NOT NULL
 )
 GO
 
