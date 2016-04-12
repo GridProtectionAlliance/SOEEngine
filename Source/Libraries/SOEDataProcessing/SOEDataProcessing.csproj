@@ -70,11 +70,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\BreakerSettings.cs" />
-    <Compile Include="Configuration\EmailSettings.cs" />
-    <Compile Include="Configuration\FaultEmailSettings.cs" />
-    <Compile Include="Configuration\FaultLocationSettings.cs" />
-    <Compile Include="Configuration\HistorianSettings.cs" />
     <Compile Include="DataAnalysis\CycleDataGroup.cs" />
     <Compile Include="DataAnalysis\DataGroup.cs" />
     <Compile Include="DataAnalysis\DataPoint.cs" />
