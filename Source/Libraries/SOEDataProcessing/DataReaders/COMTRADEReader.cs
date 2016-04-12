@@ -223,7 +223,7 @@ namespace SOEDataProcessing.DataReaders
             Channel channel = new Channel();
             Series series = new Series();
 
-            channel.Name = analogChannel.ChannelName;
+            channel.Name = analogChannel.Name;
             channel.Description = analogChannel.CircuitComponent;
             channel.HarmonicGroup = 0;
             channel.MeasurementType = new MeasurementType();
@@ -246,7 +246,7 @@ namespace SOEDataProcessing.DataReaders
             Channel channel = new Channel();
             Series series = new Series();
 
-            channel.Name = digitalChannel.ChannelName;
+            channel.Name = digitalChannel.Name;
             channel.Description = digitalChannel.CircuitComponent;
             channel.HarmonicGroup = 0;
             channel.MeasurementType = new MeasurementType();
