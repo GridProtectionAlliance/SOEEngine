@@ -131,15 +131,15 @@ namespace SOEDataProcessing.DataOperations
         {
             int length = viCycleDataGroup.VX1.RMS.DataPoints.Count;
 
-            int cycleNumber = 0;
+            int sampleNumber = 0;
             SOECycleData.SOECycleDataRow row;
 
-            for (int i = 0; i < length; i += samplesPerCycle)
+            for (int i = 0; i < length; i++)
             {
                 row = m_cycleDataTable.NewSOECycleDataRow();
 
-                row.CycleNumber = cycleNumber++;
-                row.SampleNumber = i;
+                row.CycleNumber = i;
+                row.SampleNumber = sampleNumber;
                 row.Timestamp = viCycleDataGroup.VX1.RMS[i].Time;
 
                 row.VX1RMS = viCycleDataGroup.VX1.RMS[i].Value;
@@ -176,6 +176,7 @@ namespace SOEDataProcessing.DataOperations
                 row.IRPeak = viCycleDataGroup.IR.Peak[i].Value;
 
                 m_cycleDataList.Add(Tuple.Create(eventKey, row));
+                sampleNumber += samplesPerCycle;
             }
         }
 

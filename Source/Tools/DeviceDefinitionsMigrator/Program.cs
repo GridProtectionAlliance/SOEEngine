@@ -318,8 +318,8 @@ namespace DeviceDefinitionsMigrator
 
             using (MeterInfoDataContext meterInfo = new MeterInfoDataContext(connectionString))
             {
-                // Load existing fault location configuration from the database
-                progressTracker.StartPendingMessage("Loading existing fault location configuration from database...");
+                // Load existing configuration from the database
+                progressTracker.StartPendingMessage("Loading existing configuration from database...");
                 lookupTables = new LookupTables(meterInfo);
                 lookupTables.CreateLookups(document);
                 progressTracker.EndPendingMessage();
