@@ -319,13 +319,19 @@ CREATE TABLE Recipient
 )
 GO
 
-INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\*.zip', 'IntelliRupters.dll', 'IntelliRupters.ZipReader', 1)
+INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\IntelliRupters\*.zip', 'IntelliRupters.dll', 'IntelliRupters.ZipReader', 1)
 GO
 
-INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\*.dat', 'SOEDataProcessing.dll', 'SOEDataProcessing.DataReaders.COMTRADEReader', 1)
+INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\IntelliRupters\COMTRADE\*.dat', 'IntelliRupters.dll', 'IntelliRupters.ComNamer', 2)
 GO
 
-INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\*.d00', 'SOEDataProcessing.dll', 'SOEDataProcessing.DataReaders.COMTRADEReader', 1)
+INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\IntelliRupters\COMTRADE\*.d00', 'IntelliRupters.dll', 'IntelliRupters.ComNamer', 2)
+GO
+
+INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\*.dat', 'SOEDataProcessing.dll', 'SOEDataProcessing.DataReaders.COMTRADEReader', 3)
+GO
+
+INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\*.d00', 'SOEDataProcessing.dll', 'SOEDataProcessing.DataReaders.COMTRADEReader', 3)
 GO
 
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.ConfigurationOperation', 1)
