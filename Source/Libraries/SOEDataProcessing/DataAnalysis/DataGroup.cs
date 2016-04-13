@@ -388,51 +388,8 @@ namespace SOEDataProcessing.DataAnalysis
 
         private bool IsEvent()
         {
-            // Create a list of relevant type names and phase names
-            List<string> voltageWaveforms = new List<string>()
-            {
-                "Voltage AN",
-                "Voltage BN",
-                "Voltage CN"
-            };
-
-            List<string> currentWaveforms = new List<string>()
-            {
-                "Current AN",
-                "Current BN",
-                "Current CN",
-                "Current RES"
-            };
-
-            IEnumerable<string> waveFormsInGroup = m_dataSeries
-                .Where(IsInstantaneous)
-                .Where(dataSeries => (object)dataSeries.SeriesInfo != null)
-                .Select(dataSeries => GetMeasurementType(dataSeries) + " " + GetPhase(dataSeries));
-
-            HashSet<string> waveFormsHashSet = new HashSet<string>(waveFormsInGroup);
-
-            // Determine if a channel exists for each type and phase
-            return voltageWaveforms.All(waveFormType => waveFormsHashSet.Contains(waveFormType))
-                && (currentWaveforms.Count(waveFormType => waveFormsHashSet.Contains(waveFormType)) >= 3);
-        }
-
-        private bool IsInstantaneous(DataSeries dataSeries)
-        {
-            string characteristicName = dataSeries.SeriesInfo.Channel.MeasurementCharacteristic.Name;
-            string seriesTypeName = dataSeries.SeriesInfo.SeriesType.Name;
-
-            return (characteristicName == "Instantaneous") &&
-                   (seriesTypeName == "Values" || seriesTypeName == "Instantaneous");
-        }
-
-        private string GetMeasurementType(DataSeries dataSeries)
-        {
-            return dataSeries.SeriesInfo.Channel.MeasurementType.Name;
-        }
-
-        private string GetPhase(DataSeries dataSeries)
-        {
-            return dataSeries.SeriesInfo.Channel.Phase.Name;
+            double samplesPerMinute = m_samples / (m_endTime - m_startTime).TotalMinutes;
+            return samplesPerMinute > TrendThreshold;
         }
 
         #endregion

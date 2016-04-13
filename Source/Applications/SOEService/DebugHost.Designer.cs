@@ -121,7 +121,7 @@ namespace SOEService
             // m_serviceHost
             // 
             this.m_serviceHost.ExitCode = 0;
-            this.m_serviceHost.ServiceName = "openXDA";
+            this.m_serviceHost.ServiceName = "SOEService";
             // 
             // m_notifyIcon
             // 

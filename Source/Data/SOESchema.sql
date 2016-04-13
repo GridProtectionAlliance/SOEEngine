@@ -21,13 +21,13 @@
 --GO
 --CREATE USER [NewUser] FOR LOGIN [NewUser]
 --GO
---CREATE ROLE [openXDARole] AUTHORIZATION [dbo]
+--CREATE ROLE [SOERole] AUTHORIZATION [dbo]
 --GO
---EXEC sp_addrolemember N'openXDAAdmin', N'NewUser'
+--EXEC sp_addrolemember N'SOEAdmin', N'NewUser'
 --GO
---EXEC sp_addrolemember N'db_datareader', N'openXDAAdmin'
+--EXEC sp_addrolemember N'db_datareader', N'SOEAdmin'
 --GO
---EXEC sp_addrolemember N'db_datawriter', N'openXDAAdmin'
+--EXEC sp_addrolemember N'db_datawriter', N'SOEAdmin'
 --GO
 
 ----- TABLES -----

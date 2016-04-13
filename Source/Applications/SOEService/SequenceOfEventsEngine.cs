@@ -171,16 +171,16 @@ namespace SOEService
             /// the given file path, as well as the files related to it.
             /// </summary>
             /// <param name="dataContext">The data context used for database lookups.</param>
-            /// <param name="xdaTimeZone">The time zone used by openXDA.</param>
+            /// <param name="soeTimeZone">The time zone used by the SOE engine.</param>
             /// <returns></returns>
-            public FileGroup GetFileGroup(FileInfoDataContext dataContext, TimeZoneInfo xdaTimeZone)
+            public FileGroup GetFileGroup(FileInfoDataContext dataContext, TimeZoneInfo soeTimeZone)
             {
                 FileInfo fileInfo;
                 FileGroup fileGroup;
                 DataFile dataFile;
 
                 fileGroup = new FileGroup();
-                fileGroup.ProcessingStartTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, xdaTimeZone);
+                fileGroup.ProcessingStartTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, soeTimeZone);
 
                 foreach (string file in GSF.IO.FilePath.GetFileList($"{m_filePathWithoutExtension}.*"))
                 {
@@ -190,9 +190,9 @@ namespace SOEService
                     dataFile.FilePath = file;
                     dataFile.FilePathHash = file.GetHashCode();
                     dataFile.FileSize = fileInfo.Length;
-                    dataFile.CreationTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.CreationTimeUtc, xdaTimeZone);
-                    dataFile.LastWriteTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.LastWriteTimeUtc, xdaTimeZone);
-                    dataFile.LastAccessTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.LastAccessTimeUtc, xdaTimeZone);
+                    dataFile.CreationTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.CreationTimeUtc, soeTimeZone);
+                    dataFile.LastWriteTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.LastWriteTimeUtc, soeTimeZone);
+                    dataFile.LastAccessTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.LastAccessTimeUtc, soeTimeZone);
                     dataFile.FileGroup = fileGroup;
                 }
 
@@ -349,7 +349,7 @@ namespace SOEService
             // Get system settings from the database
             ReloadSystemSettings();
 
-            // Get the list of file extensions to be processed by openXDA
+            // Get the list of file extensions to be processed by the SOE engine
             using (SystemInfoDataContext systemInfo = new SystemInfoDataContext(m_dbConnectionString))
             {
                 filterPatterns = systemInfo.DataReaders
@@ -485,7 +485,7 @@ namespace SOEService
 
             // Retrieve the connection string from the config file
             category = configurationFile.Settings["systemSettings"];
-            category.Add("ConnectionString", "Data Source=localhost; Initial Catalog=openXDA; Integrated Security=SSPI", "Defines the connection to the openXDA database.");
+            category.Add("ConnectionString", "Data Source=localhost; Initial Catalog=SOEdb; Integrated Security=SSPI", "Defines the connection to the SOE database.");
             m_dbConnectionString = category["ConnectionString"].Value;
             
             // Load system settings from the database
@@ -1205,7 +1205,7 @@ namespace SOEService
             if ((object)m_fileProcessor == null)
                 return;
 
-            // Get the list of file extensions to be processed by openXDA
+            // Get the list of file extensions to be processed by the SOE engine
             using (DbAdapterContainer dbAdapterContainer = new DbAdapterContainer(systemSettings.DbConnectionString, systemSettings.DbTimeout))
             {
                 systemInfo = dbAdapterContainer.GetAdapter<SystemInfoDataContext>();

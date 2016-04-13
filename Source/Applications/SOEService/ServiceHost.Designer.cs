@@ -153,7 +153,7 @@ namespace SOEService
             // 
             // 
             // 
-            this.m_serviceHelper.ErrorLogger.ErrorLog.FileName = "openXDA.ErrorLog.txt";
+            this.m_serviceHelper.ErrorLogger.ErrorLog.FileName = "SOEService.ErrorLog.txt";
             this.m_serviceHelper.ErrorLogger.ErrorLog.PersistSettings = true;
             this.m_serviceHelper.ErrorLogger.ErrorLog.SettingsCategory = "ErrorLog";
             this.m_serviceHelper.ErrorLogger.PersistSettings = true;
@@ -168,13 +168,13 @@ namespace SOEService
             // 
             // 
             // 
-            this.m_serviceHelper.StatusLog.FileName = "openXDA.StatusLog.txt";
+            this.m_serviceHelper.StatusLog.FileName = "SOEService.StatusLog.txt";
             this.m_serviceHelper.StatusLog.PersistSettings = true;
             this.m_serviceHelper.StatusLog.SettingsCategory = "StatusLog";
             // 
             // m_remotingServer
             // 
-            this.m_remotingServer.ConfigurationString = "Port=8888";
+            this.m_remotingServer.ConfigurationString = "Port=11503";
             this.m_remotingServer.IntegratedSecurity = true;
             this.m_remotingServer.PayloadAware = true;
             this.m_remotingServer.PersistSettings = true;
@@ -182,7 +182,7 @@ namespace SOEService
             // 
             // ServiceHost
             // 
-            this.ServiceName = "openXDA";
+            this.ServiceName = "SOEService";
             ((System.ComponentModel.ISupportInitialize)(this.m_serviceHelper.ErrorLogger.ErrorLog)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_serviceHelper.ErrorLogger)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_serviceHelper.ProcessScheduler)).EndInit();

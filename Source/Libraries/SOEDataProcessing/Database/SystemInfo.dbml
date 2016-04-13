@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?><Database Name="openXDA" Class="SystemInfoDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=localhost\SQLEXPRESS;Initial Catalog=openXDA;Integrated Security=True" SettingsObjectName="SOEDataProcessing.Properties.Settings" SettingsPropertyName="openXDAConnectionString" Provider="System.Data.SqlClient" />
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="SOEdb" Class="SystemInfoDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=localhost\SQLEXPRESS;Initial Catalog=SOEdb;Integrated Security=True" SettingsObjectName="SOEDataProcessing.Properties.Settings" SettingsPropertyName="SOEConnectionString" Provider="System.Data.SqlClient" />
   <Table Name="dbo.Setting" Member="Settings">
     <Type Name="Setting">
       <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />

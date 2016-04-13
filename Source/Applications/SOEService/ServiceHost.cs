@@ -147,11 +147,11 @@ namespace SOEService
                 if (!Directory.Exists("Debug"))
                     Directory.CreateDirectory("Debug");
 
-                fileAppender.File = @"Debug\openXDA.log";
+                fileAppender.File = @"Debug\SOE.log";
             }
             catch (Exception ex)
             {
-                fileAppender.File = "openXDA.log";
+                fileAppender.File = "SOE.log";
                 m_serviceHelper.ErrorLogger.Log(ex);
             }
 

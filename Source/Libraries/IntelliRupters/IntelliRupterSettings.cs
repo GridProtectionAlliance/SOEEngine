@@ -43,12 +43,12 @@ namespace IntelliRupters
         private string m_comNameUser1;
         private string m_comNameUser2;
 
-        private string m_xdaDataFileDestinationPath;
-        private string m_xdaDataFileArchivePath;
-        private double m_xdaDataFileArchiveExpiration;
+        private string m_soeDataFileDestinationPath;
+        private string m_soeDataFileArchivePath;
+        private double m_soeDataFileArchiveExpiration;
 
-        private string m_xdaSourceFileArchivePath;
-        private double m_xdaSourceFileArchiveExpiration;
+        private string m_soeSourceFileArchivePath;
+        private double m_soeSourceFileArchiveExpiration;
 
         #endregion
 
@@ -177,38 +177,38 @@ namespace IntelliRupters
         }
 
         /// <summary>
-        /// Gets or sets the path to the directory used by openXDA to process
+        /// Gets or sets the path to the directory used by SOE to process
         /// COMTRADE data files produced through conversion by WaveWin.
         /// </summary>
         [Setting]
         [DefaultValue(@"Watch")]
-        public string XDADataFileDestinationPath
+        public string SOEDataFileDestinationPath
         {
             get
             {
-                return m_xdaDataFileDestinationPath;
+                return m_soeDataFileDestinationPath;
             }
             set
             {
-                m_xdaDataFileDestinationPath = value;
+                m_soeDataFileDestinationPath = value;
             }
         }
 
         /// <summary>
-        /// Gets or sets the path to the directory used by openXDA to archive
+        /// Gets or sets the path to the directory used by SOE to archive
         /// COMTRADE data files produced through conversion by WaveWin.
         /// </summary>
         [Setting]
         [DefaultValue(@"Archive\COMTRADE")]
-        public string XDADataFileArchivePath
+        public string SOEDataFileArchivePath
         {
             get
             {
-                return m_xdaDataFileArchivePath;
+                return m_soeDataFileArchivePath;
             }
             set
             {
-                m_xdaDataFileArchivePath = value;
+                m_soeDataFileArchivePath = value;
             }
         }
 
@@ -218,33 +218,33 @@ namespace IntelliRupters
         /// </summary>
         [Setting]
         [DefaultValue(0.0D)]
-        public double XDADataFileArchiveExpiration
+        public double SOEDataFileArchiveExpiration
         {
             get
             {
-                return m_xdaDataFileArchiveExpiration;
+                return m_soeDataFileArchiveExpiration;
             }
             set
             {
-                m_xdaDataFileArchiveExpiration = value;
+                m_soeDataFileArchiveExpiration = value;
             }
         }
 
         /// <summary>
-        /// Gets or sets the path to the directory used by openXDA to archive the source
+        /// Gets or sets the path to the directory used by SOE to archive the source
         /// files produced by the IntelliRupters before the conversion to COMTRADE.
         /// </summary>
         [Setting]
         [DefaultValue(@"Archive\Source")]
-        public string XDASourceFileArchivePath
+        public string SOESourceFileArchivePath
         {
             get
             {
-                return m_xdaSourceFileArchivePath;
+                return m_soeSourceFileArchivePath;
             }
             set
             {
-                m_xdaSourceFileArchivePath = value;
+                m_soeSourceFileArchivePath = value;
             }
         }
 
@@ -254,15 +254,15 @@ namespace IntelliRupters
         /// </summary>
         [Setting]
         [DefaultValue(0.0D)]
-        public double XDASourceFileArchiveExpiration
+        public double SOESourceFileArchiveExpiration
         {
             get
             {
-                return m_xdaSourceFileArchiveExpiration;
+                return m_soeSourceFileArchiveExpiration;
             }
             set
             {
-                m_xdaSourceFileArchiveExpiration = value;
+                m_soeSourceFileArchiveExpiration = value;
             }
         }
 

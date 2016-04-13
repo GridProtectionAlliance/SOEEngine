@@ -52,45 +52,18 @@ namespace SOEDataProcessing.DataAnalysis
         public VICycleDataGroup(DataGroup dataGroup)
         {
             m_cycleDataGroups = dataGroup.DataSeries
-                .Select((series, i) => Tuple.Create(i / 4, series))
-                .GroupBy(tuple => tuple.Item1)
-                .Select(grouping => new DataGroup(grouping.Select(tuple => tuple.Item2)))
-                .Select(group => new CycleDataGroup(group))
+                .GroupBy(dataSeries => Tuple.Create(dataSeries.SeriesInfo.Channel.MeasurementType.Name, dataSeries.SeriesInfo.Channel.Phase.Name))
+                .Where(grouping => grouping.Count() >= 4)
+                .Select(grouping => new CycleDataGroup(new DataGroup(grouping)))
                 .ToList();
-        }
 
-        public VICycleDataGroup(CycleDataGroup va, CycleDataGroup vb, CycleDataGroup vc, CycleDataGroup ia, CycleDataGroup ib, CycleDataGroup ic, CycleDataGroup ir)
-        {
-            m_cycleDataGroups = new List<CycleDataGroup>() { va, vb, vc, ia, ib, ic, ir };
+            MapIndexes();
         }
 
         public VICycleDataGroup(List<CycleDataGroup> cycleDataGroups)
         {
-            for (int i = 0; i < cycleDataGroups.Count; i++)
-            {
-                if (cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VX1", StringComparison.OrdinalIgnoreCase))
-                    m_vx1Index = i;
-                else if (cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VX2", StringComparison.OrdinalIgnoreCase))
-                    m_vx2Index = i;
-                else if (cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VX3", StringComparison.OrdinalIgnoreCase))
-                    m_vx3Index = i;
-                else if (cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VY1", StringComparison.OrdinalIgnoreCase))
-                    m_vy1Index = i;
-                else if (cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VY2", StringComparison.OrdinalIgnoreCase))
-                    m_vy2Index = i;
-                else if (cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VY3", StringComparison.OrdinalIgnoreCase))
-                    m_vy3Index = i;
-                else if (cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("I1", StringComparison.OrdinalIgnoreCase))
-                    m_i1Index = i;
-                else if (cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("I2", StringComparison.OrdinalIgnoreCase))
-                    m_i2Index = i;
-                else if (cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("I3", StringComparison.OrdinalIgnoreCase))
-                    m_i3Index = i;
-                else if (cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("IR", StringComparison.OrdinalIgnoreCase))
-                    m_irIndex = i;
-            }
-
             m_cycleDataGroups = new List<CycleDataGroup>(cycleDataGroups);
+            MapIndexes();
         }
 
         #endregion
@@ -193,6 +166,33 @@ namespace SOEDataProcessing.DataAnalysis
             return new VICycleDataGroup(m_cycleDataGroups
                 .Select(cycleDataGroup => cycleDataGroup.ToSubGroup(startIndex, endIndex))
                 .ToList());
+        }
+
+        private void MapIndexes()
+        {
+            for (int i = 0; i < m_cycleDataGroups.Count; i++)
+            {
+                if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VX1", StringComparison.OrdinalIgnoreCase))
+                    m_vx1Index = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VX2", StringComparison.OrdinalIgnoreCase))
+                    m_vx2Index = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VX3", StringComparison.OrdinalIgnoreCase))
+                    m_vx3Index = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VY1", StringComparison.OrdinalIgnoreCase))
+                    m_vy1Index = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VY2", StringComparison.OrdinalIgnoreCase))
+                    m_vy2Index = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VY3", StringComparison.OrdinalIgnoreCase))
+                    m_vy3Index = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("I1", StringComparison.OrdinalIgnoreCase))
+                    m_i1Index = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("I2", StringComparison.OrdinalIgnoreCase))
+                    m_i2Index = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("I3", StringComparison.OrdinalIgnoreCase))
+                    m_i3Index = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("IR", StringComparison.OrdinalIgnoreCase))
+                    m_irIndex = i;
+            }
         }
 
         #endregion

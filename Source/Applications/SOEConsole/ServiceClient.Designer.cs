@@ -98,10 +98,9 @@ namespace SOEConsole
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.m_clientHelper = new GSF.ServiceProcess.ClientHelper(this.components);
-            this.m_remotingClient = new GSF.Communication.TcpClient(this.components);
-            this.m_errorLogger = new GSF.ErrorManagement.ErrorLogger(this.components);
+            this.m_clientHelper = new GSF.ServiceProcess.ClientHelper();
+            this.m_remotingClient = new GSF.Communication.TcpClient();
+            this.m_errorLogger = new GSF.ErrorManagement.ErrorLogger();
             ((System.ComponentModel.ISupportInitialize)(this.m_clientHelper)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_remotingClient)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_errorLogger)).BeginInit();
@@ -114,8 +113,9 @@ namespace SOEConsole
             // 
             // m_remotingClient
             // 
-            this.m_remotingClient.ConnectionString = "Server=localhost:8888";
+            this.m_remotingClient.ConnectionString = "Server=localhost:11503";
             this.m_remotingClient.IntegratedSecurity = true;
+            this.m_remotingClient.NetworkCredential = null;
             this.m_remotingClient.PayloadAware = true;
             this.m_remotingClient.PersistSettings = true;
             this.m_remotingClient.SettingsCategory = "RemotingClient";
@@ -125,7 +125,7 @@ namespace SOEConsole
             // 
             // 
             // 
-            this.m_errorLogger.ErrorLog.FileName = "openXDAConsole.ErrorLog.txt";
+            this.m_errorLogger.ErrorLog.FileName = "SOEConsole.ErrorLog.txt";
             this.m_errorLogger.LogToUI = true;
             ((System.ComponentModel.ISupportInitialize)(this.m_clientHelper)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_remotingClient)).EndInit();

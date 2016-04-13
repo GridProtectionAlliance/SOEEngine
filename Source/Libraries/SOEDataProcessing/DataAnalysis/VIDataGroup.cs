@@ -365,13 +365,13 @@ namespace SOEDataProcessing.DataAnalysis
 
             return seriesLookup.GetOrAdd(seriesKey, key =>
             {
-                SeriesType seriesType = seriesTypeLookup.GetOrAdd(seriesTypeName, name => new SeriesType() { Name = name, Description = name });
+                SeriesType seriesType = seriesTypeLookup.GetOrAdd(key.SeriesType, name => new SeriesType() { Name = name, Description = name });
 
                 Channel channel = channelLookup.GetOrAdd(channelKey, chKey =>
                 {
-                    MeasurementType measurementType = measurementTypeLookup.GetOrAdd(measurementTypeName, name => new MeasurementType() { Name = name, Description = name });
-                    MeasurementCharacteristic measurementCharacteristic = measurementCharacteristicLookup.GetOrAdd(measurementCharacteristicName, name => new MeasurementCharacteristic() { Name = name, Description = name });
-                    Phase phase = phaseLookup.GetOrAdd(phaseName, name => new Phase() { Name = name, Description = name });
+                    MeasurementType measurementType = measurementTypeLookup.GetOrAdd(chKey.MeasurementType, name => new MeasurementType() { Name = name, Description = name });
+                    MeasurementCharacteristic measurementCharacteristic = measurementCharacteristicLookup.GetOrAdd(chKey.MeasurementCharacteristic, name => new MeasurementCharacteristic() { Name = name, Description = name });
+                    Phase phase = phaseLookup.GetOrAdd(chKey.Phase, name => new Phase() { Name = name, Description = name });
 
                     return new Channel()
                     {
@@ -380,7 +380,7 @@ namespace SOEDataProcessing.DataAnalysis
                         MeasurementType = measurementType,
                         MeasurementCharacteristic = measurementCharacteristic,
                         Phase = phase,
-                        Name = string.Concat(measurementType.Name, " ", phase.Name),
+                        Name = chKey.Name,
                         SamplesPerHour = dataGroup.SamplesPerHour,
                         PerUnitValue = 0,
                         HarmonicGroup = 0,

@@ -21,6 +21,7 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -111,7 +112,14 @@ namespace SOEDataProcessing.DataResources
 
             foreach (DataGroup dataGroup in dataGroupsResource.DataGroups)
             {
+                double samplesPerCycle;
+
                 if (dataGroup.Classification != DataClassification.Event)
+                    continue;
+
+                samplesPerCycle = Math.Round(dataGroup.SamplesPerSecond / m_systemFrequency);
+
+                if (dataGroup.Samples < samplesPerCycle)
                     continue;
 
                 viDataGroup = new VIDataGroup(dataGroup);
@@ -144,9 +152,9 @@ namespace SOEDataProcessing.DataResources
             foreach (DataGroup cycleDataGroup in cycleDataGroups)
             {
                 cycleDataGroup[0].SeriesInfo = GetSeriesInfo(cycleDataGroup[0].SeriesInfo, "RMS", "RMS");
-                cycleDataGroup[1].SeriesInfo = GetSeriesInfo(cycleDataGroup[1].SeriesInfo, "AngleFund", "Angle");
-                cycleDataGroup[2].SeriesInfo = GetSeriesInfo(cycleDataGroup[2].SeriesInfo, "WaveAmplitude", "Wave Amplitude");
-                cycleDataGroup[3].SeriesInfo = GetSeriesInfo(cycleDataGroup[3].SeriesInfo, "WaveError", "Wave Error");
+                cycleDataGroup[1].SeriesInfo = GetSeriesInfo(cycleDataGroup[1].SeriesInfo, "Angle", "AngleFund");
+                cycleDataGroup[2].SeriesInfo = GetSeriesInfo(cycleDataGroup[2].SeriesInfo, "Wave Amplitude", "WaveAmplitude");
+                cycleDataGroup[3].SeriesInfo = GetSeriesInfo(cycleDataGroup[3].SeriesInfo, "Wave Error", "WaveError");
             }
 
             return new VICycleDataGroup(cycleDataGroups
@@ -201,22 +209,22 @@ namespace SOEDataProcessing.DataResources
 
             return seriesLookup.GetOrAdd(seriesKey, key =>
             {
-                SeriesType seriesType = seriesTypeLookup.GetOrAdd(seriesKey.SeriesType, name => new SeriesType() { Name = name, Description = name });
+                SeriesType seriesType = seriesTypeLookup.GetOrAdd(key.SeriesType, name => new SeriesType() { Name = name, Description = name });
 
                 Channel channel = channelLookup.GetOrAdd(channelKey, chKey =>
                 {
-                    MeasurementType measurementType = measurementTypeLookup.GetOrAdd(channelKey.MeasurementType, name => new MeasurementType() { Name = name, Description = name });
-                    MeasurementCharacteristic measurementCharacteristic = measurementCharacteristicLookup.GetOrAdd(channelKey.MeasurementCharacteristic, name => new MeasurementCharacteristic() { Name = name, Description = name });
-                    Phase phase = phaseLookup.GetOrAdd(channelKey.Phase, name => new Phase() { Name = name, Description = name });
+                    MeasurementType measurementType = measurementTypeLookup.GetOrAdd(chKey.MeasurementType, name => new MeasurementType() { Name = name, Description = name });
+                    MeasurementCharacteristic measurementCharacteristic = measurementCharacteristicLookup.GetOrAdd(chKey.MeasurementCharacteristic, name => new MeasurementCharacteristic() { Name = name, Description = name });
+                    Phase phase = phaseLookup.GetOrAdd(chKey.Phase, name => new Phase() { Name = name, Description = name });
 
                     return new Channel()
                     {
                         Meter = meter,
-                        Line = meterInfo.Lines.Single(line => line.ID == channelKey.LineID),
+                        Line = meterInfo.Lines.Single(line => line.ID == chKey.LineID),
                         MeasurementType = measurementType,
                         MeasurementCharacteristic = measurementCharacteristic,
                         Phase = phase,
-                        Name = string.Concat(measurementType.Name, " ", phase.Name),
+                        Name = chKey.Name,
                         SamplesPerHour = 0,
                         PerUnitValue = 0,
                         HarmonicGroup = 0,

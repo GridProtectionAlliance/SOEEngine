@@ -173,13 +173,13 @@ namespace IntelliRupters
             {
                 string extension = FilePath.GetExtension(file);
                 string destinationFileName = m_intelliRupterSettings.UseComName ? $"{comName}{extension}" : $"{originalName}{extension}";
-                string destinationDirectory = m_intelliRupterSettings.XDADataFileDestinationPath;
+                string destinationDirectory = m_intelliRupterSettings.SOEDataFileDestinationPath;
                 string destinationPath = Path.Combine(destinationDirectory, m_schema.DeviceID, destinationFileName);
                 TryCopy(file, destinationPath);
 
-                if (m_intelliRupterSettings.XDADataFileArchiveExpiration != 0.0D)
+                if (m_intelliRupterSettings.SOEDataFileArchiveExpiration != 0.0D)
                 {
-                    string archiveDirectory = m_intelliRupterSettings.XDADataFileArchivePath;
+                    string archiveDirectory = m_intelliRupterSettings.SOEDataFileArchivePath;
                     string archivePath = Path.Combine(archiveDirectory, now, m_schema.DeviceID, destinationFileName);
                     TryCopy(file, archivePath);
                 }
@@ -189,11 +189,11 @@ namespace IntelliRupters
 
             foreach (string file in altFileList)
             {
-                if (m_intelliRupterSettings.XDASourceFileArchiveExpiration != 0.0D)
+                if (m_intelliRupterSettings.SOESourceFileArchiveExpiration != 0.0D)
                 {
                     string extension = FilePath.GetExtension(file);
                     string destinationFileName = m_intelliRupterSettings.UseComName ? $"{comName}{extension}" : $"{originalName}{extension}";
-                    string archiveDirectory = m_intelliRupterSettings.XDASourceFileArchivePath;
+                    string archiveDirectory = m_intelliRupterSettings.SOESourceFileArchivePath;
                     string archivePath = Path.Combine(archiveDirectory, now, m_schema.DeviceID, destinationFileName);
                     TryCopy(file, archivePath);
                 }

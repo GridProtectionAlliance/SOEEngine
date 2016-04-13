@@ -34,7 +34,7 @@ using GSF.IO;
 namespace SOEService.Configuration
 {
     /// <summary>
-    /// Represents the system settings for openXDA.
+    /// Represents the system settings for the SOE engine.
     /// </summary>
     public class SystemSettings
     {
@@ -103,7 +103,7 @@ namespace SOEService.Configuration
         /// Gets or sets the connection string to the database.
         /// </summary>
         [Setting]
-        [DefaultValue("Data Source=localhost; Initial Catalog=openXDA; Integrated Security=SSPI")]
+        [DefaultValue("Data Source=localhost; Initial Catalog=SOEdb; Integrated Security=SSPI")]
         public string DbConnectionString
         {
             get
@@ -210,12 +210,12 @@ namespace SOEService.Configuration
 
         /// <summary>
         /// Gets or sets the time zone identifier for the
-        /// time zone used by openXDA to store data.
+        /// time zone used by the SOE engine to store data.
         /// </summary>
         /// <remarks>
         /// The default value for this setting (empty string)
         /// causes the setting to assume the value of the local
-        /// time zone of the system openXDA is running on.
+        /// time zone of the system SOE is running on.
         /// </remarks>
         [Setting]
         [DefaultValue("")]
@@ -290,7 +290,7 @@ namespace SOEService.Configuration
 
         /// <summary>
         /// Gets or sets the maximum duration, in seconds,
-        /// of the files processed by openXDA.
+        /// of the files processed by the SOE engine.
         /// </summary>
         [Setting]
         [DefaultValue(0.0D)]
@@ -580,7 +580,7 @@ namespace SOEService.Configuration
 
         /// <summary>
         /// Gets the <see cref="TimeZoneInfo"/> for the
-        /// time zone used by openXDA to store data.
+        /// time zone used by the SOE engine to store data.
         /// </summary>
         public TimeZoneInfo XDATimeZoneInfo
         {

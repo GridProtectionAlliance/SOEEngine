@@ -22,7 +22,7 @@ namespace SOEDataProcessing.Database
 	using System;
 	
 	
-	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="openXDA")]
+	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="SOEdb")]
 	public partial class SystemInfoDataContext : System.Data.Linq.DataContext
 	{
 		

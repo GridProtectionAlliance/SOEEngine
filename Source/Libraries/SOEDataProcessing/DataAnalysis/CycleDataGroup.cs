@@ -23,7 +23,6 @@
 
 using System;
 using System.Linq;
-using SOEDataProcessing.Database;
 
 namespace SOEDataProcessing.DataAnalysis
 {
@@ -62,9 +61,9 @@ namespace SOEDataProcessing.DataAnalysis
                     m_rmsIndex = i;
                 else if (dataGroup[i].SeriesInfo.Channel.MeasurementCharacteristic.Name == "AngleFund")
                     m_phaseIndex = i;
-                else if (dataGroup[i].SeriesInfo.Channel.MeasurementCharacteristic.Name == "WaveFitAmplitude")
+                else if (dataGroup[i].SeriesInfo.Channel.MeasurementCharacteristic.Name == "WaveAmplitude")
                     m_amplitudeIndex = i;
-                else if (dataGroup[i].SeriesInfo.Channel.MeasurementCharacteristic.Name == "WaveFitError")
+                else if (dataGroup[i].SeriesInfo.Channel.MeasurementCharacteristic.Name == "WaveError")
                     m_errorIndex = i;
             }
 
@@ -120,90 +119,6 @@ namespace SOEDataProcessing.DataAnalysis
         public CycleDataGroup ToSubGroup(int startIndex, int endIndex)
         {
             return new CycleDataGroup(m_dataGroup.ToSubGroup(startIndex, endIndex));
-        }
-
-        #endregion
-
-        #region [ Static ]
-
-        // Static Methods
-        public static Series GetSeriesInfo(MeterInfoDataContext meterInfo, Series timeDomainSeries, string channelDesignation, string measurementCharacteristicName)
-        {
-            int meterID;
-            int lineID;
-
-            string channelName;
-            string measurementTypeName;
-            string phaseName;
-            string seriesTypeName;
-
-            DataContextLookup<ChannelKey, Channel> channelLookup;
-            DataContextLookup<SeriesKey, Series> seriesLookup;
-            DataContextLookup<string, MeasurementType> measurementTypeLookup;
-            DataContextLookup<string, MeasurementCharacteristic> measurementCharacteristicLookup;
-            DataContextLookup<string, Phase> phaseLookup;
-            DataContextLookup<string, SeriesType> seriesTypeLookup;
-
-            ChannelKey channelKey;
-            SeriesKey seriesKey;
-
-            meterID = timeDomainSeries.Channel.MeterID;
-            lineID = timeDomainSeries.Channel.LineID;
-
-            channelName = string.Concat(timeDomainSeries.Channel.Name, " ", channelDesignation);
-            measurementTypeName = timeDomainSeries.Channel.MeasurementType.Name;
-            phaseName = timeDomainSeries.Channel.Phase.Name;
-            seriesTypeName = timeDomainSeries.SeriesType.Name;
-
-            channelLookup = new DataContextLookup<ChannelKey, Channel>(meterInfo, channel => new ChannelKey(channel))
-                .WithFilterExpression(channel => channel.MeterID == meterID)
-                .WithFilterExpression(channel => channel.LineID == lineID);
-
-            seriesLookup = new DataContextLookup<SeriesKey, Series>(meterInfo, series => new SeriesKey(series))
-                .WithFilterExpression(series => series.Channel.Meter.ID == meterID)
-                .WithFilterExpression(series => series.Channel.Line.ID == lineID);
-
-            measurementTypeLookup = new DataContextLookup<string, MeasurementType>(meterInfo, measurementType => measurementType.Name);
-            measurementCharacteristicLookup = new DataContextLookup<string, MeasurementCharacteristic>(meterInfo, measurementCharacteristic => measurementCharacteristic.Name);
-            phaseLookup = new DataContextLookup<string, Phase>(meterInfo, phase => phase.Name);
-            seriesTypeLookup = new DataContextLookup<string, SeriesType>(meterInfo, seriesType => seriesType.Name);
-
-            channelKey = new ChannelKey(lineID, 0, channelName, measurementTypeName, measurementCharacteristicName, phaseName);
-            seriesKey = new SeriesKey(channelKey, seriesTypeName);
-
-            return seriesLookup.GetOrAdd(seriesKey, key =>
-            {
-                SeriesType seriesType = seriesTypeLookup.GetOrAdd(seriesTypeName, name => new SeriesType() { Name = name, Description = name });
-
-                Channel channel = channelLookup.GetOrAdd(channelKey, chKey =>
-                {
-                    MeasurementType measurementType = measurementTypeLookup.GetOrAdd(measurementTypeName, name => new MeasurementType() { Name = name, Description = name });
-                    MeasurementCharacteristic measurementCharacteristic = measurementCharacteristicLookup.GetOrAdd(measurementCharacteristicName, name => new MeasurementCharacteristic() { Name = name, Description = name });
-                    Phase phase = phaseLookup.GetOrAdd(phaseName, name => new Phase() { Name = name, Description = name });
-
-                    return new Channel()
-                    {
-                        Meter = timeDomainSeries.Channel.Meter,
-                        Line = timeDomainSeries.Channel.Line,
-                        MeasurementType = measurementType,
-                        MeasurementCharacteristic = measurementCharacteristic,
-                        Phase = phase,
-                        Name = string.Concat(measurementType.Name, " ", phase.Name),
-                        SamplesPerHour = timeDomainSeries.Channel.SamplesPerHour,
-                        PerUnitValue = 0,
-                        HarmonicGroup = 0,
-                        Description = string.Concat(measurementCharacteristic.Name, " ", measurementType.Name, " ", phase.Name),
-                        Enabled = 1
-                    };
-                });
-
-                return new Series()
-                {
-                    SeriesType = seriesType,
-                    Channel = channel,
-                    SourceIndexes = string.Empty
-                };
-            });
         }
 
         #endregion
