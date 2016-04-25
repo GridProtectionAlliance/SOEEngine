@@ -51,6 +51,17 @@ namespace SOEDataProcessing.DataAnalysis
 
         public VICycleDataGroup(DataGroup dataGroup)
         {
+            m_vx1Index = -1;
+            m_vx2Index = -1;
+            m_vx3Index = -1;
+            m_vy1Index = -1;
+            m_vy2Index = -1;
+            m_vy3Index = -1;
+            m_i1Index = -1;
+            m_i2Index = -1;
+            m_i3Index = -1;
+            m_irIndex = -1;
+
             m_cycleDataGroups = dataGroup.DataSeries
                 .GroupBy(dataSeries => Tuple.Create(dataSeries.SeriesInfo.Channel.MeasurementType.Name, dataSeries.SeriesInfo.Channel.Phase.Name))
                 .Where(grouping => grouping.Count() >= 4)

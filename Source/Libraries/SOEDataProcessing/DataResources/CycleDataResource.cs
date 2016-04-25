@@ -127,7 +127,7 @@ namespace SOEDataProcessing.DataResources
                 if (viDataGroup.DefinedVoltages != 3 || viDataGroup.DefinedCurrents < 3)
                     continue;
 
-                viDataGroup.AddMissingCurrentChannel(meterInfo);
+                dataGroup.Add(viDataGroup.CalculateMissingCurrentChannel(meterInfo));
 
                 m_dataGroups.Add(dataGroup);
                 m_viDataGroups.Add(viDataGroup);

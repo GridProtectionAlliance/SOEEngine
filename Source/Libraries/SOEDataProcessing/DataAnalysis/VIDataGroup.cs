@@ -241,7 +241,7 @@ namespace SOEDataProcessing.DataAnalysis
         /// missing channel based on the relationship IR = IA + IB + IC.
         /// </summary>
         /// <param name="meterInfo">Data context for accessing configuration tables in the database.</param>
-        public void AddMissingCurrentChannel(MeterInfoDataContext meterInfo)
+        public DataSeries CalculateMissingCurrentChannel(MeterInfoDataContext meterInfo)
         {
             Meter meter;
             DataSeries missingSeries;
@@ -250,7 +250,7 @@ namespace SOEDataProcessing.DataAnalysis
             // then there is no missing channel or there is not
             // enough data to calculate the missing channel
             if (DefinedCurrents != 3)
-                return;
+                return null;
 
             // Get the meter associated with the channels in this data group
             meter = (I1 ?? I2).SeriesInfo.Channel.Meter;
@@ -287,6 +287,8 @@ namespace SOEDataProcessing.DataAnalysis
                 m_i1Index = m_dataGroup.DataSeries.Count;
                 m_dataGroup.Add(missingSeries);
             }
+
+            return missingSeries;
         }
 
         public DataGroup ToDataGroup()
