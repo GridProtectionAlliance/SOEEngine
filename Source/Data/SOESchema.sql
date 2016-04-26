@@ -888,20 +888,6 @@ FROM
     Meter ON Event.MeterID = Meter.ID
 GO
 
-CREATE VIEW CycDataForParentMeterView
-AS
-SELECT
-    CycleDataSOEPointView.ParentID,
-    ParentMeter.PointCode,
-    ParentMeter.UpState,
-    ParentMeter.DownState,
-    ParentMeter.Timestamp,
-    ParentMeter.ID
-FROM
-    CycleDataSOEPointView LEFT OUTER JOIN
-    CycleDataSOEPointView AS ParentMeter ON dbo.CycleDataSOEPointView.ParentID = ParentMeter.ID
-GO
-
 CREATE VIEW CycleDataSOEPointView
 AS
 SELECT
@@ -936,6 +922,20 @@ FROM
     Event ON RotatedCycleData.EventID = Event.ID INNER JOIN
     Meter ON Event.MeterID = Meter.ID INNER JOIN
     Incident ON Event.IncidentID = Incident.ID
+GO
+
+CREATE VIEW CycDataForParentMeterView
+AS
+SELECT
+    CycleDataSOEPointView.ParentID,
+    ParentMeter.PointCode,
+    ParentMeter.UpState,
+    ParentMeter.DownState,
+    ParentMeter.Timestamp,
+    ParentMeter.ID
+FROM
+    CycleDataSOEPointView LEFT OUTER JOIN
+    CycleDataSOEPointView AS ParentMeter ON dbo.CycleDataSOEPointView.ParentID = ParentMeter.ID
 GO
 
 CREATE VIEW IncidentEventCycleDataView
