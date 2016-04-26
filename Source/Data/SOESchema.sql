@@ -595,6 +595,46 @@ AS BEGIN
 END
 GO
 
+CREATE FUNCTION GetIncidents()
+RETURNS @incident TABLE
+(
+	MeterID INT,
+	StartTime DATETIME2,
+	EndTime DATETIME2
+)
+AS BEGIN
+	; WITH EventGroup AS
+	(
+		SELECT e1.ID, e1.MeterID, e1.StartTime, e1.EndTime
+		FROM Event e1 LEFT OUTER JOIN Event e2 ON
+			e1.MeterID = e2.MeterID AND
+			e1.StartTime > e2.StartTime AND
+			e1.StartTime <= dbo.AdjustDateTime2(e2.EndTime, 22)
+		WHERE e2.ID IS NULL
+		UNION ALL
+		SELECT EventGroup.ID, EventGroup.MeterID, Event.StartTime, Event.EndTime
+		FROM Event JOIN EventGroup ON
+			Event.MeterID = EventGroup.MeterID AND
+			Event.StartTime > EventGroup.StartTime AND
+			Event.StartTime <= dbo.AdjustDateTime2(EventGroup.EndTime, 22)
+	),
+	Incident AS
+	(
+		SELECT
+			MIN(MeterID) AS MeterID,
+			MIN(StartTime) AS StartTime,
+			MAX(EndTime) AS EndTime
+		FROM EventGroup
+		GROUP BY ID
+	)
+	INSERT INTO @incident
+	SELECT *
+	FROM Incident
+
+	RETURN
+END
+GO
+
 ----- VIEWS -----
 
 CREATE VIEW EventDetail AS
@@ -643,6 +683,301 @@ SELECT
         FOR XML PATH('EventDetail'), TYPE
     ) AS EventDetail
 FROM Event
+GO
+
+CREATE VIEW ChannelInfo AS
+SELECT
+	Meter.ID AS MeterID,
+	Channel.ID AS ChannelID,
+	Channel.Name AS ChannelName,
+	Channel.Description AS ChannelDescription,
+	MeasurementType.Name AS MeasurementType,
+	MeasurementCharacteristic.Name AS MeasurementCharacteristic,
+	Phase.Name AS Phase,
+	SeriesType.Name AS SeriesType,
+	Meter.Orientation,
+	Meter.Phasing
+FROM
+	Channel JOIN
+	Series ON Series.ChannelID = Channel.ID JOIN
+	MeasurementType ON Channel.MeasurementTypeID = MeasurementType.ID JOIN
+	MeasurementCharacteristic ON Channel.MeasurementCharacteristicID = MeasurementCharacteristic.ID JOIN
+	Phase ON Channel.PhaseID = Phase.ID JOIN
+	SeriesType ON Series.SeriesTypeID = SeriesType.ID JOIN
+	Meter ON Channel.MeterID = Meter.ID
+GO
+
+CREATE VIEW EventInfo AS
+SELECT
+	Event.ID AS EventID,
+	Event.IncidentID,
+	EventType.Name AS EventType,
+	Event.MeterID,
+	Event.StartTime,
+	Meter.Name AS MeterName,
+	MeterLine.LineName,
+	Line.Length AS LineLength,
+	Disturbance.StartTime AS DisturbanceStartTime,
+	CASE WHEN Disturbance.PerUnitMagnitude <> -1E308 THEN Disturbance.PerUnitMagnitude ELSE NULL END AS DisturbanceMagnitude,
+	Disturbance.DurationCycles AS DisturbanceDuration
+FROM
+	Event JOIN
+	EventType ON Event.EventTypeID = EventType.ID JOIN
+	Meter ON Event.MeterID = Meter.ID JOIN
+	MeterLine ON Event.MeterID = MeterLine.MeterID AND Event.LineID = MeterLine.LineID JOIN
+	Line ON Event.LineID = Line.ID LEFT OUTER JOIN
+	(
+		SELECT *
+		FROM
+		(
+			SELECT ROW_NUMBER() OVER(PARTITION BY EventID ORDER BY Magnitude DESC, StartTime) AS Precedence, *
+			FROM Disturbance
+		) Disturbance
+		WHERE Precedence = 1
+	) Disturbance ON Disturbance.EventID = Event.ID
+GO
+
+CREATE VIEW RotatedCycleData AS
+SELECT
+	CycleData.ID,
+	EventID,
+	CycleNumber,
+	SampleNumber,
+	Timestamp,
+	CASE CHARINDEX('A', Phasing)
+		WHEN 1 THEN VX1RMS
+		WHEN 2 THEN VX2RMS
+		WHEN 3 THEN VX3RMS
+	END AS VXARMS,
+	CASE CHARINDEX('A', Phasing)
+		WHEN 1 THEN VX1Phase
+		WHEN 2 THEN VX2Phase
+		WHEN 3 THEN VX3Phase
+	END AS VXAPhase,
+	CASE CHARINDEX('A', Phasing)
+		WHEN 1 THEN VX1Peak
+		WHEN 2 THEN VX2Peak
+		WHEN 3 THEN VX3Peak
+	END AS VXAPeak,
+	CASE CHARINDEX('B', Phasing)
+		WHEN 1 THEN VX1RMS
+		WHEN 2 THEN VX2RMS
+		WHEN 3 THEN VX3RMS
+	END AS VXBRMS,
+	CASE CHARINDEX('B', Phasing)
+		WHEN 1 THEN VX1Phase
+		WHEN 2 THEN VX2Phase
+		WHEN 3 THEN VX3Phase
+	END AS VXBPhase,
+	CASE CHARINDEX('B', Phasing)
+		WHEN 1 THEN VX1Peak
+		WHEN 2 THEN VX2Peak
+		WHEN 3 THEN VX3Peak
+	END AS VXBPeak,
+	CASE CHARINDEX('C', Phasing)
+		WHEN 1 THEN VX1RMS
+		WHEN 2 THEN VX2RMS
+		WHEN 3 THEN VX3RMS
+	END AS VXCRMS,
+	CASE CHARINDEX('C', Phasing)
+		WHEN 1 THEN VX1Phase
+		WHEN 2 THEN VX2Phase
+		WHEN 3 THEN VX3Phase
+	END AS VXCPhase,
+	CASE CHARINDEX('C', Phasing)
+		WHEN 1 THEN VX1Peak
+		WHEN 2 THEN VX2Peak
+		WHEN 3 THEN VX3Peak
+	END AS VXCPeak,
+	CASE CHARINDEX('A', Phasing)
+		WHEN 1 THEN VY1RMS
+		WHEN 2 THEN VY2RMS
+		WHEN 3 THEN VY3RMS
+	END AS VYARMS,
+	CASE CHARINDEX('A', Phasing)
+		WHEN 1 THEN VY1Phase
+		WHEN 2 THEN VY2Phase
+		WHEN 3 THEN VY3Phase
+	END AS VYAPhase,
+	CASE CHARINDEX('A', Phasing)
+		WHEN 1 THEN VY1Peak
+		WHEN 2 THEN VY2Peak
+		WHEN 3 THEN VY3Peak
+	END AS VYAPeak,
+	CASE CHARINDEX('B', Phasing)
+		WHEN 1 THEN VY1RMS
+		WHEN 2 THEN VY2RMS
+		WHEN 3 THEN VY3RMS
+	END AS VYBRMS,
+	CASE CHARINDEX('B', Phasing)
+		WHEN 1 THEN VY1Phase
+		WHEN 2 THEN VY2Phase
+		WHEN 3 THEN VY3Phase
+	END AS VYBPhase,
+	CASE CHARINDEX('B', Phasing)
+		WHEN 1 THEN VY1Peak
+		WHEN 2 THEN VY2Peak
+		WHEN 3 THEN VY3Peak
+	END AS VYBPeak,
+	CASE CHARINDEX('C', Phasing)
+		WHEN 1 THEN VY1RMS
+		WHEN 2 THEN VY2RMS
+		WHEN 3 THEN VY3RMS
+	END AS VYCRMS,
+	CASE CHARINDEX('C', Phasing)
+		WHEN 1 THEN VY1Phase
+		WHEN 2 THEN VY2Phase
+		WHEN 3 THEN VY3Phase
+	END AS VYCPhase,
+	CASE CHARINDEX('C', Phasing)
+		WHEN 1 THEN VY1Peak
+		WHEN 2 THEN VY2Peak
+		WHEN 3 THEN VY3Peak
+	END AS VYCPeak,
+	CASE CHARINDEX('A', Phasing)
+		WHEN 1 THEN I1RMS
+		WHEN 2 THEN I2RMS
+		WHEN 3 THEN I3RMS
+	END AS IARMS,
+	CASE CHARINDEX('A', Phasing)
+		WHEN 1 THEN I1Phase
+		WHEN 2 THEN I2Phase
+		WHEN 3 THEN I3Phase
+	END AS IAPhase,
+	CASE CHARINDEX('A', Phasing)
+		WHEN 1 THEN I1Peak
+		WHEN 2 THEN I2Peak
+		WHEN 3 THEN I3Peak
+	END AS IAPeak,
+	CASE CHARINDEX('B', Phasing)
+		WHEN 1 THEN I1RMS
+		WHEN 2 THEN I2RMS
+		WHEN 3 THEN I3RMS
+	END AS IBRMS,
+	CASE CHARINDEX('B', Phasing)
+		WHEN 1 THEN I1Phase
+		WHEN 2 THEN I2Phase
+		WHEN 3 THEN I3Phase
+	END AS IBPhase,
+	CASE CHARINDEX('B', Phasing)
+		WHEN 1 THEN I1Peak
+		WHEN 2 THEN I2Peak
+		WHEN 3 THEN I3Peak
+	END AS IBPeak,
+	CASE CHARINDEX('C', Phasing)
+		WHEN 1 THEN I1RMS
+		WHEN 2 THEN I2RMS
+		WHEN 3 THEN I3RMS
+	END AS ICRMS,
+	CASE CHARINDEX('C', Phasing)
+		WHEN 1 THEN I1Phase
+		WHEN 2 THEN I2Phase
+		WHEN 3 THEN I3Phase
+	END AS ICPhase,
+	CASE CHARINDEX('C', Phasing)
+		WHEN 1 THEN I1Peak
+		WHEN 2 THEN I2Peak
+		WHEN 3 THEN I3Peak
+	END AS ICPeak,
+	IRRMS,
+	IRPhase,
+	IRPeak
+FROM
+	CycleData JOIN
+	Event ON CycleData.EventID = Event.ID JOIN
+	Meter ON Event.MeterID = Meter.ID
+GO
+
+CREATE VIEW CycDataForParentMeterView
+AS
+SELECT
+    CycleDataSOEPointView.ParentID,
+    ParentMeter.PointCode,
+    ParentMeter.UpState,
+    ParentMeter.DownState,
+    ParentMeter.Timestamp,
+    ParentMeter.ID
+FROM
+    CycleDataSOEPointView LEFT OUTER JOIN
+    CycleDataSOEPointView AS ParentMeter ON dbo.CycleDataSOEPointView.ParentID = ParentMeter.ID
+GO
+
+CREATE VIEW CycleDataSOEPointView
+AS
+SELECT
+    RotatedCycleData.Timestamp,
+    CASE
+        WHEN RotatedCycleData.IARMS > RotatedCycleData.IBRMS AND RotatedCycleData.IARMS > RotatedCycleData.ICRMS THEN RotatedCycleData.IARMS
+        WHEN RotatedCycleData.IBRMS > RotatedCycleData.ICRMS THEN RotatedCycleData.IBRMS
+        ELSE RotatedCycleData.ICRMS
+    END AS Imax, 
+    CASE
+        WHEN RotatedCycleData.VXARMS < RotatedCycleData.VXBRMS AND RotatedCycleData.VXARMS < RotatedCycleData.VXCRMS AND RotatedCycleData.VXARMS < RotatedCycleData.VYARMS AND RotatedCycleData.VXARMS < RotatedCycleData.VYBRMS AND RotatedCycleData.VXARMS < RotatedCycleData.VYCRMS THEN RotatedCycleData.VXARMS
+        WHEN RotatedCycleData.VXBRMS < RotatedCycleData.VXCRMS AND RotatedCycleData.VXBRMS < RotatedCycleData.VYARMS AND RotatedCycleData.VXBRMS < RotatedCycleData.VYBRMS AND RotatedCycleData.VXBRMS < RotatedCycleData.VYCRMS THEN RotatedCycleData.VXBRMS
+        WHEN RotatedCycleData.VXCRMS < RotatedCycleData.VYARMS AND RotatedCycleData.VXCRMS < RotatedCycleData.VYBRMS AND RotatedCycleData.VXCRMS < RotatedCycleData.VYCRMS THEN RotatedCycleData.VXCRMS
+        WHEN RotatedCycleData.VYARMS < RotatedCycleData.VYBRMS AND RotatedCycleData.VYARMS < RotatedCycleData.VYCRMS THEN RotatedCycleData.VYARMS
+        WHEN RotatedCycleData.VYBRMS < RotatedCycleData.VYCRMS THEN RotatedCycleData.VYBRMS
+        ELSE RotatedCycleData.VYCRMS
+    END AS Vmin,
+    SOEPoint.PointCode,
+    SOEPoint.UpState, 
+    SOEPoint.DownState,
+    SOEPoint.ID,
+    Event.MeterID,
+    Meter.Phasing,
+    Meter.Name,
+    Event.IncidentID,
+    Meter.ParentID,
+    Incident.StartTime,
+    Event.ID AS EventID
+FROM
+    RotatedCycleData INNER JOIN
+    SOEPoint ON RotatedCycleData.ID = SOEPoint.CycleDataID INNER JOIN
+    Event ON RotatedCycleData.EventID = Event.ID INNER JOIN
+    Meter ON Event.MeterID = Meter.ID INNER JOIN
+    Incident ON Event.IncidentID = Incident.ID
+GO
+
+CREATE VIEW IncidentEventCycleDataView
+AS
+SELECT
+    ID,
+    (
+        SELECT Name
+        FROM Meter
+        WHERE ID = Incident.MeterID
+    ) AS Device,
+    StartTime,
+    (
+        SELECT MAX(RotatedCycleData.IARMS) AS Expr1
+        FROM
+            RotatedCycleData INNER JOIN
+            Event ON RotatedCycleData.EventID = Event.ID
+        WHERE Event.IncidentID = Incident.ID
+    ) AS PhaseA,
+    (
+        SELECT MAX(CycleData_3.IBRMS) AS Expr1
+        FROM
+            RotatedCycleData AS CycleData_3 INNER JOIN
+            Event AS Event_3 ON CycleData_3.EventID = Event_3.ID
+        WHERE Event_3.IncidentID = Incident.ID
+    ) AS PhaseB,
+    (
+        SELECT MAX(CycleData_2.ICRMS) AS Expr1
+        FROM
+            RotatedCycleData AS CycleData_2 INNER JOIN
+            Event AS Event_2 ON CycleData_2.EventID = Event_2.ID
+        WHERE Event_2.IncidentID = Incident.ID
+    ) AS PhaseC,
+    (
+        SELECT MAX(CycleData_1.IRRMS) AS Expr1
+        FROM
+            CycleData AS CycleData_1 INNER JOIN
+            Event AS Event_1 ON CycleData_1.EventID = Event_1.ID
+        WHERE Event_1.IncidentID = Incident.ID
+    ) AS Ground,
+    DATEDIFF(MILLISECOND, StartTime, EndTime) AS Duration
+FROM Incident
 GO
 
 ----- PROCEDURES -----
