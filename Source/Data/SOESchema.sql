@@ -516,7 +516,8 @@ CREATE TABLE SOEPoint
     CycleDataID INT NOT NULL REFERENCES CycleData(ID),
     PointCode CHAR(4) NOT NULL,
     UpState CHAR(3) NOT NULL,
-    DownState CHAR(3) NOT NULL
+    DownState CHAR(3) NOT NULL,
+    FaultType CHAR(4) NULL
 )
 GO
 
