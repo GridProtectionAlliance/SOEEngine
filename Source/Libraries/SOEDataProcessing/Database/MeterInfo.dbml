@@ -98,25 +98,6 @@
       <Association Name="Meter_MeterLine" Member="Meter" ThisKey="MeterID" OtherKey="ID" Type="Meter" IsForeignKey="true" />
     </Type>
   </Table>
-  <Table Name="dbo.Meter" Member="Meters">
-    <Type Name="Meter">
-      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="AssetKey" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="MeterLocationID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Name" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
-      <Column Name="Alias" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
-      <Column Name="ShortName" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="Make" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
-      <Column Name="Model" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
-      <Column Name="TimeZone" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
-      <Column Name="Description" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
-      <Association Name="Meter_MeterFileGroup" Member="MeterFileGroups" ThisKey="ID" OtherKey="MeterID" Type="MeterFileGroup" />
-      <Association Name="Meter_MeterLine" Member="MeterLines" ThisKey="ID" OtherKey="MeterID" Type="MeterLine" />
-      <Association Name="Meter_GroupMeter" Member="GroupMeters" ThisKey="ID" OtherKey="MeterID" Type="GroupMeter" />
-      <Association Name="Meter_Channel" Member="Channels" ThisKey="ID" OtherKey="MeterID" Type="Channel" />
-      <Association Name="MeterLocation_Meter" Member="MeterLocation" ThisKey="MeterLocationID" OtherKey="ID" Type="MeterLocation" IsForeignKey="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.Structure" Member="Structures">
     <Type Name="Structure">
       <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -162,8 +143,32 @@
       <Association Name="Line_Channel" Member="Line" ThisKey="LineID" OtherKey="ID" Type="Line" IsForeignKey="true" />
       <Association Name="MeasurementType_Channel" Member="MeasurementType" ThisKey="MeasurementTypeID" OtherKey="ID" Type="MeasurementType" IsForeignKey="true" />
       <Association Name="MeasurementCharacteristic_Channel" Member="MeasurementCharacteristic" ThisKey="MeasurementCharacteristicID" OtherKey="ID" Type="MeasurementCharacteristic" IsForeignKey="true" />
-      <Association Name="Meter_Channel" Member="Meter" ThisKey="MeterID" OtherKey="ID" Type="Meter" IsForeignKey="true" />
       <Association Name="Phase_Channel" Member="Phase" ThisKey="PhaseID" OtherKey="ID" Type="Phase" IsForeignKey="true" />
+      <Association Name="Meter_Channel" Member="Meter" ThisKey="MeterID" OtherKey="ID" Type="Meter" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Meter" Member="Meters">
+    <Type Name="Meter">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="AssetKey" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="MeterLocationID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ParentID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
+      <Column Name="Alias" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
+      <Column Name="ShortName" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Make" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
+      <Column Name="Model" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
+      <Column Name="TimeZone" Type="System.String" DbType="VarChar(200)" CanBeNull="true" />
+      <Column Name="Description" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
+      <Column Name="Phasing" Type="System.String" DbType="Char(3)" CanBeNull="true" />
+      <Column Name="Orientation" Type="System.String" DbType="Char(2)" CanBeNull="true" />
+      <Association Name="Meter_MeterFileGroup" Member="MeterFileGroups" ThisKey="ID" OtherKey="MeterID" Type="MeterFileGroup" />
+      <Association Name="Meter_MeterLine" Member="MeterLines" ThisKey="ID" OtherKey="MeterID" Type="MeterLine" />
+      <Association Name="Meter_GroupMeter" Member="GroupMeters" ThisKey="ID" OtherKey="MeterID" Type="GroupMeter" />
+      <Association Name="Meter_Channel" Member="Channels" ThisKey="ID" OtherKey="MeterID" Type="Channel" />
+      <Association Name="Meter_Meter" Member="Meters" ThisKey="ID" OtherKey="ParentID" Type="Meter" />
+      <Association Name="MeterLocation_Meter" Member="MeterLocation" ThisKey="MeterLocationID" OtherKey="ID" Type="MeterLocation" IsForeignKey="true" />
+      <Association Name="Meter_Meter" Member="Meter1" ThisKey="ParentID" OtherKey="ID" Type="Meter" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>
