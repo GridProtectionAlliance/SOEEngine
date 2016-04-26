@@ -63,8 +63,10 @@ namespace SOEDataProcessing.DataAnalysis
             m_irIndex = -1;
 
             m_cycleDataGroups = dataGroup.DataSeries
-                .GroupBy(dataSeries => Tuple.Create(dataSeries.SeriesInfo.Channel.MeasurementType.Name, dataSeries.SeriesInfo.Channel.Phase.Name))
+                .Select((dataSeries, index) => new { DataSeries = dataSeries, Index = index })
+                .GroupBy(obj => obj.Index / 4)
                 .Where(grouping => grouping.Count() >= 4)
+                .Select(grouping => grouping.Select(obj => obj.DataSeries))
                 .Select(grouping => new CycleDataGroup(new DataGroup(grouping)))
                 .ToList();
 
