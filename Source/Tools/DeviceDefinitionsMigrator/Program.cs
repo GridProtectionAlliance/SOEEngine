@@ -181,9 +181,6 @@ namespace DeviceDefinitionsMigrator
 
             public void CreateLookups(XDocument document)
             {
-                //List<XElement> deviceElements = document.Elements().Elements("device").ToList();
-                //List<XElement> lineElements = deviceElements.Elements("lines").Elements("line").ToList();
-
                 MeterLookup = m_meterInfo.Meters.ToDictionary(meter => meter.AssetKey, StringComparer.OrdinalIgnoreCase);
                 LineLookup = m_meterInfo.Lines.ToDictionary(line => line.AssetKey, StringComparer.OrdinalIgnoreCase);
                 MeterLocationLookup = m_meterInfo.MeterLocations.ToDictionary(meterLocation => meterLocation.AssetKey, StringComparer.OrdinalIgnoreCase);
@@ -201,78 +198,6 @@ namespace DeviceDefinitionsMigrator
                     .Where(channel => channel.MeterID == meter.ID)
                     .Where(channel => channel.LineID == line.ID)
                     .ToDictionary(channel => channel.Name);
-            }
-
-            private Dictionary<string, Meter> GetMeterLookup(List<XElement> deviceElements, MeterInfoDataContext meterInfo)
-            {
-                List<string> deviceIDs = deviceElements
-                    .Select(deviceElement => (string)deviceElement.Attribute("id"))
-                    .Where(id => (object)id != null)
-                    .Distinct()
-                    .ToList();
-
-                return meterInfo.Meters
-                    .Where(meter => deviceIDs.Contains(meter.AssetKey))
-                    .ToDictionary(meter => meter.AssetKey, StringComparer.OrdinalIgnoreCase);
-            }
-
-            private Dictionary<string, Line> GetLineLookup(List<XElement> lineElements, MeterInfoDataContext meterInfo)
-            {
-                List<string> lineIDs = lineElements
-                    .Select(lineElement => (string)lineElement.Attribute("id"))
-                    .Where(id => (object)id != null)
-                    .Distinct()
-                    .ToList();
-
-                return meterInfo.Lines
-                    .Where(line => lineIDs.Contains(line.AssetKey))
-                    .ToDictionary(line => line.AssetKey, StringComparer.OrdinalIgnoreCase);
-            }
-
-            private Dictionary<string, MeterLocation> GetMeterLocationLookup(List<XElement> deviceElements, List<XElement> lineElements, MeterInfoDataContext meterInfo)
-            {
-                List<string> meterLocationIDs = deviceElements
-                    .Select(deviceElement => deviceElement.Element("attributes") ?? new XElement("attributes"))
-                    .Select(deviceAttributes => (string)deviceAttributes.Element("stationID"))
-                    .Concat(lineElements.Select(lineElement => (string)lineElement.Element("endStationID")))
-                    .Distinct()
-                    .ToList();
-
-                return meterInfo.MeterLocations
-                    .Where(meterLocation => meterLocationIDs.Contains(meterLocation.AssetKey))
-                    .ToDictionary(meterLocation => meterLocation.AssetKey, StringComparer.OrdinalIgnoreCase);
-            }
-
-            private Dictionary<Tuple<string, string>, MeterLine> GetMeterLineLookup(IEnumerable<Meter> meters, IEnumerable<Line> lines, MeterInfoDataContext meterInfo)
-            {
-                List<int> meterIDs = meters
-                    .Select(meter => meter.ID)
-                    .ToList();
-
-                List<int> lineIDs = lines
-                    .Select(line => line.ID)
-                    .ToList();
-
-                return meterInfo.MeterLines
-                    .Where(meterLine => meterIDs.Contains(meterLine.MeterID))
-                    .Where(meterLine => lineIDs.Contains(meterLine.LineID))
-                    .ToDictionary(meterLine => Tuple.Create(meterLine.Meter.AssetKey, meterLine.Line.AssetKey), TupleIgnoreCase.Default);
-            }
-
-            private Dictionary<Tuple<string, string>, MeterLocationLine> GetMeterLocationLineLookup(IEnumerable<MeterLocation> meterLocations, IEnumerable<Line> lines, MeterInfoDataContext meterInfo)
-            {
-                List<int> meterLocationIDs = meterLocations
-                    .Select(meterLocation => meterLocation.ID)
-                    .ToList();
-
-                List<int> lineIDs = lines
-                    .Select(line => line.ID)
-                    .ToList();
-
-                return meterInfo.MeterLocationLines
-                    .Where(meterLocationLine => meterLocationIDs.Contains(meterLocationLine.MeterLocationID))
-                    .Where(meterLocationLine => lineIDs.Contains(meterLocationLine.LineID))
-                    .ToDictionary(meterLocationLine => Tuple.Create(meterLocationLine.MeterLocation.AssetKey, meterLocationLine.Line.AssetKey), TupleIgnoreCase.Default);
             }
 
             private Dictionary<string, MeasurementType> GetMeasurementTypeLookup(MeterInfoDataContext meterInfo)
