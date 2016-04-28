@@ -156,7 +156,7 @@
         <classShapeMoniker Id="5aea9c59-bf02-4d5c-8e9e-9f56daf1fac7" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(10.875 : 7.56814697265625); (10.125 : 7.56814697265625)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(10.875 : 7.56814697265625); (10.125 : 7.56814697265625)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/MeterInfoDataContext/Phase/Phase_Channel" />
       <nodes>
         <classShapeMoniker Id="b4ba95c7-f3bf-4349-b1d8-82da3e2aca9a" />
@@ -204,7 +204,7 @@
         <classShapeMoniker Id="33d3fcb5-270d-463b-a61b-899c6e4a9672" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(12.1176383314348 : 3.375); (12.1176383314348 : 3.125); (12.4643265426173 : 3.125); (12.4643265426173 : 3.375)]" fixedFrom="Caller" fixedTo="Caller">
+    <associationConnector edgePoints="[(12.1176383314348 : 3.375); (12.1176383314348 : 3.125); (12.4643265426173 : 3.125); (12.4643265426173 : 3.375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/MeterInfoDataContext/Meter/Meter_Meter" />
       <nodes>
         <classShapeMoniker Id="33d3fcb5-270d-463b-a61b-899c6e4a9672" />

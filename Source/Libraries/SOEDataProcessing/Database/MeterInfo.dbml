@@ -166,9 +166,9 @@
       <Association Name="Meter_MeterLine" Member="MeterLines" ThisKey="ID" OtherKey="MeterID" Type="MeterLine" />
       <Association Name="Meter_GroupMeter" Member="GroupMeters" ThisKey="ID" OtherKey="MeterID" Type="GroupMeter" />
       <Association Name="Meter_Channel" Member="Channels" ThisKey="ID" OtherKey="MeterID" Type="Channel" />
-      <Association Name="Meter_Meter" Member="Meters" ThisKey="ID" OtherKey="ParentID" Type="Meter" />
+      <Association Name="Meter_Meter" Member="Children" Storage="_Meters" ThisKey="ID" OtherKey="ParentID" Type="Meter" />
       <Association Name="MeterLocation_Meter" Member="MeterLocation" ThisKey="MeterLocationID" OtherKey="ID" Type="MeterLocation" IsForeignKey="true" />
-      <Association Name="Meter_Meter" Member="Meter1" ThisKey="ParentID" OtherKey="ID" Type="Meter" IsForeignKey="true" />
+      <Association Name="Meter_Meter" Member="Parent" Storage="_Meter1" ThisKey="ParentID" OtherKey="ID" Type="Meter" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

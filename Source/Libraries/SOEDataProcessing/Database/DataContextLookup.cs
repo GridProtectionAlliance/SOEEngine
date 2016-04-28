@@ -59,10 +59,10 @@ namespace SOEDataProcessing.Database
         public DataContextLookup(DataContext dataContext, Func<TValue, TKey> keyFunction)
         {
             if ((object)dataContext == null)
-                throw new ArgumentNullException("dataContext");
+                throw new ArgumentNullException(nameof(dataContext));
 
             if ((object)keyFunction == null)
-                throw new ArgumentNullException("keyFunction");
+                throw new ArgumentNullException(nameof(keyFunction));
 
             m_dataContext = dataContext;
             m_keyFunction = keyFunction;

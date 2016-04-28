@@ -181,14 +181,14 @@ namespace DeviceDefinitionsMigrator
 
             public void CreateLookups(XDocument document)
             {
-                List<XElement> deviceElements = document.Elements().Elements("device").ToList();
-                List<XElement> lineElements = deviceElements.Elements("lines").Elements("line").ToList();
+                //List<XElement> deviceElements = document.Elements().Elements("device").ToList();
+                //List<XElement> lineElements = deviceElements.Elements("lines").Elements("line").ToList();
 
-                MeterLookup = GetMeterLookup(deviceElements, m_meterInfo);
-                LineLookup = GetLineLookup(lineElements, m_meterInfo);
-                MeterLocationLookup = GetMeterLocationLookup(deviceElements, lineElements, m_meterInfo);
-                MeterLineLookup = GetMeterLineLookup(MeterLookup.Values, LineLookup.Values, m_meterInfo);
-                MeterLocationLineLookup = GetMeterLocationLineLookup(MeterLocationLookup.Values, LineLookup.Values, m_meterInfo);
+                MeterLookup = m_meterInfo.Meters.ToDictionary(meter => meter.AssetKey, StringComparer.OrdinalIgnoreCase);
+                LineLookup = m_meterInfo.Lines.ToDictionary(line => line.AssetKey, StringComparer.OrdinalIgnoreCase);
+                MeterLocationLookup = m_meterInfo.MeterLocations.ToDictionary(meterLocation => meterLocation.AssetKey, StringComparer.OrdinalIgnoreCase);
+                MeterLineLookup = m_meterInfo.MeterLines.ToDictionary(meterLine => Tuple.Create(meterLine.Meter.AssetKey, meterLine.Line.AssetKey), TupleIgnoreCase.Default);
+                MeterLocationLineLookup = m_meterInfo.MeterLocationLines.ToDictionary(meterLocationLine => Tuple.Create(meterLocationLine.MeterLocation.AssetKey, meterLocationLine.Line.AssetKey), TupleIgnoreCase.Default);
                 MeasurementTypeLookup = GetMeasurementTypeLookup(m_meterInfo);
                 MeasurementCharacteristicLookup = GetMeasurementCharacteristicLookup(m_meterInfo);
                 PhaseLookup = GetPhaseLookup(m_meterInfo);
@@ -309,12 +309,23 @@ namespace DeviceDefinitionsMigrator
             Channel channel;
 
             XDocument document = XDocument.Load(deviceDefinitionsFile);
-            List<XElement> deviceElements = document.Elements().Elements("device").ToList();
+            Dictionary<string, XElement> deviceLookup = document.Elements().Elements("device").ToDictionary(device => (string)device.Attribute("id"));
+            List<XElement> deviceElements;
             XElement deviceAttributes;
 
             Dictionary<string, Channel> channelLookup;
 
-            ProgressTracker progressTracker = new ProgressTracker(deviceElements.Count);
+            ProgressTracker progressTracker = new ProgressTracker(deviceLookup.Count);
+
+            deviceElements = deviceLookup.Values.OrderBy(device =>
+            {
+                int count = 0;
+
+                while (deviceLookup.TryGetValue((string)device.Element("parent") ?? string.Empty, out device))
+                    count++;
+
+                return count;
+            }).ToList();
 
             using (MeterInfoDataContext meterInfo = new MeterInfoDataContext(connectionString))
             {
@@ -335,6 +346,7 @@ namespace DeviceDefinitionsMigrator
                     // Attempt to find existing configuration for this device and update the meter with any changes to the device's attributes
                     meter = lookupTables.MeterLookup.GetOrAdd((string)deviceElement.Attribute("id"), assetKey => new Meter() { AssetKey = assetKey });
                     LoadMeterAttributes(meter, deviceAttributes);
+                    meter.Parent = lookupTables.MeterLookup.GetOrDefault((string)deviceAttributes.Element("parent") ?? string.Empty);
 
                     // Now that we know what meter we are processing, display a message to indicate that we are parsing this meter's configuration
                     progressTracker.StartPendingMessage($"Loading configuration for meter {meter.Name} ({meter.AssetKey})...");
@@ -407,9 +419,11 @@ namespace DeviceDefinitionsMigrator
                 meter.Name = meterName;
                 meter.ShortName = new string(meterName.Take(50).ToArray());
             }
-
+            
             meter.Make = (string)deviceAttributes.Element("make") ?? string.Empty;
             meter.Model = (string)deviceAttributes.Element("make") ?? string.Empty;
+            meter.Phasing = (string)deviceAttributes.Element("phasing") ?? string.Empty;
+            meter.Orientation = (string)deviceAttributes.Element("orientation") ?? string.Empty;
         }
 
         private static void LoadMeterLocationAttributes(MeterLocation meterLocation, XElement deviceAttributes)

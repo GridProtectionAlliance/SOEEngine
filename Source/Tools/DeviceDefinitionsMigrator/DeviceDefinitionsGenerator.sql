@@ -1,40 +1,62 @@
-SELECT
+; WITH Device AS
 (
 	SELECT
-		AssemblyName AS [@assembly],
-		TypeName + '.' + MethodName AS [@method]
-	FROM FaultLocationAlgorithm
-	FOR XML PATH('faultLocation'), TYPE
-) AS [analytics],
-(
-	SELECT
-		Meter.AssetKey AS [@id],
-		Meter.Name AS [attributes/name],
-		Meter.Make AS [attributes/make],
-		Meter.Model AS [attributes/model],
-		MeterLocation.AssetKey AS [attributes/stationID],
-		MeterLocation.Name AS [attributes/stationName],
-		CAST(MeterLocation.Latitude AS VARCHAR(10)) AS [attributes/stationLatitude],
-		CAST(MeterLocation.Longitude AS VARCHAR(10)) AS [attributes/stationLongitude],
-		(
-			SELECT
-				Line.AssetKey AS [@id],
-				MeterLine.LineName AS name,
-				CAST(Line.VoltageKV AS VARCHAR(10)) AS voltage,
-				CAST(Line.Length AS VARCHAR(10)) AS length
-			FROM
-				MeterLocation Station JOIN
-				MeterLocationLine StationLine ON StationLine.MeterLocationID = Station.ID JOIN
-				Line ON StationLine.LineID = Line.ID JOIN
-				MeterLine ON MeterLine.LineID = Line.ID
-			WHERE
-				Station.ID = MeterLocation.ID AND
-				MeterLine.MeterID = Meter.ID
-			FOR XML PATH('line'), TYPE
-		) AS lines
+		Meter.ID,
+		Meter.AssetKey,
+		Meter.Make AS Make,
+		Meter.Model AS Model,
+		MeterLocation.AssetKey AS MeterLocationKey,
+		MeterLocation.Name AS MeterLocationName,
+		Meter.Phasing,
+		Meter.Orientation,
+		CAST(NULL AS VARCHAR(50)) AS Parent,
+		Line.AssetKey AS LineKey,
+		MeterLine.LineName,
+		Line.VoltageKV AS LineVoltage,
+		Line.Length AS LineLength,
+		0 AS Level
 	FROM
 		Meter JOIN
-		MeterLocation ON Meter.MeterLocationID = MeterLocation.ID
-	FOR XML PATH('device'), TYPE
+		MeterLocation ON Meter.MeterLocationID = MeterLocation.ID JOIN
+		MeterLine ON MeterLine.MeterID = Meter.ID JOIN
+		Line ON MeterLine.LineID = Line.ID
+	WHERE Meter.ParentID IS NULL
+	UNION ALL
+	SELECT
+		Meter.ID AS MeterID,
+		Meter.AssetKey AS MeterKey,
+		Meter.Make AS Make,
+		Meter.Model AS Model,
+		MeterLocation.AssetKey AS MeterLocationKey,
+		MeterLocation.Name AS MeterLocationName,
+		Meter.Phasing,
+		Meter.Orientation,
+		Parent.AssetKey AS Parent,
+		Line.AssetKey AS LineKey,
+		MeterLine.LineName,
+		Line.VoltageKV AS LineVoltage,
+		Line.Length AS LineLength,
+		Parent.Level + 1 AS Level
+	FROM
+		Meter JOIN
+		Device Parent ON Meter.ParentID = Parent.ID JOIN
+		MeterLocation ON Meter.MeterLocationID = MeterLocation.ID JOIN
+		MeterLine ON MeterLine.MeterID = Meter.ID JOIN
+		Line ON MeterLine.LineID = Line.ID
 )
-FOR XML PATH('openFLE')
+SELECT
+	AssetKey AS [@id],
+	Make AS [attributes/make],
+	Model AS [attributes/model],
+	MeterLocationKey AS [attributes/stationID],
+	MeterLocationName AS [attributes/stationName],
+	Phasing AS [attributes/phasing],
+	Orientation AS [attributes/orientation],
+	CAST(CASE WHEN Parent IS NOT NULL THEN '<parent>' + Parent + '</parent>' ELSE '' END AS XML) AS [attributes],
+	LineKey AS [lines/line/@id],
+	LineName AS [lines/line/name],
+	CONVERT(DECIMAL(9,1), LineVoltage) AS [lines/line/voltage],
+	CONVERT(DECIMAL(9,2), LineLength) AS [lines/line/length]
+FROM Device
+ORDER BY Level
+FOR XML PATH('device')

@@ -3658,7 +3658,7 @@ namespace SOEDataProcessing.Database
 		}
 		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Meter_Meter", Storage="_Meters", ThisKey="ID", OtherKey="ParentID")]
-		public EntitySet<Meter> Meters
+		public EntitySet<Meter> Children
 		{
 			get
 			{
@@ -3705,7 +3705,7 @@ namespace SOEDataProcessing.Database
 		}
 		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Meter_Meter", Storage="_Meter1", ThisKey="ParentID", OtherKey="ID", IsForeignKey=true)]
-		public Meter Meter1
+		public Meter Parent
 		{
 			get
 			{
@@ -3721,19 +3721,19 @@ namespace SOEDataProcessing.Database
 					if ((previousValue != null))
 					{
 						this._Meter1.Entity = null;
-						previousValue.Meters.Remove(this);
+						previousValue.Children.Remove(this);
 					}
 					this._Meter1.Entity = value;
 					if ((value != null))
 					{
-						value.Meters.Add(this);
+						value.Children.Add(this);
 						this._ParentID = value.ID;
 					}
 					else
 					{
 						this._ParentID = default(Nullable<int>);
 					}
-					this.SendPropertyChanged("Meter1");
+					this.SendPropertyChanged("Parent");
 				}
 			}
 		}
@@ -3809,13 +3809,13 @@ namespace SOEDataProcessing.Database
 		private void attach_Meters(Meter entity)
 		{
 			this.SendPropertyChanging();
-			entity.Meter1 = this;
+			entity.Parent = this;
 		}
 		
 		private void detach_Meters(Meter entity)
 		{
 			this.SendPropertyChanging();
-			entity.Meter1 = null;
+			entity.Parent = null;
 		}
 	}
 }
