@@ -68,6 +68,9 @@
 
 using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 using GSF.Reflection;
 
@@ -99,6 +102,16 @@ namespace SOEService
             if (!DesignMode)
             {
                 m_remoteConsole = Process.Start("SOEConsole.exe");
+
+                // Get application icon.
+                Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(DebugHost), "XDA.ico");
+
+                if ((object)stream != null)
+                {
+                    Icon icon = new Icon(stream);
+                    Icon = icon;
+                    m_notifyIcon.Icon = icon;
+                }
 
                 // Initialize text.
                 m_productName = AssemblyInfo.EntryAssembly.Title;

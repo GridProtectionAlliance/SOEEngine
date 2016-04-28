@@ -43,8 +43,8 @@ namespace SOEDataProcessing.DataOperations
         private DbAdapterContainer m_dbAdapterContainer;
         private MeterDataSet m_meterDataSet;
 
-        private readonly SOECycleData.SOECycleDataDataTable m_cycleDataTable;
-        private readonly List<Tuple<EventKey, SOECycleData.SOECycleDataRow>> m_cycleDataList;
+        private readonly MeterData.CycleDataDataTable m_cycleDataTable;
+        private readonly List<Tuple<EventKey, MeterData.CycleDataRow>> m_cycleDataList;
 
         #endregion
 
@@ -52,8 +52,8 @@ namespace SOEDataProcessing.DataOperations
 
         public SOEOperation()
         {
-            m_cycleDataTable = new SOECycleData.SOECycleDataDataTable();
-            m_cycleDataList = new List<Tuple<EventKey, SOECycleData.SOECycleDataRow>>();
+            m_cycleDataTable = new MeterData.CycleDataDataTable();
+            m_cycleDataList = new List<Tuple<EventKey, MeterData.CycleDataRow>>();
         }
 
         #endregion
@@ -107,12 +107,12 @@ namespace SOEDataProcessing.DataOperations
             MeterData.EventDataTable eventTable = eventAdapter.GetDataByFileGroup(m_meterDataSet.FileGroup.ID);
             Dictionary<EventKey, MeterData.EventRow> eventLookup = eventTable.ToDictionary(CreateEventKey);
 
-            foreach (Tuple<EventKey, SOECycleData.SOECycleDataRow> tuple in m_cycleDataList)
+            foreach (Tuple<EventKey, MeterData.CycleDataRow> tuple in m_cycleDataList)
             {
                 if (eventLookup.TryGetValue(tuple.Item1, out eventRow))
                 {
                     tuple.Item2.EventID = eventRow.ID;
-                    m_cycleDataTable.AddSOECycleDataRow(tuple.Item2);
+                    m_cycleDataTable.AddCycleDataRow(tuple.Item2);
                 }
             }
 
@@ -132,11 +132,11 @@ namespace SOEDataProcessing.DataOperations
             int length = viCycleDataGroup.VX1.RMS.DataPoints.Count;
 
             int sampleNumber = 0;
-            SOECycleData.SOECycleDataRow row;
+            MeterData.CycleDataRow row;
 
             for (int i = 0; i < length; i++)
             {
-                row = m_cycleDataTable.NewSOECycleDataRow();
+                row = m_cycleDataTable.NewCycleDataRow();
 
                 row.CycleNumber = i;
                 row.SampleNumber = sampleNumber;

@@ -89,9 +89,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>FileInfo.dbml</DependentUpon>
     </Compile>
-    <Compile Include="Database\MeterData.cs">
-      <DependentUpon>MeterData.xsd</DependentUpon>
-    </Compile>
     <Compile Include="Database\MeterData.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -104,11 +101,6 @@
       <DependentUpon>MeterInfo.dbml</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Database\SOECycleData.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SOECycleData.xsd</DependentUpon>
     </Compile>
     <Compile Include="Database\SystemInfo.designer.cs">
       <AutoGen>True</AutoGen>
@@ -164,17 +156,6 @@
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>MeterInfo.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
-    </None>
-    <None Include="Database\SOECycleData.xsc">
-      <DependentUpon>SOECycleData.xsd</DependentUpon>
-    </None>
-    <None Include="Database\SOECycleData.xsd">
-      <SubType>Designer</SubType>
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>SOECycleData.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Database\SOECycleData.xss">
-      <DependentUpon>SOECycleData.xsd</DependentUpon>
     </None>
     <None Include="Database\SystemInfo.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
