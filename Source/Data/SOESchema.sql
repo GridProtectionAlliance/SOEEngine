@@ -911,12 +911,15 @@ SELECT
     SOEPoint.DownState,
     SOEPoint.ID,
     Event.MeterID,
-    Meter.Phasing,
+    CAST(CHARINDEX('A', Meter.Phasing) AS CHAR(1))
+        + CAST(CHARINDEX('C', Meter.Phasing) AS CHAR(1))
+        + CAST(CHARINDEX('B', Meter.Phasing) AS CHAR(1)) AS Phasing,
     Meter.Name,
     Event.IncidentID,
     Meter.ParentID,
     Incident.StartTime,
-    Event.ID AS EventID
+    Event.ID AS EventID,
+    SOEPoint.FaultType
 FROM
     RotatedCycleData INNER JOIN
     SOEPoint ON RotatedCycleData.ID = SOEPoint.CycleDataID INNER JOIN
@@ -977,8 +980,20 @@ SELECT
             Event AS Event_1 ON CycleData_1.EventID = Event_1.ID
         WHERE Event_1.IncidentID = Incident.ID
     ) AS Ground,
-    DATEDIFF(MILLISECOND, StartTime, EndTime) AS Duration
-FROM Incident
+    DATEDIFF(MILLISECOND, StartTime, EndTime) AS Duration,
+    t3.FaultType
+FROM
+    Incident INNER JOIN
+    (
+        SELECT t1.FaultType, t1.IncidentID
+        FROM
+            CycleDataSOEPointView AS t1 INNER JOIN
+            (
+                SELECT IncidentID, MAX(Imax) AS Imax
+                FROM dbo.CycleDataSOEPointView
+                GROUP BY IncidentID
+            ) AS t2 ON t1.IncidentID = t2.IncidentID AND t1.Imax = t2.Imax
+    ) AS t3 ON dbo.Incident.ID = t3.IncidentID
 GO
 
 ----- PROCEDURES -----
