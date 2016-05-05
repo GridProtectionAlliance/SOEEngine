@@ -514,7 +514,10 @@ CREATE TABLE SOEPoint
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
     CycleDataID INT NOT NULL REFERENCES CycleData(ID),
-    PointCode CHAR(4) NOT NULL,
+    StatusElement CHAR(2) NOT NULL,
+    BreakerElementA CHAR(1) NOT NULL,
+    BreakerElementB CHAR(1) NOT NULL,
+    BreakerElementC CHAR(1) NOT NULL,
     UpState CHAR(3) NOT NULL,
     DownState CHAR(3) NOT NULL,
     FaultType CHAR(4) NULL
@@ -906,7 +909,10 @@ SELECT
         WHEN RotatedCycleData.VYBRMS < RotatedCycleData.VYCRMS THEN RotatedCycleData.VYBRMS
         ELSE RotatedCycleData.VYCRMS
     END AS Vmin,
-    SOEPoint.PointCode,
+    SOEPoint.StatusElement,
+    SOEPoint.BreakerElementA,
+    SOEPoint.BreakerElementB,
+    SOEPoint.BreakerElementC,
     SOEPoint.UpState, 
     SOEPoint.DownState,
     SOEPoint.ID,
@@ -928,19 +934,19 @@ FROM
     Incident ON Event.IncidentID = Incident.ID
 GO
 
-CREATE VIEW CycDataForParentMeterView
-AS
-SELECT
-    CycleDataSOEPointView.ParentID,
-    ParentMeter.PointCode,
-    ParentMeter.UpState,
-    ParentMeter.DownState,
-    ParentMeter.Timestamp,
-    ParentMeter.ID
-FROM
-    CycleDataSOEPointView LEFT OUTER JOIN
-    CycleDataSOEPointView AS ParentMeter ON dbo.CycleDataSOEPointView.ParentID = ParentMeter.ID
-GO
+-- CREATE VIEW CycDataForParentMeterView
+-- AS
+-- SELECT
+--     CycleDataSOEPointView.ParentID,
+--     ParentMeter.PointCode,
+--     ParentMeter.UpState,
+--     ParentMeter.DownState,
+--     ParentMeter.Timestamp,
+--     ParentMeter.ID
+-- FROM
+--     CycleDataSOEPointView LEFT OUTER JOIN
+--     CycleDataSOEPointView AS ParentMeter ON dbo.CycleDataSOEPointView.ParentID = ParentMeter.ID
+-- GO
 
 CREATE VIEW IncidentEventCycleDataView
 AS
