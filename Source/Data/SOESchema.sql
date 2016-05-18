@@ -403,7 +403,7 @@ CREATE TABLE Event
     LineID INT NOT NULL REFERENCES Line(ID),
     EventTypeID INT NOT NULL REFERENCES EventType(ID),
     EventDataID INT NOT NULL REFERENCES EventData(ID),
-    IncidentID INT NULL,
+    IncidentID INT NOT NULL REFERENCES Incident(ID),
     Name VARCHAR(200) NOT NULL,
     Alias VARCHAR(200) NULL,
     ShortName VARCHAR(50) NULL,
