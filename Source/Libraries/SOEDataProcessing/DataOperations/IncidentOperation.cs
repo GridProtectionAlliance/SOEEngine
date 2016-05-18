@@ -25,11 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GSF;
 using GSF.Data;
-using SOEDataProcessing.DataAnalysis;
 using SOEDataProcessing.Database;
 using SOEDataProcessing.Database.MeterDataTableAdapters;
 using SOEDataProcessing.DataResources;
@@ -55,22 +52,12 @@ namespace SOEDataProcessing.DataOperations
             public List<MeterData.IncidentRow> ExistingIncidents = new List<MeterData.IncidentRow>();
         }
 
-        // Constants
-
-        // Delegates
-
-        // Events
-
         // Fields
         private double m_timeTolerance;
 
         private DbAdapterContainer m_dbAdapterContainer;
         private List<Incident> m_incidents;
         private int m_meterID;
-
-        #endregion
-
-        #region [ Constructors ]
 
         #endregion
 
@@ -164,22 +151,6 @@ namespace SOEDataProcessing.DataOperations
             Range<DateTime> timeRange = new Range<DateTime>(row.StartTime, row.EndTime);
             return incidentRange.Overlaps(timeRange);
         }
-
-        #endregion
-
-        #region [ Operators ]
-
-        #endregion
-
-        #region [ Static ]
-
-        // Static Fields
-
-        // Static Constructor
-
-        // Static Properties
-
-        // Static Methods
 
         #endregion
     }

@@ -639,6 +639,61 @@ AS BEGIN
 END
 GO
 
+CREATE FUNCTION GetNearbyIncidents
+(
+    @meterID INT,
+    @startTime DATETIME2,
+    @endTime DATETIME2,
+    @timeTolerance FLOAT
+)
+RETURNS TABLE
+AS RETURN
+(
+    WITH LeftIncidentGroup AS
+    (
+        SELECT *
+        FROM Incident
+        WHERE
+            MeterID = @meterID AND
+            EndTime < @endTime AND
+            EndTime >= dbo.AdjustDateTime2(@startTime, -@timeTolerance)
+        UNION ALL
+        SELECT Incident.*
+        FROM Incident JOIN LeftIncidentGroup ON
+            Incident.MeterID = LeftIncidentGroup.MeterID AND
+            Incident.EndTime < LeftIncidentGroup.EndTime AND
+            Incident.EndTime >= dbo.AdjustDateTime2(LeftIncidentGroup.StartTime, -@timeTolerance)
+    ),
+    RightIncidentGroup AS
+    (
+        SELECT *
+        FROM Incident
+        WHERE
+            MeterID = @meterID AND
+            StartTime > @startTime AND
+            StartTime <= dbo.AdjustDateTime2(@endTime, @timeTolerance)
+        UNION ALL
+        SELECT Incident.*
+        FROM Incident JOIN RightIncidentGroup ON
+            Incident.MeterID = RightIncidentGroup.MeterID AND
+            Incident.StartTime > RightIncidentGroup.StartTime AND
+            Incident.StartTime <= dbo.AdjustDateTime2(RightIncidentGroup.EndTime, @timeTolerance)
+    ),
+    MiddleIncidentGroup AS
+    (
+        SELECT *
+        FROM Incident
+        WHERE
+            MeterID = @meterID AND
+            StartTime <= @endTime AND
+            EndTime >= @startTime
+    )
+    SELECT * FROM LeftIncidentGroup UNION
+    SELECT * FROM RightIncidentGroup UNION
+    SELECT * FROM MiddleIncidentGroup
+)
+GO
+
 ----- VIEWS -----
 
 CREATE VIEW EventDetail AS
