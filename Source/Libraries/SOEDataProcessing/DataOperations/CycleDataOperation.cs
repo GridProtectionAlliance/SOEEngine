@@ -34,7 +34,7 @@ using EventKey = System.Tuple<int, int, System.DateTime, System.DateTime, int>;
 
 namespace SOEDataProcessing.DataOperations
 {
-    public class SOEOperation : DataOperationBase<MeterDataSet>
+    public class CycleDataOperation : DataOperationBase<MeterDataSet>
     {
         #region [ Members ]
 
@@ -50,7 +50,7 @@ namespace SOEDataProcessing.DataOperations
 
         #region [ Constructors ]
 
-        public SOEOperation()
+        public CycleDataOperation()
         {
             m_cycleDataTable = new MeterData.CycleDataDataTable();
             m_cycleDataList = new List<Tuple<EventKey, MeterData.CycleDataRow>>();
