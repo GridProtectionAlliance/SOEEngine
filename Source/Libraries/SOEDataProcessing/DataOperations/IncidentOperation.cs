@@ -97,11 +97,11 @@ namespace SOEDataProcessing.DataOperations
             IEnumerable<Range<DateTime>> ranges = incidentTable.Select(incident => new Range<DateTime>(incident.StartTime, incident.EndTime))
                 .Concat(cycleDataResource.DataGroups.Select(dataGroup => new Range<DateTime>(dataGroup.StartTime, dataGroup.EndTime)));
 
-            List<Incident> incidents = Range<DateTime>.MergeAllOverlapping(ranges)
+            m_incidents = Range<DateTime>.MergeAllOverlapping(ranges)
                 .Select(range => new Incident(range))
                 .ToList();
 
-            foreach (Incident incident in incidents)
+            foreach (Incident incident in m_incidents)
                 incident.ExistingIncidents = incidentTable.Where(row => Overlaps(incident, row)).ToList();
 
             m_meterID = meterDataSet.Meter.ID;
