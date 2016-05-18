@@ -235,11 +235,11 @@ namespace SOEService.Configuration
         }
 
         /// <summary>
-        /// Gets or sets the maximum distance, in seconds,
-        /// between a meter's clock and real time.
+        /// Gets or sets the maximum amount of time, in seconds,
+        /// between two events that belong to the same incident.
         /// </summary>
         [Setting]
-        [DefaultValue(0.5D)]
+        [DefaultValue(22.0D)]
         public double TimeTolerance
         {
             get

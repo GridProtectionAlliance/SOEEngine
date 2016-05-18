@@ -110,6 +110,7 @@
     <Compile Include="DataOperations\ConfigurationOperation.cs" />
     <Compile Include="DataOperations\DataOperationBase.cs" />
     <Compile Include="DataOperations\CycleDataOperation.cs" />
+    <Compile Include="DataOperations\IncidentOperation.cs" />
     <Compile Include="DataResources\CycleDataResource.cs" />
     <Compile Include="DataResources\EventClassificationResource.cs" />
     <Compile Include="DataResources\DataGroupsResource.cs" />

@@ -117,6 +117,7 @@ namespace SOEDataProcessing.DataOperations
         {
             BulkLoader bulkLoader;
 
+            IncidentTableAdapter incidentAdapter;
             EventTableAdapter eventAdapter;
             EventDataTableAdapter eventDataAdapter;
             Dictionary<EventKey, MeterData.EventRow> eventLookup;
@@ -147,6 +148,17 @@ namespace SOEDataProcessing.DataOperations
             {
                 tuple.Item2.EventDataID = eventDataLookup[tuple.Item1].ID;
                 m_eventTable.AddEventRow(tuple.Item2);
+            }
+
+            // Update event rows with incident IDs
+            incidentAdapter = dbAdapterContainer.GetAdapter<IncidentTableAdapter>();
+
+            foreach (MeterData.EventRow row in m_eventTable)
+            {
+                int? incidentID = incidentAdapter.GetIDByTime(row.StartTime);
+
+                if ((object)incidentID != null)
+                    row.IncidentID = incidentID.GetValueOrDefault();
             }
 
             // Write events to the database

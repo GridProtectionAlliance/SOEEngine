@@ -1,0 +1,186 @@
+﻿//******************************************************************************************************
+//  IncidentOperation.cs - Gbtc
+//
+//  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  05/18/2016 - Stephen C. Wills
+//       Generated original version of source code.
+//
+//******************************************************************************************************
+
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using GSF;
+using GSF.Data;
+using SOEDataProcessing.DataAnalysis;
+using SOEDataProcessing.Database;
+using SOEDataProcessing.Database.MeterDataTableAdapters;
+using SOEDataProcessing.DataResources;
+using SOEDataProcessing.DataSets;
+
+namespace SOEDataProcessing.DataOperations
+{
+    public class IncidentOperation : DataOperationBase<MeterDataSet>
+    {
+        #region [ Members ]
+
+        // Nested Types
+        private class Incident
+        {
+            public Incident(Range<DateTime> range)
+            {
+                StartTime = range.Start;
+                EndTime = range.End;
+            }
+
+            public DateTime StartTime;
+            public DateTime EndTime;
+            public List<MeterData.IncidentRow> ExistingIncidents = new List<MeterData.IncidentRow>();
+        }
+
+        // Constants
+
+        // Delegates
+
+        // Events
+
+        // Fields
+        private double m_timeTolerance;
+
+        private DbAdapterContainer m_dbAdapterContainer;
+        private List<Incident> m_incidents;
+        private int m_meterID;
+
+        #endregion
+
+        #region [ Constructors ]
+
+        #endregion
+
+        #region [ Properties ]
+
+        public double TimeTolerance
+        {
+            get
+            {
+                return m_timeTolerance;
+            }
+            set
+            {
+                m_timeTolerance = value;
+            }
+        }
+
+        #endregion
+
+        #region [ Methods ]
+
+        public override void Prepare(DbAdapterContainer dbAdapterContainer)
+        {
+            m_dbAdapterContainer = dbAdapterContainer;
+            m_incidents = new List<Incident>();
+        }
+
+        public override void Execute(MeterDataSet meterDataSet)
+        {
+            CycleDataResource cycleDataResource = CycleDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
+            DateTime startTime = cycleDataResource.DataGroups.Min(dataGroup => dataGroup.StartTime);
+            DateTime endTime = cycleDataResource.DataGroups.Max(dataGroup => dataGroup.EndTime);
+
+            IncidentTableAdapter incidentAdapter = m_dbAdapterContainer.GetAdapter<IncidentTableAdapter>();
+            MeterData.IncidentDataTable incidentTable = incidentAdapter.GetNearbyIncidents(meterDataSet.Meter.ID, startTime, endTime, m_timeTolerance);
+
+            IEnumerable<Range<DateTime>> ranges = incidentTable.Select(incident => new Range<DateTime>(incident.StartTime, incident.EndTime))
+                .Concat(cycleDataResource.DataGroups.Select(dataGroup => new Range<DateTime>(dataGroup.StartTime, dataGroup.EndTime)));
+
+            List<Incident> incidents = Range<DateTime>.MergeAllOverlapping(ranges)
+                .Select(range => new Incident(range))
+                .ToList();
+
+            foreach (Incident incident in incidents)
+                incident.ExistingIncidents = incidentTable.Where(row => Overlaps(incident, row)).ToList();
+
+            m_meterID = meterDataSet.Meter.ID;
+        }
+
+        public override void Load(DbAdapterContainer dbAdapterContainer)
+        {
+            MeterData.IncidentDataTable incidentTable = new MeterData.IncidentDataTable();
+
+            foreach (Incident incident in m_incidents)
+            {
+                if (incident.ExistingIncidents.Count == 0 || incident.ExistingIncidents.Count > 1)
+                    incidentTable.AddIncidentRow(m_meterID, incident.StartTime, incident.EndTime);
+            }
+
+            BulkLoader bulkLoader = new BulkLoader();
+            bulkLoader.Connection = dbAdapterContainer.Connection;
+            bulkLoader.CommandTimeout = dbAdapterContainer.CommandTimeout;
+            bulkLoader.Load(incidentTable);
+
+            List<Incident> cleanup = m_incidents
+                .Where(incident => incident.ExistingIncidents.Count > 1)
+                .ToList();
+
+            if (cleanup.Count == 0)
+                return;
+
+            using (AdoDataConnection database = new AdoDataConnection(dbAdapterContainer.Connection, typeof(SqlDataAdapter), false))
+            {
+                foreach (Incident incident in cleanup)
+                {
+                    string incidentIDs = string.Join(",", incident.ExistingIncidents.Select(inc => inc.ID));
+                    database.ExecuteNonQuery($"UPDATE Event SET IncidentID = (SELECT ID FROM Incident WHERE StartTime = {{0}} AND EndTime = {{1}}) WHERE IncidentID IN ({incidentIDs})", incident.StartTime, incident.EndTime);
+                }
+
+                string allIncidentIDs = string.Join(",", cleanup
+                    .SelectMany(incident => incident.ExistingIncidents)
+                    .Select(incident => incident.ID));
+
+                database.ExecuteNonQuery($"DELETE FROM Incident WHERE ID IN ({allIncidentIDs})");
+            }
+        }
+
+        private bool Overlaps(Incident incident, MeterData.IncidentRow row)
+        {
+            Range<DateTime> incidentRange = new Range<DateTime>(incident.StartTime, incident.EndTime);
+            Range<DateTime> timeRange = new Range<DateTime>(row.StartTime, row.EndTime);
+            return incidentRange.Overlaps(timeRange);
+        }
+
+        #endregion
+
+        #region [ Operators ]
+
+        #endregion
+
+        #region [ Static ]
+
+        // Static Fields
+
+        // Static Constructor
+
+        // Static Properties
+
+        // Static Methods
+
+        #endregion
+    }
+}
