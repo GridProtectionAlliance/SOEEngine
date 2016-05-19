@@ -135,8 +135,8 @@ CREATE TABLE Meter
     Model VARCHAR(200) NOT NULL,
     TimeZone VARCHAR(200) NULL,
     Description VARCHAR(MAX) NULL,
-    Phasing CHAR(3) NULL,
-    Orientation CHAR(2) NULL
+    Phasing VARCHAR(3) NULL,
+    Orientation VARCHAR(2) NULL
 )
 GO
 
@@ -520,13 +520,13 @@ CREATE TABLE SOEPoint
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
     CycleDataID INT NOT NULL REFERENCES CycleData(ID),
-    StatusElement CHAR(2) NOT NULL,
-    BreakerElementA CHAR(1) NOT NULL,
-    BreakerElementB CHAR(1) NOT NULL,
-    BreakerElementC CHAR(1) NOT NULL,
-    UpState CHAR(3) NOT NULL,
-    DownState CHAR(3) NOT NULL,
-    FaultType CHAR(4) NULL
+    StatusElement VARCHAR(2) NOT NULL,
+    BreakerElementA VARCHAR(1) NOT NULL,
+    BreakerElementB VARCHAR(1) NOT NULL,
+    BreakerElementC VARCHAR(1) NOT NULL,
+    UpState VARCHAR(3) NOT NULL,
+    DownState VARCHAR(3) NOT NULL,
+    FaultType VARCHAR(4) NULL
 )
 GO
 

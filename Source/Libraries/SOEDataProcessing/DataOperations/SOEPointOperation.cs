@@ -67,7 +67,8 @@ namespace SOEDataProcessing.DataOperations
             {
                 List<int> incidentIDs = Enumerable.Select(eventTable, row => row.IncidentID).Distinct().ToList();
                 query = $"SELECT * FROM Event WHERE IncidentID IN ({string.Join(",", incidentIDs)})";
-                eventTable = new MeterData.EventDataTable(database.RetrieveData(query));
+                eventTable = new MeterData.EventDataTable();
+                eventTable.Merge(database.RetrieveData(query));
 
                 string eventIDs = string.Join(",", Enumerable.Select(eventTable, row => row.ID));
                 database.ExecuteNonQuery($"DELETE FROM SOEPoint WHERE CycleDataID IN (SELECT ID FROM CycleData WHERE EventID IN ({eventIDs}))");
@@ -88,8 +89,9 @@ namespace SOEDataProcessing.DataOperations
                 {
                     string previousState = null;
 
-                    query = $"SELECT * FROM CycleData WHERE EventID IN (SELECT ID FROM Event WHERE IncidentID = {incidentID}) ORDER BY Timestamp";
-                    cycleDataTable = new MeterData.RotatedCycleDataDataTable(database.RetrieveData(query));
+                    query = $"SELECT * FROM RotatedCycleData WHERE EventID IN (SELECT ID FROM Event WHERE IncidentID = {incidentID}) ORDER BY Timestamp";
+                    cycleDataTable = new MeterData.RotatedCycleDataDataTable();
+                    cycleDataTable.Merge(database.RetrieveData(query));
 
                     foreach (MeterData.RotatedCycleDataRow row in cycleDataTable)
                     {
