@@ -35,7 +35,7 @@
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="openXDASetup.wxs" />
+    <Compile Include="SOESetup.wxs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SOEDataProcessing\SOEDataProcessing.csproj">
