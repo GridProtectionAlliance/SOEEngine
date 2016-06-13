@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using GSF;
@@ -41,12 +42,6 @@ namespace SOEDataProcessing.DataOperations
         // Nested Types
         private class Incident
         {
-            public Incident(Range<DateTime> range)
-            {
-                StartTime = range.Start;
-                EndTime = range.End;
-            }
-
             public DateTime StartTime;
             public DateTime EndTime;
             public List<MeterData.IncidentRow> ExistingIncidents = new List<MeterData.IncidentRow>();
@@ -63,6 +58,7 @@ namespace SOEDataProcessing.DataOperations
 
         #region [ Properties ]
 
+        [Setting]
         public double TimeTolerance
         {
             get
@@ -94,11 +90,11 @@ namespace SOEDataProcessing.DataOperations
             IncidentTableAdapter incidentAdapter = m_dbAdapterContainer.GetAdapter<IncidentTableAdapter>();
             MeterData.IncidentDataTable incidentTable = incidentAdapter.GetNearbyIncidents(meterDataSet.Meter.ID, startTime, endTime, m_timeTolerance);
 
-            IEnumerable<Range<DateTime>> ranges = incidentTable.Select(incident => new Range<DateTime>(incident.StartTime, incident.EndTime))
-                .Concat(cycleDataResource.DataGroups.Select(dataGroup => new Range<DateTime>(dataGroup.StartTime, dataGroup.EndTime)));
+            IEnumerable<Range<DateTime>> ranges = incidentTable.Select(incident => ToRange(incident.StartTime, incident.EndTime))
+                .Concat(cycleDataResource.DataGroups.Select(dataGroup => ToRange(dataGroup.StartTime, dataGroup.EndTime)));
 
             m_incidents = Range<DateTime>.MergeAllOverlapping(ranges)
-                .Select(range => new Incident(range))
+                .Select(ToIncident)
                 .ToList();
 
             foreach (Incident incident in m_incidents)
@@ -122,33 +118,59 @@ namespace SOEDataProcessing.DataOperations
             bulkLoader.CommandTimeout = dbAdapterContainer.CommandTimeout;
             bulkLoader.Load(incidentTable);
 
+            List<Incident> expand = m_incidents
+                .Where(incident => incident.ExistingIncidents.Count == 1)
+                .ToList();
+
             List<Incident> cleanup = m_incidents
                 .Where(incident => incident.ExistingIncidents.Count > 1)
                 .ToList();
 
-            if (cleanup.Count == 0)
+            if (expand.Count == 0 && cleanup.Count == 0)
                 return;
 
             using (AdoDataConnection database = new AdoDataConnection(dbAdapterContainer.Connection, typeof(SqlDataAdapter), false))
             {
+                foreach (Incident incident in expand)
+                    database.ExecuteNonQuery("UPDATE Incident SET StartTime = {0}, EndTime = {1} WHERE ID = {2}", incident.StartTime, incident.EndTime, incident.ExistingIncidents[0].ID);
+
                 foreach (Incident incident in cleanup)
                 {
                     string incidentIDs = string.Join(",", incident.ExistingIncidents.Select(inc => inc.ID));
                     database.ExecuteNonQuery($"UPDATE Event SET IncidentID = (SELECT ID FROM Incident WHERE StartTime = {{0}} AND EndTime = {{1}}) WHERE IncidentID IN ({incidentIDs})", incident.StartTime, incident.EndTime);
                 }
 
-                string allIncidentIDs = string.Join(",", cleanup
-                    .SelectMany(incident => incident.ExistingIncidents)
-                    .Select(incident => incident.ID));
+                if (cleanup.Count > 0)
+                {
+                    string allIncidentIDs = string.Join(",", cleanup
+                        .SelectMany(incident => incident.ExistingIncidents)
+                        .Select(incident => incident.ID));
 
-                database.ExecuteNonQuery($"DELETE FROM Incident WHERE ID IN ({allIncidentIDs})");
+                    database.ExecuteNonQuery($"DELETE FROM Incident WHERE ID IN ({allIncidentIDs})");
+                }
             }
+        }
+
+        private Range<DateTime> ToRange(DateTime startTime, DateTime endTime)
+        {
+            DateTime start = startTime.AddSeconds(-m_timeTolerance / 2.0D);
+            DateTime end = endTime.AddSeconds(m_timeTolerance / 2.0D);
+            return new Range<DateTime>(start, end);
+        }
+
+        private Incident ToIncident(Range<DateTime> range)
+        {
+            return new Incident()
+            {
+                StartTime = range.Start.AddSeconds(m_timeTolerance / 2.0D),
+                EndTime = range.End.AddSeconds(-m_timeTolerance / 2.0D)
+            };
         }
 
         private bool Overlaps(Incident incident, MeterData.IncidentRow row)
         {
-            Range<DateTime> incidentRange = new Range<DateTime>(incident.StartTime, incident.EndTime);
-            Range<DateTime> timeRange = new Range<DateTime>(row.StartTime, row.EndTime);
+            Range<DateTime> incidentRange = ToRange(incident.StartTime, incident.EndTime);
+            Range<DateTime> timeRange = ToRange(row.StartTime, row.EndTime);
             return incidentRange.Overlaps(timeRange);
         }
 

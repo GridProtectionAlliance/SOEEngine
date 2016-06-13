@@ -155,7 +155,7 @@ namespace SOEDataProcessing.DataOperations
 
             foreach (MeterData.EventRow row in m_eventTable)
             {
-                int? incidentID = incidentAdapter.GetIDByTime(row.StartTime);
+                int? incidentID = incidentAdapter.GetIDByTime(row.MeterID, row.StartTime);
 
                 if ((object)incidentID != null)
                     row.IncidentID = incidentID.GetValueOrDefault();

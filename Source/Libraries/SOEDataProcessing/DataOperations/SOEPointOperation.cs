@@ -128,20 +128,20 @@ namespace SOEDataProcessing.DataOperations
                             null;
 
                         string breakerElementA =
-                            (upState[0] == 0) ? "5" :
-                            (downState[0] == 0) ? "0" :
+                            (upState[0] == '0') ? "5" :
+                            (downState[0] == '0') ? "0" :
                             (row.IARMS < 700.0D) ? "1" :
                             "4";
 
                         string breakerElementC =
-                            (upState[1] == 0) ? "5" :
-                            (downState[1] == 0) ? "0" :
+                            (upState[1] == '0') ? "5" :
+                            (downState[1] == '0') ? "0" :
                             (row.ICRMS < 700.0D) ? "1" :
                             "4";
 
                         string breakerElementB =
-                            (upState[2] == 0) ? "5" :
-                            (downState[2] == 0) ? "0" :
+                            (upState[2] == '0') ? "5" :
+                            (downState[2] == '0') ? "0" :
                             (row.IBRMS < 700.0D) ? "1" :
                             "4";
 

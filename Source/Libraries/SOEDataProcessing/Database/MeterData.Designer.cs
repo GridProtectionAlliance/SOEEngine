@@ -9804,8 +9804,8 @@ SELECT ID, FileGroupID, MeterID, LineID, EventTypeID, EventDataID, IncidentID, N
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
             this._adapter.InsertCommand.CommandText = "INSERT INTO [dbo].[Incident] ([MeterID], [StartTime], [EndTime]) VALUES (@MeterID" +
-                ", @StartTime, @EndTime);\r\nSELECT ID, MeterID, StartTime, EndTime FROM Incident W" +
-                "HERE (ID = SCOPE_IDENTITY())";
+                ", @StartTime, @EndTime);\nSELECT ID, MeterID, StartTime, EndTime FROM Incident WH" +
+                "ERE (ID = SCOPE_IDENTITY())";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@MeterID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "MeterID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StartTime", global::System.Data.SqlDbType.DateTime2, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StartTime", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -9842,8 +9842,10 @@ SELECT ID, MeterID, StartTime, EndTime FROM Incident WHERE (ID = @ID)";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
             this._commandCollection[1] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[1].Connection = this.Connection;
-            this._commandCollection[1].CommandText = "SELECT ID FROM Incident WHERE @time BETWEEN StartTime AND EndTime";
+            this._commandCollection[1].CommandText = "SELECT ID FROM Incident WHERE MeterID = @meterID AND @time BETWEEN StartTime AND " +
+                "EndTime";
             this._commandCollection[1].CommandType = global::System.Data.CommandType.Text;
+            this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@meterID", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "MeterID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._commandCollection[1].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@time", global::System.Data.SqlDbType.DateTime2, 1024, global::System.Data.ParameterDirection.Input, 0, 0, "", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._commandCollection[2] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[2].Connection = this.Connection;
@@ -10045,9 +10047,10 @@ SELECT ID, MeterID, StartTime, EndTime FROM Incident WHERE (ID = @ID)";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual global::System.Nullable<int> GetIDByTime(System.DateTime time) {
+        public virtual global::System.Nullable<int> GetIDByTime(int meterID, System.DateTime time) {
             global::System.Data.SqlClient.SqlCommand command = this.CommandCollection[1];
-            command.Parameters[0].Value = ((System.DateTime)(time));
+            command.Parameters[0].Value = ((int)(meterID));
+            command.Parameters[1].Value = ((System.DateTime)(time));
             global::System.Data.ConnectionState previousConnectionState = command.Connection.State;
             if (((command.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
