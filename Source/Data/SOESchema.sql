@@ -352,6 +352,9 @@ GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.SOEPointOperation', 5)
 GO
 
+INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.IncidentAttributeOperation', 6)
+GO
+
 -- ------ --
 -- Events --
 -- ------ --
@@ -391,6 +394,28 @@ CREATE TABLE Incident
     StartTime DATETIME2 NOT NULL,
     EndTime DATETIME2 NOT NULL
 )
+GO
+
+CREATE TABLE IncidentAttribute
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    IncidentID INT NOT NULL REFERENCES Incident(ID),
+    FaultType VARCHAR(4) NULL,
+    IAMax FLOAT NOT NULL,
+    IBMax FLOAT NOT NULL,
+    ICMax FLOAT NOT NULL,
+    IRMax FLOAT NOT NULL,
+    VAMax FLOAT NOT NULL,
+    VBMax FLOAT NOT NULL,
+    VCMax FLOAT NOT NULL,
+    VAMin FLOAT NOT NULL,
+    VBMin FLOAT NOT NULL,
+    VCMin FLOAT NOT NULL
+)
+GO
+
+CREATE NONCLUSTERED INDEX IX_IncidentAttribute_IncidentID
+ON Event(IncidentID ASC)
 GO
 
 CREATE TABLE EventType
@@ -441,6 +466,10 @@ GO
 
 CREATE NONCLUSTERED INDEX IX_Event_EventDataID
 ON Event(EventDataID ASC)
+GO
+
+CREATE NONCLUSTERED INDEX IX_Event_IncidentID
+ON Event(IncidentID ASC)
 GO
 
 CREATE NONCLUSTERED INDEX IX_Event_StartTime
@@ -516,6 +545,10 @@ CREATE TABLE CycleData
 )
 GO
 
+CREATE NONCLUSTERED INDEX IX_CycleData_EventID
+ON CycleData(EventID ASC)
+GO
+
 CREATE TABLE SOEPoint
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
@@ -528,6 +561,10 @@ CREATE TABLE SOEPoint
     DownState VARCHAR(3) NOT NULL,
     FaultType VARCHAR(4) NULL
 )
+GO
+
+CREATE NONCLUSTERED INDEX IX_SOEPoint_CycleDataID
+ON SOEPoint(CycleDataID ASC)
 GO
 
 ----- FUNCTIONS -----
@@ -953,114 +990,305 @@ FROM
     Meter ON Event.MeterID = Meter.ID
 GO
 
+CREATE VIEW OrientedCycleData AS
+SELECT
+    CycleData.ID,
+    EventID,
+    CycleNumber,
+    SampleNumber,
+    Timestamp,
+    CASE WHEN Orientation = 'XY' THEN VX1RMS ELSE VY1RMS END AS VUp1RMS,
+    CASE WHEN Orientation = 'XY' THEN VX1Phase ELSE VY1Phase END AS VUp1Phase,
+    CASE WHEN Orientation = 'XY' THEN VX1Peak ELSE VY1Peak END AS VUp1Peak,
+    CASE WHEN Orientation = 'XY' THEN VX2RMS ELSE VY2RMS END AS VUp2RMS,
+    CASE WHEN Orientation = 'XY' THEN VX2Phase ELSE VY2Phase END AS VUp2Phase,
+    CASE WHEN Orientation = 'XY' THEN VX2Peak ELSE VY2Peak END AS VUp2Peak,
+    CASE WHEN Orientation = 'XY' THEN VX3RMS ELSE VY3RMS END AS VUp3RMS,
+    CASE WHEN Orientation = 'XY' THEN VX3Phase ELSE VY3Phase END AS VUp3Phase,
+    CASE WHEN Orientation = 'XY' THEN VX3Peak ELSE VY3Peak END AS VUp3Peak,
+    CASE WHEN Orientation = 'XY' THEN VY1RMS ELSE VX1RMS END AS VDown1RMS,
+    CASE WHEN Orientation = 'XY' THEN VY1Phase ELSE VX1Phase END AS VDown1Phase,
+    CASE WHEN Orientation = 'XY' THEN VY1Peak ELSE VX1Peak END AS VDown1Peak,
+    CASE WHEN Orientation = 'XY' THEN VY2RMS ELSE VX2RMS END AS VDown2RMS,
+    CASE WHEN Orientation = 'XY' THEN VY2Phase ELSE VX2Phase END AS VDown2Phase,
+    CASE WHEN Orientation = 'XY' THEN VY2Peak ELSE VX2Peak END AS VDown2Peak,
+    CASE WHEN Orientation = 'XY' THEN VY3RMS ELSE VX3RMS END AS VDown3RMS,
+    CASE WHEN Orientation = 'XY' THEN VY3Phase ELSE VX3Phase END AS VDown3Phase,
+    CASE WHEN Orientation = 'XY' THEN VY3Peak ELSE VX3Peak END AS VDown3Peak,
+	I1RMS,
+	I1Phase,
+	I1Peak,
+	I2RMS,
+	I2Phase,
+	I2Peak,
+	I3RMS,
+	I3Phase,
+	I3Peak,
+    IRRMS,
+    IRPhase,
+    IRPeak
+FROM
+    CycleData JOIN
+    Event ON CycleData.EventID = Event.ID JOIN
+    Meter ON Event.MeterID = Meter.ID
+GO
+
+CREATE VIEW RotatedAndOrientedCycleData AS
+SELECT
+    CycleData.ID,
+    EventID,
+    CycleNumber,
+    SampleNumber,
+    Timestamp,
+    CASE CHARINDEX('A', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VX1RMS ELSE VY1RMS END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VX2RMS ELSE VY2RMS END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VX3RMS ELSE VY3RMS END
+    END AS VUpARMS,
+    CASE CHARINDEX('A', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VX1Phase ELSE VY1Phase END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VX2Phase ELSE VY2Phase END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VX3Phase ELSE VY3Phase END
+    END AS VUpAPhase,
+    CASE CHARINDEX('A', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VX1Peak ELSE VY1Peak END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VX2Peak ELSE VY2Peak END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VX3Peak ELSE VY3Peak END
+    END AS VUpAPeak,
+    CASE CHARINDEX('B', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VX1RMS ELSE VY1RMS END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VX2RMS ELSE VY2RMS END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VX3RMS ELSE VY3RMS END
+    END AS VUpBRMS,
+    CASE CHARINDEX('B', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VX1Phase ELSE VY1Phase END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VX2Phase ELSE VY2Phase END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VX3Phase ELSE VY3Phase END
+    END AS VUpBPhase,
+    CASE CHARINDEX('B', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VX1Peak ELSE VY1Peak END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VX2Peak ELSE VY2Peak END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VX3Peak ELSE VY3Peak END
+    END AS VUpBPeak,
+    CASE CHARINDEX('C', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VX1RMS ELSE VY1RMS END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VX2RMS ELSE VY3RMS END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VX3RMS ELSE VY2RMS END
+    END AS VUpCRMS,
+    CASE CHARINDEX('C', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VX1Phase ELSE VY1Phase END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VX2Phase ELSE VY2Phase END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VX3Phase ELSE VY3Phase END
+    END AS VUpCPhase,
+    CASE CHARINDEX('C', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VX1Peak ELSE VY1Peak END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VX2Peak ELSE VY2Peak END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VX3Peak ELSE VY3Peak END
+    END AS VUpCPeak,
+    CASE CHARINDEX('A', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VY1RMS ELSE VX1RMS END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VY2RMS ELSE VX2RMS END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VY3RMS ELSE VX3RMS END
+    END AS VDownARMS,
+    CASE CHARINDEX('A', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VY1Phase ELSE VX1Phase END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VY2Phase ELSE VX2Phase END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VY3Phase ELSE VX3Phase END
+    END AS VDownAPhase,
+    CASE CHARINDEX('A', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VY1Peak ELSE VX1Peak END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VY2Peak ELSE VX2Peak END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VY3Peak ELSE VX3Peak END
+    END AS VDownAPeak,
+    CASE CHARINDEX('B', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VY1RMS ELSE VX1RMS END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VY2RMS ELSE VX2RMS END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VY3RMS ELSE VX3RMS END
+    END AS VDownBRMS,
+    CASE CHARINDEX('B', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VY1Phase ELSE VX1Phase END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VY2Phase ELSE VX2Phase END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VY3Phase ELSE VX3Phase END
+    END AS VDownBPhase,
+    CASE CHARINDEX('B', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VY1Peak ELSE VX1Peak END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VY2Peak ELSE VX2Peak END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VY3Peak ELSE VX3Peak END
+    END AS VDownBPeak,
+    CASE CHARINDEX('C', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VY1RMS ELSE VX1RMS END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VY2RMS ELSE VX2RMS END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VY3RMS ELSE VX3RMS END
+    END AS VDownCRMS,
+    CASE CHARINDEX('C', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VY1Phase ELSE VX1Phase END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VY2Phase ELSE VX2Phase END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VY3Phase ELSE VX3Phase END
+    END AS VDownCPhase,
+    CASE CHARINDEX('C', Phasing)
+        WHEN 1 THEN CASE WHEN Orientation = 'XY' THEN VY1Peak ELSE VX1Peak END
+        WHEN 2 THEN CASE WHEN Orientation = 'XY' THEN VY2Peak ELSE VX2Peak END
+        WHEN 3 THEN CASE WHEN Orientation = 'XY' THEN VY3Peak ELSE VX3Peak END
+    END AS VDownCPeak,
+    CASE CHARINDEX('A', Phasing)
+        WHEN 1 THEN I1RMS
+        WHEN 2 THEN I2RMS
+        WHEN 3 THEN I3RMS
+    END AS IARMS,
+    CASE CHARINDEX('A', Phasing)
+        WHEN 1 THEN I1Phase
+        WHEN 2 THEN I2Phase
+        WHEN 3 THEN I3Phase
+    END AS IAPhase,
+    CASE CHARINDEX('A', Phasing)
+        WHEN 1 THEN I1Peak
+        WHEN 2 THEN I2Peak
+        WHEN 3 THEN I3Peak
+    END AS IAPeak,
+    CASE CHARINDEX('B', Phasing)
+        WHEN 1 THEN I1RMS
+        WHEN 2 THEN I2RMS
+        WHEN 3 THEN I3RMS
+    END AS IBRMS,
+    CASE CHARINDEX('B', Phasing)
+        WHEN 1 THEN I1Phase
+        WHEN 2 THEN I2Phase
+        WHEN 3 THEN I3Phase
+    END AS IBPhase,
+    CASE CHARINDEX('B', Phasing)
+        WHEN 1 THEN I1Peak
+        WHEN 2 THEN I2Peak
+        WHEN 3 THEN I3Peak
+    END AS IBPeak,
+    CASE CHARINDEX('C', Phasing)
+        WHEN 1 THEN I1RMS
+        WHEN 2 THEN I2RMS
+        WHEN 3 THEN I3RMS
+    END AS ICRMS,
+    CASE CHARINDEX('C', Phasing)
+        WHEN 1 THEN I1Phase
+        WHEN 2 THEN I2Phase
+        WHEN 3 THEN I3Phase
+    END AS ICPhase,
+    CASE CHARINDEX('C', Phasing)
+        WHEN 1 THEN I1Peak
+        WHEN 2 THEN I2Peak
+        WHEN 3 THEN I3Peak
+    END AS ICPeak,
+    IRRMS,
+    IRPhase,
+    IRPeak
+FROM
+    CycleData JOIN
+    Event ON CycleData.EventID = Event.ID JOIN
+    Meter ON Event.MeterID = Meter.ID
+GO
+
 CREATE VIEW CycleDataSOEPointView
 AS
 SELECT
-    RotatedCycleData.Timestamp,
-    CASE
-        WHEN RotatedCycleData.IARMS > RotatedCycleData.IBRMS AND RotatedCycleData.IARMS > RotatedCycleData.ICRMS THEN RotatedCycleData.IARMS
-        WHEN RotatedCycleData.IBRMS > RotatedCycleData.ICRMS THEN RotatedCycleData.IBRMS
-        ELSE RotatedCycleData.ICRMS
-    END AS Imax, 
-    CASE
-        WHEN RotatedCycleData.VXARMS < RotatedCycleData.VXBRMS AND RotatedCycleData.VXARMS < RotatedCycleData.VXCRMS AND RotatedCycleData.VXARMS < RotatedCycleData.VYARMS AND RotatedCycleData.VXARMS < RotatedCycleData.VYBRMS AND RotatedCycleData.VXARMS < RotatedCycleData.VYCRMS THEN RotatedCycleData.VXARMS
-        WHEN RotatedCycleData.VXBRMS < RotatedCycleData.VXCRMS AND RotatedCycleData.VXBRMS < RotatedCycleData.VYARMS AND RotatedCycleData.VXBRMS < RotatedCycleData.VYBRMS AND RotatedCycleData.VXBRMS < RotatedCycleData.VYCRMS THEN RotatedCycleData.VXBRMS
-        WHEN RotatedCycleData.VXCRMS < RotatedCycleData.VYARMS AND RotatedCycleData.VXCRMS < RotatedCycleData.VYBRMS AND RotatedCycleData.VXCRMS < RotatedCycleData.VYCRMS THEN RotatedCycleData.VXCRMS
-        WHEN RotatedCycleData.VYARMS < RotatedCycleData.VYBRMS AND RotatedCycleData.VYARMS < RotatedCycleData.VYCRMS THEN RotatedCycleData.VYARMS
-        WHEN RotatedCycleData.VYBRMS < RotatedCycleData.VYCRMS THEN RotatedCycleData.VYBRMS
-        ELSE RotatedCycleData.VYCRMS
-    END AS Vmin,
-    SOEPoint.StatusElement,
-    SOEPoint.BreakerElementA,
-    SOEPoint.BreakerElementB,
-    SOEPoint.BreakerElementC,
-    SOEPoint.UpState, 
-    SOEPoint.DownState,
-    SOEPoint.ID,
-    Event.MeterID,
-    CAST(CHARINDEX('A', Meter.Phasing) AS CHAR(1))
-        + CAST(CHARINDEX('C', Meter.Phasing) AS CHAR(1))
-        + CAST(CHARINDEX('B', Meter.Phasing) AS CHAR(1)) AS Phasing,
-    Meter.Name,
-    Event.IncidentID,
-    Meter.ParentID,
-    Incident.StartTime,
-    Event.ID AS EventID,
-    SOEPoint.FaultType
+	CycleData.Timestamp,
+	CASE
+		WHEN CycleData.IARMS > CycleData.IBRMS AND CycleData.IARMS > CycleData.ICRMS THEN CycleData.IARMS
+		WHEN CycleData.IBRMS > CycleData.ICRMS THEN CycleData.IBRMS
+		ELSE CycleData.ICRMS
+	END AS Imax,
+	CASE
+		WHEN CycleData.VUpARMS < CycleData.VUpBRMS AND CycleData.VUpARMS < CycleData.VUpCRMS THEN CycleData.VUpARMS
+		WHEN CycleData.VUpBRMS < CycleData.VUpCRMS THEN CycleData.VUpBRMS
+		ELSE CycleData.VUpCRMS
+	END AS Vmin,
+	CASE
+		WHEN CycleData.VUpARMS > CycleData.VUpBRMS AND CycleData.VUpARMS > CycleData.VUpCRMS THEN CycleData.VUpARMS
+		WHEN CycleData.VUpBRMS > CycleData.VUpCRMS THEN CycleData.VUpBRMS
+		ELSE CycleData.VUpCRMS
+	END AS Vmax,
+	SOEPoint.StatusElement,
+	SOEPoint.BreakerElementA,
+	SOEPoint.BreakerElementB,
+	SOEPoint.BreakerElementC,
+	SOEPoint.UpState,
+	SOEPoint.DownState,
+	SOEPoint.ID,
+	Event.MeterID,
+	CAST(CHARINDEX('A', dbo.Meter.Phasing) AS CHAR(1)) + CAST(CHARINDEX('C', dbo.Meter.Phasing) AS CHAR(1)) + CAST(CHARINDEX('B', dbo.Meter.Phasing) AS CHAR(1)) AS Phasing,
+	Meter.Name,
+	Event.IncidentID,
+	Meter.ParentID,
+	Incident.StartTime,
+	Event.ID AS EventID,
+	SOEPoint.FaultType,
+	CycleData.VUpARMS AS VoltSourceA,
+	CycleData.VUpBRMS AS VoltSourceB,
+	CycleData.VUpCRMS AS VoltSourceC
 FROM
-    RotatedCycleData INNER JOIN
-    SOEPoint ON RotatedCycleData.ID = SOEPoint.CycleDataID INNER JOIN
-    Event ON RotatedCycleData.EventID = Event.ID INNER JOIN
-    Meter ON Event.MeterID = Meter.ID INNER JOIN
-    Incident ON Event.IncidentID = Incident.ID
+	dbo.RotatedAndOrientedCycleData CycleData INNER JOIN
+    dbo.SOEPoint ON CycleData.ID = dbo.SOEPoint.CycleDataID INNER JOIN
+    dbo.Event ON CycleData.EventID = dbo.Event.ID INNER JOIN
+    dbo.Meter ON dbo.Event.MeterID = dbo.Meter.ID INNER JOIN
+    dbo.Incident ON dbo.Event.IncidentID = dbo.Incident.ID
 GO
-
--- CREATE VIEW CycDataForParentMeterView
--- AS
--- SELECT
---     CycleDataSOEPointView.ParentID,
---     ParentMeter.PointCode,
---     ParentMeter.UpState,
---     ParentMeter.DownState,
---     ParentMeter.Timestamp,
---     ParentMeter.ID
--- FROM
---     CycleDataSOEPointView LEFT OUTER JOIN
---     CycleDataSOEPointView AS ParentMeter ON dbo.CycleDataSOEPointView.ParentID = ParentMeter.ID
--- GO
 
 CREATE VIEW IncidentEventCycleDataView
 AS
+WITH IncidentEventCycleDataView0 AS
+(
+	SELECT
+		Incident.ID,
+		Meter.Name AS Device,
+		Incident.StartTime,
+		DATEDIFF(MILLISECOND, dbo.Incident.StartTime, dbo.Incident.EndTime) AS Duration,
+		IncidentAttribute.IAMax,
+		IncidentAttribute.IBMax,
+		IncidentAttribute.ICMax,
+		IncidentAttribute.IRMax,
+		IncidentAttribute.VAMin,
+		IncidentAttribute.VBMin,
+		IncidentAttribute.VCMin,
+		IncidentAttribute.VAMax,
+		IncidentAttribute.VBMax,
+		IncidentAttribute.VCMax,
+		IncidentAttribute.FaultType,
+		CASE
+			WHEN IncidentAttribute.IAMax > IncidentAttribute.IBMax AND IncidentAttribute.IAMax > IncidentAttribute.ICMax THEN IncidentAttribute.IAMax
+			WHEN IncidentAttribute.IBMax > IncidentAttribute.ICMax THEN IncidentAttribute.IBMax
+			ELSE IncidentAttribute.ICMax
+		END AS IMax,
+		CASE
+			WHEN IncidentAttribute.VAMax > IncidentAttribute.VBMax AND IncidentAttribute.VAMax > IncidentAttribute.VCMax THEN IncidentAttribute.VAMax
+			WHEN IncidentAttribute.VBMax > IncidentAttribute.VCMax THEN IncidentAttribute.VBMax
+			ELSE IncidentAttribute.VCMax
+		END AS VMax,
+		CASE
+			WHEN IncidentAttribute.VAMin < IncidentAttribute.VBMin AND IncidentAttribute.VAMin < IncidentAttribute.VCMin THEN IncidentAttribute.VAMin
+			WHEN IncidentAttribute.VBMin < IncidentAttribute.VCMin THEN IncidentAttribute.VBMin
+			ELSE IncidentAttribute.VCMin
+		END AS VMin,
+		Line.VoltageKV * 1000 / SQRT(3) AS NominalVoltage
+	FROM
+		Incident INNER JOIN
+		IncidentAttribute ON IncidentAttribute.IncidentID = Incident.ID INNER JOIN
+		Meter ON Incident.MeterID = Meter.ID INNER JOIN
+		MeterLine ON Meter.ID = MeterLine.MeterID INNER JOIN
+		Line ON MeterLine.LineID = Line.ID
+)
 SELECT
-    ID,
-    (
-        SELECT Name
-        FROM Meter
-        WHERE ID = Incident.MeterID
-    ) AS Device,
-    StartTime,
-    (
-        SELECT MAX(RotatedCycleData.IARMS) AS Expr1
-        FROM
-            RotatedCycleData INNER JOIN
-            Event ON RotatedCycleData.EventID = Event.ID
-        WHERE Event.IncidentID = Incident.ID
-    ) AS PhaseA,
-    (
-        SELECT MAX(CycleData_3.IBRMS) AS Expr1
-        FROM
-            RotatedCycleData AS CycleData_3 INNER JOIN
-            Event AS Event_3 ON CycleData_3.EventID = Event_3.ID
-        WHERE Event_3.IncidentID = Incident.ID
-    ) AS PhaseB,
-    (
-        SELECT MAX(CycleData_2.ICRMS) AS Expr1
-        FROM
-            RotatedCycleData AS CycleData_2 INNER JOIN
-            Event AS Event_2 ON CycleData_2.EventID = Event_2.ID
-        WHERE Event_2.IncidentID = Incident.ID
-    ) AS PhaseC,
-    (
-        SELECT MAX(CycleData_1.IRRMS) AS Expr1
-        FROM
-            CycleData AS CycleData_1 INNER JOIN
-            Event AS Event_1 ON CycleData_1.EventID = Event_1.ID
-        WHERE Event_1.IncidentID = Incident.ID
-    ) AS Ground,
-    DATEDIFF(MILLISECOND, StartTime, EndTime) AS Duration,
-    t3.FaultType
-FROM
-    Incident INNER JOIN
-    (
-        SELECT t1.FaultType, t1.IncidentID
-        FROM
-            CycleDataSOEPointView AS t1 INNER JOIN
-            (
-                SELECT IncidentID, MAX(Imax) AS Imax
-                FROM dbo.CycleDataSOEPointView
-                GROUP BY IncidentID
-            ) AS t2 ON t1.IncidentID = t2.IncidentID AND t1.Imax = t2.Imax
-    ) AS t3 ON dbo.Incident.ID = t3.IncidentID
+	CASE
+		WHEN LEN(FaultType) = 2 AND FaultType LIKE '%N' THEN 'LG'
+		WHEN LEN(FaultType) = 3 AND FaultType LIKE '%N' THEN 'LLG'
+		WHEN LEN(FaultType) = 4 AND FaultType LIKE '%N' THEN 'LLLG'
+		WHEN LEN(FaultType) = 2 THEN 'LL'
+		WHEN FaultType IS NOT NULL THEN 'LLL'
+		WHEN VMin = VAMin AND (VAMin / NominalVoltage) <= 0.9 THEN 'A-SAG'
+		WHEN VMin = VCMin AND (VCMin / NominalVoltage) <= 0.9 THEN 'C-SAG'
+		WHEN VMin = VBMin AND (VBMin / NominalVoltage) <= 0.9 THEN 'B-SAG'
+		WHEN VMax = VAMax AND (VAMax / NominalVoltage) >= 1.1 THEN 'A-SWELL'
+		WHEN VMax = VCMax AND (VCMax / NominalVoltage) >= 1.1 THEN 'C-SWELL'
+		WHEN VMax = VBMax AND (VBMax / NominalVoltage) >= 1.1 THEN 'B-SWELL'
+		ELSE 'OTHER'
+	END AS IncidentType,
+	*
+FROM IncidentEventCycleDataView0
 GO
 
 ----- PROCEDURES -----
