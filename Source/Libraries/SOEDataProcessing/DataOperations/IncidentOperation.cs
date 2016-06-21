@@ -146,6 +146,7 @@ namespace SOEDataProcessing.DataOperations
                         .SelectMany(incident => incident.ExistingIncidents)
                         .Select(incident => incident.ID));
 
+                    database.ExecuteNonQuery($"DELETE FROM IncidentAttribute WHERE IncidentID IN ({allIncidentIDs})");
                     database.ExecuteNonQuery($"DELETE FROM Incident WHERE ID IN ({allIncidentIDs})");
                 }
             }
