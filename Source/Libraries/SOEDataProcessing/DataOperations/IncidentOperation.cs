@@ -131,13 +131,15 @@ namespace SOEDataProcessing.DataOperations
 
             using (AdoDataConnection database = new AdoDataConnection(dbAdapterContainer.Connection, typeof(SqlDataAdapter), false))
             {
+                const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fffffff";
+
                 foreach (Incident incident in expand)
-                    database.ExecuteNonQuery("UPDATE Incident SET StartTime = {0}, EndTime = {1} WHERE ID = {2}", incident.StartTime, incident.EndTime, incident.ExistingIncidents[0].ID);
+                    database.ExecuteNonQuery("UPDATE Incident SET StartTime = {0}, EndTime = {1} WHERE ID = {2}", incident.StartTime.ToString(DateTimeFormat), incident.EndTime.ToString(DateTimeFormat), incident.ExistingIncidents[0].ID);
 
                 foreach (Incident incident in cleanup)
                 {
                     string incidentIDs = string.Join(",", incident.ExistingIncidents.Select(inc => inc.ID));
-                    database.ExecuteNonQuery($"UPDATE Event SET IncidentID = (SELECT ID FROM Incident WHERE StartTime = {{0}} AND EndTime = {{1}}) WHERE IncidentID IN ({incidentIDs})", incident.StartTime, incident.EndTime);
+                    database.ExecuteNonQuery($"UPDATE Event SET IncidentID = (SELECT ID FROM Incident WHERE StartTime = {{0}} AND EndTime = {{1}}) WHERE IncidentID IN ({incidentIDs})", incident.StartTime.ToString(DateTimeFormat), incident.EndTime.ToString(DateTimeFormat));
                 }
 
                 if (cleanup.Count > 0)
