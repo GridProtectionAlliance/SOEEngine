@@ -101,7 +101,7 @@ namespace SOEDataProcessing.DataResources
 
         public override void Initialize(MeterDataSet meterDataSet)
         {
-            CycleDataResource cycleDataResource = CycleDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
+            CycleDataResource cycleDataResource = meterDataSet.GetResource<CycleDataResource>();
             m_systemEvents = GetSystemEvents(cycleDataResource.DataGroups);
         }
 

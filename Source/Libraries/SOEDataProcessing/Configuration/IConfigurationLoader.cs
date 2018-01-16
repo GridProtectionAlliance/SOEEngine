@@ -20,8 +20,7 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-
-using SOEDataProcessing.Database;
+using GSF.Data;
 
 namespace SOEDataProcessing.Configuration
 {
@@ -30,6 +29,6 @@ namespace SOEDataProcessing.Configuration
     /// </summary>
     public interface IConfigurationLoader
     {
-        void UpdateConfiguration(DbAdapterContainer dbAdapterContainer);
+        void UpdateConfiguration(AdoDataConnection connection);
     }
 }

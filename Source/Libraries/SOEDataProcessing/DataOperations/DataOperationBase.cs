@@ -28,9 +28,7 @@ namespace SOEDataProcessing.DataOperations
 {
     public abstract class DataOperationBase<T> : IDataOperation where T : class, IDataSet
     {
-        public abstract void Prepare(DbAdapterContainer dbAdapterContainer);
         public abstract void Execute(T dataSet);
-        public abstract void Load(DbAdapterContainer dbAdapterContainer);
 
         public void Execute(IDataSet dataSet)
         {

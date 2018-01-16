@@ -20,15 +20,17 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-
-using System.Data.SqlClient;
 using System.Linq;
 using GSF.Data;
-using SOEDataProcessing.Database;
-using SOEDataProcessing.Database.MeterDataTableAdapters;
 using SOEDataProcessing.DataResources;
 using SOEDataProcessing.DataSets;
-using static SOEDataProcessing.Database.MeterData;
+using System.Collections;
+using SOE.Model;
+using GSF.Data.Model;
+using System.Collections.Generic;
+using SOEDataProcessing.DataAnalysis;
+using System.Data;
+using System;
 
 namespace SOEDataProcessing.DataOperations
 {
@@ -36,36 +38,30 @@ namespace SOEDataProcessing.DataOperations
     {
         private MeterDataSet m_meterDataSet;
 
-        public override void Prepare(DbAdapterContainer dbAdapterContainer)
-        {
-        }
-
         public override void Execute(MeterDataSet meterDataSet)
         {
             m_meterDataSet = meterDataSet;
+            Load();
         }
 
-        public override void Load(DbAdapterContainer dbAdapterContainer)
+        private void Load()
         {
-            CycleDataResource cycleDataResource = CycleDataResource.GetResource(m_meterDataSet, dbAdapterContainer);
-            IncidentTableAdapter incidentAdapter = dbAdapterContainer.GetAdapter<IncidentTableAdapter>();
-            IncidentAttributeDataTable incidentAttributeTable = new IncidentAttributeDataTable();
+            CycleDataResource cycleDataResource = m_meterDataSet.GetResource<CycleDataResource>();
 
-            object[] incidentIDs = cycleDataResource.DataGroups
-                .Select(dataGroup => incidentAdapter.GetIDByTime(m_meterDataSet.Meter.ID, dataGroup.StartTime))
-                .Where(incidentID => incidentID.HasValue)
-                .Select(incidentID => incidentID.GetValueOrDefault())
-                .Distinct()
-                .Cast<object>()
-                .ToArray();
-
-            if (!incidentIDs.Any())
-                return;
-
-            string formatString = string.Join(",", incidentIDs.Select((id, index) => $"{{{index}}}"));
-
-            using (AdoDataConnection connection = new AdoDataConnection(dbAdapterContainer.Connection, typeof(SqlDataAdapter), false))
+            using (AdoDataConnection connection = m_meterDataSet.Meter.ConnectionFactory())
             {
+                TableOperations<Incident> incidentTable = new TableOperations<Incident>(connection);
+                List<object> incidents = new List<object>();
+                foreach (DataGroup dg in cycleDataResource.DataGroups) {
+                    Incident incident = incidentTable.QueryRecordWhere("MeterID = {0} AND {1} Between StartTime AND EndTime", m_meterDataSet.Meter.ID, ToDateTime2(connection, dg.StartTime));
+                    if(incident != null)
+                        incidents.Add(incident.ID);
+                }
+                if (!incidents.Any())
+                    return;
+
+                string formatString = string.Join(",", incidents.Select((id, index) => $"{{{index}}}"));
+
                 connection.ExecuteNonQuery(
                     $"WITH IMaxCycleData AS " +
                     $"( " +
@@ -157,8 +153,20 @@ namespace SOEDataProcessing.DataOperations
                     $"        VCMin = Source.VCMin " +
                     $"WHEN NOT MATCHED THEN " +
                     $"    INSERT (IncidentID, FaultType, IAMax, IBMax, ICMax, IRMax, VAMax, VBMax, VCMax, VAMin, VBMin, VCMin) " +
-                    $"    VALUES (Source.IncidentID, Source.FaultType, Source.IAMax, Source.IBMax, Source.ICMax, Source.IRMax, Source.VAMax, Source.VBMax, Source.VCMax, Source.VAMin, Source.VBMin, Source.VCMin);", incidentIDs);
+                    $"    VALUES (Source.IncidentID, Source.FaultType, Source.IAMax, Source.IBMax, Source.ICMax, Source.IRMax, Source.VAMax, Source.VBMax, Source.VCMax, Source.VAMin, Source.VBMin, Source.VCMin);", incidents.ToArray());
             }
         }
+
+        private IDbDataParameter ToDateTime2(AdoDataConnection connection, DateTime dateTime)
+        {
+            using (IDbCommand command = connection.Connection.CreateCommand())
+            {
+                IDbDataParameter parameter = command.CreateParameter();
+                parameter.DbType = DbType.DateTime2;
+                parameter.Value = dateTime;
+                return parameter;
+            }
+        }
+
     }
 }

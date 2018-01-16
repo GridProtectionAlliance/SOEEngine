@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <TagDefinitions>
     <tagInfo>
         <tag>
@@ -509,7 +509,7 @@
             <id>b48d8592-f5f5-11cf-9d89-0080c72e70a3</id>
             <name>QuantityTypeIDTag</name>
             <standardName>tagQuantityTypeID</standardName>
-            <description>The high-level description of the type of quantity which is being captured by this channel. In order to guarantee reader compatibility, the following series value types (in order) should be used (ID_SERIES_VALUE_TYPE_VX1L, etc.).</description>
+            <description>The high-level description of the type of quantity which is being captured by this channel. In order to guarantee reader compatibility, the following series value types (in order) should be used (ID_SERIES_VALUE_TYPE_VAL, etc.).</description>
             <elementType>Scalar</elementType>
             <physicalType>Guid</physicalType>
             <required>True</required>
@@ -2377,7 +2377,7 @@
                 <name>Response</name>
                 <standardName>ID_QT_RESPONSE</standardName>
                 <value>67f6af85-f753-11cf-9d89-0080c72e70a3</value>
-                <description>VAL (FREQUENCY), VX1L, PHASEANGLE / For frequency-domain measurements including magnitude and (optionally) phase angle.</description>
+                <description>VAL (FREQUENCY), VAL, PHASEANGLE / For frequency-domain measurements including magnitude and (optionally) phase angle.</description>
             </id>
             <id>
                 <name>Flash</name>
@@ -2407,7 +2407,7 @@
                 <name>XY</name>
                 <standardName>ID_QT_XY</standardName>
                 <value>67f6af8a-f753-11cf-9d89-0080c72e70a3</value>
-                <description>VAL, VX1L</description>
+                <description>VAL, VAL</description>
             </id>
             <id>
                 <name>MagDur</name>
@@ -2419,7 +2419,7 @@
                 <name>XYZ</name>
                 <standardName>ID_QT_XYZ</standardName>
                 <value>67f6af8c-f753-11cf-9d89-0080c72e70a3</value>
-                <description>VAL, VX1L, VX1L</description>
+                <description>VAL, VAL, VAL</description>
             </id>
             <id>
                 <name>MagDurTime</name>
@@ -2879,7 +2879,7 @@
         <tagValueTypeID>
             <id>
                 <name>Values</name>
-                <standardName>ID_SERIES_VALUE_TYPE_VX1L</standardName>
+                <standardName>ID_SERIES_VALUE_TYPE_VAL</standardName>
                 <value>67f6af97-f753-11cf-9d89-0080c72e70a3</value>
                 <description>This should be the default value type for a measurement -- a value.</description>
             </id>
@@ -3035,7 +3035,7 @@
             </id>
             <id>
                 <name>Interval</name>
-                <standardName>ID_SERIES_VALUE_TYPE_INTERVX1L</standardName>
+                <standardName>ID_SERIES_VALUE_TYPE_INTERVAL</standardName>
                 <value>72e82a40-336c-11d5-a4b3-444553540000</value>
                 <description>Interval data</description>
             </id>

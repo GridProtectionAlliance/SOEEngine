@@ -26,9 +26,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using SOEDataProcessing.DataAnalysis;
-using SOEDataProcessing.Database;
 using SOEDataProcessing.DataResources;
 using GSF.Configuration;
+using GSF.Data;
+using SOE.Model;
 
 namespace SOEDataProcessing.DataSets
 {
@@ -37,12 +38,14 @@ namespace SOEDataProcessing.DataSets
         #region [ Members ]
 
         // Fields
+        private Func<AdoDataConnection> m_createDbConnection;
         private string m_connectionString;
         private Dictionary<Type, object> m_resources;
 
         private string m_filePath;
         private FileGroup m_fileGroup;
         private Meter m_meter;
+        private ConfigurationDataSet m_configuration;
         private List<DataSeries> m_dataSeries;
         private List<DataSeries> m_digitals;
 
@@ -53,6 +56,7 @@ namespace SOEDataProcessing.DataSets
         public MeterDataSet()
         {
             m_resources = new Dictionary<Type, object>();
+            m_configuration = new ConfigurationDataSet();
             m_dataSeries = new List<DataSeries>();
             m_digitals = new List<DataSeries>();
         }
@@ -60,6 +64,18 @@ namespace SOEDataProcessing.DataSets
         #endregion
 
         #region [ Properties ]
+
+        public Func<AdoDataConnection> CreateDbConnection
+        {
+            get
+            {
+                return m_createDbConnection;
+            }
+            set
+            {
+                m_createDbConnection = value;
+            }
+        }
 
         public string ConnectionString
         {
@@ -106,6 +122,14 @@ namespace SOEDataProcessing.DataSets
             set
             {
                 m_meter = value;
+            }
+        }
+
+        public ConfigurationDataSet Configuration
+        {
+            get
+            {
+                return m_configuration;
             }
         }
 

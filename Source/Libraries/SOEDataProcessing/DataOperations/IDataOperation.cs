@@ -28,8 +28,6 @@ namespace SOEDataProcessing.DataOperations
 {
     public interface IDataOperation
     {
-        void Prepare(DbAdapterContainer dbAdapterContainer);
         void Execute(IDataSet meterDataSet);
-        void Load(DbAdapterContainer dbAdapterContainer);
     }
 }

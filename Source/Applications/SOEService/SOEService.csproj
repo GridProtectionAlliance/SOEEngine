@@ -127,7 +127,12 @@
     <Reference Include="log4net">
       <HintPath>..\..\Dependencies\NuGet\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\NuGet\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core">
@@ -200,6 +205,10 @@
     <ProjectReference Include="..\..\Libraries\IntelliRupters\IntelliRupters.csproj">
       <Project>{75fa1fb7-5afc-4c54-8aba-f12738837398}</Project>
       <Name>IntelliRupters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\SOE.Model\SOE.Model.csproj">
+      <Project>{54cdfae3-a029-4141-9a7d-5981b7cd4b64}</Project>
+      <Name>SOE.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\SOEDataProcessing\SOEDataProcessing.csproj">
       <Project>{11ae594d-2b2b-473c-8550-6bf62914c3e2}</Project>

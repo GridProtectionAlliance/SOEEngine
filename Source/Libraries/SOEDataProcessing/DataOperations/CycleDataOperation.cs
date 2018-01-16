@@ -31,6 +31,9 @@ using SOEDataProcessing.Database.MeterDataTableAdapters;
 using SOEDataProcessing.DataResources;
 using SOEDataProcessing.DataSets;
 using EventKey = System.Tuple<int, int, System.DateTime, System.DateTime, int>;
+using SOE.Model;
+using GSF.Data;
+using GSF.Data.Model;
 
 namespace SOEDataProcessing.DataOperations
 {
@@ -40,11 +43,10 @@ namespace SOEDataProcessing.DataOperations
 
         // Fields
         private double m_systemFrequency;
-        private DbAdapterContainer m_dbAdapterContainer;
         private MeterDataSet m_meterDataSet;
 
         private readonly MeterData.CycleDataDataTable m_cycleDataTable;
-        private readonly List<Tuple<EventKey, MeterData.CycleDataRow>> m_cycleDataList;
+        private readonly List<Tuple<EventKey, CycleData>> m_cycleDataList;
 
         #endregion
 
@@ -53,7 +55,7 @@ namespace SOEDataProcessing.DataOperations
         public CycleDataOperation()
         {
             m_cycleDataTable = new MeterData.CycleDataDataTable();
-            m_cycleDataList = new List<Tuple<EventKey, MeterData.CycleDataRow>>();
+            m_cycleDataList = new List<Tuple<EventKey, CycleData>>();
         }
 
         #endregion
@@ -76,15 +78,9 @@ namespace SOEDataProcessing.DataOperations
         #endregion
 
         #region [ Methods ]
-
-        public override void Prepare(DbAdapterContainer dbAdapterContainer)
-        {
-            m_dbAdapterContainer = dbAdapterContainer;
-        }
-
         public override void Execute(MeterDataSet meterDataSet)
         {
-            CycleDataResource cycleDataResource = CycleDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
+            CycleDataResource cycleDataResource = meterDataSet.GetResource<CycleDataResource>();
 
             for (int i = 0; i < cycleDataResource.DataGroups.Count; i++)
             {
@@ -95,36 +91,27 @@ namespace SOEDataProcessing.DataOperations
             }
 
             m_meterDataSet = meterDataSet;
-        }
 
-        public override void Load(DbAdapterContainer dbAdapterContainer)
-        {
-            BulkLoader bulkLoader;
-            MeterData.EventRow eventRow;
-
-            // Query database for events and store them in a lookup table by event key
-            EventTableAdapter eventAdapter = dbAdapterContainer.GetAdapter<EventTableAdapter>();
-            MeterData.EventDataTable eventTable = eventAdapter.GetDataByFileGroup(m_meterDataSet.FileGroup.ID);
-            Dictionary<EventKey, MeterData.EventRow> eventLookup = eventTable.ToDictionary(CreateEventKey);
-
-            foreach (Tuple<EventKey, MeterData.CycleDataRow> tuple in m_cycleDataList)
+            using (AdoDataConnection connection = meterDataSet.CreateDbConnection())
             {
-                if (eventLookup.TryGetValue(tuple.Item1, out eventRow))
+                // Query database for events and store them in a lookup table by event key
+                TableOperations<Event> eventAdapter = new TableOperations<Event>(connection);
+                TableOperations<CycleData> cycleDataAdapter = new TableOperations<CycleData>(connection);
+
+                IEnumerable<Event> eventTable = eventAdapter.QueryRecordsWhere("FileGroupID = {0}",m_meterDataSet.FileGroup.ID);
+
+                Dictionary<EventKey, Event> eventLookup = eventTable.ToDictionary(CreateEventKey);
+
+                foreach (Tuple<EventKey, CycleData> tuple in m_cycleDataList)
                 {
-                    tuple.Item2.EventID = eventRow.ID;
-                    m_cycleDataTable.AddCycleDataRow(tuple.Item2);
+                    Event eventRow;
+                    if (eventLookup.TryGetValue(tuple.Item1, out eventRow))
+                    {
+                        tuple.Item2.EventID = eventRow.ID;
+                        cycleDataAdapter.AddNewRecord(tuple.Item2);
+                    }
                 }
             }
-
-            if (m_cycleDataTable.Count == 0)
-                return;
-
-            // Create the bulk loader for loading data into the database
-            bulkLoader = new BulkLoader();
-            bulkLoader.Connection = dbAdapterContainer.Connection;
-            bulkLoader.CommandTimeout = dbAdapterContainer.CommandTimeout;
-
-            bulkLoader.Load(m_cycleDataTable);
         }
 
         private void Process(EventKey eventKey, VICycleDataGroup viCycleDataGroup, int samplesPerCycle)
@@ -132,11 +119,11 @@ namespace SOEDataProcessing.DataOperations
             int length = viCycleDataGroup.VX1.RMS.DataPoints.Count;
 
             int sampleNumber = 0;
-            MeterData.CycleDataRow row;
+            CycleData row;
 
             for (int i = 0; i < length; i++)
             {
-                row = m_cycleDataTable.NewCycleDataRow();
+                row = new CycleData();
 
                 row.CycleNumber = i;
                 row.SampleNumber = sampleNumber;
@@ -180,12 +167,12 @@ namespace SOEDataProcessing.DataOperations
             }
         }
 
-        private EventKey CreateEventKey(FileGroup fileGroup, DataGroup dataGroup)
+        private EventKey CreateEventKey(SOE.Model.FileGroup fileGroup, DataGroup dataGroup)
         {
             return Tuple.Create(fileGroup.ID, dataGroup.Line.ID, dataGroup.StartTime, dataGroup.EndTime, dataGroup.Samples);
         }
 
-        private EventKey CreateEventKey(MeterData.EventRow eventRow)
+        private EventKey CreateEventKey(Event eventRow)
         {
             return Tuple.Create(eventRow.FileGroupID, eventRow.LineID, eventRow.StartTime, eventRow.EndTime, eventRow.Samples);
         }

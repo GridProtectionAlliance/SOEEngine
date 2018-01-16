@@ -73,6 +73,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -83,16 +84,21 @@ using System.Threading;
 using System.Transactions;
 using SOEDataProcessing.Configuration;
 using SOEDataProcessing.DataAnalysis;
-using SOEDataProcessing.Database;
 using SOEDataProcessing.DataSets;
 using GSF.Annotations;
 using GSF.Collections;
 using GSF.Configuration;
+using GSF.Data;
+using GSF.Data.Model;
 using GSF.IO;
 using GSF.Threading;
 using log4net;
 using SOEService.Configuration;
 using FileShare = SOEService.Configuration.FileShare;
+using GSF.IO.Checksums;
+using SOEDataProcessing.DataOperations;
+using SOEDataProcessing.DataReaders;
+using SOE.Model;
 
 namespace SOEService
 {
@@ -105,6 +111,22 @@ namespace SOEService
         #region [ Members ]
 
         // Nested Types
+        private class DataProcessorState
+        {
+            public string FilePath { get; set; }
+            public string FileName => Path.GetFileName(FilePath);
+            public FileWrapper FileWrapper { get; set; }
+            public FileGroup FileGroup { get; set; }
+
+            public string MeterKey { get; set; }
+            public string ConnectionString { get; set; }
+            public SystemSettings SystemSettings { get; set; }
+
+            public Action<DataProcessorState> ProcessFileCallback { get; set; }
+            public Action<DataProcessorState> ProcessFailureCallback { get; set; }
+            public MeterDataSet MeterDataSet { get; set; }
+            public bool Retry { get; set; }
+        }
 
         private class FileWrapper
         {
@@ -114,6 +136,8 @@ namespace SOEService
             private string m_filePath;
             private string m_directory;
             private string m_filePathWithoutExtension;
+
+            private DateTime? m_maxFileCreationTime;
             private Dictionary<string, DateTime> m_fileCreationTimes;
 
             #endregion
@@ -135,6 +159,18 @@ namespace SOEService
 
                 m_fileCreationTimes = new Dictionary<string, DateTime>();
             }
+
+            /// <summary>
+            /// Creates a new instance of the <see cref="FileWrapper"/> class.
+            /// </summary>
+            /// <param name="filePath">The path to the wrapped file.</param>
+            /// <param name="maxFileCreationTime">The max creation time of the file group.</param>
+            public FileWrapper(string filePath, DateTime maxFileCreationTime)
+                : this(filePath)
+            {
+                m_maxFileCreationTime = maxFileCreationTime;
+            }
+
 
             #endregion
 
@@ -165,41 +201,31 @@ namespace SOEService
             #endregion
 
             #region [ Methods ]
-
             /// <summary>
-            /// Gets the file group containing information about the file on
-            /// the given file path, as well as the files related to it.
+            /// Creates new <see cref="DataFile"/> objects for each file in the file group.
             /// </summary>
-            /// <param name="dataContext">The data context used for database lookups.</param>
-            /// <param name="soeTimeZone">The time zone used by the SOE engine.</param>
-            /// <returns></returns>
-            public FileGroup GetFileGroup(FileInfoDataContext dataContext, TimeZoneInfo soeTimeZone)
+            /// <param name="xdaTimeZone">The time zone used by openXDA.</param>
+            /// <returns>The list of data files.</returns>
+            public List<DataFile> CreateDataFiles(TimeZoneInfo xdaTimeZone)
             {
-                FileInfo fileInfo;
-                FileGroup fileGroup;
+                List<DataFile> dataFiles = new List<DataFile>();
                 DataFile dataFile;
+                FileInfo fileInfo;
 
-                fileGroup = new FileGroup();
-                fileGroup.ProcessingStartTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, soeTimeZone);
-
-                foreach (string file in GSF.IO.FilePath.GetFileList($"{m_filePathWithoutExtension}.*"))
+                foreach (string filePath in GSF.IO.FilePath.GetFileList($"{m_filePathWithoutExtension}.*"))
                 {
-                    fileInfo = new FileInfo(file);
+                    fileInfo = new FileInfo(filePath);
 
                     dataFile = new DataFile();
-                    dataFile.FilePath = file;
-                    dataFile.FilePathHash = file.GetHashCode();
+                    dataFile.FilePath = filePath;
+                    dataFile.FilePathHash = filePath.GetHashCode();
                     dataFile.FileSize = fileInfo.Length;
-                    dataFile.CreationTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.CreationTimeUtc, soeTimeZone);
-                    dataFile.LastWriteTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.LastWriteTimeUtc, soeTimeZone);
-                    dataFile.LastAccessTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.LastAccessTimeUtc, soeTimeZone);
-                    dataFile.FileGroup = fileGroup;
+                    dataFile.CreationTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.CreationTimeUtc, xdaTimeZone);
+                    dataFile.LastWriteTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.LastWriteTimeUtc, xdaTimeZone);
+                    dataFile.LastAccessTime = TimeZoneInfo.ConvertTimeFromUtc(fileInfo.LastAccessTimeUtc, xdaTimeZone);
+                    dataFiles.Add(dataFile);
                 }
-
-                dataContext.FileGroups.InsertOnSubmit(fileGroup);
-                dataContext.SubmitChanges();
-
-                return fileGroup;
+                return dataFiles;
             }
 
             /// <summary>
@@ -208,6 +234,9 @@ namespace SOEService
             /// <returns>The creation time of the file with the most recent creation time of the files with the same root name as the wrapped file.</returns>
             public DateTime GetMaxFileCreationTime()
             {
+                if (m_maxFileCreationTime.HasValue)
+                    return m_maxFileCreationTime.GetValueOrDefault();
+
                 string[] fileList = GSF.IO.FilePath.GetFileList($"{m_filePathWithoutExtension}.*");
                 return fileList.Max(file => m_fileCreationTimes.GetOrAdd(file, path => DateTime.UtcNow));
             }
@@ -233,25 +262,20 @@ namespace SOEService
         }
 
         // Constants
-
-        /// <summary>
-        /// Globally unique identifier required by the file processor to identify its cached list of processed files.
-        /// </summary>
-        private static readonly Guid FileProcessorID = new Guid("4E3D3A90-6E7E-4AB7-96F3-3A5899081D0D");
+        private const int FileEnumerationPriority = 1;
+        private const int FileWatcherPriority = 2;
+        private const int RequeuePriority = 3;
 
         // Fields
         private string m_dbConnectionString;
         private SystemSettings m_systemSettings;
 
         private FileProcessor m_fileProcessor;
-        private Dictionary<string, FileWrapper> m_fileWrapperLookup;
         private ConcurrentDictionary<string, string> m_activeFiles;
 
         private LogicalThreadScheduler m_meterDataScheduler;
         private Dictionary<string, LogicalThread> m_meterDataThreadLookup;
         private LogicalThread m_noMeterThread;
-
-        private int m_queuedFileCount;
 
         private bool m_stopped;
         private bool m_disposed;
@@ -281,7 +305,6 @@ namespace SOEService
                 statusBuilder.AppendLine($"        Min Time Offset: {systemSettings.MinTimeOffset} hours");
                 statusBuilder.AppendLine($"      Max File Duration: {systemSettings.MaxFileDuration} seconds");
                 statusBuilder.AppendLine($"   File Creation Offset: {systemSettings.MaxFileCreationTimeOffset} hours");
-                statusBuilder.AppendLine($"      Queued file count: {Interlocked.CompareExchange(ref m_queuedFileCount, 0, 0)} / {systemSettings.MaxQueuedFileCount}");
                 statusBuilder.AppendLine();
 
                 activeFiles = m_activeFiles.ToArray();
@@ -337,6 +360,18 @@ namespace SOEService
 
         #endregion
 
+        #region [ Constructors ]
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="SequenceOfEventsEngine"/> class.
+        /// </summary>
+        public SequenceOfEventsEngine()
+        {
+            m_stopped = true;
+        }
+
+        #endregion
+
         #region [ Methods ]
 
         /// <summary>
@@ -344,19 +379,8 @@ namespace SOEService
         /// </summary>
         public void Start()
         {
-            IEnumerable<string> filterPatterns;
-
             // Get system settings from the database
             ReloadSystemSettings();
-
-            // Get the list of file extensions to be processed by the SOE engine
-            using (SystemInfoDataContext systemInfo = new SystemInfoDataContext(m_dbConnectionString))
-            {
-                filterPatterns = systemInfo.DataReaders
-                    .Select(reader => reader.FilePattern)
-                    .Select(extension => string.Format("*.{0}", extension))
-                    .ToList();
-            }
 
             // Reload configuration at startup
             ReloadConfiguration();
@@ -368,9 +392,6 @@ namespace SOEService
             // Make sure results directory exists
             TryCreateDirectory(m_systemSettings.ResultsPath);
 
-            if ((object)m_fileWrapperLookup == null)
-                m_fileWrapperLookup = new Dictionary<string, FileWrapper>();
-
             // Create the lookup table used to track which files are being processed
             if ((object)m_activeFiles == null)
                 m_activeFiles = new ConcurrentDictionary<string, string>();
@@ -378,7 +399,7 @@ namespace SOEService
             // Create the scheduler used to schedule when to process meter data
             if ((object)m_meterDataScheduler == null)
             {
-                m_meterDataScheduler = new LogicalThreadScheduler();
+                m_meterDataScheduler = new LogicalThreadScheduler(3);
                 m_meterDataThreadLookup = new Dictionary<string, LogicalThread>();
 
                 m_meterDataScheduler.UnhandledException += (sender, args) =>
@@ -394,7 +415,7 @@ namespace SOEService
             // Setup new file processor to monitor the watch directories
             if ((object)m_fileProcessor == null)
             {
-                m_fileProcessor = new FileProcessor(FileProcessorID);
+                m_fileProcessor = new FileProcessor(m_systemSettings.FileProcessorID);
                 m_fileProcessor.InternalBufferSize = m_systemSettings.FileWatcherBufferSize;
                 m_fileProcessor.EnumerationStrategy = m_systemSettings.FileWatcherEnumerationStrategy;
                 m_fileProcessor.MaxThreadCount = m_systemSettings.FileWatcherInternalThreadCount;
@@ -406,6 +427,8 @@ namespace SOEService
                 UpdateFileProcessorFilter(m_systemSettings);
             }
 
+            m_stopped = false;
+
             foreach (string path in m_systemSettings.WatchDirectoryList)
                 m_fileProcessor.AddTrackedDirectory(path);
         }
@@ -415,12 +438,6 @@ namespace SOEService
         /// </summary>
         public void ReloadConfiguration()
         {
-            SystemInfoDataContext systemInfo;
-            List<Type> types;
-            string connectionString;
-
-            IConfigurationLoader configurationLoader;
-
             // If system settings is null,
             // attempt to reload system settings
             if ((object)m_systemSettings == null)
@@ -430,41 +447,40 @@ namespace SOEService
             if ((object)m_systemSettings == null)
                 return;
 
-            using (DbAdapterContainer dbAdapterContainer = new DbAdapterContainer(m_systemSettings.DbConnectionString))
+            using (AdoDataConnection connection = CreateDbConnection(m_systemSettings))
             {
-                systemInfo = dbAdapterContainer.GetAdapter<SystemInfoDataContext>();
 
-                types = systemInfo.ConfigurationLoaders
-                    .OrderBy(configLoader => configLoader.LoadOrder)
-                    .AsEnumerable()
-                    .Select(configLoader => LoadType(configLoader.AssemblyName, configLoader.TypeName))
-                    .Where(type => (object)type != null)
-                    .Where(type => typeof(IConfigurationLoader).IsAssignableFrom(type))
-                    .Where(type => (object)type.GetConstructor(Type.EmptyTypes) != null)
+                TableOperations<ConfigurationLoader> configurationLoaderTable = new TableOperations<ConfigurationLoader>(connection);
+
+                List<ConfigurationLoader> configurationLoaderDefinitions = configurationLoaderTable
+                    .QueryRecords("LoadOrder")
                     .ToList();
 
-                connectionString = LoadSystemSettings(systemInfo);
+                string connectionString = LoadSystemSettings(connection);
 
-                foreach (Type type in types)
+
+                foreach (ConfigurationLoader configurationLoaderDefinition in configurationLoaderDefinitions)
                 {
                     try
                     {
-                        OnStatusMessage("[{0}] Loading configuration...", type.Name);
+                        OnStatusMessage("[{0}] Loading configuration...", configurationLoaderDefinition.TypeName);
 
-                        // Create an instance of the configuration loader
-                        configurationLoader = (IConfigurationLoader)Activator.CreateInstance(type);
+                        using (ConfigurationLoaderWrapper wrapper = Wrap(configurationLoaderDefinition))
+                        {
+                            IConfigurationLoader configurationLoader = wrapper.DataObject;
 
-                        // Use the connection string parser to load system settings into the configuration loader
-                        ConnectionStringParser.ParseConnectionString(connectionString, configurationLoader);
+                            // Use the connection string parser to load system settings into the configuration loader
+                            ConnectionStringParser.ParseConnectionString(connectionString, configurationLoader);
 
-                        // Update configuration by calling the configuration loader's UpdateConfiguration method
-                        configurationLoader.UpdateConfiguration(dbAdapterContainer);
+                            // Update configuration by calling the configuration loader's UpdateConfiguration method
+                            configurationLoader.UpdateConfiguration(connection);
+                        }
 
-                        OnStatusMessage("[{0}] Done loading configuration.", type.Name);
+                        OnStatusMessage("[{0}] Done loading configuration.", configurationLoaderDefinition.TypeName);
                     }
                     catch (Exception ex)
                     {
-                        string message = string.Format("[{0}] Unable to update configuration due to exception: {1}", type.Name, ex.Message);
+                        string message = string.Format("[{0}] Unable to update configuration due to exception: {1}", configurationLoaderDefinition.TypeName, ex.Message);
                         OnProcessException(new InvalidOperationException(message, ex));
                     }
                 }
@@ -482,6 +498,7 @@ namespace SOEService
             // Reload the configuration file
             configurationFile = ConfigurationFile.Current;
             configurationFile.Reload();
+            AdoDataConnection.ReloadConfigurationSettings();
 
             // Retrieve the connection string from the config file
             category = configurationFile.Settings["systemSettings"];
@@ -583,7 +600,7 @@ namespace SOEService
 
             if (args[0].Equals("-Enumerate", StringComparison.OrdinalIgnoreCase))
             {
-                m_fileProcessor.EnumerateWatchDirectories();
+                EnumerateWatchDirectories();
                 return "Started enumeration of the watch directories.";
             }
 
@@ -691,6 +708,238 @@ namespace SOEService
         }
 
         /// <summary>
+        /// Issues command to the file processor to enumerate the watch directories.
+        /// </summary>
+        public void EnumerateWatchDirectories()
+        {
+            if (m_fileProcessor.EnumerationThreads > 0)
+                throw new InvalidOperationException("Enumeration of watch directories already in progress.");
+
+            m_fileProcessor.EnumerateWatchDirectories();
+        }
+
+        /// <summary>
+        /// Processes the given file on the appropriate meter thread with the given priority.
+        /// </summary>
+        /// <param name="filePath">The path to the file to be processed.</param>
+        /// <param name="priority">The priority at which to process the file.</param>
+        public void ProcessFile(string filePath, int priority, int crc)
+        {
+            string connectionString = LoadSystemSettings();
+            SystemSettings systemSettings = new SystemSettings(connectionString);
+            string meterKey = GetMeterKey(filePath, systemSettings.FilePattern);
+
+            // Get the thread used to process this data
+            GetThread(meterKey).Push(priority, () =>
+            {
+                if (m_stopped || m_disposed)
+                    return;
+
+                FileWrapper fileWrapper = new FileWrapper(filePath);
+                FileGroup fileGroup = new FileGroup();
+                fileGroup.FileHash = crc;
+
+                Action<DataProcessorState> processFileCallback = state =>
+                {
+                    try
+                    {
+                        // Set up thread state for logging and reporting
+                        ThreadContext.Properties["Meter"] = state.MeterKey;
+                        m_activeFiles[state.MeterKey] = state.FilePath;
+
+                        // Sets the processing start time of the file group
+                        BeginProcessing(state);
+
+                        // Create the appropriate data reader
+                        // and use it to parse the file
+                        ReadFile(state);
+
+                        if (state.Retry)
+                            return;
+
+                        // Determine whether the file duration is within a user-defined maximum tolerance
+                        ValidateFileDuration(state.FilePath, state.FileGroup, state.SystemSettings);
+
+                        // Determine whether the timestamps in the file extend beyond user-defined thresholds
+                        ValidateFileTimestamps(state.FilePath, state.FileGroup, state.SystemSettings);
+
+                        // Save the file group in the database now that the data has been successfully parsed
+                        using (AdoDataConnection connection = state.MeterDataSet.CreateDbConnection())
+                        {
+                            state.FileGroup.DataFiles = state.FileWrapper.CreateDataFiles(state.SystemSettings.XDATimeZoneInfo);
+                            SaveFileGroup(connection, fileGroup);
+                        }
+
+                        // Process the data that was parsed from the file
+                        ProcessFile(state);
+
+                        // Set the processing end time of the file
+                        // group and save it to the database
+                        CompleteProcessing(state);
+                    }
+                    finally
+                    {
+                        // Restore thread state for logging and reporting
+                        string removedFilePath;
+                        m_activeFiles.TryRemove(state.MeterKey, out removedFilePath);
+                        ThreadContext.Properties.Remove("Meter");
+                    }
+                };
+
+                Action<DataProcessorState> processFailureCallback = state =>
+                {
+                    // Set the error flag on the file group,
+                    // then set the processing end time
+                    // and save the file group to the database
+                    state.FileGroup.Error = 1;
+                    CompleteProcessing(state);
+                };
+
+                // Set up the data processor state and enter the processing loop
+                EnterProcessingLoop(new DataProcessorState()
+                {
+                    FilePath = filePath,
+                    FileWrapper = fileWrapper,
+                    FileGroup = fileGroup,
+
+                    MeterKey = meterKey,
+                    ConnectionString = connectionString,
+                    SystemSettings = systemSettings,
+
+                    ProcessFileCallback = processFileCallback,
+                    ProcessFailureCallback = processFailureCallback
+                });
+            });
+        }
+
+        /// <summary>
+        /// Processes a group of data files that have already been processed.
+        /// </summary>
+        /// <param name="fileGroupID">The ID of the file group representing the group of files to be processed again.</param>
+        public void ReprocessFile(int fileGroupID)
+        {
+            string connectionString = LoadSystemSettings();
+            SystemSettings systemSettings = new SystemSettings(connectionString);
+            FileGroup fileGroup;
+
+            // Get the list of data files in the file group
+            using (AdoDataConnection connection = CreateDbConnection(systemSettings))
+            {
+                TableOperations<FileGroup> fileGroupTable = new TableOperations<FileGroup>(connection);
+                TableOperations<DataFile> dataFileTable = new TableOperations<DataFile>(connection);
+
+                fileGroup = fileGroupTable.QueryRecordWhere("ID = {0}", fileGroupID);
+
+                fileGroup.DataFiles = dataFileTable
+                    .QueryRecordsWhere("FileGroupID = {0}", fileGroupID)
+                    .ToList();
+            }
+
+            // Get the first file that matches the file processor's filter
+            string filePath = fileGroup.DataFiles
+                .Select(dataFile => dataFile.FilePath)
+                .FirstOrDefault(m_fileProcessor.MatchesFilter);
+
+            if ((object)filePath == null)
+                throw new InvalidOperationException("There are no files in the file group that match the file processor's filter.");
+
+            // Determine which meter the file is associated with
+            string meterKey = GetMeterKey(filePath, systemSettings.FilePattern);
+
+            GetThread(meterKey).Push(RequeuePriority, () =>
+            {
+                if (m_stopped || m_disposed)
+                    return;
+
+                DateTime maxFileCreationTime = fileGroup.DataFiles.Max(dataFile => dataFile.CreationTime);
+                FileWrapper fileWrapper = new FileWrapper(filePath, maxFileCreationTime);
+                string tempFolderPath = Path.Combine(Path.GetTempPath(), "openXDA", "Reprocessor", meterKey);
+
+                fileGroup.ProcessingEndTime = DateTime.MinValue;
+
+                using (AdoDataConnection connection = CreateDbConnection(systemSettings))
+                {
+                    // If the data files don't exist at their original location,
+                    // write them out to a temp directory so they can be processed
+                    if (fileGroup.DataFiles.Any(dataFile => !File.Exists(dataFile.FilePath)))
+                    {
+                        string fileName = Path.GetFileName(filePath);
+                        string tempFilePath = Path.Combine(tempFolderPath, fileName);
+                        Directory.CreateDirectory(tempFolderPath);
+
+                        foreach (DataFile dataFile in fileGroup.DataFiles)
+                        {
+                            byte[] dataFileBlob = connection.ExecuteScalar<byte[]>("SELECT Blob FROM FileBlob WHERE DataFileID = {0}", dataFile.ID);
+                            string dataFileName = Path.GetFileName(dataFile.FilePath);
+                            string tempDataFilePath = Path.Combine(tempFolderPath, dataFileName);
+                            File.WriteAllBytes(tempDataFilePath, dataFileBlob);
+                        }
+
+                        filePath = tempFilePath;
+                    }
+                }
+
+                Action<DataProcessorState> processFileCallback = state =>
+                {
+                    try
+                    {
+                        // Set up thread state for logging and reporting
+                        ThreadContext.Properties["Meter"] = state.MeterKey;
+                        m_activeFiles[state.MeterKey] = state.FilePath;
+
+                        // Sets the processing start time of the file group
+                        BeginProcessing(state);
+
+                        // Create the appropriate data reader
+                        // and use it to parse the file
+                        ReadFile(state);
+
+                        if (state.Retry)
+                            return;
+
+                        // Process the data that was parsed from the file
+                        ProcessFile(state);
+
+                        // Set the processing end time of the file
+                        // group and save it to the database
+                        CompleteProcessing(state);
+                    }
+                    finally
+                    {
+                        // Restore thread state for logging and reporting
+                        string removedFilePath;
+                        m_activeFiles.TryRemove(state.MeterKey, out removedFilePath);
+                        ThreadContext.Properties.Remove("Meter");
+                    }
+                };
+
+                Action<DataProcessorState> processFailureCallback = state =>
+                {
+                    // Set the error flag on the file group,
+                    // then set the processing end time
+                    // and save the file group to the database
+                    state.FileGroup.Error = 1;
+                    CompleteProcessing(state);
+                };
+
+                // Set up the data processor state and enter the processing loop
+                EnterProcessingLoop(new DataProcessorState()
+                {
+                    FilePath = filePath,
+                    FileWrapper = fileWrapper,
+                    FileGroup = fileGroup,
+
+                    MeterKey = meterKey,
+                    ConnectionString = connectionString,
+                    SystemSettings = systemSettings,
+
+                    ProcessFileCallback = processFileCallback,
+                    ProcessFailureCallback = processFailureCallback
+                });
+            });
+        }
+
+        /// <summary>
         /// Stops the fault location engine.
         /// </summary>
         public void Stop()
@@ -741,29 +990,28 @@ namespace SOEService
         {
             try
             {
-                string meterKey;
-                string connectionString;
-                SystemSettings systemSettings;
+                string connectionString = LoadSystemSettings();
+                SystemSettings systemSettings = new SystemSettings(connectionString);
+                ValidateFileCreationTime(filePath, systemSettings);
 
-                connectionString = LoadSystemSettings();
-                systemSettings = new SystemSettings(connectionString);
-                ValidateFileCreationTime(filePath, systemSettings.MaxFileCreationTimeOffset);
-
-                using (DbAdapterContainer dbAdapterContainer = new DbAdapterContainer(systemSettings.DbConnectionString, systemSettings.DbTimeout))
-                using (DataReaderWrapper dataReaderWrapper = GetDataReader(dbAdapterContainer.GetAdapter<SystemInfoDataContext>(), systemSettings, filePath))
+                using (AdoDataConnection connection = CreateDbConnection(systemSettings))
                 {
-                    if ((object)dataReaderWrapper.DataObject.MeterDataSet != null)
-                    {
-                        meterKey = GetMeterKey(filePath, systemSettings.FilePattern);
-                        ValidateMeterKey(filePath, meterKey, dbAdapterContainer.GetAdapter<MeterInfoDataContext>());
-                    }
+                    TableOperations<Meter> meterTable = new TableOperations<Meter>(connection);
+                    string meterKey = GetMeterKey(filePath, systemSettings.FilePattern);
+                    ValidateMeterKey(filePath, meterKey, meterTable);
                 }
 
                 return true;
             }
             catch (FileSkippedException ex)
             {
-                Log.Warn(ex.Message);
+                // This method may be called if the file was deleted,
+                // in which case the user almost certainly doesn't care
+                // why it was skipped for processing and logging the
+                // error would only cause confusion
+                if (File.Exists(filePath))
+                    Log.Warn(ex.Message, ex);
+
                 return false;
             }
         }
@@ -772,63 +1020,94 @@ namespace SOEService
         // directories. This handler validates the file and processes it if able.
         private void FileProcessor_Processing(object sender, FileProcessorEventArgs fileProcessorEventArgs)
         {
-            if (m_disposed)
+            if (m_stopped || m_disposed)
                 return;
 
             try
             {
                 string filePath;
-                string connectionString;
-                SystemSettings systemSettings;
+                int priority;
 
                 filePath = fileProcessorEventArgs.FullPath;
 
-                if (!FilePath.TryGetReadLockExclusive(filePath))
+                priority = fileProcessorEventArgs.RaisedByFileWatcher
+                    ? FileWatcherPriority
+                    : FileEnumerationPriority;
+
+                // Determine whether the file has already been
+                // processed or needs to be processed again
+                if (fileProcessorEventArgs.AlreadyProcessed)
                 {
+                    using (AdoDataConnection connection = CreateDbConnection(m_systemSettings))
+                    {
+                        TableOperations<DataFile> dataFileTable = new TableOperations<DataFile>(connection);
+                        TableOperations<FileGroup> fileGroupTable = new TableOperations<FileGroup>(connection);
+
+                        DataFile dataFile = dataFileTable
+                            .QueryRecordsWhere("FilePathHash = {0} AND FilePath = {1}", filePath.GetHashCode(), filePath)
+                            .MaxBy(file => file.ID);
+
+                        if ((object)dataFile != null)
+                        {
+                            FileGroup fileGroup = fileGroupTable.QueryRecordWhere("ID = {0}", dataFile.FileGroupID);
+
+                            // This will tell us whether the service was stopped in the middle
+                            // of processing the last time it attempted to process the file
+                            if (fileGroup.ProcessingEndTime > DateTime.MinValue)
+                            {
+                                // Explicitly use Log.Debug() so that the message does not appear on the remote console,
+                                // but include a FileSkippedException so that the message gets routed to the skipped files log
+                                FileSkippedException ex = new FileSkippedException($"Skipped file \"{filePath}\" because it has already been processed.");
+                                Log.Debug(ex.Message, ex);
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                byte[] buffer;
+
+                try
+                {
+                    buffer = File.ReadAllBytes(filePath);
+                }
+                catch (IOException)
+                {
+                    // Couldn't read from the file, likely because the
+                    // process writing the file isn't finished writing
                     fileProcessorEventArgs.Requeue = true;
                     return;
                 }
 
-                connectionString = LoadSystemSettings();
-                systemSettings = new SystemSettings(connectionString);
+                Crc32 crc32 = new Crc32();
+                crc32.Update(buffer);
+                int crc = (int)crc32.Value;
 
-                using (DbAdapterContainer dbAdapterContainer = new DbAdapterContainer(systemSettings.DbConnectionString, systemSettings.DbTimeout))
+                if (m_systemSettings.SkipOnCRCHashMatch)
                 {
-                    try
+                    using (AdoDataConnection connection = CreateDbConnection(m_systemSettings))
                     {
-                        ProcessFile(
-                            fileProcessorArgs: fileProcessorEventArgs,
-                            connectionString: connectionString,
-                            systemSettings: systemSettings,
-                            dbAdapterContainer: dbAdapterContainer);
-                    }
-                    catch (Exception ex)
-                    {
-                        // There may be a problem here where the outer exception's call stack
-                        // was overwritten by the call stack of the point where it was thrown
-                        ExceptionDispatchInfo exInfo = ExceptionDispatchInfo.Capture(ex);
+                        TableOperations<FileGroup> to = new TableOperations<FileGroup>(connection);
+                        int fileGroupCount = to.QueryRecordCountWhere("FileHash = {0}", crc);
 
-                        try
+                        if (fileGroupCount != 0)
                         {
-                            // Attempt to set the error flag on the file group
-                            FileInfoDataContext fileInfo = dbAdapterContainer.GetAdapter<FileInfoDataContext>();
-                            FileWrapper fileWrapper = m_fileWrapperLookup.GetOrAdd(filePath, path => new FileWrapper(path));
-                            FileGroup fileGroup = fileWrapper.GetFileGroup(fileInfo, systemSettings.XDATimeZoneInfo);
-                            fileGroup.ProcessingEndTime = fileGroup.ProcessingStartTime;
-                            fileGroup.Error = 1;
-                            fileInfo.SubmitChanges();
-                        }
-                        catch (Exception fileGroupError)
-                        {
-                            // Log exceptions that occur when setting the error flag on the file group
-                            string message = $"Exception occurred setting error flag on file group: {fileGroupError.Message}";
-                            OnProcessException(new Exception(message, fileGroupError));
-                        }
+                            TableOperations<FileBlob> to2 = new TableOperations<FileBlob>(connection);
+                            int fileBlobCount = to2.QueryRecordCountWhere("DataFileID IN (SELECT ID FROM DataFile WHERE FileGroupID IN (SELECT ID FROM FileGroup WHERE FileHash = {0})) AND Blob = {1}", crc, buffer);
 
-                        // Throw the original exception
-                        exInfo.Throw();
+                            if (fileBlobCount != 0)
+                            {
+                                // Explicitly use Log.Debug() so that the message does not appear on the remote console,
+                                // but include a FileSkippedException so that the message gets routed to the skipped files log
+                                FileSkippedException ex = new FileSkippedException($"Skipped file \"{filePath}\" because it has already been processed.");
+                                Log.Warn(ex.Message, ex);
+                                return;
+                            }
+                        }
                     }
                 }
+
+                ProcessFile(filePath, priority, crc);
             }
             catch (FileSkippedException)
             {
@@ -842,60 +1121,110 @@ namespace SOEService
                 string message = $"Exception occurred processing file \"{fileProcessorEventArgs.FullPath}\": {ex.Message}";
                 throw new Exception(message, ex);
             }
-            finally
-            {
-                // Make sure to clean up file wrappers from
-                // the lookup table to prevent memory leaks
-                if (!fileProcessorEventArgs.Requeue)
-                    m_fileWrapperLookup.Remove(fileProcessorEventArgs.FullPath);
-            }
         }
 
-        // Processes the file to determine if it can be parsed and kicks off the meter's processing thread.
-        private void ProcessFile(FileProcessorEventArgs fileProcessorArgs, string connectionString, SystemSettings systemSettings, DbAdapterContainer dbAdapterContainer)
+        // Starts a loop to process the file.
+        // Continues looping so long as the user continues requesting to requeue.
+        private void EnterProcessingLoop(DataProcessorState state)
         {
-            string filePath;
-            string meterKey;
+            int retryCount = 0;
+            Action delayAndProcess = null;
 
-            FileInfoDataContext fileInfo;
-            SystemInfoDataContext systemInfo;
+            // This method should always be called from the meter thread
+            LogicalThread meterThread = LogicalThread.CurrentThread;
 
-            DataReader dataReader;
-            DataReaderWrapper dataReaderWrapper;
-            FileWrapper fileWrapper;
+            if ((object)meterThread != GetThread(state.MeterKey))
+                throw new InvalidOperationException("EnterReadLoop must be called from the appropriate meter thread.");
 
-            int queuedFileCount;
-
-            filePath = fileProcessorArgs.FullPath;
-            fileInfo = dbAdapterContainer.GetAdapter<FileInfoDataContext>();
-
-            // Determine whether the file has already been
-            // processed or needs to be processed again
-            if (fileProcessorArgs.AlreadyProcessed)
+            // Attempts to process the file and
+            // returns the success indicator
+            Func<bool> tryProcessFile = () =>
             {
-                DataFile dataFile = fileInfo.DataFiles
-                    .Where(file => file.FilePathHash == filePath.GetHashCode())
-                    .Where(file => file.FilePath == filePath)
-                    .MaxBy(file => file.ID);
+                state.ProcessFileCallback(state);
+                return !state.Retry;
+            };
 
-                // This will tell us whether the service was stopped in the middle
-                // of processing the last time it attempted to process the file
-                if ((object)dataFile != null && dataFile.FileGroup.ProcessingEndTime > DateTime.MinValue)
-                {
-                    Log.Debug($"Skipped file \"{filePath}\" because it has already been processed.");
+            // Always invoked on the meter thread -
+            // attempts to process the file and kicks off
+            // the delayAndProcess action on retry signal
+            Action processFileTimer = () =>
+            {
+                if (m_stopped || m_disposed)
                     return;
+
+                try
+                {
+                    int delay;
+
+                    if (!tryProcessFile())
+                    {
+                        if (retryCount < 8)
+                            delay = 250;
+                        else if (retryCount < 23)
+                            delay = 1000;
+                        else if (retryCount < 32)
+                            delay = 5000;
+                        else
+                            delay = 60000;
+
+                        delayAndProcess.DelayAndExecute(delay);
+                    }
                 }
-            }
+
+                catch
+                {
+                    try {
+                        state.ProcessFailureCallback(state);
+                    }
+                    catch (Exception ex) {
+                        OnProcessException(ex);
+                    }
+
+                    throw;
+                }
+            };
+
+            // Always invoked after a delay -
+            // pushes the process file timer onto the processing thread
+            delayAndProcess = () => meterThread.Push(RequeuePriority, processFileTimer);
+
+            // Execute the timer action
+            // to kick off the async loop
+            processFileTimer();
+        }
+
+        // Sets up state for logging and reporting.
+        private void BeginProcessing(DataProcessorState state)
+        {
+            FileGroup fileGroup = state.FileGroup;
+            SystemSettings systemSettings = state.SystemSettings;
+            TimeZoneInfo xdaTimeZoneInfo = systemSettings.XDATimeZoneInfo;
+            DateTime utcNow = DateTime.UtcNow;
+            DateTime xdaNow = TimeZoneInfo.ConvertTimeFromUtc(utcNow, xdaTimeZoneInfo);
+            fileGroup.ProcessingStartTime = xdaNow;
+        }
+
+        // Finds the data reader for the file and uses it to parse the file.
+        private void ReadFile(DataProcessorState state)
+        {
+            string meterKey = state.MeterKey;
+            string filePath = state.FilePath;
 
             // Get the data reader that will be used to parse the file
-            systemInfo = dbAdapterContainer.GetAdapter<SystemInfoDataContext>();
 
-            dataReader = systemInfo.DataReaders
-                .OrderBy(reader => reader.LoadOrder)
-                .AsEnumerable()
-                .FirstOrDefault(reader => FilePath.IsFilePatternMatch(reader.FilePattern, filePath, true));
+            SystemSettings systemSettings = state.SystemSettings;
+            DataReader dataReaderDefinition;
 
-            if ((object)dataReader == null)
+            using (AdoDataConnection connection = CreateDbConnection(systemSettings))
+            {
+                TableOperations<DataReader> dataReaderTable = new TableOperations<DataReader>(connection);
+
+                dataReaderDefinition = dataReaderTable
+                    .QueryRecords("LoadOrder")
+                    .FirstOrDefault(reader => FilePath.IsFilePatternMatch(reader.FilePattern, filePath, true));
+            }
+
+            if ((object)dataReaderDefinition == null)
             {
                 // Because the file processor is filtering files based on the DataReader file patterns,
                 // this should only ever occur if the configuration changes during runtime
@@ -904,301 +1233,165 @@ namespace SOEService
                 throw new FileSkippedException($"Skipped file \"{filePath}\" because no data reader could be found to process the file.");
             }
 
-            dataReaderWrapper = Wrap(dataReader);
-
-            try
-            {
-                meterKey = null;
-
-                // Determine whether the database contains configuration information for the meter that produced this file
-                if ((object)dataReaderWrapper.DataObject.MeterDataSet != null)
-                    meterKey = GetMeterKey(filePath, systemSettings.FilePattern);
+            // Instantiate the data reader definition and wrap the object in a
+            // data reader wrapper so we can safely dispose in a using block
+            using (DataReaderWrapper dataReaderWrapper = Wrap(dataReaderDefinition))
+            {    
+                IDataReader dataReader = dataReaderWrapper.DataObject;
 
                 // Apply connection string settings to the data reader
-                ConnectionStringParser.ParseConnectionString(connectionString, dataReaderWrapper.DataObject);
-
-                // Get the file wrapper from the lookup table
-                fileWrapper = m_fileWrapperLookup.GetOrAdd(filePath, path => new FileWrapper(path));
+                ConnectionStringParser.ParseConnectionString(state.ConnectionString, dataReader);
 
                 // Determine whether the dataReader can parse the file
-                if (!dataReaderWrapper.DataObject.CanParse(filePath, fileWrapper.GetMaxFileCreationTime()))
-                {
-                    fileProcessorArgs.Requeue = true;
-                    dataReaderWrapper.Dispose();
+                state.Retry = !dataReader.CanParse(filePath, state.FileWrapper.GetMaxFileCreationTime());
+
+                if (state.Retry)
                     return;
+
+                // Call the method to parse the file
+                state.MeterDataSet = ParseFile(dataReader, filePath);
+
+                if ((object)state.MeterDataSet != null)
+                {
+                    state.MeterDataSet.CreateDbConnection = () => CreateDbConnection(systemSettings);
+                    state.MeterDataSet.FilePath = filePath;
+                    state.MeterDataSet.FileGroup = state.FileGroup;
+                    state.MeterDataSet.ConnectionString = state.ConnectionString;
+                    state.MeterDataSet.Meter.AssetKey = meterKey;
                 }
-
-                // Get the thread used to process this data
-                GetThread(meterKey).Push(() => ParseFile(connectionString, systemSettings, filePath, meterKey, dataReaderWrapper, fileWrapper));
-
-                // Keep track of the number of operations in thread queues
-                queuedFileCount = Interlocked.Increment(ref m_queuedFileCount);
-
-                while (!m_stopped && !m_disposed && m_queuedFileCount >= systemSettings.MaxQueuedFileCount)
-                    Thread.Sleep(1000);
             }
-            catch
+
+            // Shift date/time values to the configured time zone and set the start and end time values on the file group
+            MeterDataSet meterDataSet = state.MeterDataSet;
+            ShiftTime(meterDataSet, meterDataSet.Meter.GetTimeZoneInfo(systemSettings.DefaultMeterTimeZoneInfo), systemSettings.XDATimeZoneInfo);
+            SetDataTimeRange(meterDataSet);
+        }
+
+        // Processes the data that was parsed from the file.
+        private void ProcessFile(DataProcessorState state)
+        {
+            string filePath = state.FilePath;
+            FileGroup fileGroup = state.FileGroup;
+
+            // Process the meter data set
+            OnStatusMessage($"Processing file '{filePath}'...");
+            ProcessMeterDataSet(state.MeterDataSet);
+            OnStatusMessage($"Finished processing file '{filePath}'.");
+        }
+
+        // Saves the file group to the database and cleans up state for logging and reporting.
+        private void CompleteProcessing(DataProcessorState state)
+        {
+            try
             {
-                // If an error occurs here, dispose of the data reader;
-                // otherwise, the meter data thread will handle it
-                dataReaderWrapper.Dispose();
-                throw;
+                SystemSettings systemSettings = state.SystemSettings;
+                FileGroup fileGroup = state.FileGroup;
+
+                using (AdoDataConnection connection = CreateDbConnection(systemSettings))
+                {
+                    DateTime utcNow = DateTime.UtcNow;
+                    TimeZoneInfo xdaTimeZone = systemSettings.XDATimeZoneInfo;
+                    DateTime xdaNow = TimeZoneInfo.ConvertTimeFromUtc(utcNow, xdaTimeZone);
+                    fileGroup.ProcessingEndTime = xdaNow;
+                    SaveFileGroup(connection, fileGroup);
+                }
+            }
+            catch (Exception ex)
+            {
+                OnProcessException(ex);
             }
         }
 
         // Parses the file on the meter's processing thread and kicks off processing of the meter data set.
-        private void ParseFile(string connectionString, SystemSettings systemSettings, string filePath, string meterKey, DataReaderWrapper dataReaderWrapper, FileWrapper fileWrapper)
+        private MeterDataSet ParseFile(IDataReader dataReader, string filePath)
         {
-            FileGroup fileGroup = null;
-            MeterDataSet meterDataSet;
-            int queuedFileCount;
+            // Parse the file to turn it into a meter data set
+            OnStatusMessage($"Parsing data from file \"{filePath}\"...");
+            dataReader.Parse(filePath);
+            OnStatusMessage($"Finished parsing data from file \"{filePath}\".");
 
-            // Keep track of the number of operations in thread queues
-            queuedFileCount = Interlocked.Decrement(ref m_queuedFileCount);
-
-            if (m_stopped || m_disposed)
-            {
-                dataReaderWrapper.Dispose();
-                return;
-            }
-
-            using (dataReaderWrapper)
-            using (DbAdapterContainer dbAdapterContainer = new DbAdapterContainer(systemSettings.DbConnectionString, systemSettings.DbTimeout))
-            {
-                try
-                {
-                    // Keep track of the meters and files currently being processed
-                    if ((object)meterKey != null)
-                        m_activeFiles[meterKey] = filePath;
-
-                    ThreadContext.Properties["Meter"] = meterKey;
-
-                    // Create the file group
-                    fileGroup = fileWrapper.GetFileGroup(dbAdapterContainer.GetAdapter<FileInfoDataContext>(), systemSettings.XDATimeZoneInfo);
-
-                    // Parse the file to turn it into a meter data set
-                    OnStatusMessage($"Parsing data from file \"{filePath}\"...");
-                    dataReaderWrapper.DataObject.Parse(filePath);
-                    OnStatusMessage($"Finished parsing data from file \"{filePath}\".");
-                    meterDataSet = dataReaderWrapper.DataObject.MeterDataSet;
-
-                    // If the data reader does not return a data set,
-                    // there is nothing left to do
-                    if ((object)meterDataSet == null)
-                        return;
-
-                    // Data reader has finally outlived its usefulness
-                    dataReaderWrapper.Dispose();
-
-                    // Set file path, file group, connection string,
-                    // and meter asset key for the meter data set
-                    meterDataSet.FilePath = filePath;
-                    meterDataSet.FileGroup = fileGroup;
-                    meterDataSet.ConnectionString = connectionString;
-                    meterDataSet.Meter.AssetKey = meterKey;
-
-                    // Shift date/time values to the configured time zone and set the start and end time values on the file group
-                    ShiftTime(meterDataSet, meterDataSet.Meter.GetTimeZoneInfo(systemSettings.DefaultMeterTimeZoneInfo), systemSettings.XDATimeZoneInfo);
-                    SetDataTimeRange(meterDataSet, dbAdapterContainer.GetAdapter<FileInfoDataContext>());
-
-                    // Determine whether the file duration is within a user-defined maximum tolerance
-                    ValidateFileDuration(meterDataSet.FilePath, systemSettings.MaxFileDuration, meterDataSet.FileGroup);
-
-                    // Determine whether the timestamps in the file extend beyond user-defined thresholds
-                    ValidateFileTimestamps(meterDataSet.FilePath, meterDataSet.FileGroup, systemSettings, dbAdapterContainer.GetAdapter<FileInfoDataContext>());
-
-                    // Process the meter data set
-                    OnStatusMessage($"Processing meter data from file \"{filePath}\"...");
-                    ProcessMeterDataSet(meterDataSet, systemSettings, dbAdapterContainer);
-                    OnStatusMessage($"Finished processing data from file \"{filePath}\".");
-                }
-                catch (Exception ex)
-                {
-                    // There seems to be a problem here where the outer exception's call stack
-                    // was overwritten by the call stack of the point where it was thrown
-                    ExceptionDispatchInfo exInfo = ExceptionDispatchInfo.Capture(ex);
-
-                    try
-                    {
-                        // Attempt to set the error flag on the file group
-                        if ((object)fileGroup != null)
-                            fileGroup.Error = 1;
-                    }
-                    catch (Exception fileGroupError)
-                    {
-                        // Log any exceptions that occur when attempting to set the error flag on the file group
-                        string message = $"Exception occurred setting error flag on file group: {fileGroupError.Message}";
-                        OnProcessException(new Exception(message, fileGroupError));
-                    }
-
-                    // Throw the original exception
-                    exInfo.Throw();
-                }
-                finally
-                {
-                    if ((object)fileGroup != null)
-                    {
-                        try
-                        {
-                            // Attempt to set the processing end time of the file group
-                            fileGroup.ProcessingEndTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, systemSettings.XDATimeZoneInfo);
-                            dbAdapterContainer.GetAdapter<FileInfoDataContext>().SubmitChanges();
-                        }
-                        catch (Exception ex)
-                        {
-                            // Log any exceptions that occur when attempting to set processing end time on the file group
-                            string message = $"Exception occurred setting processing end time on file group: {ex.Message}";
-                            OnProcessException(new Exception(message, ex));
-                        }
-                    }
-
-                    // Keep track of the meters and files currently being processed
-                    if ((object)meterKey != null)
-                        m_activeFiles.TryRemove(meterKey, out filePath);
-
-                    ThreadContext.Properties.Remove("Meter");
-                }
-            }
+            return dataReader.MeterDataSet;
         }
 
         // Instantiates and executes data operations and data writers to process the meter data set.
-        private void ProcessMeterDataSet(MeterDataSet meterDataSet, SystemSettings systemSettings, DbAdapterContainer dbAdapterContainer)
+        private void ProcessMeterDataSet(MeterDataSet meterDataSet)
         {
-            SystemInfoDataContext systemInfo;
-            List<DataOperationWrapper> dataOperations;
-            List<DataWriterWrapper> dataWriters;
+            List<DataOperation> dataOperationDefinitions;
 
-            // Get the SystemInfoDataContext from the dbAdapterContainer
-            systemInfo = dbAdapterContainer.GetAdapter<SystemInfoDataContext>();
-
-            // Load the data operations from the database,
-            // in descending order so we can remove records while we iterate
-            dataOperations = systemInfo.DataOperations
-                .OrderByDescending(dataOperation => dataOperation.LoadOrder)
-                .Select(Wrap)
-                .Where(wrapper => (object)wrapper != null)
-                .ToList();
-
-            for (int i = dataOperations.Count - 1; i >= 0; i--)
+            using (AdoDataConnection connection = meterDataSet.CreateDbConnection())
             {
-                try
-                {
-                    Log.Debug($"Preparing data operation '{dataOperations[i].DataObject.GetType().Name}' for execution...");
+                TableOperations<DataOperation> dataOperationTable = new TableOperations<DataOperation>(connection);
 
-                    // Load configuration parameters from the connection string into the data operation
-                    ConnectionStringParser.ParseConnectionString(meterDataSet.ConnectionString, dataOperations[i].DataObject);
-
-                    // Call the prepare method to allow the data operation to prepare any data it needs from the database
-                    dataOperations[i].DataObject.Prepare(dbAdapterContainer);
-
-                    Log.Debug($"Finished preparing data operation '{dataOperations[i].DataObject.GetType().Name}' for execution.");
-                }
-                catch (Exception ex)
-                {
-                    // Log the error and remove the data operation from the list
-                    string message = $"An error occurred while preparing data from meter '{meterDataSet.Meter.AssetKey}' for data operation of type '{dataOperations[i].DataObject.GetType().FullName}': {ex.Message}";
-                    OnProcessException(new Exception(message, ex));
-                    dataOperations.RemoveAt(i);
-                }
+                // Load the data operations from the database,
+                // in descending order so we can remove records while we iterate
+                dataOperationDefinitions = dataOperationTable
+                    .QueryRecords("LoadOrder")
+                    .ToList();
             }
-            
-            for (int i = dataOperations.Count - 1; i >= 0; i--)
+
+            foreach (DataOperation dataOperationDefinition in dataOperationDefinitions)
             {
                 try
                 {
-                    Log.Debug($"Executing data operation '{dataOperations[i].DataObject.GetType().Name}'...");
+                    Log.Debug($"Executing data operation '{dataOperationDefinition.TypeName}'...");
 
                     // Call the execute method on the data operation to perform in-memory data transformations
-                    dataOperations[i].DataObject.Execute(meterDataSet);
+                    using (DataOperationWrapper wrapper = Wrap(dataOperationDefinition))
+                    {
+                        IDataOperation dataOperation = wrapper.DataObject;
 
-                    Log.Debug($"Finished execurting data operation '{dataOperations[i].DataObject.GetType().Name}'.");
+                        ConnectionStringParser.ParseConnectionString(meterDataSet.ConnectionString, dataOperation);
+
+                        dataOperation.Execute(meterDataSet);
+                    }
+
+                    Log.Debug($"Finished executing data operation '{dataOperationDefinition.TypeName}'.");
                 }
                 catch (Exception ex)
                 {
                     // Log the error and skip to the next data operation
-                    string message = $"An error occurred while executing data operation of type '{dataOperations[i].DataObject.GetType().FullName}' on data from meter '{meterDataSet.Meter.AssetKey}': {ex.Message}";
-                    OnProcessException(new Exception(message, ex));
-                    continue;
-                }
-
-                try
-                {
-                    Log.Debug($"Loading data from data operation '{dataOperations[i].DataObject.GetType().Name}' into database...");
-
-                    // Call the load method inside a transaction to load data into from the data operation into the database
-                    using (TransactionScope transaction = new TransactionScope(TransactionScopeOption.Required, GetTransactionOptions()))
-                    {
-                        dataOperations[i].DataObject.Load(dbAdapterContainer);
-                        transaction.Complete();
-                    }
-
-                    Log.Debug($"Finished loading data from data operation '{dataOperations[i].DataObject.GetType().Name}' into database.");
-                }
-                catch (Exception ex)
-                {
-                    // Log the error and move on to the next data operation
-                    string message = $"An error occurred while loading data from data operation of type '{dataOperations[i].DataObject.GetType().FullName}' for data from meter '{meterDataSet.Meter.AssetKey}': {ex.Message}";
-                    OnProcessException(new Exception(message, ex));
-                }
-            }
-
-            // Load the data writers from the database
-            dataWriters = systemInfo.DataWriters
-                .OrderBy(dataWriter => dataWriter.LoadOrder)
-                .Select(Wrap)
-                .Where(wrapper => (object)wrapper != null)
-                .ToList();
-
-            foreach (DataWriterWrapper dataWriter in dataWriters)
-            {
-                try
-                {
-                    Log.Debug($"Writing results to external location with data writer '{dataWriter.DataObject.GetType().Name}'...");
-
-                    // Load configuration parameters from the connection string into the data writer
-                    ConnectionStringParser.ParseConnectionString(meterDataSet.ConnectionString, dataWriter.DataObject);
-
-                    // Write the results to the data writer's destination by calling the WriteResults method
-                    dataWriter.DataObject.WriteResults(dbAdapterContainer, meterDataSet);
-
-                    Log.Debug($"Finished writing results with data writer '{dataWriter.DataObject.GetType().Name}'.");
-                }
-                catch (Exception ex)
-                {
-                    // Log the error and move on to the next data writer
-                    string message = $"An error occurred while writing data from meter '{meterDataSet.Meter.AssetKey}' using data writer of type '{dataWriter.DataObject.GetType().FullName}': {ex.Message}";
+                    string message = $"An error occurred while executing data operation of type '{dataOperationDefinition.TypeName}' on data from meter '{meterDataSet.Meter.AssetKey}': {ex.Message}";
                     OnProcessException(new Exception(message, ex));
                 }
             }
         }
 
-        // Gets the data reader used to process the file at the given file path.
-        private DataReaderWrapper GetDataReader(SystemInfoDataContext systemInfo, SystemSettings systemSettings, string filePath)
+        // Saves the given file group to the database using the given connection.
+        private void SaveFileGroup(AdoDataConnection connection, FileGroup fileGroup)
         {
-            DataReader dataReader;
+            // Attempt to set the error flag on the file group
+            TableOperations<FileGroup> fileGroupTable = new TableOperations<FileGroup>(connection);
 
-            dataReader = systemInfo.DataReaders
-                .OrderBy(reader => reader.LoadOrder)
-                .AsEnumerable()
-                .FirstOrDefault(reader => FilePath.IsFilePatternMatch(reader.FilePattern, filePath, true));
+            fileGroupTable.AddNewOrUpdateRecord(fileGroup);
 
-            if ((object)dataReader == null)
+            if (fileGroup.ID == 0)
+                fileGroup.ID = connection.ExecuteScalar<int>("SELECT @@IDENTITY");
+
+            TableOperations<DataFile> dataFileTable = new TableOperations<DataFile>(connection);
+            TableOperations<FileBlob> fileBlobTable = new TableOperations<FileBlob>(connection);
+
+            foreach (DataFile dataFile in fileGroup.DataFiles)
             {
-                // Because the file processor is filtering files based on the DataReader file patterns,
-                // this should only ever occur if the configuration changes during runtime
-                UpdateFileProcessorFilter(systemSettings);
+                dataFile.FileGroupID = fileGroup.ID;
+                dataFileTable.AddNewOrUpdateRecord(dataFile);
 
-                throw new FileSkippedException($"Skipped file \"{filePath}\" because no data reader could be found to process the file.");
+                if (dataFile.ID == 0)
+                    dataFile.ID = connection.ExecuteScalar<int>("SELECT @@IDENTITY");
+
+                if (File.Exists(dataFile.FilePath) && fileBlobTable.QueryRecordCountWhere("DataFileID = {0}", dataFile.ID) == 0)
+                {
+                    FileBlob fileBlob = new FileBlob();
+                    fileBlob.DataFileID = dataFile.ID;
+                    fileBlob.Blob = File.ReadAllBytes(dataFile.FilePath);
+                    fileBlobTable.AddNewOrUpdateRecord(fileBlob);
+                }
             }
-
-            return Wrap(dataReader);
         }
 
         // Updates the Filter property of the FileProcessor with the
         // latest collection of filters from the DataReader table.
         private void UpdateFileProcessorFilter(SystemSettings systemSettings)
         {
-            SystemInfoDataContext systemInfo;
             List<string> filterPatterns;
 
             // Do not attempt to load filter patterns if file processor is not defined
@@ -1206,12 +1399,13 @@ namespace SOEService
                 return;
 
             // Get the list of file extensions to be processed by the SOE engine
-            using (DbAdapterContainer dbAdapterContainer = new DbAdapterContainer(systemSettings.DbConnectionString, systemSettings.DbTimeout))
+            using (AdoDataConnection connection = CreateDbConnection(systemSettings))
             {
-                systemInfo = dbAdapterContainer.GetAdapter<SystemInfoDataContext>();
 
-                filterPatterns = systemInfo.DataReaders
-                    .Select(reader => reader.FilePattern)
+                TableOperations<DataReader> dataReaderTable = new TableOperations<DataReader>(connection);
+
+                filterPatterns = dataReaderTable
+                    .QueryRecords().Select(reader => reader.FilePattern)
                     .ToList();
             }
 
@@ -1250,17 +1444,27 @@ namespace SOEService
         // Loads system settings from the database.
         private string LoadSystemSettings()
         {
-            using (SystemInfoDataContext systemInfo = new SystemInfoDataContext(m_dbConnectionString))
+            using (AdoDataConnection connection = new AdoDataConnection(m_dbConnectionString, typeof(SqlConnection), typeof(SqlDataAdapter)))
             {
-                return LoadSystemSettings(systemInfo);
+                return LoadSystemSettings(connection);
             }
         }
 
         // Loads system settings from the database.
-        private string LoadSystemSettings(SystemInfoDataContext systemInfo)
+        private string LoadSystemSettings(AdoDataConnection connection)
         {
+            TableOperations<Setting> settingTable = new TableOperations<Setting>(connection);
+            List<Setting> settingList = settingTable.QueryRecords().ToList();
+
+            foreach (IGrouping<string, Setting> grouping in settingList.GroupBy(setting => setting.Name))
+            {
+                if (grouping.Count() > 1)
+                    Log.Warn($"Duplicate record for setting {grouping.Key} detected.");
+            }
+
             // Convert the Setting table to a dictionary
-            Dictionary<string, string> settings = systemInfo.Settings
+            Dictionary<string, string> settings = settingList
+                .DistinctBy(setting => setting.Name)
                 .ToDictionary(setting => setting.Name, setting => setting.Value, StringComparer.OrdinalIgnoreCase);
 
             // Add the database connection string if there is not
@@ -1281,6 +1485,16 @@ namespace SOEService
         private static readonly ILog Log = LogManager.GetLogger(typeof(SequenceOfEventsEngine));
 
         // Static Methods
+
+        /// <summary>
+        /// Determines if the given exception is a file skipped exception.
+        /// </summary>
+        /// <param name="ex">The exception to be tested.</param>
+        /// <returns>True if it is a file skipped exception; false otherwise.</returns>
+        public static bool IsFileSkippedException(Exception ex)
+        {
+            return ex is FileSkippedException;
+        }
 
         // Attempts to create the directory at the given path.
         private static void TryCreateDirectory(string path)
@@ -1367,7 +1581,7 @@ namespace SOEService
         }
 
         // Determines the start time and end time of the given data and sets the properties on the given file group.
-        private static void SetDataTimeRange(MeterDataSet meterDataSet, FileInfoDataContext fileInfo)
+        private static void SetDataTimeRange(MeterDataSet meterDataSet)
         {
             DateTime dataStartTime;
             DateTime dataEndTime;
@@ -1386,13 +1600,35 @@ namespace SOEService
                 .DefaultIfEmpty()
                 .Max();
 
-            if (dataStartTime != default(DateTime))
-                meterDataSet.FileGroup.DataStartTime = dataStartTime;
+            if (dataStartTime != default(DateTime) || dataEndTime != default(DateTime))
+            {
+                using (AdoDataConnection connection = meterDataSet.CreateDbConnection())
+                {
+                    TableOperations<FileGroup> fileGroupTable = new TableOperations<FileGroup>(connection);
+                    if (dataStartTime != default(DateTime))
+                        meterDataSet.FileGroup.DataStartTime = dataStartTime;
+                    if (dataEndTime != default(DateTime))
+                        meterDataSet.FileGroup.DataEndTime = dataEndTime;
 
-            if (dataEndTime != default(DateTime))
-                meterDataSet.FileGroup.DataEndTime = dataEndTime;
+                    fileGroupTable.UpdateRecord(meterDataSet.FileGroup);
+                }
+            }
+        }
 
-            fileInfo.SubmitChanges();
+        // Instantiates the given data writer and wraps it in a disposable wrapper object.
+        private static ConfigurationLoaderWrapper Wrap(ConfigurationLoader loader)
+        {
+            try
+            {
+                Assembly assembly = Assembly.LoadFrom(loader.AssemblyName);
+                Type type = assembly.GetType(loader.TypeName);
+                return new ConfigurationLoaderWrapper(loader.ID, type);
+            }
+            catch (Exception ex)
+            {
+                string message = $"Failed to create configuration loader of type {loader.TypeName}: {ex.Message}";
+                throw new TypeLoadException(message, ex);
+            }
         }
 
         // Instantiates the given data reader and wraps it in a disposable wrapper object.
@@ -1427,30 +1663,21 @@ namespace SOEService
             }
         }
 
-        // Instantiates the given data writer and wraps it in a disposable wrapper object.
-        private static DataWriterWrapper Wrap(DataWriter writer)
-        {
-            try
-            {
-                Assembly assembly = Assembly.LoadFrom(writer.AssemblyName);
-                Type type = assembly.GetType(writer.TypeName);
-                return new DataWriterWrapper(writer.ID, type);
-            }
-            catch (Exception ex)
-            {
-                string message = $"Failed to create data writer of type {writer.TypeName}: {ex.Message}";
-                throw new TypeLoadException(message, ex);
-            }
-        }
-
         // Determines whether the file creation time exceeds a user-defined threshold.
-        private static void ValidateFileCreationTime(string filePath, double maxFileCreationTimeOffset)
+        private static void ValidateFileCreationTime(string filePath, SystemSettings systemSettings)
         {
+            double maxFileCreationTimeOffset = systemSettings.MaxFileCreationTimeOffset;
             DateTime fileCreationTime;
             double hoursSinceCreation;
 
             // Determine whether file creation time validation is disabled
             if (maxFileCreationTimeOffset <= 0.0D)
+                return;
+
+            // This method may be called if the file was deleted,
+            // in which case it should be impossible to get the
+            // creation time of the file
+            if (!File.Exists(filePath))
                 return;
 
             // Determine the number of hours that have passed since the file was created
@@ -1463,16 +1690,17 @@ namespace SOEService
         }
 
         // Determines whether configuration exists for the meter with the given asset key.
-        private static void ValidateMeterKey(string filePath, string meterKey, MeterInfoDataContext meterInfo)
+        private static void ValidateMeterKey(string filePath, string meterKey, TableOperations<Meter> meterTable)
         {
             // Determine whether there exists a meter whose asset key matches the given meterKey
-            if (!meterInfo.Meters.Any(m => m.AssetKey == meterKey))
+            if (meterTable.QueryRecordCountWhere("AssetKey = {0}", meterKey) == 0)
                 throw new FileSkippedException($"Skipped file \"{filePath}\" because no meter configuration was found for meter {meterKey}.");
         }
 
         // Determines whether the duration of data in the file exceeds a user-defined threshold.
-        private static void ValidateFileDuration(string filePath, double maxFileDuration, FileGroup fileGroup)
+        private static void ValidateFileDuration(string filePath, FileGroup fileGroup, SystemSettings systemSettings)
         {
+            double maxFileDuration = systemSettings.MaxFileDuration;
             double timeDifference;
 
             // Determine whether file duration validation is disabled
@@ -1488,7 +1716,7 @@ namespace SOEService
         }
 
         // Determines whether the timestamps in the file extend beyond user-defined thresholds.
-        private static void ValidateFileTimestamps(string filePath, FileGroup fileGroup, SystemSettings systemSettings, FileInfoDataContext fileInfo)
+        private static void ValidateFileTimestamps(string filePath, FileGroup fileGroup, SystemSettings systemSettings)
         {
             DateTime now;
             double timeDifference;
@@ -1526,6 +1754,22 @@ namespace SOEService
             {
                 IsolationLevel = IsolationLevel.ReadCommitted,
                 Timeout = TransactionManager.MaximumTimeout
+            };
+        }
+
+        // Creates a new database connection based on the given system configuration.
+        private static AdoDataConnection CreateDbConnection(SystemSettings systemSettings)
+        {
+
+            string connectionString = systemSettings.DbConnectionString;
+            Type connectionType = typeof(SqlConnection);
+            Type adapterType = typeof(SqlDataAdapter);
+
+            return new AdoDataConnection(connectionString, connectionType, adapterType)
+            {
+
+
+                DefaultTimeout = systemSettings.DbTimeout
             };
         }
 

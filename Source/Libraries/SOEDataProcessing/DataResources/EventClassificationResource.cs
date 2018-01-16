@@ -44,16 +44,14 @@ namespace SOEDataProcessing.DataResources
         #region [ Members ]
 
         // Fields
-        private DbAdapterContainer m_dbAdapterContainer;
         private Dictionary<DataGroup, EventClassification> m_classifications;
 
         #endregion
 
         #region [ Constructors ]
 
-        private EventClassificationResource(DbAdapterContainer dbAdapterContainer)
+        public EventClassificationResource()
         {
-            m_dbAdapterContainer = dbAdapterContainer;
             m_classifications = new Dictionary<DataGroup, EventClassification>();
         }
 
@@ -75,7 +73,7 @@ namespace SOEDataProcessing.DataResources
 
         public override void Initialize(MeterDataSet meterDataSet)
         {
-            CycleDataResource cycleDataResource = CycleDataResource.GetResource(meterDataSet, m_dbAdapterContainer);
+            CycleDataResource cycleDataResource =  meterDataSet.GetResource<CycleDataResource>();
 
             DataGroup dataGroup;
             VICycleDataGroup viCycleDataGroup;
@@ -158,16 +156,6 @@ namespace SOEDataProcessing.DataResources
             }
 
             return false;
-        }
-
-        #endregion
-
-        #region [ Static ]
-
-        // Static Methods
-        public static EventClassificationResource GetResource(MeterDataSet meterDataSet, DbAdapterContainer dbAdapterContainer)
-        {
-            return meterDataSet.GetResource(() => new EventClassificationResource(dbAdapterContainer));
         }
 
         #endregion

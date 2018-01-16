@@ -26,7 +26,10 @@ using System.Collections.Generic;
 using System.Linq;
 using GSF;
 using Ionic.Zlib;
-using SOEDataProcessing.Database;
+using SOE.Model;
+using GSF.Data.Model;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace SOEDataProcessing.DataAnalysis
 {
@@ -142,6 +145,21 @@ namespace SOEDataProcessing.DataAnalysis
         }
 
         /// <summary>
+        /// Gets the sample rate, in samples per second,
+        /// of the data series in this data group.
+        /// </summary>
+        public double Duration
+        {
+            get
+            {
+                if (!m_dataSeries.Any())
+                    return double.NaN;
+
+                return m_dataSeries[0].Duration;
+            }
+        }
+
+        /// <summary>
         /// Gets the sample rate, in samples per hour,
         /// of the data series in this data group.
         /// </summary>
@@ -163,6 +181,7 @@ namespace SOEDataProcessing.DataAnalysis
                 return m_dataSeries.AsReadOnly();
             }
         }
+
 
         /// <summary>
         /// Gets the classification of this group of data as of the last call to <see cref="Classify()"/>.
@@ -246,6 +265,7 @@ namespace SOEDataProcessing.DataAnalysis
 
             return false;
         }
+
 
         /// <summary>
         /// Removes a channel from the data group.
@@ -382,6 +402,9 @@ namespace SOEDataProcessing.DataAnalysis
 
         private bool IsTrend()
         {
+            if (!m_dataSeries.Any())
+                return false;
+
             double samplesPerMinute = m_samples / (m_endTime - m_startTime).TotalMinutes;
             return samplesPerMinute <= TrendThreshold;
         }
@@ -392,6 +415,66 @@ namespace SOEDataProcessing.DataAnalysis
             return samplesPerMinute > TrendThreshold;
         }
 
+        private bool IsInstantaneous(DataSeries dataSeries)
+        {
+            string characteristicName = dataSeries.SeriesInfo.Channel.MeasurementCharacteristic.Name;
+            string seriesTypeName = dataSeries.SeriesInfo.SeriesType.Name;
+
+            return (characteristicName == "Instantaneous") &&
+                   (seriesTypeName == "Values" || seriesTypeName == "Instantaneous");
+        }
+
+        private string GetMeasurementType(DataSeries dataSeries)
+        {
+            return dataSeries.SeriesInfo.Channel.MeasurementType.Name;
+        }
+
+        private string GetPhase(DataSeries dataSeries)
+        {
+            return dataSeries.SeriesInfo.Channel.Phase.Name;
+        }
+
+        private double CalculateSamplesPerMinute(DateTime startTime, DateTime endTime, int samples)
+        {
+            return (samples - 1) / (endTime - startTime).TotalMinutes;
+        }
+
         #endregion
     }
+
+    public static partial class TableOperationsExtensions
+    {
+        public static Event GetEvent(this TableOperations<Event> eventTable, FileGroup fileGroup, DataGroup dataGroup)
+        {
+            int fileGroupID = fileGroup.ID;
+            int lineID = dataGroup.Line.ID;
+            DateTime startTime = dataGroup.StartTime;
+            DateTime endTime = dataGroup.EndTime;
+            int samples = dataGroup.Samples;
+
+            IDbDataParameter startTimeParameter = new SqlParameter()
+            {
+                ParameterName = nameof(dataGroup.StartTime),
+                DbType = DbType.DateTime2,
+                Value = startTime
+            };
+
+            IDbDataParameter endTimeParameter = new SqlParameter()
+            {
+                ParameterName = nameof(dataGroup.EndTime),
+                DbType = DbType.DateTime2,
+                Value = endTime
+            };
+
+            RecordRestriction recordRestriction =
+                new RecordRestriction("FileGroupID = {0}", fileGroupID) &
+                new RecordRestriction("LineID = {0}", lineID) &
+                new RecordRestriction("StartTime = {0}", startTimeParameter) &
+                new RecordRestriction("EndTime = {0}", endTimeParameter) &
+                new RecordRestriction("Samples = {0}", samples);
+
+            return eventTable.QueryRecord(recordRestriction);
+        }
+    }
+
 }

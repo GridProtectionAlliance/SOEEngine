@@ -26,6 +26,7 @@ using SOEDataProcessing.DataOperations;
 using SOEDataProcessing.DataReaders;
 using SOEDataProcessing.DataWriters;
 using log4net;
+using SOEDataProcessing.Configuration;
 
 namespace SOEService
 {
@@ -146,6 +147,22 @@ namespace SOEService
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Defines a wrapper around the <see cref="IConfigurationLoader"/> interface.
+    /// </summary>
+    public class ConfigurationLoaderWrapper : DataObjectWrapper<IConfigurationLoader>
+    {
+        /// <summary>
+        /// Creates a new instance of the <see cref="ConfigurationLoaderWrapper"/> class.
+        /// </summary>
+        /// <param name="id">The ID of the configuration loader.</param>
+        /// <param name="dataReaderType">The actual type of the configuration loader.</param>
+        public ConfigurationLoaderWrapper(int id, Type configurationLoaderType)
+            : base(id, configurationLoaderType)
+        {
+        }
     }
 
     /// <summary>

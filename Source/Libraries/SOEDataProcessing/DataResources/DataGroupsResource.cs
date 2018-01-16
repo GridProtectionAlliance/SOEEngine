@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SOEDataProcessing.DataAnalysis;
 using SOEDataProcessing.DataSets;
-using Line = SOEDataProcessing.Database.Line;
+using Line = SOE.Model.Line;
 
 namespace SOEDataProcessing.DataResources
 {

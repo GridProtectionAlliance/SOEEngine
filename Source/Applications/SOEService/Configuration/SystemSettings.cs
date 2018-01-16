@@ -55,6 +55,7 @@ namespace SOEService.Configuration
         private double m_minTimeOffset;
         private double m_maxFileDuration;
         private double m_maxFileCreationTimeOffset;
+        private bool m_skipOnCRCHashMatch;
 
         private double m_systemFrequency;
         private double m_maxVoltage;
@@ -63,6 +64,7 @@ namespace SOEService.Configuration
         private string m_lengthUnits;
         private double m_comtradeMinWaitTime;
         private int m_processingThreadCount;
+        private Guid m_fileProcessorID;
         private FileEnumerationStrategy m_fileWatcherEnumerationStrategy;
         private int m_fileWatcherMaxFragmentation;
         private int m_fileWatcherInternalThreadCount;
@@ -325,6 +327,23 @@ namespace SOEService.Configuration
         }
 
         /// <summary>
+        /// Gets or sets a boolean to skip on crc hash match.
+        /// </summary>
+        [Setting]
+        [DefaultValue(true)]
+        public bool SkipOnCRCHashMatch
+        {
+            get
+            {
+                return m_skipOnCRCHashMatch;
+            }
+            set
+            {
+                m_skipOnCRCHashMatch = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the system frequency.
         /// </summary>
         [Setting]
@@ -434,6 +453,25 @@ namespace SOEService.Configuration
 
                 if (m_processingThreadCount <= 0)
                     m_processingThreadCount = Environment.ProcessorCount;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the ID of the file processor which determines
+        /// the name of the file backed lookup table.
+        /// </summary>
+        [Setting]
+        [SettingName("FileProcessorID")]
+        [DefaultValue("5048737A-92B1-43EF-A2C6-554E1FC0268B")]
+        public string FileProcessorIDSetting
+        {
+            get
+            {
+                return m_fileProcessorID.ToString();
+            }
+            set
+            {
+                m_fileProcessorID = Guid.Parse(value);
             }
         }
 
@@ -562,6 +600,19 @@ namespace SOEService.Configuration
                     .ToList();
             }
         }
+
+        /// <summary>
+        /// Gets the ID of the file processor which determines
+        /// the name of the file backed lookup table.
+        /// </summary>
+        public Guid FileProcessorID
+        {
+            get
+            {
+                return m_fileProcessorID;
+            }
+        }
+
 
         /// <summary>
         /// Gets the <see cref="TimeZoneInfo"/> for the time zone

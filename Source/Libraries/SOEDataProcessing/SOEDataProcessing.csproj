@@ -74,8 +74,6 @@
     <Compile Include="DataAnalysis\DataGroup.cs" />
     <Compile Include="DataAnalysis\DataPoint.cs" />
     <Compile Include="DataAnalysis\DataSeries.cs" />
-    <Compile Include="DataAnalysis\Disturbance.cs" />
-    <Compile Include="DataAnalysis\VoltageDisturbanceAnalyzer.cs" />
     <Compile Include="DataAnalysis\Transform.cs" />
     <Compile Include="DataAnalysis\VICycleDataGroup.cs" />
     <Compile Include="DataAnalysis\VIDataGroup.cs" />
@@ -88,6 +86,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>FileInfo.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="Database\MeterData.cs">
+      <DependentUpon>MeterData.xsd</DependentUpon>
     </Compile>
     <Compile Include="Database\MeterData.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -108,8 +109,8 @@
       <DependentUpon>SystemInfo.dbml</DependentUpon>
     </Compile>
     <Compile Include="DataOperations\ConfigurationOperation.cs" />
-    <Compile Include="DataOperations\DataOperationBase.cs" />
     <Compile Include="DataOperations\CycleDataOperation.cs" />
+    <Compile Include="DataOperations\DataOperationBase.cs" />
     <Compile Include="DataOperations\IncidentAttributeOperation.cs" />
     <Compile Include="DataOperations\IncidentOperation.cs" />
     <Compile Include="DataOperations\SOEPointOperation.cs" />
@@ -120,10 +121,8 @@
     <Compile Include="DataOperations\EventOperation.cs" />
     <Compile Include="DataOperations\IDataOperation.cs" />
     <Compile Include="DataResources\IDataResource.cs" />
-    <Compile Include="DataResources\InterruptionDataResource.cs" />
-    <Compile Include="DataResources\SagDataResource.cs" />
-    <Compile Include="DataResources\SwellDataResource.cs" />
     <Compile Include="DataResources\SystemEventResource.cs" />
+    <Compile Include="DataSets\ConfigurationDataSet.cs" />
     <Compile Include="DataSets\IDataSet.cs" />
     <Compile Include="DataReaders\COMTRADEReader.cs" />
     <Compile Include="DataReaders\IDataReader.cs" />
@@ -190,6 +189,12 @@
       <Link>TagDefinitions.xml</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SOE.Model\SOE.Model.csproj">
+      <Project>{54cdfae3-a029-4141-9a7d-5981b7cd4b64}</Project>
+      <Name>SOE.Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

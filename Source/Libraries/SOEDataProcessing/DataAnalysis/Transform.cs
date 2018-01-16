@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GSF.NumericalAnalysis;
+using GSF.Collections;
 
 namespace SOEDataProcessing.DataAnalysis
 {
@@ -139,9 +140,25 @@ namespace SOEDataProcessing.DataAnalysis
                 .ToList();
         }
 
-        private static int CalculateSamplesPerCycle(DataSeries dataSeries, double frequency)
+        public static int CalculateSamplesPerCycle(DataSeries dataSeries, double frequency)
         {
             return (int)Math.Round(dataSeries.SampleRate / frequency);
         }
+
+        public static int CalculateSamplesPerCycle(double samplesPerSecond, double frequency)
+        {
+            int[] commonSampleRates =
+            {
+                4, 8, 16, 32,
+                80, 96, 100, 200,
+                64, 128, 256, 512, 1024
+            };
+
+            int calculatedRate = (int)Math.Round(samplesPerSecond / frequency);
+            int nearestCommonRate = commonSampleRates.MinBy(rate => Math.Abs(calculatedRate - rate));
+            int diff = Math.Abs(calculatedRate - nearestCommonRate);
+            return (diff < nearestCommonRate * 0.1D) ? nearestCommonRate : calculatedRate;
+        }
+
     }
 }

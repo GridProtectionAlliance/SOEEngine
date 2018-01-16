@@ -27,9 +27,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using GSF.Data;
-using SOEDataProcessing.Database;
-using SOEDataProcessing.Database.MeterDataTableAdapters;
 using SOEDataProcessing.DataSets;
+using SOE.Model;
+using GSF.Data.Model;
 
 namespace SOEDataProcessing.DataOperations
 {
@@ -45,125 +45,124 @@ namespace SOEDataProcessing.DataOperations
 
         #region [ Methods ]
 
-        public override void Prepare(DbAdapterContainer dbAdapterContainer)
-        {
-        }
-
         public override void Execute(MeterDataSet meterDataSet)
         {
             m_fileGroupID = meterDataSet.FileGroup.ID;
             m_orientation = meterDataSet.Meter.Orientation;
+            using (AdoDataConnection connection = meterDataSet.CreateDbConnection())
+            {
+                Load(connection);
+            }
         }
 
-        public override void Load(DbAdapterContainer dbAdapterContainer)
+        private void Load(AdoDataConnection connection)
         {
-            EventTableAdapter eventAdapter = dbAdapterContainer.GetAdapter<EventTableAdapter>();
-            MeterData.EventDataTable eventTable = eventAdapter.GetDataByFileGroup(m_fileGroupID);
-            MeterData.SOEPointDataTable soePointTable = new MeterData.SOEPointDataTable();
-            MeterData.RotatedCycleDataDataTable cycleDataTable;
+            TableOperations<Event> eventAdapter = new TableOperations<Event>(connection);
+            TableOperations<SOEPoint> soePointAdapter = new TableOperations<SOEPoint>(connection);
+            TableOperations<CycleData> cycleDataAdapter = new TableOperations<CycleData>(connection);
+            TableOperations<RotatedCycleData> rotatedCycleDataAdapter = new TableOperations<RotatedCycleData>(connection);
+
+            IEnumerable<Event> eventTable = eventAdapter.QueryRecordsWhere("FileGroupID = {0}", m_fileGroupID);
             string query;
 
-            using (AdoDataConnection database = new AdoDataConnection(dbAdapterContainer.Connection, typeof(SqlDataAdapter), false))
+            List<int> incidentIDs = eventTable.Select(row => row.IncidentID).Distinct().ToList();
+            eventTable = eventAdapter.QueryRecordsWhere($"IncidentID IN ({string.Join(", ", incidentIDs)})");
+
+            string eventIDs = string.Join(",", Enumerable.Select(eventTable, row => row.ID));
+            connection.ExecuteNonQuery($"DELETE FROM SOEPoint WHERE CycleDataID IN (SELECT ID FROM CycleData WHERE EventID IN ({eventIDs}))");
+
+            query = $"SELECT " +
+                    $"    Event.ID, " +
+                    $"    Line.VoltageKV " +
+                    $"FROM " +
+                    $"    Event JOIN " +
+                    $"    Line ON Event.LineID = Line.ID " +
+                    $"WHERE Event.ID IN ({eventIDs})";
+
+            Dictionary<int, double> lineKVLookup = connection.RetrieveData(query).Rows
+                .Cast<DataRow>()
+                .ToDictionary(row => row.ConvertField<int>("ID"), row => row.ConvertField<double>("VoltageKV"));
+
+            List<RotatedCycleData> cycleDataTable = new List<RotatedCycleData>();
+            foreach (int incidentID in incidentIDs)
             {
-                List<int> incidentIDs = Enumerable.Select(eventTable, row => row.IncidentID).Distinct().ToList();
-                query = $"SELECT * FROM Event WHERE IncidentID IN ({string.Join(",", incidentIDs)})";
-                eventTable = new MeterData.EventDataTable();
-                eventTable.Merge(database.RetrieveData(query));
+                string previousState = null;
+                cycleDataTable.AddRange(rotatedCycleDataAdapter.QueryRecordsWhere("EventID IN (SELECT ID FROM Event WHERE IncidentID = {0})", incidentID).OrderBy(x => x.Timestamp));
 
-                string eventIDs = string.Join(",", Enumerable.Select(eventTable, row => row.ID));
-                database.ExecuteNonQuery($"DELETE FROM SOEPoint WHERE CycleDataID IN (SELECT ID FROM CycleData WHERE EventID IN ({eventIDs}))");
-
-                query = $"SELECT " +
-                        $"    Event.ID, " +
-                        $"    Line.VoltageKV " +
-                        $"FROM " +
-                        $"    Event JOIN " +
-                        $"    Line ON Event.LineID = Line.ID " +
-                        $"WHERE Event.ID IN ({eventIDs})";
-
-                Dictionary<int, double> lineKVLookup = database.RetrieveData(query).Rows
-                    .Cast<DataRow>()
-                    .ToDictionary(row => row.ConvertField<int>("ID"), row => row.ConvertField<double>("VoltageKV"));
-
-                foreach (int incidentID in incidentIDs)
+                foreach (RotatedCycleData row in cycleDataTable)
                 {
-                    string previousState = null;
+                    double lineKV;
 
-                    query = $"SELECT * FROM RotatedCycleData WHERE EventID IN (SELECT ID FROM Event WHERE IncidentID = {incidentID}) ORDER BY Timestamp";
-                    cycleDataTable = new MeterData.RotatedCycleDataDataTable();
-                    cycleDataTable.Merge(database.RetrieveData(query));
+                    if (!lineKVLookup.TryGetValue(row.EventID, out lineKV))
+                        continue;
 
-                    foreach (MeterData.RotatedCycleDataRow row in cycleDataTable)
-                    {
-                        double lineKV;
+                    string xState =
+                        GetVoltageState(row.VXARMS, lineKV) +
+                        GetVoltageState(row.VXCRMS, lineKV) +
+                        GetVoltageState(row.VXBRMS, lineKV);
 
-                        if (!lineKVLookup.TryGetValue(row.EventID, out lineKV))
-                            continue;
+                    string yState =
+                        GetVoltageState(row.VYARMS, lineKV) +
+                        GetVoltageState(row.VYCRMS, lineKV) +
+                        GetVoltageState(row.VYBRMS, lineKV);
 
-                        string xState =
-                            GetVoltageState(row.VXARMS, lineKV) +
-                            GetVoltageState(row.VXCRMS, lineKV) +
-                            GetVoltageState(row.VXBRMS, lineKV);
+                    string upState = (m_orientation == "XY") ? xState : yState;
+                    string downState = (m_orientation == "XY") ? yState : xState;
 
-                        string yState =
-                            GetVoltageState(row.VYARMS, lineKV) +
-                            GetVoltageState(row.VYCRMS, lineKV) +
-                            GetVoltageState(row.VYBRMS, lineKV);
+                    string faultType =
+                        (row.IARMS > 700.0D && row.ICRMS > 700.0D && row.IBRMS > 700.0D && row.IRRMS > 300.0D) ? "ACBN" :
+                        (row.IARMS > 700.0D && row.ICRMS > 700.0D && row.IBRMS > 700.0D) ? "ACB" :
+                        (row.IARMS > 700.0D && row.ICRMS > 700.0D && row.IRRMS > 700.0D) ? "ACN" :
+                        (row.ICRMS > 700.0D && row.IBRMS > 700.0D && row.IRRMS > 700.0D) ? "CBN" :
+                        (row.IARMS > 700.0D && row.IBRMS > 700.0D && row.IRRMS > 700.0D) ? "ABN" :
+                        (row.IARMS > 700.0D && row.ICRMS > 700.0D) ? "AC" :
+                        (row.ICRMS > 700.0D && row.IBRMS > 700.0D) ? "CB" :
+                        (row.IARMS > 700.0D && row.IBRMS > 700.0D) ? "AB" :
+                        (row.IARMS > 700.0D) ? "AN" :
+                        (row.ICRMS > 700.0D) ? "CN" :
+                        (row.IBRMS > 700.0D) ? "BN" :
+                        null;
 
-                        string upState = (m_orientation == "XY") ? xState : yState;
-                        string downState = (m_orientation == "XY") ? yState : xState;
+                    char breakerElementA =
+                        (upState[0] == '0') ? '5' :
+                        (downState[0] == '0') ? '0' :
+                        (row.IARMS < 700.0D) ? '1' :
+                        '4';
 
-                        string faultType =
-                            (row.IARMS > 700.0D && row.ICRMS > 700.0D && row.IBRMS > 700.0D && row.IRRMS > 300.0D) ? "ACBN" :
-                            (row.IARMS > 700.0D && row.ICRMS > 700.0D && row.IBRMS > 700.0D) ? "ACB" :
-                            (row.IARMS > 700.0D && row.ICRMS > 700.0D && row.IRRMS > 700.0D) ? "ACN" :
-                            (row.ICRMS > 700.0D && row.IBRMS > 700.0D && row.IRRMS > 700.0D) ? "CBN" :
-                            (row.IARMS > 700.0D && row.IBRMS > 700.0D && row.IRRMS > 700.0D) ? "ABN" :
-                            (row.IARMS > 700.0D && row.ICRMS > 700.0D) ? "AC" :
-                            (row.ICRMS > 700.0D && row.IBRMS > 700.0D) ? "CB" :
-                            (row.IARMS > 700.0D && row.IBRMS > 700.0D) ? "AB" :
-                            (row.IARMS > 700.0D) ? "AN" :
-                            (row.ICRMS > 700.0D) ? "CN" :
-                            (row.IBRMS > 700.0D) ? "BN" :
-                            null;
+                    char breakerElementC =
+                        (upState[1] == '0') ? '5' :
+                        (downState[1] == '0') ? '0' :
+                        (row.ICRMS < 700.0D) ? '1' :
+                        '4';
 
-                        string breakerElementA =
-                            (upState[0] == '0') ? "5" :
-                            (downState[0] == '0') ? "0" :
-                            (row.IARMS < 700.0D) ? "1" :
-                            "4";
+                    char breakerElementB =
+                        (upState[2] == '0') ? '5' :
+                        (downState[2] == '0') ? '0' :
+                        (row.IBRMS < 700.0D) ? '1' :
+                        '4';
 
-                        string breakerElementC =
-                            (upState[1] == '0') ? "5" :
-                            (downState[1] == '0') ? "0" :
-                            (row.ICRMS < 700.0D) ? "1" :
-                            "4";
+                    string statusElement =
+                        ((object)faultType != null) ? "11" :
+                        (upState != "000" && downState.Contains("0")) ? "03" :
+                        "00";
 
-                        string breakerElementB =
-                            (upState[2] == '0') ? "5" :
-                            (downState[2] == '0') ? "0" :
-                            (row.IBRMS < 700.0D) ? "1" :
-                            "4";
+                    string state = upState + downState + statusElement + breakerElementA + breakerElementB + breakerElementC;
 
-                        string statusElement =
-                            ((object)faultType != null) ? "11" :
-                            (upState != "000" && downState.Contains("0")) ? "03" :
-                            "00";
+                    if (state != previousState)
+                        soePointAdapter.AddNewRecord(new SOEPoint() {
+                            CycleDataID = row.ID,
+                            StatusElement = statusElement,
+                            BreakerElementA = breakerElementA,
+                            BreakerElementB = breakerElementB,
+                            BreakerElementC = breakerElementC,
+                            UpState = upState,
+                            DownState = downState,
+                            FaultType = faultType
+                        });
 
-                        string state = upState + downState + statusElement + breakerElementA + breakerElementB + breakerElementC;
-
-                        if (state != previousState)
-                            soePointTable.AddSOEPointRow(row.ID, statusElement, breakerElementA, breakerElementB, breakerElementC, upState, downState, faultType);
-
-                        previousState = state;
-                    }
+                    previousState = state;
                 }
             }
-
-            BulkLoader bulkLoader = new BulkLoader();
-            bulkLoader.Connection = dbAdapterContainer.Connection;
-            bulkLoader.CommandTimeout = dbAdapterContainer.CommandTimeout;
-            bulkLoader.Load(soePointTable);
         }
 
         private string GetVoltageState(double rms, double lineKV)

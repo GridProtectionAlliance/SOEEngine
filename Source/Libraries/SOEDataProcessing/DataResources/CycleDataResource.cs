@@ -26,9 +26,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using SOEDataProcessing.DataAnalysis;
-using SOEDataProcessing.Database;
 using SOEDataProcessing.DataSets;
 using log4net;
+using SOE.Model;
+using GSF.Data;
+using GSF.Data.Model;
 
 namespace SOEDataProcessing.DataResources
 {
@@ -37,21 +39,10 @@ namespace SOEDataProcessing.DataResources
         #region [ Members ]
 
         // Fields
-        private DbAdapterContainer m_dbAdapterContainer;
-
         private double m_systemFrequency;
         private List<DataGroup> m_dataGroups;
         private List<VIDataGroup> m_viDataGroups;
         private List<VICycleDataGroup> m_viCycleDataGroups;
-
-        #endregion
-
-        #region [ Constructors ]
-
-        private CycleDataResource(DbAdapterContainer dbAdapterContainer)
-        {
-            m_dbAdapterContainer = dbAdapterContainer;
-        }
 
         #endregion
 
@@ -100,7 +91,6 @@ namespace SOEDataProcessing.DataResources
 
         public override void Initialize(MeterDataSet meterDataSet)
         {
-            MeterInfoDataContext meterInfo = m_dbAdapterContainer.GetAdapter<MeterInfoDataContext>();
             DataGroupsResource dataGroupsResource = meterDataSet.GetResource<DataGroupsResource>();
             VIDataGroup viDataGroup;
 
@@ -127,7 +117,7 @@ namespace SOEDataProcessing.DataResources
                 if (viDataGroup.DefinedVoltages != 3 || viDataGroup.DefinedCurrents < 3)
                     continue;
 
-                dataGroup.Add(viDataGroup.CalculateMissingCurrentChannel(meterInfo));
+                dataGroup.Add(viDataGroup.CalculateMissingCurrentChannel());
 
                 m_dataGroups.Add(dataGroup);
                 m_viDataGroups.Add(viDataGroup);
@@ -185,61 +175,68 @@ namespace SOEDataProcessing.DataResources
 
         private Series GetSeriesInfo(Meter meter, ChannelKey channelKey, SeriesKey seriesKey)
         {
-            MeterInfoDataContext meterInfo = m_dbAdapterContainer.GetAdapter<MeterInfoDataContext>();
+            Series dbSeries = meter.Channels
+                .SelectMany(channel => channel.Series)
+                .FirstOrDefault(series => seriesKey.Equals(new SeriesKey(series)));
 
-            DataContextLookup<ChannelKey, Channel> channelLookup;
-            DataContextLookup<SeriesKey, Series> seriesLookup;
-            DataContextLookup<string, MeasurementType> measurementTypeLookup;
-            DataContextLookup<string, MeasurementCharacteristic> measurementCharacteristicLookup;
-            DataContextLookup<string, Phase> phaseLookup;
-            DataContextLookup<string, SeriesType> seriesTypeLookup;
-
-            channelLookup = new DataContextLookup<ChannelKey, Channel>(meterInfo, channel => new ChannelKey(channel))
-                .WithFilterExpression(channel => channel.MeterID == meter.ID)
-                .WithFilterExpression(channel => channel.LineID == channelKey.LineID);
-
-            seriesLookup = new DataContextLookup<SeriesKey, Series>(meterInfo, series => new SeriesKey(series))
-                .WithFilterExpression(series => series.Channel.Meter.ID == meter.ID)
-                .WithFilterExpression(series => series.Channel.Line.ID == channelKey.LineID);
-
-            measurementTypeLookup = new DataContextLookup<string, MeasurementType>(meterInfo, measurementType => measurementType.Name);
-            measurementCharacteristicLookup = new DataContextLookup<string, MeasurementCharacteristic>(meterInfo, measurementCharacteristic => measurementCharacteristic.Name);
-            phaseLookup = new DataContextLookup<string, Phase>(meterInfo, phase => phase.Name);
-            seriesTypeLookup = new DataContextLookup<string, SeriesType>(meterInfo, seriesType => seriesType.Name);
-
-            return seriesLookup.GetOrAdd(seriesKey, key =>
+            if ((object)dbSeries == null)
             {
-                SeriesType seriesType = seriesTypeLookup.GetOrAdd(key.SeriesType, name => new SeriesType() { Name = name, Description = name });
 
-                Channel channel = channelLookup.GetOrAdd(channelKey, chKey =>
+                using (AdoDataConnection connection = meter.ConnectionFactory())
                 {
-                    MeasurementType measurementType = measurementTypeLookup.GetOrAdd(chKey.MeasurementType, name => new MeasurementType() { Name = name, Description = name });
-                    MeasurementCharacteristic measurementCharacteristic = measurementCharacteristicLookup.GetOrAdd(chKey.MeasurementCharacteristic, name => new MeasurementCharacteristic() { Name = name, Description = name });
-                    Phase phase = phaseLookup.GetOrAdd(chKey.Phase, name => new Phase() { Name = name, Description = name });
+                    Channel dbChannel = meter.Channels
+                        .FirstOrDefault(channel => channelKey.Equals(new ChannelKey(channel)));
 
-                    return new Channel()
+                    if ((object)dbChannel == null)
                     {
-                        Meter = meter,
-                        Line = meterInfo.Lines.Single(line => line.ID == chKey.LineID),
-                        MeasurementType = measurementType,
-                        MeasurementCharacteristic = measurementCharacteristic,
-                        Phase = phase,
-                        Name = chKey.Name,
-                        SamplesPerHour = 0,
-                        PerUnitValue = 0,
-                        HarmonicGroup = 0,
-                        Description = string.Concat(measurementCharacteristic.Name, " ", measurementType.Name, " ", phase.Name),
-                        Enabled = 1
-                    };
-                });
+                        TableOperations<Channel> channelTable = new TableOperations<Channel>(connection);
+                        TableOperations<MeasurementType> measurementTypeTable = new TableOperations<MeasurementType>(connection);
+                        TableOperations<MeasurementCharacteristic> measurementCharacteristicTable = new TableOperations<MeasurementCharacteristic>(connection);
+                        TableOperations<Phase> phaseTable = new TableOperations<Phase>(connection);
 
-                return new Series()
-                {
-                    SeriesType = seriesType,
-                    Channel = channel,
-                    SourceIndexes = string.Empty
-                };
-            });
+                        MeasurementType measurementType = measurementTypeTable.GetOrAdd(channelKey.MeasurementType);
+                        MeasurementCharacteristic measurementCharacteristic = measurementCharacteristicTable.GetOrAdd(channelKey.MeasurementCharacteristic);
+                        Phase phase = phaseTable.GetOrAdd(channelKey.Phase);
+
+                        dbChannel = new Channel()
+                        {
+                            MeterID = meter.ID,
+                            LineID = channelKey.LineID,
+                            MeasurementTypeID = measurementType.ID,
+                            MeasurementCharacteristicID = measurementCharacteristic.ID,
+                            PhaseID = phase.ID,
+                            Name = channelKey.Name,
+                            SamplesPerHour = 0,
+                            Description = string.Concat(channelKey.MeasurementCharacteristic, " ", channelKey.MeasurementType, " ", channelKey.Phase),
+                            Enabled = true
+                        };
+
+                        channelTable.AddNewRecord(dbChannel);
+                        dbChannel.ID = connection.ExecuteScalar<int>("SELECT @@IDENTITY");
+                        meter.Channels = null;
+                    }
+                    TableOperations<Series> seriesTable = new TableOperations<Series>(connection);
+                    TableOperations<SeriesType> seriesTypeTable = new TableOperations<SeriesType>(connection);
+                    SeriesType seriesType = seriesTypeTable.GetOrAdd(seriesKey.SeriesType);
+
+                    dbSeries = new Series()
+                    {
+                        ChannelID = dbChannel.ID,
+                        SeriesTypeID = seriesType.ID,
+                        SourceIndexes = string.Empty
+                    };
+
+                    seriesTable.AddNewRecord(dbSeries);
+                    dbSeries.ID = connection.ExecuteScalar<int>("SELECT @@IDENTITY");
+                    dbChannel.Series = null;
+
+                    dbSeries = meter.Channels
+                        .SelectMany(channel => channel.Series)
+                        .First(series => seriesKey.Equals(new SeriesKey(series)));
+                }
+            }
+
+            return dbSeries;
         }
 
         #endregion
@@ -248,12 +245,6 @@ namespace SOEDataProcessing.DataResources
 
         // Static Fields
         private static readonly ILog Log = LogManager.GetLogger(typeof(CycleDataResource));
-
-        // Static Methods
-        public static CycleDataResource GetResource(MeterDataSet meterDataSet, DbAdapterContainer dbAdapterContainer)
-        {
-            return meterDataSet.GetResource(() => new CycleDataResource(dbAdapterContainer));
-        }
 
         #endregion
     }

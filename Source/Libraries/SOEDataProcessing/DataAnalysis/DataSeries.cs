@@ -24,8 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SOEDataProcessing.Database;
-
+using SOE.Model;
 namespace SOEDataProcessing.DataAnalysis
 {
     /// <summary>

@@ -21,7 +21,7 @@
 --GO
 --CREATE USER [NewUser] FOR LOGIN [NewUser]
 --GO
---CREATE ROLE [SOERole] AUTHORIZATION [dbo]
+--CREATE ROLE [SOEAdmin] AUTHORIZATION [dbo]
 --GO
 --EXEC sp_addrolemember N'SOEAdmin', N'NewUser'
 --GO
@@ -36,7 +36,9 @@ CREATE TABLE Setting
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
     Name VARCHAR(200) NOT NULL,
-    Value VARCHAR(MAX) NOT NULL
+    Value VARCHAR(MAX) NOT NULL,
+	DefaultValue VARCHAR(MAX) NOT NULL
+
 )
 GO
 
@@ -84,7 +86,8 @@ CREATE TABLE FileGroup
     DataEndTime DATETIME2 NOT NULL,
     ProcessingStartTime DATETIME2 NOT NULL,
     ProcessingEndTime DATETIME2 NOT NULL,
-    Error INT NOT NULL DEFAULT 0
+    Error INT NOT NULL DEFAULT 0,
+	FileHash INT
 )
 GO
 
@@ -108,6 +111,19 @@ GO
 CREATE NONCLUSTERED INDEX IX_DataFile_FilePathHash
 ON DataFile(FilePathHash ASC)
 GO
+
+CREATE TABLE [dbo].[FileBlob](
+    ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    DataFileID INT NOT NULL REFERENCES DataFile(ID),
+    Blob VARBINARY(MAX) NOT NULL
+)
+GO
+
+CREATE NONCLUSTERED INDEX IX_Fileblob_DataFileID
+ON FileBlob(DataFileID ASC)
+GO
+
+
 
 CREATE TABLE MeterLocation
 (
@@ -414,10 +430,6 @@ CREATE TABLE IncidentAttribute
 )
 GO
 
-CREATE NONCLUSTERED INDEX IX_IncidentAttribute_IncidentID
-ON Event(IncidentID ASC)
-GO
-
 CREATE TABLE EventType
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
@@ -444,8 +456,12 @@ CREATE TABLE Event
     TimeZoneOffset INT NOT NULL,
     SamplesPerSecond INT NOT NULL,
     SamplesPerCycle INT NOT NULL,
-    Description VARCHAR(MAX) NULL,
+    Description VARCHAR(MAX) NULL
 )
+GO
+
+CREATE NONCLUSTERED INDEX IX_IncidentAttribute_IncidentID
+ON Event(IncidentID ASC)
 GO
 
 CREATE NONCLUSTERED INDEX IX_Event_FileGroupID
@@ -1385,4 +1401,47 @@ as begin
 
 	select 'delete from [' + table_name + '] where ' + criteria from @to_delete order by id desc
 end
+GO
+
+CREATE PROCEDURE [dbo].[UniversalCascadeDelete]
+     
+    @tableName VARCHAR(200),
+    @baseCriteria NVARCHAR(1000)
+AS
+BEGIN
+     
+     
+    SET NOCOUNT ON;
+    DECLARE @deleteSQL NVARCHAR(900)
+
+    CREATE TABLE #DeleteCascade
+    (
+        DeleteSQL NVARCHAR(900)
+    )
+
+    INSERT INTO #DeleteCascade
+    EXEC usp_delete_cascade @tableName, @baseCriteria
+
+    DECLARE DeleteCursor CURSOR FOR
+    SELECT *
+    FROM #DeleteCascade
+
+    OPEN DeleteCursor
+
+    FETCH NEXT FROM DeleteCursor
+    INTO @deleteSQL
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        EXEC sp_executesql @deleteSQL
+
+        FETCH NEXT FROM DeleteCursor
+        INTO @deleteSQL
+    END
+
+    CLOSE DeleteCursor
+    DEALLOCATE DeleteCursor
+
+    DROP TABLE #DeleteCascade
+END
 GO
