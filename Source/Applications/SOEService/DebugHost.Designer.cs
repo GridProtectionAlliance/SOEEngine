@@ -99,7 +99,6 @@ namespace SOEService
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DebugHost));
             this.LabelNotice = new System.Windows.Forms.Label();
-            this.m_serviceHost = new SOEService.ServiceHost(this.components);
             this.m_notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.m_contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.m_showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -117,11 +116,6 @@ namespace SOEService
             this.LabelNotice.TabIndex = 1;
             this.LabelNotice.Text = resources.GetString("LabelNotice.Text");
             this.LabelNotice.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // m_serviceHost
-            // 
-            this.m_serviceHost.ExitCode = 0;
-            this.m_serviceHost.ServiceName = "SOEService";
             // 
             // m_notifyIcon
             // 

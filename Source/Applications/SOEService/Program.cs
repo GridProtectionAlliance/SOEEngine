@@ -81,6 +81,11 @@ namespace SOEService
     static class Program
     {
         /// <summary>
+        /// The service host instance for the application.
+        /// </summary>
+        public static readonly ServiceHost Host = new ServiceHost();
+
+        /// <summary>
         /// The main entry point for the application.
         /// </summary>
         static void Main()
@@ -89,10 +94,10 @@ namespace SOEService
             // Run as Windows Application.
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DebugHost());
+            Application.Run(new DebugHost(Host));
 #else
             // Run as Windows Service.
-            ServiceBase.Run(new ServiceHost());
+            ServiceBase.Run(Host);
 #endif
         }
     }

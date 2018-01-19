@@ -88,8 +88,11 @@ namespace SOEService
 
         #region [ Constructors ]
 
-        public DebugHost()
+        public DebugHost(ServiceHost host)
         {
+            m_serviceHost = host;
+            m_serviceHost.ExitCode = 0;
+            m_serviceHost.ServiceName = "openXDA";
             InitializeComponent();
         }
 
