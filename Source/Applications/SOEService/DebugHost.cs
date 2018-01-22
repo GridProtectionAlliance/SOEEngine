@@ -73,6 +73,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using GSF.Reflection;
+using GSF.IO;
 
 namespace SOEService
 {
@@ -104,6 +105,7 @@ namespace SOEService
         {
             if (!DesignMode)
             {
+                Environment.CurrentDirectory = FilePath.GetAbsolutePath("");
                 m_remoteConsole = Process.Start("SOEConsole.exe");
 
                 // Get application icon.

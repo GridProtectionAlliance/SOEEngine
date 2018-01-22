@@ -93,33 +93,6 @@ namespace SOEService
             // Load ServiceHub SignalR class
             app.MapSignalR(hubConfig);
 
-            // Map custom API controllers
-            try
-            {
-                httpConfig.Routes.MapHttpRoute(
-                    name: "CustomAPIs",
-                    routeTemplate: "api/{controller}/{action}/{id}",
-                    defaults: new { action = "Index", id = RouteParameter.Optional }
-                );
-            }
-            catch (Exception ex)
-            {
-                Program.Host.LogException(new InvalidOperationException($"Failed to initialize custom API controllers: {ex.Message}", ex));
-            }
-
-            // Map Grafana authenticated proxy controller
-            try
-            {
-                httpConfig.Routes.MapHttpRoute(
-                    name: "GrafanaAuthProxy",
-                    routeTemplate: "grafana/{*url}",
-                    defaults: new { controller = "GrafanaAuthProxy", url = RouteParameter.Optional });
-            }
-            catch (Exception ex)
-            {
-                Program.Host.LogException(new InvalidOperationException($"Failed to initialize Grafana authenticated proxy controller: {ex.Message}", ex));
-            }
-
             // Set configuration to use reflection to setup routes
             httpConfig.MapHttpAttributeRoutes();
 
