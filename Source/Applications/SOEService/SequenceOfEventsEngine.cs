@@ -719,6 +719,41 @@ namespace SOEService
         }
 
         /// <summary>
+        /// Auto deletes old files.
+        /// </summary>
+        /// <param name="args">The arguments supplied to the command to tweak the settings.</param>
+        /// <returns></returns>
+        public void AutoDeleteFiles()
+        {
+            using (AdoDataConnection connection = CreateDbConnection(m_systemSettings))
+            {
+                TableOperations<Setting> settingTable = new TableOperations<Setting>(connection);
+                int days = int.Parse(settingTable.QueryRecordWhere("Name = 'AutoFileDeletionDays'")?.Value ?? "30");
+                DateTime date = DateTime.UtcNow.AddDays(days * -1);
+
+                foreach (string path in m_fileProcessor.TrackedDirectories)
+                {
+                    foreach (string filePath in FilePath.EnumerateFiles(path))
+                    {
+                        FileInfo file = new FileInfo(filePath);
+                        List<DateTime> list = new List<DateTime>();
+                        list.Add(file.CreationTimeUtc);
+                        list.Add(file.LastAccessTimeUtc);
+                        list.Add(file.LastWriteTimeUtc);
+                        DateTime max = list.Max();
+
+                        if (max < date)
+                        {
+                            OnStatusMessage("Deleting file - {0}", file.Name);
+                            file.Delete();
+                        }
+                    }
+                }
+            }
+
+        }
+
+        /// <summary>
         /// Processes the given file on the appropriate meter thread with the given priority.
         /// </summary>
         /// <param name="filePath">The path to the file to be processed.</param>
