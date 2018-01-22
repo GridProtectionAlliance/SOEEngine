@@ -32,6 +32,75 @@
 
 ----- TABLES -----
 
+CREATE TABLE ApplicationRole(
+	ID uniqueidentifier NOT NULL PRIMARY KEY DEFAULT NEWID(),
+	Name varchar(200) NOT NULL,
+	Description varchar(max) NULL,
+	NodeID uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+	CreatedOn datetime DEFAULT GETDATE(),
+	CreatedBy varchar(200) NOT NULL,
+	UpdatedOn datetime DEFAULT GETDATE(),
+	UpdatedBy varchar(200) NOT NULL,
+)
+GO
+
+CREATE TABLE SecurityGroup(
+	ID uniqueidentifier NOT NULL PRIMARY KEY DEFAULT NEWID(),
+	Name varchar(200) NOT NULL,
+	Description varchar(max) NULL,
+	CreatedOn datetime DEFAULT GETDATE(),
+	CreatedBy varchar(200) NOT NULL,
+	UpdatedOn datetime DEFAULT GETDATE(),
+	UpdatedBy varchar(200) NOT NULL,
+)
+GO
+
+CREATE TABLE UserAccount(
+	ID uniqueidentifier NOT NULL PRIMARY KEY DEFAULT NEWID(),
+	Name varchar(200) NOT NULL,
+	Password varchar(200) NULL,
+	FirstName varchar(200) NULL,
+	LastName varchar(200) NULL,
+	DefaultNodeID uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
+	Phone varchar(200) NULL,
+	Email varchar(200) NULL,
+	LockedOut bit NOT NULL,
+	UseADAuthentication bit NOT NULL,
+	ChangePasswordOn datetime NULL,
+	CreatedOn datetime DEFAULT GETDATE(),
+	CreatedBy varchar(50) NOT NULL,
+	UpdatedOn datetime DEFAULT GETDATE(),
+	UpdatedBy varchar(50) NOT NULL,
+)
+
+CREATE TABLE ApplicationRoleSecurityGroup(
+	ApplicationRoleID uniqueidentifier NOT NULL FOREIGN KEY REFERENCES ApplicationRole(ID),
+	SecurityGroupID uniqueidentifier NOT NULL FOREIGN KEY REFERENCES SecurityGroup(ID)
+)
+GO
+
+CREATE TABLE ApplicationRoleUserAccount(
+	ApplicationRoleID uniqueidentifier NOT NULL FOREIGN KEY REFERENCES ApplicationRole(ID),
+	UserAccountID uniqueidentifier NOT NULL FOREIGN KEY REFERENCES UserAccount(ID)
+)
+GO
+
+
+CREATE TABLE SecurityGroupUserAccount(
+	SecurityGroupID uniqueidentifier NOT NULL FOREIGN KEY REFERENCES SecurityGroup(ID),
+	UserAccountID uniqueidentifier NOT NULL FOREIGN KEY REFERENCES UserAccount(ID)
+)
+GO
+
+INSERT SecurityGroup (Name, Description, CreatedBy, UpdatedBy) VALUES (N'S-1-5-32-545', 'All authenticated windows users.', N'Installer', N'Installer')
+GO
+INSERT ApplicationRole (Name, Description, CreatedBy, UpdatedBy) VALUES (N'Administrator', N'Administrator Role', N'Installer', N'Installer')
+GO
+INSERT ApplicationRole (Name, Description, CreatedBy, UpdatedBy) VALUES (N'Viewer', N'Viewer Role', N'Installer',  N'Installer')
+GO
+INSERT ApplicationRoleSecurityGroup (ApplicationRoleID, SecurityGroupID) VALUES ((SELECT ID FROM ApplicationRole WHERE Name = 'Administrator'), (SELECT ID FROM SecurityGroup WHERE Name = 's-1-5-32-545'))
+GO
+
 CREATE TABLE Setting
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
