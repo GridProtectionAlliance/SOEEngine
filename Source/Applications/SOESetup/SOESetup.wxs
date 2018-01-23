@@ -20,6 +20,9 @@
       <!-- SOE Service -->
       <Feature Id="ServiceFeature" Title="SOE Service" AllowAdvertise="no" Description="Installs the SOE Windows service to perform data analytics.">
         <ComponentGroupRef Id="ServiceComponents" />
+        <!-- Web Files -->
+        <?include WebFeatures.wxi ?>
+
       </Feature>
 
       <!-- SOE Console -->
@@ -110,6 +113,7 @@
             <Directory Id="DEBUGFOLDER" Name="Debug" />
             <Directory Id="RESULTSFOLDER" Name="Results" />
             <Directory Id="WATCHFOLDER" Name="Watch" />
+            <?include WebFolders.wxi ?>
           </Directory>
         </Directory>
       <?else ?>
@@ -119,6 +123,7 @@
             <Directory Id="DEBUGFOLDER" Name="Debug" />
             <Directory Id="RESULTSFOLDER" Name="Results" />
             <Directory Id="WATCHFOLDER" Name="Watch" />
+            <?include WebFolders.wxi ?>
           </Directory>
         </Directory>
       <?endif ?>
@@ -127,6 +132,10 @@
         <Directory Id="ApplicationProgramsFolder" Name="SOEEngine" />
       </Directory>
     </Directory>
+  </Fragment>
+
+  <Fragment>
+    <?include WebFiles.wxi ?>
   </Fragment>
 
   <Fragment>
@@ -147,7 +156,7 @@
         <ServiceControl Id="SOEServiceControl" Name="SOEService" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
       </Component>
       <Component Id="SOEServiceConfig">
-        <File Id="SOEService.exe.config" Name="$(var.SOEService.TargetFileName).config" Source="$(var.SOEService.TargetPath).config" />
+        <File Id="SOEService.exe.config" Name="$(var.SOEService.TargetFileName).config" Source="$(var.SOEService.ProjectDir)\app.config" />
         <util:XmlFile Id="SetDBConnectionString" Action="setValue" ElementPath="/configuration/categorizedSettings/systemSettings/add[\[]@name='ConnectionString'[\]]/@value" Value="[XDACONNECTIONSTRING]" File="[#SOEService.exe.config]" SelectionLanguage="XPath" Sequence="1" />
       </Component>
       <Component Id="DeviceDefinitionsMigrator">
@@ -162,6 +171,7 @@
       
       <!-- XDA Libraries -->
       <ComponentRef Id="SOEDataProcessing" />
+      <ComponentRef Id="SOE.Model" />
 
       <!-- DotNetZip Dependencies -->
       <ComponentRef Id="Ionic.Zlib" />
@@ -181,11 +191,36 @@
       <ComponentRef Id="GSF.ServiceProcess" />
       <ComponentRef Id="GSF.TimeSeries" />
       <ComponentRef Id="TagDefinitions" />
+      <ComponentRef Id="GSF.Web" />
 
       <!-- openHistorian Dependencies -->
       <ComponentRef Id="crypto" />
       <ComponentRef Id="GSF.SortedTreeStore" />
       <ComponentRef Id="openHistorian.Core" />
+
+      <!-- Self Hosting SignalR, WebAPI and Razor Engine Components (from NuGet) -->
+      <ComponentRef Id="AjaxMin" />
+      <ComponentRef Id="Microsoft.AspNet.SignalR.Core" />
+      <ComponentRef Id="Microsoft.Owin.Cors" />
+      <ComponentRef Id="Microsoft.Owin" />
+      <ComponentRef Id="Microsoft.Owin.Host.HttpListener" />
+      <ComponentRef Id="Microsoft.Owin.Hosting" />
+      <ComponentRef Id="Microsoft.Owin.Security" />
+      <ComponentRef Id="Microsoft.AspNet.Cors" />
+      <ComponentRef Id="System.Web.Http" />
+      <ComponentRef Id="System.Web.Http.Owin" />
+      <ComponentRef Id="Newtonsoft.Json" />
+      <ComponentRef Id="Owin" />
+      <ComponentRef Id="RazorEngine" />
+      <ComponentRef Id="System.Web.Razor" />
+      <ComponentRef Id="Microsoft.Web.Infrastructure" />
+      <ComponentRef Id="System.Net.Http.Formatting" />
+      <ComponentRef Id="System.Net.Http.WebRequest" />
+      <ComponentRef Id="System.Web.Helpers" />
+      <ComponentRef Id="System.Web.Mvc" />
+      <ComponentRef Id="System.Web.WebPages.Deployment" />
+      <ComponentRef Id="System.Web.WebPages" />
+      <ComponentRef Id="System.Web.WebPages.Razor" />
 
       <!-- Cleanup -->
       <Component Id="Cleanup" Guid="{C8EBB158-C708-4C94-87C1-F5DBC77D7BDE}">
@@ -222,7 +257,11 @@
       <Component Id="SOEDataProcessing">
         <File Id="SOEDataProcessing.dll" Name="$(var.SOEDataProcessing.TargetFileName)" Source="$(var.SOEDataProcessing.TargetPath)" />
       </Component>
-      
+      <Component Id="SOE.Model">
+        <File Id="SOE.Model.dll" Name="$(var.SOE.Model.TargetFileName)" Source="$(var.SOE.Model.TargetPath)" />
+      </Component>
+
+
       <!-- DotNetZip Dependencies -->
       <Component Id="Ionic.Zlib">
         <File Id="Ionic.Zlib.dll" Name="Ionic.Zlib.dll" Source="$(var.SolutionDir)\Dependencies\DotNetZip\Ionic.Zlib.dll" />
@@ -267,6 +306,10 @@
       <Component Id="TagDefinitions">
         <File Id="TagDefinitions.xml" Name="TagDefinitions.xml" Source="$(var.SolutionDir)\Dependencies\GSF\TagDefinitions.xml" />
       </Component>
+      <Component Id="GSF.Web">
+        <File Id="GSF.Web.dll" Name="GSF.Web.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Web.dll" />
+      </Component>
+
 
       <!-- openHistorian Dependencies -->
       <Component Id="crypto">
@@ -278,6 +321,75 @@
       <Component Id="openHistorian.Core">
         <File Id="openHistorian.Core.dll" Name="openHistorian.Core.dll" Source="$(var.SolutionDir)\Dependencies\openHistorian\openHistorian.Core.dll" />
       </Component>
+
+      <!-- Self Hosting SignalR, WebAPI and Razor Engine Components (from NuGet) -->
+      <Component Id="AjaxMin">
+        <File Id="AjaxMin.dll" Name="AjaxMin.dll" Source="$(var.SolutionDir)Dependencies\GSF\AjaxMin.dll" />
+      </Component>
+      <Component Id="Microsoft.AspNet.Cors">
+        <File Id="System.Web.Cors.dll" Name="System.Web.Cors.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.Cors.dll" />
+      </Component>
+      <Component Id="Microsoft.AspNet.SignalR.Core">
+        <File Id="Microsoft.AspNet.SignalR.Core.dll" Name="Microsoft.AspNet.SignalR.Core.dll" Source="$(var.SolutionDir)Dependencies\GSF\Microsoft.AspNet.SignalR.Core.dll" />
+      </Component>
+      <Component Id="System.Net.Http.Formatting">
+        <File Id="System.Net.Http.Formatting.dll" Name="System.Net.Http.Formatting.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Net.Http.Formatting.dll" />
+      </Component>
+      <Component Id="System.Web.Http">
+        <File Id="System.Web.Http.dll" Name="System.Web.Http.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.Http.dll" />
+      </Component>
+      <Component Id="System.Web.Http.Owin">
+        <File Id="System.Web.Http.Owin.dll" Name="System.Web.Http.Owin.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.Http.Owin.dll" />
+      </Component>
+      <Component Id="Microsoft.Owin">
+        <File Id="Microsoft.Owin.dll" Name="Microsoft.Owin.dll" Source="$(var.SolutionDir)Dependencies\GSF\Microsoft.Owin.dll" />
+      </Component>
+      <Component Id="Microsoft.Owin.Cors">
+        <File Id="Microsoft.Owin.Cors.dll" Name="Microsoft.Owin.Cors.dll" Source="$(var.SolutionDir)Dependencies\GSF\Microsoft.Owin.Cors.dll" />
+      </Component>
+      <Component Id="Microsoft.Owin.Host.HttpListener">
+        <File Id="Microsoft.Owin.Host.HttpListener.dll" Name="Microsoft.Owin.Host.HttpListener.dll" Source="$(var.SolutionDir)Dependencies\GSF\Microsoft.Owin.Host.HttpListener.dll" />
+      </Component>
+      <Component Id="Microsoft.Owin.Hosting">
+        <File Id="Microsoft.Owin.Hosting.dll" Name="Microsoft.Owin.Hosting.dll" Source="$(var.SolutionDir)Dependencies\GSF\Microsoft.Owin.Hosting.dll" />
+      </Component>
+      <Component Id="Microsoft.Owin.Security">
+        <File Id="Microsoft.Owin.Security.dll" Name="Microsoft.Owin.Security.dll" Source="$(var.SolutionDir)Dependencies\GSF\Microsoft.Owin.Security.dll" />
+      </Component>
+      <Component Id="Newtonsoft.Json">
+        <File Id="Newtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="$(var.SolutionDir)Dependencies\GSF\Newtonsoft.Json.dll" />
+      </Component>
+      <Component Id="Owin">
+        <File Id="Owin.dll" Name="Owin.dll" Source="$(var.SolutionDir)Dependencies\GSF\Owin.dll" />
+      </Component>
+      <Component Id="RazorEngine">
+        <File Id="RazorEngine.dll" Name="RazorEngine.dll" Source="$(var.SolutionDir)Dependencies\GSF\RazorEngine.dll" />
+      </Component>
+      <Component Id="System.Web.Razor">
+        <File Id="System.Web.Razor.dll" Name="System.Web.Razor.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.Razor.dll" />
+      </Component>
+      <Component Id="Microsoft.Web.Infrastructure">
+        <File Id="Microsoft.Web.Infrastructure.dll" Name="Microsoft.Web.Infrastructure.dll" Source="$(var.SolutionDir)Dependencies\GSF\Microsoft.Web.Infrastructure.dll" />
+      </Component>
+      <Component Id="System.Net.Http.WebRequest">
+        <File Id="System.Net.Http.WebRequest.dll" Name="System.Net.Http.WebRequest.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Net.Http.WebRequest.dll" />
+      </Component>
+      <Component Id="System.Web.Helpers">
+        <File Id="System.Web.Helpers.dll" Name="System.Web.Helpers.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.Helpers.dll" />
+      </Component>
+      <Component Id="System.Web.Mvc">
+        <File Id="System.Web.Mvc.dll" Name="System.Web.Mvc.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.Mvc.dll" />
+      </Component>
+      <Component Id="System.Web.WebPages.Deployment">
+        <File Id="System.Web.WebPages.Deployment.dll" Name="System.Web.WebPages.Deployment.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.WebPages.Deployment.dll" />
+      </Component>
+      <Component Id="System.Web.WebPages">
+        <File Id="System.Web.WebPages.dll" Name="System.Web.WebPages.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.WebPages.dll" />
+      </Component>
+      <Component Id="System.Web.WebPages.Razor">
+        <File Id="System.Web.WebPages.Razor.dll" Name="System.Web.WebPages.Razor.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.WebPages.Razor.dll" />
+      </Component>
+
     </ComponentGroup>
   </Fragment>
 

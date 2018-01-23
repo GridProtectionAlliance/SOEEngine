@@ -1,0 +1,91 @@
+<Include>
+<ComponentGroup Id="wwwroot_Components" Directory="wwwroot_WWWROOTFOLDER">
+  <Component Id="wwwroot_Groups_cshtml">
+    <File Id="wwwroot_Groups.cshtml" Name="Groups.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Groups.cshtml" />
+  </Component>
+  <Component Id="wwwroot_index_cshtml">
+    <File Id="wwwroot_index.cshtml" Name="index.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\index.cshtml" />
+  </Component>
+  <Component Id="wwwroot_Layout_cshtml">
+    <File Id="wwwroot_Layout.cshtml" Name="Layout.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Layout.cshtml" />
+  </Component>
+  <Component Id="wwwroot_RemoteConsole_cshtml">
+    <File Id="wwwroot_RemoteConsole.cshtml" Name="RemoteConsole.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\RemoteConsole.cshtml" />
+  </Component>
+  <Component Id="wwwroot_Settings_cshtml">
+    <File Id="wwwroot_Settings.cshtml" Name="Settings.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Settings.cshtml" />
+  </Component>
+  <Component Id="wwwroot_Users_cshtml">
+    <File Id="wwwroot_Users.cshtml" Name="Users.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Users.cshtml" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Content_Components" Directory="wwwroot_CONTENTFOLDER">
+  <Component Id="wwwroot_Content_bootstrap_datetimepicker_css">
+    <File Id="wwwroot_Content_bootstrap_datetimepicker.css" Name="bootstrap-datetimepicker.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-datetimepicker.css" />
+  </Component>
+  <Component Id="wwwroot_Content_bootstrap_datetimepicker_min_css">
+    <File Id="wwwroot_Content_bootstrap_datetimepicker.min.css" Name="bootstrap-datetimepicker.min.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-datetimepicker.min.css" />
+  </Component>
+  <Component Id="wwwroot_Content_bootstrap_sidebar_css">
+    <File Id="wwwroot_Content_bootstrap_sidebar.css" Name="bootstrap-sidebar.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-sidebar.css" />
+  </Component>
+  <Component Id="wwwroot_Content_bootstrap_theme_cerulean_css">
+    <File Id="wwwroot_Content_bootstrap_theme_cerulean.css" Name="bootstrap-theme-cerulean.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-theme-cerulean.css" />
+  </Component>
+  <Component Id="wwwroot_Content_bootstrap_theme_cosmo_css">
+    <File Id="wwwroot_Content_bootstrap_theme_cosmo.css" Name="bootstrap-theme-cosmo.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-theme-cosmo.css" />
+  </Component>
+  <Component Id="wwwroot_Content_bootstrap_theme_cyborg_css">
+    <File Id="wwwroot_Content_bootstrap_theme_cyborg.css" Name="bootstrap-theme-cyborg.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-theme-cyborg.css" />
+  </Component>
+  <Component Id="wwwroot_Content_bootstrap_theme_readable_css">
+    <File Id="wwwroot_Content_bootstrap_theme_readable.css" Name="bootstrap-theme-readable.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-theme-readable.css" />
+  </Component>
+  <Component Id="wwwroot_Content_bootstrap_theme_sandstone_css">
+    <File Id="wwwroot_Content_bootstrap_theme_sandstone.css" Name="bootstrap-theme-sandstone.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-theme-sandstone.css" />
+  </Component>
+  <Component Id="wwwroot_Content_bootstrap_theme_slate_css">
+    <File Id="wwwroot_Content_bootstrap_theme_slate.css" Name="bootstrap-theme-slate.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-theme-slate.css" />
+  </Component>
+  <Component Id="wwwroot_Content_bootstrap_theme_united_css">
+    <File Id="wwwroot_Content_bootstrap_theme_united.css" Name="bootstrap-theme-united.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-theme-united.css" />
+  </Component>
+  <Component Id="wwwroot_Content_bootstrap_theme_css">
+    <File Id="wwwroot_Content_bootstrap_theme.css" Name="bootstrap-theme.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-theme.css" />
+  </Component>
+  <Component Id="wwwroot_Content_bootstrap_theme_min_css">
+    <File Id="wwwroot_Content_bootstrap_theme.min.css" Name="bootstrap-theme.min.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-theme.min.css" />
+  </Component>
+  <Component Id="wwwroot_Content_Popup_css">
+    <File Id="wwwroot_Content_Popup.css" Name="Popup.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Popup.css" />
+  </Component>
+  <Component Id="wwwroot_Content_Site_css">
+    <File Id="wwwroot_Content_Site.css" Name="Site.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Site.css" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_Components" Directory="wwwroot_IMAGESFOLDER">
+  <Component Id="wwwroot_Images_gpa_smalllock_png">
+    <File Id="wwwroot_Images_gpa_smalllock.png" Name="gpa-smalllock.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\gpa-smalllock.png" />
+  </Component>
+  <Component Id="wwwroot_Images_SOETools_png">
+    <File Id="wwwroot_Images_SOETools.png" Name="SOETools.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\SOETools.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Scripts_Components" Directory="wwwroot_SCRIPTSFOLDER">
+  <Component Id="wwwroot_Scripts_bootstrap_datetimepicker_min_js">
+    <File Id="wwwroot_Scripts_bootstrap_datetimepicker.min.js" Name="bootstrap-datetimepicker.min.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\bootstrap-datetimepicker.min.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_dateFormat_js">
+    <File Id="wwwroot_Scripts_dateFormat.js" Name="dateFormat.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\dateFormat.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_modernizr_2_8_3_js">
+    <File Id="wwwroot_Scripts_modernizr_2.8.3.js" Name="modernizr-2.8.3.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\modernizr-2.8.3.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_moment_min_js">
+    <File Id="wwwroot_Scripts_moment.min.js" Name="moment.min.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\moment.min.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_Site_js">
+    <File Id="wwwroot_Scripts_Site.js" Name="Site.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Site.js" />
+  </Component>
+</ComponentGroup>
+</Include>
