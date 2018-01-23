@@ -223,6 +223,8 @@ namespace SOEService
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("EngineStatus", "Displays status information about the XDA engine", EngineStatusHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("TweakFileProcessor", "Modifies the behavior of the file processor at runtime", TweakFileProcessorHandler));
             m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("MsgServiceMonitors", "Sends a message to all service monitors", MsgServiceMonitorsRequestHandler));
+            m_serviceHelper.ClientRequestHandlers.Add(new ClientRequestHandler("PurgeData", "Deletes data from database beyond a sepecified date", PurgeDataHandler));
+
             m_serviceHelper.UpdatedStatus += UpdatedStatusHandler;
             m_serviceHelper.LoggedException += LoggedExceptionHandler;
 
@@ -456,6 +458,20 @@ namespace SOEService
 
             string[] args = Arguments.ToArgs(requestInfo.Request.Arguments.ToString());
             string message = m_sequenceOfEventsEngine.TweakFileProcessor(args);
+            DisplayResponseMessage(requestInfo, message);
+        }
+
+        private void PurgeDataHandler(ClientRequestInfo requestInfo)
+        {
+            if (requestInfo.Request.Arguments.ContainsHelpRequest)
+            {
+                string helpMessage = m_sequenceOfEventsEngine.PurgeData(new string[] { "-?" });
+                DisplayResponseMessage(requestInfo, helpMessage);
+                return;
+            }
+
+            string[] args = Arguments.ToArgs(requestInfo.Request.Arguments.ToString());
+            string message = m_sequenceOfEventsEngine.PurgeData(args);
             DisplayResponseMessage(requestInfo, message);
         }
 
