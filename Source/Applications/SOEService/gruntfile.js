@@ -26,10 +26,12 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-babel');
+    grunt.loadNpmTasks('grunt-typescript');
 
     grunt.initConfig({
         babel: {
             options: {
+                sourceMap: true,
                 plugins: ['transform-react-jsx'],
                 presets: ['es2015', 'stage-0', 'react']
             },
@@ -43,17 +45,32 @@ module.exports = function (grunt) {
                 }]
             }
         },
-
+        typescript: {
+            build: {
+                src: ['wwwroot/Scripts/JSX/*.tsx', '!wwwroot/Scripts/JSX/*.d.tsx'],
+                options: {
+                    module: 'system',
+                    target: 'es5',
+                    declaration: true,
+                    moduleResolution:'node',
+                    emitDecoratorMetadata: true,
+                    experimentalDecorators: true,
+                    sourceMap: true,
+                    noImplicitAny: false,
+                    jsx: "react"
+                }
+            }
+        },
         watch: {
-            files: ['wwwroot/Scripts/JSX/*.jsx'],
+            files: ['wwwroot/Scripts/JSX/*.tsx'],
             tasks: ['default'],
             options: {
-                debounceDelay: 250
+                debounceDelay: 100
             }
         }
     });
 
     grunt.registerTask('default', [
-        'babel',
+        'typescript',
     ]);
 };

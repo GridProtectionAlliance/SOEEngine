@@ -1,7 +1,10 @@
 {
-	"version": "1.0.0",
-	"name": "ASP.NET",
-	"private": true,
+  "dependencies": {
+    "react": "16.2.0",
+    "react-dom": "16.2.0",
+    "react-datetime-range-picker": "1.0.4"
+
+  },
   "devDependencies": {
     "babel-core": "6.26.0",
     "babel-loader": "7.1.2",
@@ -12,6 +15,10 @@
     "grunt-babel": "7.0.0",
     "grunt-cli": "1.2.0",
     "grunt-contrib-watch": "1.0.0",
-    "load-grunt-tasks": "3.5.2"
-  }
+    "load-grunt-tasks": "3.5.2",
+    "requirejs-react-jsx": "1.0.2"
+  },
+  "name": "SOEEngine",
+  "private": true,
+  "version": "1.0.0"
 }

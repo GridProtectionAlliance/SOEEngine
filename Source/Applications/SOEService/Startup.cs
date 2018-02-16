@@ -93,6 +93,25 @@ namespace SOEService
             // Load ServiceHub SignalR class
             app.MapSignalR(hubConfig);
 
+            // Map custom API controllers
+            try
+            {
+                httpConfig.Routes.MapHttpRoute(
+                    name: "Controllers",
+                    routeTemplate: "api/{controller}/{action}/{modelName}/{id}",
+                    defaults: new {
+                        action = "Index",
+                        id = RouteParameter.Optional,
+                        modelName = RouteParameter.Optional
+                    }
+                );
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to initialize custom API controllers: {ex.Message}", ex));
+            }
+
+
             // Set configuration to use reflection to setup routes
             httpConfig.MapHttpAttributeRoutes();
 

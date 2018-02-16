@@ -20,53 +20,16 @@
     //       Generated original version of source code.
     //
     //*****************************************************************************************************@
-@using GSF.Web
+@using GSF.Web.Model
 @using SOE.Model
-@using RazorEngine.Templating
 
-@inherits TemplateBase<AppModel>
+@inherits ExtendedTemplateBase<AppModel>
 @{
-    // DataContext is the "database connection" that is available for the page, you can
-    // use direct database calls, e.g., dataContect.Connection.RetrieveData(...) or you
-    // can use model based table operations, e.g., dataContext.Table<Page>().LoadRecord(id)
-    List<int> counts = ViewBag.counts ?? new List<int>();
-    List<int> faults = ViewBag.faults ?? new List<int>();
-    List<int> faultsLG = ViewBag.faultsLG ?? new List<int>();
-    List<int> faultsLL = ViewBag.faultsLL ?? new List<int>();
-    List<int> faultsLLL = ViewBag.faultsLLL ?? new List<int>();
-    List<int> volts = ViewBag.volts ?? new List<int>();
-    List<int> voltsags = ViewBag.voltsags ?? new List<int>();
-    List<int> voltswells = ViewBag.voltswells ?? new List<int>();
-
-    List<int> others = ViewBag.others ?? new List<int>();
-    //ValueList[] timeWindows = ViewBag.timeWindows ?? new ValueList[0];
-
-
-
+    Layout = "Layout.cshtml";
 }
 @section StyleSheets {
-    @* Include any page specific style sheets here, these will be added to page header *@
+    <link href="/Content/ExtraMediaBootstrap.css" rel="stylesheet">
 }
 @section Scripts {
-    @* Include any page specific scripts here, these will be added to scripts at bottom of page *@
+    <script src="~/Scripts/bundle.js"></script>
 }
-
-<script src="~/Scripts/react/react.js"></script>
-<script src="~/Scripts/react/react-dom.js"></script>
-<script src="~/Scripts/react/remarkable.js"></script>
-
-<div id="content"></div>
-<script>
-    @*var cols = [{key:'Type', label: 'Type'}].concat((@Raw(Json.Encode(timeWindows))).map(a => { return {key: a.Text, label: a.Text}}));*@
-    var data = [
-        {id: 1, Type: 'All Time', '24 Hrs':0, '7 Days':0, '30 Days':0, '90 Days':0},
-        {id: 2, Type: 'Faults', '24 Hrs':0, '7 Days':0, '30 Days':0, '90 Days':0},
-        {id: 3, Type: 'L-G/L-L-G/L-L-L-G', '24 Hrs':0, '7 Days':0, '30 Days':0, '90 Days':0},
-        {id: 4, Type: 'L-L', '24 Hrs':0, '7 Days':0, '30 Days':0, '90 Days':0},
-        {id: 5, Type: 'L-L-L', '24 Hrs':0, '7 Days':0, '30 Days':0, '90 Days':0},
-
-    ]    
-</script>
-
-<script src="~/Scripts/JSX/Table.js"></script>
-<script src="~/Scripts/JSX/Default.js"></script>
