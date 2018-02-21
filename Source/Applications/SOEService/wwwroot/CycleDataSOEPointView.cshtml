@@ -33,6 +33,7 @@
 @{
     DataContext dataContext = ViewBag.DataContext;
     ViewBag.Title = "SOE Points";
+    ViewBag.ShowMenu = false;
     Layout = "Layout.cshtml";
     HttpRequestMessage request = ViewBag.Request;
     Dictionary<string, string> parameters = request.QueryParameters();
@@ -143,6 +144,7 @@
                 return;
 
             Cookies.set('SimpleIsChecked', $('#simpleCheckbox').is(':checked'), { expires: 365 });
+            location.reload();
         }
 
 
@@ -187,7 +189,7 @@
         function openSEE(data) {
             window.Highlight = Date.parse(data.Timestamp);
 
-            if (!childWindow || window.EventID !== data.EventID) {
+            if (!childWindow || childWindow.closed || window.EventID !== data.EventID) {
                 window.EventID = data.EventID;
                 childWindow = window.open("@Url.Content("~/OpenSEE.cshtml?EventID=")" + data.EventID, "SOEChildWindow", "width=auto,height=auto");
             }
