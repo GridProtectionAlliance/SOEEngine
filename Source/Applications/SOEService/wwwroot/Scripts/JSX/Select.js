@@ -50,13 +50,14 @@ var Select = /** @class */ (function (_super) {
             }) });
     };
     Select.prototype.onChange = function (event) {
+        this.setState({ value: event.target.value });
         if (this.props.onChange != undefined)
             this.props.onChange(event.target.value);
     };
     Select.prototype.render = function () {
         return (React.createElement("div", { className: "form-group" },
             this.props.formLabel != undefined ? (React.createElement("label", null, this.props.formLabel)) : (null),
-            React.createElement("select", { className: "form-control", value: this.props.value, onChange: this.onChange.bind(this) }, this.state.dynamicColumns)));
+            React.createElement("select", { className: "form-control", value: this.state.value, onChange: this.onChange.bind(this) }, this.state.dynamicColumns)));
     };
     return Select;
 }(React.Component));

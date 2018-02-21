@@ -1,0 +1,124 @@
+﻿@*******************************************************************************************************
+    //  CycleDataSOEPointView.cshtml - Gbtc
+    //
+    //  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+    //
+    //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+    //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+    //  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
+    //  not use this file except in compliance with the License. You may obtain a copy of the License at:
+    //
+    //      http://opensource.org/licenses/MIT
+    //
+    //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+    //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+    //  License for the specific language governing permissions and limitations.
+    //
+    //  Code Modification History:
+    //  ----------------------------------------------------------------------------------------------------
+    //  04/21/2016 - Stephen Wills
+    //       Generated original version of source code.
+    //
+    //*****************************************************************************************************@
+@using System.Collections.Specialized
+@using System.Globalization
+@using System.Net.Http
+@using GSF.Web
+@using GSF
+@using GSF.Web.Model
+@using SOE.Model
+@using SOEService
+
+@inherits ExtendedTemplateBase<AppModel>
+@{
+    DataContext dataContext = ViewBag.DataContext;
+    Layout = "Layout.cshtml";
+    ViewBag.Title = "Incidents";
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+    string levels = parameters["levels"] ?? "";
+    string limits = parameters["limits"] ?? "";
+    string timeContext = parameters["timeContext"] ?? "";
+    string date = parameters["date"] ?? "";
+    string name = parameters["name"] ?? "";
+
+    ViewBag.AddNewEditTitle = "";
+    ViewBag.HeaderColumns = new[]
+{   //    { "Field", "Label", "Classes" }
+        new[] { "StartTime", "Date/Time", "text-center" },
+        new[] { "System", "System", "text-center" },
+        new[] { "Circuit", "Circuit", "text-center" },
+        new[] { "Device", "Device", "text-center" },
+        new[] { null, "Type", "text-center valign-middle"},
+        new[] { null, "A", "text-center valign-middle" },
+        new[] { null, "C", "text-center valign-middle" },
+        new[] { null, "B", "text-center valign-middle" },
+        new[] { null, "G", "text-center valign-middle" },
+        new[] { null, "Duration", "text-center valign-middle" },
+        new[] { null, "SOE Data", "text-center valign-middle" },
+    };
+    ViewBag.ShowSearchFilter = true;
+
+    ViewBag.BodyRows = BodyRows().ToString();
+    ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
+    ViewBag.HideAddNewButton = true;
+    ViewBag.CanEdit = false;
+    ViewBag.HideUnauthorizedControls = true;
+}
+
+@helper BodyRows()
+{
+    <td width="9%" class="text-center valign-middle" data-bind="text: StartTime.formatDate(DateTimeFormat)"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: System"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: Circuit"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: Device"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: FaultType"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: IAMax.toFixed(0)"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: ICMax.toFixed(0)"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: IBMax.toFixed(0)"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: IRMax.toFixed(0)"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: (Duration/1000*60).toFixed(1)"></td>
+    <td width="9%" class="text-center valign-middle" nowrap>
+        <button type="button" class="btn btn-danger" data-bind="click: openSOEModal.bind($data)">A</button>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <button type="button" class="btn btn-danger" data-bind="">W</button>
+    </td>
+}
+
+@helper AddNewEditDialog(DataContext dataContext)
+{
+}
+@Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
+
+<div id="incidentTable"></div>
+
+<div id="openSOEDialog" class="modal modal-wide fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <iframe style="border: none" id="openSOEFrame"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        @Raw(dataContext.RenderViewModelConfiguration<IncidentEventCycleDataView, DataHub>(ViewBag, "StartTime", null, date, name, levels, limits, timeContext))
+
+        $(function () {
+            $("#openSOEDialog").modal({ show: false, backdrop: "static", keyboard: false });
+        });
+
+        function openSOEModal(record) {
+            $("#openSOEFrame").attr({
+                "src": "@Url.Content("CycleDataSOEPointView.cshtml?IncidentID=")" + record.ID.toString(),
+                "height": ($(window).height() - 250) + "px",
+                "width": "100%"
+            });
+
+
+            $("#openSOEDialog").modal("show");
+        }
+    </script>
+}

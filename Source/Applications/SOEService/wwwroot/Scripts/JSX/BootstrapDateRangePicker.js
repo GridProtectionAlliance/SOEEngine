@@ -83,7 +83,9 @@ var BootstrapDateRangePickerWrapper = /** @class */ (function (_super) {
         if (ctrl.props.hideCalendar != undefined)
             $('input[name="' + ctrl.props.inputName + '"]').on('hideCalendar.daterangepicker', function () { ctrl.props.hideCalendar(ctrl.state); });
         if (ctrl.props.applyDateRangePicker != undefined)
-            $('input[name="' + ctrl.props.inputName + '"]').on('apply.daterangepicker', function () { ctrl.props.applyDateRangePicker(ctrl.state); });
+            $('input[name="' + ctrl.props.inputName + '"]').on('apply.daterangepicker', function () {
+                ctrl.props.applyDateRangePicker(ctrl.state);
+            });
         if (ctrl.props.cancelDateRangePicker != undefined)
             $('input[name="' + ctrl.props.inputName + '"]').on('cancel.daterangepicker', function () { ctrl.props.cancelDateRangePicker(ctrl.state); });
     };
@@ -139,16 +141,19 @@ var BootstrapDateRangePickerWrapper = /** @class */ (function (_super) {
         formLabel: PropTypes.string
     };
     BootstrapDateRangePickerWrapper.defaultProps = {
-        startDate: moment().subtract(6, 'days').utc().startOf('day'),
-        endDate: moment().utc().endOf('day'),
+        startDate: moment().subtract(6, 'days').startOf('day'),
+        endDate: moment().endOf('day'),
         showDropdowns: false,
         showWeekNumbers: false,
         timePicker: true,
         timePickerIncrement: 60,
         timePicker24Hour: true,
         timePickerSeconds: false,
+        locale: {
+            format: 'MM/DD/YYYY HH:mm'
+        },
         ranges: {
-            'Today': [moment().utc().startOf('day'), moment().utc().endOf('day')],
+            'Today': [moment().startOf('day'), moment().endOf('day')],
             'Yesterday': [moment().utc().subtract(1, 'days').startOf('day'), moment().utc().subtract(1, 'days').endOf('day')],
             'Last 7 Days': [moment().utc().subtract(6, 'days').startOf('day'), moment().utc().endOf('day')],
             'Last 30 Days': [moment().utc().subtract(29, 'days').startOf('day'), moment().utc().endOf('day')],

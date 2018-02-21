@@ -1,0 +1,199 @@
+﻿@*******************************************************************************************************
+//  CycleDataSOEPointView.cshtml - Gbtc
+//
+//  Copyright © 2016, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  04/21/2016 - Stephen Wills
+//       Generated original version of source code.
+//
+//*****************************************************************************************************@
+@using System.Collections.Specialized
+@using System.Net.Http
+@using GSF
+@using GSF.Data.Model
+@using GSF.Web
+@using GSF.Web.Model
+@using SOE.Model
+@using SOEService
+
+@inherits ExtendedTemplateBase<AppModel>
+@{
+    DataContext dataContext = ViewBag.DataContext;
+    ViewBag.Title = "SOE Points";
+    Layout = "Layout.cshtml";
+    HttpRequestMessage request = ViewBag.Request;
+    Dictionary<string, string> parameters = request.QueryParameters();
+    int IncidentID = int.Parse(parameters["IncidentID"] ?? "0");
+
+    string voltageStatePath = "/Images/UpDownState/Box Set 3/";
+    string breakerElementPath = "/Images/PointCode/BreakerElement/";
+    string statusElementPath = "/Images/PointCode/StatusElement/";
+    string simpleVoltageStatePath = "/Images/UpDownState/Summary Set/";
+    string simpleBreakerStatusPath = "/Images/PointCode/Summary/";
+
+    ViewBag.HeaderColumns = new[]
+    {   //    { "Field", "Label", "Classes" }
+        new[] { "Name", "Name", "text-center" },
+        new[] { "Timestamp", "Timestamp", "text-center" },
+        new[] { "Phasing", "Phasing", "text-center" },
+        new[] { "Upstate", "Upstate", "text-center" },
+        new[] { null, "Device State", "text-center valign-middle"},
+        new[] { "DownState", "Downstate", "text-center valign-middle" },
+        new[] { "Imax", "Imax", "text-center valign-middle" },
+        new[] { "Vmin", "Vmin", "text-center valign-middle" }
+    };
+
+    ViewBag.BodyRows = BodyRows(breakerElementPath, statusElementPath, simpleBreakerStatusPath).ToString();
+    ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
+    ViewBag.HideAddNewButton = true;
+    ViewBag.CanEdit = false;
+    ViewBag.HideUnauthorizedControls = true;
+
+
+}
+
+    <div style="margin: 5px; text-align: right; cursor: default">
+        <label style="font-weight: normal" for="simpleCheckbox">Simple Icons</label>
+        <input id="simpleCheckbox" type="checkbox" onchange="reload();"/>
+    </div>
+
+@helper BodyRows(string breakerElementPath, string statusElementPath, string simpleBreakerStatusPath)
+{
+    <td width="9%" class="text-center valign-middle" data-bind="text: Name"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: Timestamp.formatDate(DateTimeFormat)"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: Phasing"></td>
+    <td width="9%" class="text-center valign-middle">
+        <!-- ko if: !isChecked()-->
+        <img style="display: inline" data-bind="if: !isChecked(),attr: {src: '/Images/UpDownState/Box Set 3/'+ UpState + '.png'}"/>
+        <!-- /ko -->
+        <!-- ko if: isChecked()-->
+        <img style="display: inline" data-bind="if: isChecked(),attr: {src: '/Images/UpDownState/Summary Set/'+ getSimpleVoltageState(UpState) + '.png'}" />
+        <!-- /ko -->
+    </td>
+    <td width="9%" class="text-center valign-middle">
+        <!-- ko if: !isChecked()-->
+        <img style="display: inline" data-bind="attr: {src: '@breakerElementPath' + 'A' + BreakerElementA + '.png'}" />
+        <img style="display: inline" data-bind="attr: {src: '@breakerElementPath' + 'C' + BreakerElementC + '.png'}" />
+        <img style="display: inline" data-bind="attr: {src: '@breakerElementPath' + 'B' + BreakerElementB + '.png'}" />
+        <br /> 
+        <img style="display: inline" data-bind="attr: {src: '@statusElementPath' + StatusElement + '.png'}" />
+        <!-- /ko -->
+        <!-- ko if: isChecked()-->
+        <img data-bind="attr: {src: '@simpleBreakerStatusPath' + getSimpleBreakerStatus($data) + '.png'}" />'
+        <!-- /ko -->
+
+
+    </td>
+    <td width="9%" class="text-center valign-middle">
+        <!-- ko if: !isChecked()-->
+        <img style="display: inline" data-bind="if: !isChecked(),attr: {src: '/Images/UpDownState/Box Set 3/'+ DownState + '.png'}" />
+        <!-- /ko -->
+        <!-- ko if: isChecked()-->
+        <img style="display: inline" data-bind="if: isChecked(),attr: {src: '/Images/UpDownState/Summary Set/'+ getSimpleVoltageState(DownState) + '.png'}" />
+        <!-- /ko -->
+    </td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: Imax.toFixed(0)"></td>
+    <td width="9%" class="text-center valign-middle" data-bind="text: Vmin.toFixed(0)"></td>
+    <td width="9%" class="text-center valign-middle" nowrap>
+        <button type="button" class="btn btn-default" data-bind="click: openSEE.bind($data)"><img src="/Images/seeButton.png"/></button>
+    </td>
+
+}
+
+
+@helper AddNewEditDialog(DataContext dataContext)
+{
+}
+@Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
+
+@section Scripts {
+    <script type="text/javascript">
+       @Raw(dataContext.RenderViewModelConfiguration<CycleDataSOEPointView, DataHub>(ViewBag, "StartTime", null, IncidentID))
+        var checkbox = $('#simpleCheckbox');
+        var childWindow;
+        var simpleIsChecked = (Cookies.get('SimpleIsChecked') === 'true');
+        if (simpleIsChecked !== undefined)
+            checkbox.prop('checked', simpleIsChecked);
+
+        function isChecked() {
+            return checkbox.is(':checked')
+        }
+
+        function toggleCheckbox() {
+            var checkbox = $('#simpleCheckbox');
+            checkbox.prop('checked', !checkbox.is(':checked'));
+            reload();
+        }
+
+        function reload() {
+            if (!hubIsConnected)
+                return;
+
+            Cookies.set('SimpleIsChecked', $('#simpleCheckbox').is(':checked'), { expires: 365 });
+        }
+
+
+        function getSimpleVoltageState(state) {
+            var simpleState;
+
+            if (state.indexOf('0') >= 0)
+                simpleState = '3';
+            else if (state.indexOf('2') >= 0)
+                simpleState = '1';
+            else if (state.indexOf('3') >= 0)
+                simpleState = '2';
+            else
+                simpleState = '0';
+
+            return simpleState;
+        }
+
+        function getSimpleBreakerStatus(data) {
+            var summaryState;
+            var simpleState;
+
+            summaryState =
+                data.BreakerElementA +
+                data.BreakerElementC +
+                data.BreakerElementB;
+
+            if (summaryState.indexOf('5') >= 0)
+                simpleState = '5';
+            else if (data.StatusElement.startsWith('3'))
+                simpleState = '4'
+            else if (summaryState.indexOf('4') >= 0)
+                simpleState = '2';
+            else if (summaryState.indexOf('0') >= 0)
+                simpleState = '3'
+            else
+                simpleState = '1';
+
+            return simpleState;
+        }
+
+        function openSEE(data) {
+            window.Highlight = Date.parse(data.Timestamp);
+
+            if (!childWindow || window.EventID !== data.EventID) {
+                window.EventID = data.EventID;
+                childWindow = window.open("@Url.Content("~/OpenSEE.cshtml?EventID=")" + data.EventID, "SOEChildWindow", "width=auto,height=auto");
+            }
+
+            if (childWindow.UpdateMarkings)
+                childWindow.UpdateMarkings();
+        }
+    </script>
+}

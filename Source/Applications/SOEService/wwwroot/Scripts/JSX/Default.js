@@ -34,8 +34,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var ReactDOM = require("react-dom");
+var react_router_dom_1 = require("react-router-dom");
 var BootstrapDateRangePicker_1 = require("./BootstrapDateRangePicker");
-var PrimeMultiselectWrapper_1 = require("./PrimeMultiselectWrapper");
 var PrimeDataTableWrapper_1 = require("./PrimeDataTableWrapper");
 var Select_1 = require("./Select");
 var Input_1 = require("./Input");
@@ -50,12 +50,20 @@ var MainPage = /** @class */ (function (_super) {
         _this.state = {
             severity: 'Both',
             limits: 'All',
-            levels: 'System',
+            levels: 'Circuit',
             classifications: [],
-            date: moment().subtract(6, 'days').utc().startOf('day'),
+            date: moment().subtract(20, 'days').startOf('day'),
             timeContext: 'Days',
             numBuckets: 20,
             cars: []
+        };
+        _this.values = {
+            severity: 'Both',
+            limits: 'All',
+            levels: 'Circuit',
+            date: moment().subtract(20, 'days').startOf('day'),
+            timeContext: 'Days',
+            numBuckets: 20
         };
         return _this;
     }
@@ -75,31 +83,50 @@ var MainPage = /** @class */ (function (_super) {
         });
     };
     MainPage.prototype.applyFilter = function () {
+        this.setState({
+            severity: this.values['severity'],
+            limits: this.values['limits'],
+            levels: this.values['levels'],
+            date: this.values['date'],
+            timeContext: this.values['timeContext'],
+            numBuckets: this.values['numBuckets'],
+        });
     };
     MainPage.prototype.render = function () {
+        var _this = this;
         var ctrl = this;
-        return (React.createElement("div", { style: { 'marginTop': '50px' } },
-            React.createElement("div", { className: "panel-group" },
-                React.createElement("div", { className: "panel panel-default" },
-                    React.createElement("div", { className: "panel-heading" },
-                        React.createElement("h4", { className: "panel-title" },
-                            React.createElement("a", { style: { 'color': '#337ab7' }, "data-toggle": "collapse", href: "#collapse1" }, "Filter"))),
-                    React.createElement("div", { id: "collapse1", className: "panel-collapse collapse in" },
-                        React.createElement("div", { className: "panel-body" },
-                            React.createElement("div", { className: "col-md-4" },
-                                React.createElement(PrimeMultiselectWrapper_1.default, { value: ctrl.state.classifications, options: ctrl.state.cars, style: { width: '100%' }, formLabel: "Classification Filter:" }),
-                                React.createElement(Select_1.default, { value: ctrl.state.limits, options: ["All", "Top 100", "Top 50", "Top 25", "Top 10"], formLabel: "Record Limits:", onChange: function (value) { ctrl.setState({ limits: value }); } }),
-                                React.createElement(Select_1.default, { value: ctrl.state.levels, options: ["System", "Circuit", "Device"], formLabel: "Search Levels:", onChange: function (value) { ctrl.setState({ levels: value }); } })),
-                            React.createElement("div", { className: "col-md-4" },
-                                React.createElement(BootstrapDateRangePicker_1.default, { formLabel: "Date Range:", date: ctrl.state.date, singleDatePicker: true, showDropdowns: true, applyDateRangePicker: function (msg) {
-                                        ctrl.setState({ date: msg.date });
-                                    } }),
-                                React.createElement(Select_1.default, { value: ctrl.state.timeContext, options: ["Months", "Days", "Hours"], formLabel: "Time Context:", onChange: function (value) { ctrl.setState({ timeContext: value }); } }),
-                                React.createElement(Input_1.default, { value: ctrl.state.numBuckets, type: "number", formLabel: "Number of Buckets:", onChange: function (value) { ctrl.setState({ numBuckets: value }); } })),
-                            React.createElement("div", { className: "col-md-4" }))))),
-            React.createElement("br", null),
-            React.createElement("div", null,
-                React.createElement(PrimeDataTableWrapper_1.default, { filters: { date: this.state.date, timeContext: this.state.timeContext, numBuckets: this.state.numBuckets, limits: this.state.limits } }))));
+        return (React.createElement(react_router_dom_1.BrowserRouter, { basename: "Summary/Summary.cshtml" },
+            React.createElement("div", { style: { 'marginTop': '50px' } },
+                React.createElement("div", { className: "panel-group" },
+                    React.createElement("div", { className: "panel panel-default" },
+                        React.createElement("div", { className: "panel-heading" },
+                            React.createElement("h4", { className: "panel-title" },
+                                React.createElement("a", { style: { 'color': '#337ab7' }, "data-toggle": "collapse", href: "#collapse1" }, "Filter"))),
+                        React.createElement("div", { id: "collapse1", className: "panel-collapse collapse in" },
+                            React.createElement("div", { className: "panel-body" },
+                                React.createElement("div", { className: "col-md-4" },
+                                    React.createElement(Select_1.default, { value: ctrl.values['limits'], options: ["All", "Top 100", "Top 50", "Top 25", "Top 10"], formLabel: "Record Limits:", onChange: function (value) { ctrl.values['limits'] = value; } }),
+                                    React.createElement(Select_1.default, { value: ctrl.values['levels'], options: ["System", "Circuit", "Device"], formLabel: "Search Levels:", onChange: function (value) { ctrl.values['levels'] = value; } })),
+                                React.createElement("div", { className: "col-md-4" },
+                                    React.createElement(BootstrapDateRangePicker_1.default, { formLabel: "Start Date:", startDate: ctrl.state.date, singleDatePicker: true, showDropdowns: true, applyDateRangePicker: function (msg) {
+                                            ctrl.values['date'] = msg.date;
+                                        } }),
+                                    React.createElement(Select_1.default, { value: ctrl.values['timeContext'], options: ["Months", "Days", "Hours"], formLabel: "Time Context:", onChange: function (value) { ctrl.values['timeContext'] = value; } }),
+                                    React.createElement(Input_1.default, { value: ctrl.values['numBuckets'], type: "number", formLabel: "Number of Buckets:", onChange: function (value) { ctrl.values['numBuckets'] = value; } })),
+                                React.createElement("div", { className: "col-md-4" })),
+                            React.createElement("div", { className: "panel-footer", style: { textAlign: 'right' } },
+                                React.createElement(react_router_dom_1.Link, { to: "/" },
+                                    React.createElement("button", { className: "btn btn-primary", onClick: this.applyFilter.bind(this) }, "Apply")))))),
+                React.createElement("br", null),
+                React.createElement(react_router_dom_1.Route, { exact: true, path: "/", render: function () { return React.createElement(PrimeDataTableWrapper_1.default, { filters: { date: _this.state.date, timeContext: _this.state.timeContext, numBuckets: _this.state.numBuckets, limits: _this.state.limits, levels: _this.state.levels } }); } }),
+                React.createElement(react_router_dom_1.Route, { exact: true, path: "/System/:systemName", render: function (_a) {
+                        var match = _a.match;
+                        return React.createElement(PrimeDataTableWrapper_1.default, { filters: { date: _this.state.date, timeContext: _this.state.timeContext, numBuckets: _this.state.numBuckets, limits: _this.state.limits, levels: "Circuit", systemName: match.params.systemName } });
+                    } }),
+                React.createElement(react_router_dom_1.Route, { exact: true, path: "/Circuit/:circuitName", render: function (_a) {
+                        var match = _a.match;
+                        return React.createElement(PrimeDataTableWrapper_1.default, { filters: { date: _this.state.date, timeContext: _this.state.timeContext, numBuckets: _this.state.numBuckets, limits: _this.state.limits, levels: "Device", circuitName: match.params.circuitName } });
+                    } }))));
     };
     MainPage.prototype.handleApply = function () {
         console.log('handled');

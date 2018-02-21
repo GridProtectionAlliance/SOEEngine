@@ -105,6 +105,18 @@ namespace SOEService
                         modelName = RouteParameter.Optional
                     }
                 );
+
+                httpConfig.Routes.MapHttpRoute(
+                    name: "Summary",
+                    routeTemplate: "Summary/{*stuff}",
+                    defaults: new
+                    {
+                        action = "GetPage",
+                        controller = "Main"
+                    }
+                );
+
+
             }
             catch (Exception ex)
             {

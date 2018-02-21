@@ -39,35 +39,42 @@ import {DataTable} from 'primereact/components/datatable/DataTable';
 import {Column} from 'primereact/components/column/Column';
 import {Button} from 'primereact/components/button/Button';
 import * as _ from "lodash";
-
+import * as moment from "moment";
 import * as PropTypes from 'prop-types';
 import SOEService from './../Services/SOEService';
+import { BrowserRouter as Router, Route,Link } from 'react-router-dom'
 
 export default class PrimeDataTable extends React.Component<any,any> {
     soeservice: any;
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            data: [],
+            dynamicColumns: [<Column key="" field="" header=""></Column>]
+        };
         this.soeservice = new SOEService();
     }
     
     getData(props){
         this.soeservice.getView(props.filters).then(data => {
-            if(data.length == 0) return;
+            this.setState({ data: data });
+            if (data.length == 0) return this.setState({ dynamicColumns: [<Column key="" field="" header=""></Column>] });
             
             var headerStyle = {
                     'transform': 'rotate(-45deg)',
                     'transformOrigin': 'left top 0'
             }
 
+
+            this.setState({ data: data });
+
+            var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE"]
             var dynamicColumns = Object.keys(data[0]).map((col,i) =>{
-                if(!isNaN(Date.parse(col)))
-                    return <Column key={col} field={col} header={<div style={headerStyle}>{col}</div>} sortable={true}></Column>
-                else
-                    return <Column style={{width: "100px"}} key={col} field={col} header={col} sortable={true}></Column>
+                if(nonDynamicColumns.indexOf(col) < 0)
+                    return <Column key={col} field={col} body={this.dateTemplate.bind(this)} header={<div style={headerStyle}>{col}</div>}  sortable={true}></Column>
             });
       
-            return this.setState({data: data, dynamicColumns: dynamicColumns});
+            this.setState({dynamicColumns: dynamicColumns});
         });
 
     }
@@ -78,11 +85,42 @@ export default class PrimeDataTable extends React.Component<any,any> {
             this.getData(nextProps);
     }
 
+    systemTemplate(rowData, column) {
+        return <Link to={"/System/" + rowData.System}><span style={{ 'width': '100%', 'cursor': 'pointer' }}>{rowData[column.field]}</span></Link>
+    }
+    circuitTemplate(rowData, column) {
+        return <Link to={"/Circuit/" + rowData.Circuit}><span style={{ 'width': '100%', 'cursor': 'pointer' }}>{rowData[column.field]}</span></Link>
+    }
+    dateTemplate(rowData, column) {
+        var nameString = "";
+        if (this.props.filters.levels == "System")
+            nameString = rowData.System;
+        else if (this.props.filters.levels == "Circuit")
+            nameString = rowData.Circuit;
+        else if (this.props.filters.levels == "Device")
+            nameString = rowData.Device;
+
+        if(this.props.filters.timeContext == "Days")
+            return <a target="_blank" href={`/IncidentEventCycleDataView.cshtml?levels=${this.props.filters.levels}&limits=${this.props.filters.limits}&timeContext=${this.props.filters.timeContext}&date=${moment(column.field, "MM/DD/YYYY").format('YYYYMMDDHH')}&name=${nameString}`}>{rowData[column.field]}</a>
+        else if (this.props.filters.timeContext == "Months")
+            return <a target="_blank" href={`/IncidentEventCycleDataView.cshtml?levels=${this.props.filters.levels}&limits=${this.props.filters.limits}&timeContext=${this.props.filters.timeContext}&date=${moment(column.field + "-01", "MM/YYYY/DD").format('YYYYMMDDHH')}&name=${nameString}`}>{rowData[column.field]}</a>
+        else
+            return <a target="_blank" href={`/IncidentEventCycleDataView.cshtml?levels=${this.props.filters.levels}&limits=${this.props.filters.limits}&timeContext=${this.props.filters.timeContext}&date=${moment(column.field + "/" + this.props.filters.date.year(), "MM/DD HH/YYYY").format('YYYYMMDDHH')}&name=${nameString}`}>{rowData[column.field]}</a>
+    }
+
+
+
     render() {
 
         return (
-            <DataTable value={this.state.data}  paginator={true} rows={25}>
+            <DataTable value={this.state.data} paginator={true} rows={25}>
+                <Column style={{ width: "100px" }} body={this.systemTemplate} field="System" header="Volt Class" sortable={true}></Column>
+                <Column style={{ width: "100px" }} body={this.circuitTemplate} field="Circuit" header="Circuit" sortable={true}></Column>
+                <Column style={{ width: "100px" }} field="Device" header="Device" sortable={true}></Column>
                 {this.state.dynamicColumns}
+                <Column style={{ width: "100px" }} field="Total" header="Total" sortable={true}></Column>
+                <Column style={{ width: "100px" }} field="CT Files" header="CT Files" sortable={true}></Column>
+                <Column style={{ width: "100px" }} field="SOE" header="SOE" sortable={true}></Column>
             </DataTable>
         );
     }

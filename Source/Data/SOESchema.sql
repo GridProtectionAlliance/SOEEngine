@@ -1320,6 +1320,8 @@ WITH IncidentEventCycleDataView0 AS
 (
 	SELECT
 		Incident.ID,
+		System.Name as System,
+		Circuit.Name as Circuit,
 		Meter.Name AS Device,
 		Incident.StartTime,
 		DATEDIFF(MILLISECOND, dbo.Incident.StartTime, dbo.Incident.EndTime) AS Duration,
@@ -1355,7 +1357,11 @@ WITH IncidentEventCycleDataView0 AS
 		IncidentAttribute ON IncidentAttribute.IncidentID = Incident.ID INNER JOIN
 		Meter ON Incident.MeterID = Meter.ID INNER JOIN
 		MeterLine ON Meter.ID = MeterLine.MeterID INNER JOIN
-		Line ON MeterLine.LineID = Line.ID
+		Line ON MeterLine.LineID = Line.ID INNER JOIN
+		CircuitMeter ON Meter.ID = CircuitMeter.MeterID INNER JOIN
+		Circuit ON Circuit.ID = CircuitMeter.CircuitID INNER JOIN
+		SystemCircuit ON Circuit.ID = SystemCircuit.CiruitID INNER JOIN
+		System ON System.ID = SystemCircuit.SystemID
 )
 SELECT
 	CASE

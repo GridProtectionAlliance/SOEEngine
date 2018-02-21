@@ -361,6 +361,8 @@ namespace SOEService
                 webServer.PagedViewModelTypes.TryAdd("Users.cshtml", new Tuple<Type, Type>(typeof(UserAccount), typeof(SecurityHub)));
                 webServer.PagedViewModelTypes.TryAdd("Groups.cshtml", new Tuple<Type, Type>(typeof(SecurityGroup), typeof(SecurityHub)));
                 webServer.PagedViewModelTypes.TryAdd("Settings.cshtml", new Tuple<Type, Type>(typeof(Setting), typeof(DataHub)));
+                webServer.PagedViewModelTypes.TryAdd("IncidentEventCycleDataView.cshtml", new Tuple<Type, Type>(typeof(IncidentEventCycleDataView), typeof(DataHub)));
+                webServer.PagedViewModelTypes.TryAdd("CycleDataSOEPointView.cshtml", new Tuple<Type, Type>(typeof(CycleDataSOEPointView), typeof(DataHub)));
 
                 // Create new web application hosting environment
                 m_webAppHost = WebApp.Start<Startup>(systemSettings["WebHostURL"].Value);
@@ -531,7 +533,7 @@ namespace SOEService
             string newLines = string.Format("{0}{0}", Environment.NewLine);
 
             m_serviceHelper.ErrorLogger.Log(ex);
-            m_serviceHelper.UpdateStatus(UpdateType.Alarm, ex.Message + newLines);
+            m_serviceHelper.UpdateStatus(UpdateType.Alarm, "{0}",ex.Message + newLines);
 
             foreach (IServiceMonitor serviceMonitor in m_serviceMonitors.Adapters)
             {

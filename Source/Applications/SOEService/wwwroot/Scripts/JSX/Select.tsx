@@ -40,7 +40,8 @@ export default class Select extends React.Component<any,any>{
         
     }
 
-    onChange(event){
+    onChange(event) {
+        this.setState({ value: event.target.value });
         if(this.props.onChange != undefined)
             this.props.onChange(event.target.value);
     }
@@ -49,7 +50,7 @@ export default class Select extends React.Component<any,any>{
         return (
             <div className="form-group">
                 { this.props.formLabel != undefined ? (<label>{this.props.formLabel}</label>):(null)}
-                <select className="form-control" value={this.props.value} onChange={this.onChange.bind(this)}>
+                <select className="form-control" value={this.state.value} onChange={this.onChange.bind(this)}>
                     {this.state.dynamicColumns}
                 </select>
             </div>

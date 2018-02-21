@@ -23,6 +23,7 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom'
 import Table from './Table'
 import ABNBDateRangePickerWrapper from './ABNBDateRangePicker';
 import BootstrapDateRangePickerWrapper from './BootstrapDateRangePicker';
@@ -39,19 +40,29 @@ import * as $ from 'jquery';
 import * as moment from 'moment';
 
 
-class MainPage extends React.Component<any,any> {
+class MainPage extends React.Component<any, any> {
+  values: object;
   constructor(props) {
     super(props);
 
     this.state = {
         severity: 'Both',
         limits: 'All',
-        levels: 'System',
+        levels: 'Circuit',
         classifications: [],
         date: moment().subtract(20, 'days').startOf('day'),
         timeContext: 'Days',
         numBuckets: 20,
         cars: []
+    }
+
+    this.values = {
+        severity: 'Both',
+        limits: 'All',
+        levels: 'Circuit',
+        date: moment().subtract(20, 'days').startOf('day'),
+        timeContext: 'Days',
+        numBuckets: 20
     }
   }
 
@@ -73,56 +84,69 @@ class MainPage extends React.Component<any,any> {
   }
 
   applyFilter(){
-
+      this.setState({
+          severity: this.values['severity'],
+          limits: this.values['limits'],
+          levels: this.values['levels'],
+          date: this.values['date'],
+          timeContext: this.values['timeContext'],
+          numBuckets: this.values['numBuckets'],
+      });
   }
 
   render() {
         var ctrl = this;
 
         return (
-            <div style={{'marginTop': '50px'}}>
-                <div className="panel-group">
-                  <div className="panel panel-default">
-                    <div className="panel-heading">
-                      <h4 className="panel-title">
-                        <a style={{'color': '#337ab7'}} data-toggle="collapse" href="#collapse1">Filter</a>
-                      </h4>
-                    </div>
-                    <div id="collapse1" className="panel-collapse collapse in">
-                      <div className="panel-body">
-                                              <div className="col-md-4">
-                            <PrimeMultiSelectWrapper value={ctrl.state.classifications} options={ctrl.state.cars} style={{ width: '100%' }} formLabel="Classification Filter:"/>
-                            <Select value={ctrl.state.limits} options={["All","Top 100", "Top 50", "Top 25", "Top 10"]} formLabel="Record Limits:" onChange={function(value){ctrl.setState({limits: value})}}/>
-                            <Select value={ctrl.state.levels} options={["System","Circuit", "Device"]} formLabel="Search Levels:" onChange={function(value){ctrl.setState({levels: value})}}/>
-                            {/*<Select value={ctrl.state.severity} options={["PQ","LTE", "Both"]} formLabel="Severity Filter:" onChange={function(value){ctrl.setState({severity: value})}}/>*/}
-
+            <Router basename="Summary/Summary.cshtml">
+                <div style={{'marginTop': '50px'}}>
+                    <div className="panel-group">
+                      <div className="panel panel-default">
+                        <div className="panel-heading">
+                          <h4 className="panel-title">
+                            <a style={{'color': '#337ab7'}} data-toggle="collapse" href="#collapse1">Filter</a>
+                          </h4>
                         </div>
-                        <div className="col-md-4">
-                            <BootstrapDateRangePickerWrapper
-                                formLabel="Start Date:"
-                                startDate={ctrl.state.date}
-                                singleDatePicker={true}
-                                showDropdowns={true}
-                                applyDateRangePicker={function (msg) {
-                                   ctrl.setState({date: msg.date});
-                                }}
-                            />
-                            <Select value={ctrl.state.timeContext} options={["Months", "Days", "Hours"]} formLabel="Time Context:" onChange={function(value){ctrl.setState({timeContext: value})}}/>
-                            <Input value={ctrl.state.numBuckets} type="number" formLabel="Number of Buckets:" onChange={function(value){ctrl.setState({numBuckets: value})}}/>
-                        </div>
-                        <div className="col-md-4"></div>
+                        <div id="collapse1" className="panel-collapse collapse in">
+                          <div className="panel-body">
+                                                  <div className="col-md-4">
+                                {/*<PrimeMultiSelectWrapper value={ctrl.state.classifications} options={ctrl.state.cars} style={{ width: '100%' }} formLabel="Classification Filter:"/>*/}
+                                <Select value={ctrl.values['limits']} options={["All", "Top 100", "Top 50", "Top 25", "Top 10"]} formLabel="Record Limits:" onChange={function (value) { ctrl.values['limits'] = value}}/>
+                                <Select value={ctrl.values['levels']} options={["System", "Circuit", "Device"]} formLabel="Search Levels:" onChange={function (value) { ctrl.values['levels'] = value }}/>
+                                {/*<Select value={ctrl.state.severity} options={["PQ","LTE", "Both"]} formLabel="Severity Filter:" onChange={function(value){ctrl.setState({severity: value})}}/>*/}
 
+                            </div>
+                            <div className="col-md-4">
+                                <BootstrapDateRangePickerWrapper
+                                    formLabel="Start Date:"
+                                    startDate={ctrl.state.date}
+                                    singleDatePicker={true}
+                                    showDropdowns={true}
+                                    applyDateRangePicker={function (msg) {
+                                        ctrl.values['date'] = msg.date;
+                                    }}
+                                />
+                                <Select value={ctrl.values['timeContext']} options={["Months", "Days", "Hours"]} formLabel="Time Context:" onChange={function (value) { ctrl.values['timeContext']=  value}}/>
+                                <Input value={ctrl.values['numBuckets']} type="number" formLabel="Number of Buckets:" onChange={function (value) { ctrl.values['numBuckets'] = value}}/>
+                            </div>
+                            <div className="col-md-4"></div>
+
+                          </div>
+                          <div className="panel-footer" style={{textAlign: 'right'}}>
+                            <Link to="/"><button className="btn btn-primary" onClick={this.applyFilter.bind(this)}>Apply</button></Link>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
                 
-                <br/>
+                    <br/>
 
-                <div>
-                    <PrimeDataTableWrapper filters={{date: this.state.date, timeContext: this.state.timeContext, numBuckets: this.state.numBuckets, limits: this.state.limits, levels: this.state.levels}} />
+                    <Route exact path="/" render={() => <PrimeDataTableWrapper filters={{ date: this.state.date, timeContext: this.state.timeContext, numBuckets: this.state.numBuckets, limits: this.state.limits, levels: this.state.levels }} />}></Route>
+                    <Route exact path="/System/:systemName" render={({ match }) => <PrimeDataTableWrapper filters={{ date: this.state.date, timeContext: this.state.timeContext, numBuckets: this.state.numBuckets, limits: this.state.limits, levels: "Circuit", systemName: match.params.systemName }} />}></Route>
+                    <Route exact path="/Circuit/:circuitName" render={({ match }) => <PrimeDataTableWrapper filters={{ date: this.state.date, timeContext: this.state.timeContext, numBuckets: this.state.numBuckets, limits: this.state.limits, levels: "Device", circuitName: match.params.circuitName }} />}></Route>
                 </div>
-            </div>
+            </Router>
+
             );
     }
 
