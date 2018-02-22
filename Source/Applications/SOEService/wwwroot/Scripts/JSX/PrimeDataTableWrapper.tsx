@@ -71,7 +71,7 @@ export default class PrimeDataTable extends React.Component<any,any> {
             var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE"]
             var dynamicColumns = Object.keys(data[0]).map((col,i) =>{
                 if(nonDynamicColumns.indexOf(col) < 0)
-                    return <Column key={col} field={col} body={this.dateTemplate.bind(this)} header={<div style={headerStyle}>{col}</div>}  sortable={true}></Column>
+                    return <Column key={col} field={col} body={this.dateTemplate.bind(this)} header={<div style={headerStyle}>{col}</div>} sortable={true} footer={this.footerTemplate}></Column>
             });
       
             this.setState({dynamicColumns: dynamicColumns});
@@ -108,12 +108,14 @@ export default class PrimeDataTable extends React.Component<any,any> {
             return <a target="_blank" href={`/IncidentEventCycleDataView.cshtml?levels=${this.props.filters.levels}&limits=${this.props.filters.limits}&timeContext=${this.props.filters.timeContext}&date=${moment(column.field + "/" + this.props.filters.date.year(), "MM/DD HH/YYYY").format('YYYYMMDDHH')}&name=${nameString}`}>{rowData[column.field]}</a>
     }
 
-
-
+    footerTemplate(data) {
+        return [<td>footers</td>, <td>totals</td>]
+    }
+    
     render() {
 
         return (
-            <DataTable value={this.state.data} paginator={true} rows={25}>
+            <DataTable value={this.state.data} paginator={true} rows={25} rowGroupFooterTemplate={this.footerTemplate.bind(this.state.data)}>
                 <Column style={{ width: "100px" }} body={this.systemTemplate} field="System" header="Volt Class" sortable={true}></Column>
                 <Column style={{ width: "100px" }} body={this.circuitTemplate} field="Circuit" header="Circuit" sortable={true}></Column>
                 <Column style={{ width: "100px" }} field="Device" header="Device" sortable={true}></Column>
