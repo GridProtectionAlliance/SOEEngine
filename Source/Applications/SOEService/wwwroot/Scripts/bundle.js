@@ -47721,7 +47721,7 @@ var MainPage = (function (_super) {
                                 React.createElement(react_router_dom_1.Link, { to: "/" },
                                     React.createElement("button", { className: "btn btn-primary", onClick: this.applyFilter.bind(this) }, "Apply")))))),
                 React.createElement("br", null),
-                React.createElement("div", { style: { 'width': '100%' } },
+                React.createElement("div", { style: { 'width': '100%' }, className: "row" },
                     React.createElement("div", { className: "col-lg-6 col-md-6 col-sm-6", style: { textAlign: 'left' } },
                         React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('<<'); } },
                             '<<',

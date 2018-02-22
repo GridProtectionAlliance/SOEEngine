@@ -168,7 +168,7 @@ class MainPage extends React.Component<any, any> {
                     </div>
                 
                     <br/>
-                    <div style={{ 'width': '100%' }}>
+                    <div style={{ 'width': '100%' }} className="row">
                         <div className="col-lg-6 col-md-6 col-sm-6" style={{ textAlign: 'left' }}>
                             <button className="btn btn-default" onClick={(e) => this.changeDate('<<')}>{'<<'} Step</button>
                             <button className="btn btn-default" onClick={(e) => this.changeDate('<')}>{'<'} Nudge</button>
