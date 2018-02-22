@@ -94,6 +94,34 @@ class MainPage extends React.Component<any, any> {
       });
   }
 
+  changeDate(type){
+    switch(type){
+        case '<<':
+            var date = moment(this.state.date.subtract(this.state.numBuckets / 2, this.state.timeContext.toLocaleLowerCase()).toISOString());
+            this.values['date'] = date;
+            this.applyFilter();
+            return;
+        case '<' : 
+            var date = moment(this.state.date.subtract(1, this.state.timeContext.toLocaleLowerCase()).toISOString());
+            this.values['date'] = date;
+            this.applyFilter();
+            return;
+        case '>' : 
+            var date = moment(this.state.date.add(1, this.state.timeContext.toLocaleLowerCase()).toISOString());
+            this.values['date'] = date;
+            this.applyFilter();
+            return;
+        case '>>': 
+            var date = moment(this.state.date.add(this.state.numBuckets / 2, this.state.timeContext.toLocaleLowerCase()).toISOString());
+            this.values['date'] = date;
+            this.applyFilter();
+            return;
+        default:
+            return;
+    }
+
+  }
+
   render() {
         var ctrl = this;
 
@@ -119,7 +147,7 @@ class MainPage extends React.Component<any, any> {
                             <div className="col-md-4">
                                 <BootstrapDateRangePickerWrapper
                                     formLabel="Start Date:"
-                                    startDate={ctrl.state.date}
+                                    startDate={moment(ctrl.state.date.toISOString())}
                                     singleDatePicker={true}
                                     showDropdowns={true}
                                     applyDateRangePicker={function (msg) {
@@ -140,7 +168,12 @@ class MainPage extends React.Component<any, any> {
                     </div>
                 
                     <br/>
-
+                    <div style={{'textAlign': 'center'}}>
+                        <button className="btn btn-default" onClick={(e) => this.changeDate('<<')}>{'<<'} Step</button>
+                        <button className="btn btn-default" onClick={(e) => this.changeDate('<')}>{'<'} Nudge</button>
+                        <button className="btn btn-default" onClick={(e) => this.changeDate('>')}>Nudge {'>'}</button>
+                        <button className="btn btn-default" onClick={(e) => this.changeDate('>>')}>Step {'>>'}</button>
+                    </div>
                     <Route exact path="/" render={() => <PrimeDataTableWrapper filters={{ date: this.state.date, timeContext: this.state.timeContext, numBuckets: this.state.numBuckets, limits: this.state.limits, levels: this.state.levels }} />}></Route>
                     <Route exact path="/System/:systemName" render={({ match }) => <PrimeDataTableWrapper filters={{ date: this.state.date, timeContext: this.state.timeContext, numBuckets: this.state.numBuckets, limits: this.state.limits, levels: "Circuit", systemName: match.params.systemName }} />}></Route>
                     <Route exact path="/Circuit/:circuitName" render={({ match }) => <PrimeDataTableWrapper filters={{ date: this.state.date, timeContext: this.state.timeContext, numBuckets: this.state.numBuckets, limits: this.state.limits, levels: "Device", circuitName: match.params.circuitName }} />}></Route>
@@ -148,10 +181,6 @@ class MainPage extends React.Component<any, any> {
             </Router>
 
             );
-    }
-
-    handleApply() {
-        console.log('handled');
     }
 }
 

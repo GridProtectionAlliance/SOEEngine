@@ -10,49 +10,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-//******************************************************************************************************
-//  DateRangePicker.tsx - Gbtc
-//
-//  Copyright © 2018, Grid Protection Alliance.  All Rights Reserved.
-//
-//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
-//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
-//  file except in compliance with the License. You may obtain a copy of the License at:
-//
-//      http://opensource.org/licenses/MIT
-//
-//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
-//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
-//  License for the specific language governing permissions and limitations.
-//
-//  Wrapper class for Bootstrap Date Range Picker
-//
-//      http://www.daterangepicker.com/
-//
-//  License
-//  The MIT License (MIT)
-//
-//  Copyright (c) 2012-2017 Dan Grossman
-//  
-//  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and 
-//  associated documentation files (the "Software"), to deal in the Software without restriction, including 
-//  without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
-//  copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to
-//  the following conditions:
-//  The above copyright notice and this permission notice shall be included in all copies or substantial
-//  portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE 
-//  AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR 
-//  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-//  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
-//  Code Modification History:
-//  ----------------------------------------------------------------------------------------------------
-//  02/05/2018 - Billy Ernest
-//       Generated original version of source code.
-//
-//******************************************************************************************************
 require("font-awesome/css/font-awesome.css");
 require("bootstrap-daterangepicker/daterangepicker.css");
 var DateRangePicker = require("bootstrap-daterangepicker");
@@ -60,7 +17,7 @@ var React = require("react");
 var moment = require("moment");
 var $ = require("jquery");
 var PropTypes = require("prop-types");
-var BootstrapDateRangePickerWrapper = /** @class */ (function (_super) {
+var BootstrapDateRangePickerWrapper = (function (_super) {
     __extends(BootstrapDateRangePickerWrapper, _super);
     function BootstrapDateRangePickerWrapper(props) {
         var _this = _super.call(this, props) || this;

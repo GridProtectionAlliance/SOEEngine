@@ -97,6 +97,7 @@ using System.Data;
 using GSF.Identity;
 using System.Security.Principal;
 using GSF.Security;
+using System.Web.Optimization;
 
 namespace SOEService
 {
@@ -315,6 +316,8 @@ namespace SOEService
         {
             try
             {
+                BundleConfig.RegisterBundles(BundleTable.Bundles);
+
                 ConfigurationFile.Current.Reload();
                 AdoDataConnection.ReloadConfigurationSettings();
 

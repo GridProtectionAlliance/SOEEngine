@@ -48,9 +48,10 @@ import * as React from 'react';
 import * as moment from 'moment'; 
 import * as $ from 'jquery';
 import * as PropTypes from 'prop-types';
+import * as _ from "lodash";
 
 export default class BootstrapDateRangePickerWrapper extends React.Component<any, any> {
-
+    picker: any;
     static propTypes = {
         startDate: PropTypes.oneOfType([PropTypes.string.isRequired,PropTypes.object.isRequired]),
         endDate: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.object.isRequired]),
@@ -131,7 +132,7 @@ export default class BootstrapDateRangePickerWrapper extends React.Component<any
         super(props);
 
         this.state = {
-            date: props.date,
+            date: moment(props.startDate.toISOString()),
         };
 
     }
@@ -139,9 +140,9 @@ export default class BootstrapDateRangePickerWrapper extends React.Component<any
     componentDidMount() {
         var ctrl = this;
 
-        var picker = new DateRangePicker('input[name="' + ctrl.props.inputName + '"]', this.props,
+        ctrl.picker = new DateRangePicker('input[name="' + ctrl.props.inputName + '"]', this.props,
             (date) => { 
-                ctrl.setState({ date: date}); }
+                ctrl.setState({ date: moment(date.toISOString())}); }
         );
 
         if(ctrl.props.showDateRangePicker != undefined)
@@ -159,6 +160,10 @@ export default class BootstrapDateRangePickerWrapper extends React.Component<any
         if (ctrl.props.cancelDateRangePicker != undefined)    
             $('input[name="' + ctrl.props.inputName + '"]').on('cancel.daterangepicker', function () { ctrl.props.cancelDateRangePicker(ctrl.state) })
 
+    }
+    componentWillReceiveProps(nextProps) { 
+        if (!(_.isEqual(this.props.startDate, nextProps.startDate)))
+            this.picker.setStartDate(nextProps.startDate);
     }
 
     componentWillUnmount() {

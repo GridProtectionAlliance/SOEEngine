@@ -24,6 +24,7 @@
 @using SOE.Model
 @using RazorEngine.Templating
 @using GSF.Web.Shared
+@using System.Web.Optimization
 
 @inherits TemplateBase<AppModel>
 @{
@@ -42,6 +43,14 @@
     string pageTitle = ViewBag.CustomTitle ?? ViewBag.Title;
     string pageHeader = ViewBag.CustomHeader ?? pageTitle;
     string programName = "SOETools";
+
+    //public MvcHtmlString RenderScript(string jsPath)
+    //{
+    //    var builder = new StringBuilder();
+    //    builder.Append(Scripts.Render(jsPath).ToHtmlString());
+    //    return new MvcHtmlString(builder.ToString());
+    //}
+}
 }
 <!DOCTYPE html>
 <html lang="en">

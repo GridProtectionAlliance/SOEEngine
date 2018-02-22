@@ -23,10 +23,12 @@
 
 module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
+    const webPackConfig = require('./webpack.config');
 
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-babel');
-    grunt.loadNpmTasks('grunt-typescript');
+    //grunt.loadNpmTasks('grunt-babel');
+    //grunt.loadNpmTasks('grunt-typescript');
+    grunt.loadNpmTasks('grunt-webpack');
 
     grunt.initConfig({
         babel: {
@@ -47,7 +49,7 @@ module.exports = function (grunt) {
         },
         typescript: {
             build: {
-                src: ['wwwroot/Scripts/JSX/*.tsx', '!wwwroot/Scripts/JSX/*.d.tsx'],
+                src: ['wwwroot/Scripts/JSX/*.ts*', '!wwwroot/Scripts/JSX/*.d.ts*'],
                 options: {
                     module: 'system',
                     target: 'es5',
@@ -62,15 +64,22 @@ module.exports = function (grunt) {
             }
         },
         watch: {
-            files: ['wwwroot/Scripts/JSX/*.tsx'],
+            files: ['wwwroot/Scripts/JSX/*.ts*'],
             tasks: ['default'],
             options: {
                 debounceDelay: 100
             }
+        },
+        webpack: {
+            options: {
+                stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+            },
+            prod: webPackConfig,
+            dev: Object.assign({ watch: true }, webPackConfig)
         }
     });
 
     grunt.registerTask('default', [
-        'typescript',
+        'webpack'
     ]);
 };

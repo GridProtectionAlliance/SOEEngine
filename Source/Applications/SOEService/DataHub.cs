@@ -96,8 +96,6 @@ namespace SOEService
         #endregion
 
         #region [ IncidentEventCycleDataView Table Operations ]
-
-
         [RecordOperation(typeof(IncidentEventCycleDataView), RecordOperation.QueryRecordCount)]
         public int QueryIncidentEventCycleDataViewCount(string date, string name, string levels, string limits, string timeContext, string filterString)
         {
@@ -151,9 +149,6 @@ namespace SOEService
         #endregion
 
         #region [ CycleDataSOEPointView Table Operations ]
-
-
-
         [RecordOperation(typeof(CycleDataSOEPointView), RecordOperation.QueryRecordCount)]
         public int QueryCycleDataSOEPointViewCount(int parentID, string filterText)
         {
@@ -194,9 +189,6 @@ namespace SOEService
         {
             DataContext.Table<CycleDataSOEPointView>().UpdateRecord(record);
         }
-
-
-
         #endregion
 
         #region [ OpenSEE Table Operations ]

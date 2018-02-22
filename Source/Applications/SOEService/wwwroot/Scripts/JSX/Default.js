@@ -1,26 +1,4 @@
 "use strict";
-//******************************************************************************************************
-//  Default.tsx - Gbtc
-//
-//  Copyright © 2018, Grid Protection Alliance.  All Rights Reserved.
-//
-//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
-//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
-//  file except in compliance with the License. You may obtain a copy of the License at:
-//
-//      http://opensource.org/licenses/MIT
-//
-//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
-//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
-//  License for the specific language governing permissions and limitations.
-//
-//  Code Modification History:
-//  ----------------------------------------------------------------------------------------------------
-//  02/06/2018 - Billy Ernest
-//       Generated original version of source code.
-//
-//******************************************************************************************************
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -43,7 +21,7 @@ require("primereact/resources/primereact.css");
 require("primereact/resources/themes/omega/theme.css");
 require("primereact/components/multiselect/MultiSelect.css");
 var moment = require("moment");
-var MainPage = /** @class */ (function (_super) {
+var MainPage = (function (_super) {
     __extends(MainPage, _super);
     function MainPage(props) {
         var _this = _super.call(this, props) || this;
@@ -92,6 +70,32 @@ var MainPage = /** @class */ (function (_super) {
             numBuckets: this.values['numBuckets'],
         });
     };
+    MainPage.prototype.changeDate = function (type) {
+        switch (type) {
+            case '<<':
+                var date = this.state.date.subtract(this.state.numBuckets / 2, this.state.timeContext.toLocaleLowerCase());
+                this.values['date'] = date;
+                this.setState({ date: date });
+                return;
+            case '<':
+                var date = this.state.date.subtract(1, this.state.timeContext.toLocaleLowerCase());
+                this.values['date'] = date;
+                this.setState({ date: date });
+                return;
+            case '>':
+                var date = this.state.date.add(1, this.state.timeContext.toLocaleLowerCase());
+                this.values['date'] = date;
+                this.setState({ date: date });
+                return;
+            case '>>':
+                var date = this.state.date.add(this.state.numBuckets / 2, this.state.timeContext.toLocaleLowerCase());
+                this.values['date'] = date;
+                this.setState({ date: date });
+                return;
+            default:
+                return;
+        }
+    };
     MainPage.prototype.render = function () {
         var _this = this;
         var ctrl = this;
@@ -118,6 +122,19 @@ var MainPage = /** @class */ (function (_super) {
                                 React.createElement(react_router_dom_1.Link, { to: "/" },
                                     React.createElement("button", { className: "btn btn-primary", onClick: this.applyFilter.bind(this) }, "Apply")))))),
                 React.createElement("br", null),
+                React.createElement("div", { style: { 'textAlign': 'center' } },
+                    React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('<<'); } },
+                        '<<',
+                        " Step"),
+                    React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('<'); } },
+                        '<',
+                        " Nudge"),
+                    React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('>'); } },
+                        "Nudge ",
+                        '>'),
+                    React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('>>'); } },
+                        "Step ",
+                        '>>')),
                 React.createElement(react_router_dom_1.Route, { exact: true, path: "/", render: function () { return React.createElement(PrimeDataTableWrapper_1.default, { filters: { date: _this.state.date, timeContext: _this.state.timeContext, numBuckets: _this.state.numBuckets, limits: _this.state.limits, levels: _this.state.levels } }); } }),
                 React.createElement(react_router_dom_1.Route, { exact: true, path: "/System/:systemName", render: function (_a) {
                         var match = _a.match;
@@ -127,9 +144,6 @@ var MainPage = /** @class */ (function (_super) {
                         var match = _a.match;
                         return React.createElement(PrimeDataTableWrapper_1.default, { filters: { date: _this.state.date, timeContext: _this.state.timeContext, numBuckets: _this.state.numBuckets, limits: _this.state.limits, levels: "Device", circuitName: match.params.circuitName } });
                     } }))));
-    };
-    MainPage.prototype.handleApply = function () {
-        console.log('handled');
     };
     return MainPage;
 }(React.Component));

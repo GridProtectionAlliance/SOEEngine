@@ -186,7 +186,7 @@ namespace SOEService
                         idList = $"ID IN ({ string.Join(",", ids.Select(x => int.Parse(x)))})";
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest("The id field must be a comma separated integer list.");
             }
