@@ -73,24 +73,24 @@ var MainPage = (function (_super) {
     MainPage.prototype.changeDate = function (type) {
         switch (type) {
             case '<<':
-                var date = this.state.date.subtract(this.state.numBuckets / 2, this.state.timeContext.toLocaleLowerCase());
+                var date = moment(this.state.date.subtract(this.state.numBuckets / 2, this.state.timeContext.toLocaleLowerCase()).toISOString());
                 this.values['date'] = date;
-                this.setState({ date: date });
+                this.applyFilter();
                 return;
             case '<':
-                var date = this.state.date.subtract(1, this.state.timeContext.toLocaleLowerCase());
+                var date = moment(this.state.date.subtract(1, this.state.timeContext.toLocaleLowerCase()).toISOString());
                 this.values['date'] = date;
-                this.setState({ date: date });
+                this.applyFilter();
                 return;
             case '>':
-                var date = this.state.date.add(1, this.state.timeContext.toLocaleLowerCase());
+                var date = moment(this.state.date.add(1, this.state.timeContext.toLocaleLowerCase()).toISOString());
                 this.values['date'] = date;
-                this.setState({ date: date });
+                this.applyFilter();
                 return;
             case '>>':
-                var date = this.state.date.add(this.state.numBuckets / 2, this.state.timeContext.toLocaleLowerCase());
+                var date = moment(this.state.date.add(this.state.numBuckets / 2, this.state.timeContext.toLocaleLowerCase()).toISOString());
                 this.values['date'] = date;
-                this.setState({ date: date });
+                this.applyFilter();
                 return;
             default:
                 return;
@@ -112,7 +112,7 @@ var MainPage = (function (_super) {
                                     React.createElement(Select_1.default, { value: ctrl.values['limits'], options: ["All", "Top 100", "Top 50", "Top 25", "Top 10"], formLabel: "Record Limits:", onChange: function (value) { ctrl.values['limits'] = value; } }),
                                     React.createElement(Select_1.default, { value: ctrl.values['levels'], options: ["System", "Circuit", "Device"], formLabel: "Search Levels:", onChange: function (value) { ctrl.values['levels'] = value; } })),
                                 React.createElement("div", { className: "col-md-4" },
-                                    React.createElement(BootstrapDateRangePicker_1.default, { formLabel: "Start Date:", startDate: ctrl.state.date, singleDatePicker: true, showDropdowns: true, applyDateRangePicker: function (msg) {
+                                    React.createElement(BootstrapDateRangePicker_1.default, { formLabel: "Start Date:", startDate: moment(ctrl.state.date.toISOString()), singleDatePicker: true, showDropdowns: true, applyDateRangePicker: function (msg) {
                                             ctrl.values['date'] = msg.date;
                                         } }),
                                     React.createElement(Select_1.default, { value: ctrl.values['timeContext'], options: ["Months", "Days", "Hours"], formLabel: "Time Context:", onChange: function (value) { ctrl.values['timeContext'] = value; } }),
@@ -122,19 +122,21 @@ var MainPage = (function (_super) {
                                 React.createElement(react_router_dom_1.Link, { to: "/" },
                                     React.createElement("button", { className: "btn btn-primary", onClick: this.applyFilter.bind(this) }, "Apply")))))),
                 React.createElement("br", null),
-                React.createElement("div", { style: { 'textAlign': 'center' } },
-                    React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('<<'); } },
-                        '<<',
-                        " Step"),
-                    React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('<'); } },
-                        '<',
-                        " Nudge"),
-                    React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('>'); } },
-                        "Nudge ",
-                        '>'),
-                    React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('>>'); } },
-                        "Step ",
-                        '>>')),
+                React.createElement("div", { style: { 'width': '100%', 'margin': '0' }, className: "row" },
+                    React.createElement("div", { className: "col-lg-6 col-md-6 col-sm-6", style: { textAlign: 'left', 'padding': '0' } },
+                        React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('<<'); } },
+                            '<<',
+                            " Step"),
+                        React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('<'); } },
+                            '<',
+                            " Nudge")),
+                    React.createElement("div", { className: "col-lg-6 col-md-6 col-sm-6", style: { textAlign: 'right', 'padding': '0' } },
+                        React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('>'); } },
+                            "Nudge ",
+                            '>'),
+                        React.createElement("button", { className: "btn btn-default", onClick: function (e) { return _this.changeDate('>>'); } },
+                            "Step ",
+                            '>>'))),
                 React.createElement(react_router_dom_1.Route, { exact: true, path: "/", render: function () { return React.createElement(PrimeDataTableWrapper_1.default, { filters: { date: _this.state.date, timeContext: _this.state.timeContext, numBuckets: _this.state.numBuckets, limits: _this.state.limits, levels: _this.state.levels } }); } }),
                 React.createElement(react_router_dom_1.Route, { exact: true, path: "/System/:systemName", render: function (_a) {
                         var match = _a.match;

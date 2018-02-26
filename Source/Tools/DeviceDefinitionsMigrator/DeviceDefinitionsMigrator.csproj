@@ -95,6 +95,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\SOE.Model\SOE.Model.csproj">
+      <Project>{54cdfae3-a029-4141-9a7d-5981b7cd4b64}</Project>
+      <Name>SOE.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\SOEDataProcessing\SOEDataProcessing.csproj">
       <Project>{11ae594d-2b2b-473c-8550-6bf62914c3e2}</Project>
       <Name>SOEDataProcessing</Name>

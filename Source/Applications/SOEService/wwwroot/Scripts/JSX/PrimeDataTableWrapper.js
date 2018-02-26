@@ -46,7 +46,7 @@ var PrimeDataTable = (function (_super) {
             var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE"];
             var dynamicColumns = Object.keys(data[0]).map(function (col, i) {
                 if (nonDynamicColumns.indexOf(col) < 0)
-                    return React.createElement(Column_1.Column, { key: col, field: col, body: _this.dateTemplate.bind(_this), header: React.createElement("div", { style: headerStyle }, col), sortable: true });
+                    return React.createElement(Column_1.Column, { key: col, field: col, body: _this.dateTemplate.bind(_this), header: React.createElement("div", { style: headerStyle }, col), sortable: true, footer: _this.footerTemplate });
             });
             _this.setState({ dynamicColumns: dynamicColumns });
         });
@@ -55,10 +55,6 @@ var PrimeDataTable = (function (_super) {
     PrimeDataTable.prototype.componentWillReceiveProps = function (nextProps) {
         if (!(_.isEqual(this.props, nextProps)))
             this.getData(nextProps);
-    };
-    PrimeDataTable.prototype.shouldComponentUpdate = function (nextProps, nextState, nextConext) {
-        console.log(nextProps);
-        return true;
     };
     PrimeDataTable.prototype.systemTemplate = function (rowData, column) {
         return React.createElement(react_router_dom_1.Link, { to: "/System/" + rowData.System },
@@ -83,8 +79,11 @@ var PrimeDataTable = (function (_super) {
         else
             return React.createElement("a", { target: "_blank", href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + moment(column.field + "/" + this.props.filters.date.year(), "MM/DD HH/YYYY").format('YYYYMMDDHH') + "&name=" + nameString }, rowData[column.field]);
     };
+    PrimeDataTable.prototype.footerTemplate = function (data) {
+        return [React.createElement("td", null, "footers"), React.createElement("td", null, "totals")];
+    };
     PrimeDataTable.prototype.render = function () {
-        return (React.createElement(DataTable_1.DataTable, { value: this.state.data, paginator: true, rows: 25 },
+        return (React.createElement(DataTable_1.DataTable, { value: this.state.data, paginator: true, rows: 25, rowGroupFooterTemplate: this.footerTemplate.bind(this.state.data) },
             React.createElement(Column_1.Column, { style: { width: "100px" }, body: this.systemTemplate, field: "System", header: "Volt Class", sortable: true }),
             React.createElement(Column_1.Column, { style: { width: "100px" }, body: this.circuitTemplate, field: "Circuit", header: "Circuit", sortable: true }),
             React.createElement(Column_1.Column, { style: { width: "100px" }, field: "Device", header: "Device", sortable: true }),

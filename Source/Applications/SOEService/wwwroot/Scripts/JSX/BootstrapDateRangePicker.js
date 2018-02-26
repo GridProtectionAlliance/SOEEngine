@@ -17,19 +17,20 @@ var React = require("react");
 var moment = require("moment");
 var $ = require("jquery");
 var PropTypes = require("prop-types");
+var _ = require("lodash");
 var BootstrapDateRangePickerWrapper = (function (_super) {
     __extends(BootstrapDateRangePickerWrapper, _super);
     function BootstrapDateRangePickerWrapper(props) {
         var _this = _super.call(this, props) || this;
         _this.state = {
-            date: props.date,
+            date: moment(props.startDate.toISOString()),
         };
         return _this;
     }
     BootstrapDateRangePickerWrapper.prototype.componentDidMount = function () {
         var ctrl = this;
-        var picker = new DateRangePicker('input[name="' + ctrl.props.inputName + '"]', this.props, function (date) {
-            ctrl.setState({ date: date });
+        ctrl.picker = new DateRangePicker('input[name="' + ctrl.props.inputName + '"]', this.props, function (date) {
+            ctrl.setState({ date: moment(date.toISOString()) });
         });
         if (ctrl.props.showDateRangePicker != undefined)
             $('input[name="' + ctrl.props.inputName + '"]').on('show.daterangepicker', function () { ctrl.props.showDateRangePicker(ctrl.state); });
@@ -45,6 +46,10 @@ var BootstrapDateRangePickerWrapper = (function (_super) {
             });
         if (ctrl.props.cancelDateRangePicker != undefined)
             $('input[name="' + ctrl.props.inputName + '"]').on('cancel.daterangepicker', function () { ctrl.props.cancelDateRangePicker(ctrl.state); });
+    };
+    BootstrapDateRangePickerWrapper.prototype.componentWillReceiveProps = function (nextProps) {
+        if (!(_.isEqual(this.props.startDate, nextProps.startDate)))
+            this.picker.setStartDate(nextProps.startDate);
     };
     BootstrapDateRangePickerWrapper.prototype.componentWillUnmount = function () {
         var ctrl = this;

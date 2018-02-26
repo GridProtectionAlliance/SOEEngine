@@ -84,7 +84,10 @@
     <Compile Include="System\DataOperation.cs" />
     <Compile Include="System\DataReader.cs" />
     <Compile Include="System\Setting.cs" />
+    <Compile Include="TransmissionElements\Circuit.cs" />
     <Compile Include="TransmissionElements\Line.cs" />
+    <Compile Include="TransmissionElements\SubStation.cs" />
+    <Compile Include="TransmissionElements\System.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

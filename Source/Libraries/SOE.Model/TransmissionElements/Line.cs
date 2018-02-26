@@ -61,6 +61,10 @@ namespace SOE.Model
         [Required]
         public double Length { get; set; }
 
+        public double AFCLG { get; set; }
+        public double AFCLL { get; set; }
+        public double AFCLLL { get; set; }
+
         public string Description { get; set; }
 
         [JsonIgnore]

@@ -207,12 +207,39 @@ CREATE TABLE MeterLocation
 )
 GO
 
+CREATE TABLE System(
+	ID int IDENTITY(1,1) NOT NULL primary key,
+	Name varchar(max) NOT NULL,
+)
+GO
+
+CREATE TABLE SubStation(
+	ID int IDENTITY(1,1) NOT NULL primary key,
+	Name varchar(max) NOT NULL,
+)
+GO
+
+CREATE TABLE Circuit(
+	ID int IDENTITY(1,1) NOT NULL Primary key,
+	SystemID int not null foreign key references system(id),
+	Name varchar(max) NOT NULL,
+)
+GO
+
 CREATE TABLE Meter
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
     AssetKey VARCHAR(50) NOT NULL UNIQUE,
+	SubStationID INT NULL REFERENCES SubStation(ID),
     MeterLocationID INT NOT NULL REFERENCES MeterLocation(ID),
-    ParentID INT NULL REFERENCES Meter(ID),
+    ParentNormalID INT NULL REFERENCES Meter(ID),
+	ParentAlternateID INT NULL REFERENCES Meter(ID),
+	CircuitNormalID INT NULL REFERENCES Circuit(ID),
+	CircuitAlternateID INT NULL REFERENCES Circuit(ID),
+	IsNormallyOpen bit not null,
+	RootPNGFolder varchar(max) null,
+	AnalysisLink varchar(max) null,
+	ClassifyLink varchar(max) null,
     Name VARCHAR(200) NOT NULL,
     Alias VARCHAR(200) NULL,
     ShortName VARCHAR(50) NULL,
@@ -224,6 +251,9 @@ CREATE TABLE Meter
     Orientation VARCHAR(2) NULL
 )
 GO
+
+
+
 
 CREATE TABLE MeterFileGroup
 (
@@ -248,6 +278,9 @@ CREATE TABLE Line
     VoltageKV FLOAT NOT NULL,
     ThermalRating FLOAT NOT NULL,
     Length FLOAT NOT NULL,
+	AFCLG FLOAT NULL,
+	AFCLL FLOAT NULL,
+	AFCLLL FLOAT NULL,
     Description VARCHAR(MAX) NULL
 )
 GO
@@ -1299,7 +1332,7 @@ SELECT
 	CAST(CHARINDEX('A', dbo.Meter.Phasing) AS CHAR(1)) + CAST(CHARINDEX('C', dbo.Meter.Phasing) AS CHAR(1)) + CAST(CHARINDEX('B', dbo.Meter.Phasing) AS CHAR(1)) AS Phasing,
 	Meter.Name,
 	Event.IncidentID,
-	Meter.ParentID,
+	Meter.ParentNormalID,
 	Incident.StartTime,
 	Event.ID AS EventID,
 	SOEPoint.FaultType,
@@ -1358,10 +1391,8 @@ WITH IncidentEventCycleDataView0 AS
 		Meter ON Incident.MeterID = Meter.ID INNER JOIN
 		MeterLine ON Meter.ID = MeterLine.MeterID INNER JOIN
 		Line ON MeterLine.LineID = Line.ID INNER JOIN
-		CircuitMeter ON Meter.ID = CircuitMeter.MeterID INNER JOIN
-		Circuit ON Circuit.ID = CircuitMeter.CircuitID INNER JOIN
-		SystemCircuit ON Circuit.ID = SystemCircuit.CiruitID INNER JOIN
-		System ON System.ID = SystemCircuit.SystemID
+		Circuit ON Circuit.ID = Meter.CircuitNormalID INNER JOIN
+		System ON System.ID = Circuit.SystemID
 )
 SELECT
 	CASE

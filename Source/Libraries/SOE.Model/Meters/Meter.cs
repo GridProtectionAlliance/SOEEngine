@@ -38,6 +38,7 @@ namespace SOE.Model
 
         // Fields
         private MeterLocation m_meterLocation;
+        private Meter m_parent;
         private List<MeterLine> m_meterLines;
         private List<Channel> m_channels;
 
@@ -48,8 +49,15 @@ namespace SOE.Model
         [PrimaryKey(true)]
         public int ID { get; set; }
 
-        [Required]
-        public int ParentID { get; set; }
+        public int? SubStationID { get; set; }
+        public int? ParentNormalID { get; set; }
+        public int? ParentAlternateID { get; set; }
+        public int? CircuitNormalID { get; set; }
+        public int? CircuitAlternateID { get; set; }
+        public bool IsNormallyOpen { get; set; }
+        public string RootPNGFolder { get; set; }
+        public string AnalysisLink {get; set;}
+        public string ClassifyLink { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -125,6 +133,21 @@ namespace SOE.Model
 
         [JsonIgnore]
         [NonRecordField]
+        public Meter Parent
+        {
+            get
+            {
+                return m_parent ?? (m_parent = QueryParent());
+            }
+            set
+            {
+                m_parent = value;
+            }
+        }
+
+
+        [JsonIgnore]
+        [NonRecordField]
         public List<Channel> Channels
         {
             get
@@ -159,6 +182,15 @@ namespace SOE.Model
 
         #region [ Methods ]
 
+        public Meter GetParent(AdoDataConnection connection)
+        {
+            if ((object)connection == null)
+                return null;
+
+            TableOperations<Meter> meterLocationTable = new TableOperations<Meter>(connection);
+            return meterLocationTable.QueryRecordWhere("ParentNormalID = {0}", ParentNormalID);
+        }
+
         public MeterLocation GetMeterLocation(AdoDataConnection connection)
         {
             if ((object)connection == null)
@@ -192,6 +224,21 @@ namespace SOE.Model
                 return TimeZoneInfo.FindSystemTimeZoneById(TimeZone);
 
             return defaultTimeZone;
+        }
+
+        private Meter QueryParent()
+        {
+            Meter meter;
+
+            using (AdoDataConnection connection = ConnectionFactory?.Invoke())
+            {
+                meter = GetParent(connection);
+            }
+
+            if ((object)meter != null)
+                meter.LazyContext = LazyContext;
+
+            return LazyContext.GetMeter(meter);
         }
 
         private MeterLocation QueryMeterLocation()

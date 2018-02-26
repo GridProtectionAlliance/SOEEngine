@@ -60,7 +60,7 @@ namespace SOE.Model
 
         public int IncidentID { get; set; }
 
-        public int ParentID { get; set; }
+        public int ParentNormalID { get; set; }
 
         public int EventID { get; set; }
     }
