@@ -11,6 +11,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
+var _ = require("lodash");
 var Select = (function (_super) {
     __extends(Select, _super);
     function Select(props) {
@@ -26,6 +27,16 @@ var Select = (function (_super) {
         this.setState({ dynamicColumns: this.state.options.map(function (o, i) {
                 return React.createElement("option", { key: o }, o);
             }) });
+    };
+    Select.prototype.componentWillReceiveProps = function (nextProps) {
+        if (!(_.isEqual(this.props, nextProps)))
+            this.setState({
+                options: nextProps.options,
+                dynamicColumns: this.state.options.map(function (o, i) {
+                    return React.createElement("option", { key: o }, o);
+                }),
+                value: nextProps.value
+            });
     };
     Select.prototype.onChange = function (event) {
         this.setState({ value: event.target.value });

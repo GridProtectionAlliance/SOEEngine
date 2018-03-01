@@ -23,9 +23,7 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom'
 import Table from './Table'
-import ABNBDateRangePickerWrapper from './ABNBDateRangePicker';
 import BootstrapDateRangePickerWrapper from './BootstrapDateRangePicker';
 import PrimeMultiSelectWrapper from './PrimeMultiselectWrapper';
 import PrimeDataTableWrapper from './PrimeDataTableWrapper';
@@ -38,153 +36,133 @@ import 'primereact/components/multiselect/MultiSelect.css';
 import {Accordion,AccordionTab} from 'primereact/components/accordion/Accordion';
 import * as $ from 'jquery';
 import * as moment from 'moment';
-
+import createHistory from "history/createBrowserHistory"
+import * as queryString from "query-string";
 
 class MainPage extends React.Component<any, any> {
-  values: object;
+    values: object;
+    history: object;
   constructor(props) {
     super(props);
+    this.history = createHistory();
+    var query = queryString.parse(this.history['location'].search);
 
     this.state = {
-        severity: 'Both',
-        limits: 'All',
-        levels: 'Circuit',
-        classifications: [],
-        date: moment().subtract(20, 'days').startOf('day'),
-        timeContext: 'Days',
-        numBuckets: 20,
-        cars: []
-    }
+        limits: (query['limits'] != undefined ? query['limits'] : 'All'),
+        levels: (query['levels'] != undefined ? query['levels'] : 'Circuit'),
+        date: (query['date'] != undefined ? query['date'] : moment().subtract(30, 'days').startOf('day').format('YYYYMMDDHH')),
+        context: (query['context'] != undefined ? query['context'] : 'Days'),
+        buckets: (query['buckets'] != undefined ? query['buckets'] : 30),
+        filter: (query['filter'] != undefined ? query['filter'] : null)
+      }
 
-    this.values = {
-        severity: 'Both',
-        limits: 'All',
-        levels: 'Circuit',
-        date: moment().subtract(20, 'days').startOf('day'),
-        timeContext: 'Days',
-        numBuckets: 20
-    }
+      this.history['listen']((location, action) => {
+          var query = queryString.parse(this.history['location'].search);
+          this.setState ({
+              limits: (query['limits'] != undefined ? query['limits'] : 'All'),
+              levels: (query['levels'] != undefined ? query['levels'] : 'Circuit'),
+              date: (query['date'] != undefined ? query['date'] : moment().subtract(30, 'days').startOf('day').format('YYYYMMDDHH')),
+              context: (query['context'] != undefined ? query['context'] : 'Days'),
+              buckets: (query['buckets'] != undefined ? query['buckets'] : 30),
+              filter: (query['filter'] != undefined ? query['filter'] : null)
+          })
+      });
   }
 
   componentDidMount(){
-    this.setState({
-        cars: [
-            { label: 'Audi', value: 'Audi' },
-            { label: 'BMW', value: 'BMW' },
-            { label: 'Fiat', value: 'Fiat' },
-            { label: 'Honda', value: 'Honda' },
-            { label: 'Jaguar', value: 'Jaguar' },
-            { label: 'Mercedes', value: 'Mercedes' },
-            { label: 'Renault', value: 'Renault' },
-            { label: 'VW', value: 'VW' },
-            { label: 'Volvo', value: 'Volvo' }
-        ]
-    });
 
-  }
-
-  applyFilter(){
-      this.setState({
-          severity: this.values['severity'],
-          limits: this.values['limits'],
-          levels: this.values['levels'],
-          date: this.values['date'],
-          timeContext: this.values['timeContext'],
-          numBuckets: this.values['numBuckets'],
-      });
   }
 
   changeDate(type){
     switch(type){
         case '<<':
-            var date = moment(this.state.date.subtract(this.state.numBuckets / 2, this.state.timeContext.toLocaleLowerCase()).toISOString());
-            this.values['date'] = date;
-            this.applyFilter();
-            return;
+            var date = moment(this.state.date,'YYYYMMDDHH').subtract(this.state.buckets / 2, this.state.context.toLocaleLowerCase()).format('YYYYMMDDHH');
+            break;
         case '<' : 
-            var date = moment(this.state.date.subtract(1, this.state.timeContext.toLocaleLowerCase()).toISOString());
-            this.values['date'] = date;
-            this.applyFilter();
-            return;
+            var date = moment(this.state.date, 'YYYYMMDDHH').subtract(1, this.state.context.toLocaleLowerCase()).format('YYYYMMDDHH');
+            break;
         case '>' : 
-            var date = moment(this.state.date.add(1, this.state.timeContext.toLocaleLowerCase()).toISOString());
-            this.values['date'] = date;
-            this.applyFilter();
-            return;
+            var date = moment(this.state.date, 'YYYYMMDDHH').add(1, this.state.context.toLocaleLowerCase()).format('YYYYMMDDHH');
+            break;
         case '>>': 
-            var date = moment(this.state.date.add(this.state.numBuckets / 2, this.state.timeContext.toLocaleLowerCase()).toISOString());
-            this.values['date'] = date;
-            this.applyFilter();
-            return;
-        default:
-            return;
+            var date = moment(this.state.date, 'YYYYMMDDHH').add(this.state.buckets / 2, this.state.context.toLocaleLowerCase()).format('YYYYMMDDHH');
+            break;
     }
 
+      this.setState({ 'date': date }, () => this.history['push']('Summary.cshtml?' + queryString.stringify(this.state)));
+  }
+
+  tableCallback(rowData, column) {
+      var level = ''
+      if (column.field == 'System')
+          level = 'Circuit';
+      else
+          level = 'Device';
+
+      this.setState({
+          levels: level,
+          filter: rowData[column.field]
+      }, () => this.history['push']('Summary.cshtml?' + queryString.stringify(this.state)));     
   }
 
   render() {
         var ctrl = this;
 
         return (
-            <Router basename="Summary/Summary.cshtml">
-                <div style={{'marginTop': '50px'}}>
-                    <div className="panel-group">
-                      <div className="panel panel-default">
-                        <div className="panel-heading">
-                          <h4 className="panel-title">
-                            <a style={{'color': '#337ab7'}} data-toggle="collapse" href="#collapse1">Filter</a>
-                          </h4>
-                        </div>
-                        <div id="collapse1" className="panel-collapse collapse in">
-                          <div className="panel-body">
-                                                  <div className="col-md-4">
-                                {/*<PrimeMultiSelectWrapper value={ctrl.state.classifications} options={ctrl.state.cars} style={{ width: '100%' }} formLabel="Classification Filter:"/>*/}
-                                <Select value={ctrl.values['limits']} options={["All", "Top 100", "Top 50", "Top 25", "Top 10"]} formLabel="Record Limits:" onChange={function (value) { ctrl.values['limits'] = value}}/>
-                                <Select value={ctrl.values['levels']} options={["System", "Circuit", "Device"]} formLabel="Search Levels:" onChange={function (value) { ctrl.values['levels'] = value }}/>
-                                {/*<Select value={ctrl.state.severity} options={["PQ","LTE", "Both"]} formLabel="Severity Filter:" onChange={function(value){ctrl.setState({severity: value})}}/>*/}
+            <div style={{'marginTop': '50px'}}>
+                <div className="panel-group">
+                  <div className="panel panel-default">
+                    <div className="panel-heading">
+                      <h4 className="panel-title">
+                        <a style={{'color': '#337ab7'}} data-toggle="collapse" href="#collapse1">Filter</a>
+                      </h4>
+                    </div>
+                    <div id="collapse1" className="panel-collapse collapse in">
+                      <div className="panel-body">
+                                              <div className="col-md-4">
+                            {/*<PrimeMultiSelectWrapper value={ctrl.state.classifications} options={ctrl.state.cars} style={{ width: '100%' }} formLabel="Classification Filter:"/>*/}
+                            <Select value={ctrl.state['limits']} options={["All", "Top 100", "Top 50", "Top 25", "Top 10"]} formLabel="Record Limits:" onChange={function (value) { ctrl.setState({ 'limits': value }, () => ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)))}}/>
+                            <Select value={ctrl.state['levels']} options={["System", "Circuit", "Device"]} formLabel="Search Levels:" onChange={function (value) { ctrl.setState({ 'levels': value }, () => ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state))) }}/>
+                            <Input value={ctrl.state['filter']} clearable={true} formLabel="Filter Text:" onChange={function (value) { ctrl.setState({ 'filter': value }, () => ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state))) }} />
 
-                            </div>
-                            <div className="col-md-4">
-                                <BootstrapDateRangePickerWrapper
-                                    formLabel="Start Date:"
-                                    startDate={moment(ctrl.state.date.toISOString())}
-                                    singleDatePicker={true}
-                                    showDropdowns={true}
-                                    applyDateRangePicker={function (msg) {
-                                        ctrl.values['date'] = msg.date;
-                                    }}
-                                />
-                                <Select value={ctrl.values['timeContext']} options={["Months", "Days", "Hours"]} formLabel="Time Context:" onChange={function (value) { ctrl.values['timeContext']=  value}}/>
-                                <Input value={ctrl.values['numBuckets']} type="number" formLabel="Number of Buckets:" onChange={function (value) { ctrl.values['numBuckets'] = value}}/>
-                            </div>
-                            <div className="col-md-4"></div>
-
-                          </div>
-                          <div className="panel-footer" style={{textAlign: 'right'}}>
-                            <Link to="/"><button className="btn btn-primary" onClick={this.applyFilter.bind(this)}>Apply</button></Link>
-                          </div>
+                             {/*<Select value={ctrl.state.severity} options={["PQ","LTE", "Both"]} formLabel="Severity Filter:" onChange={function(value){ctrl.setState({severity: value})}}/>*/}
+ 
                         </div>
+                        <div className="col-md-4">
+                            <BootstrapDateRangePickerWrapper
+                                formLabel="Start Date:"
+                                startDate={moment(ctrl.state.date, 'YYYYMMDDHH')}
+                                singleDatePicker={true}
+                                showDropdowns={true}
+                                applyDateRangePicker={function (msg) {
+                                    this.setState({ 'date': msg.date.format('YYYYMMDDHH') }, () => ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)));
+                                }}
+                            />
+                            <Select value={ctrl.state['context']} options={["Months", "Days", "Hours"]} formLabel="Time Context:" onChange={function (value) { ctrl.setState({ 'context': value }, () => ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)))}}/>
+                            <Input value={ctrl.state['buckets']} type="number" formLabel="Number of Buckets:" onChange={function (value) { ctrl.setState({ 'buckets': value }, () => ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)))}}/>
+                        </div>
+                        <div className="col-md-4"></div>
+ 
                       </div>
                     </div>
-                
-                    <br/>
-                    <div style={{ 'width': '100%', 'margin': '0' }} className="row">
-                        <div className="col-lg-6 col-md-6 col-sm-6" style={{ textAlign: 'left', 'padding': '0'}}>
-                            <button className="btn btn-default" onClick={(e) => this.changeDate('<<')}>{'<<'} Step</button>
-                            <button className="btn btn-default" onClick={(e) => this.changeDate('<')}>{'<'} Nudge</button>
-                        </div>
-                        <div className="col-lg-6 col-md-6 col-sm-6" style={{ textAlign: 'right', 'padding': '0'}}>
-                            <button className="btn btn-default" onClick={(e) => this.changeDate('>')}>Nudge {'>'}</button>
-                            <button className="btn btn-default" onClick={(e) => this.changeDate('>>')}>Step {'>>'}</button>
-                        </div>
-                    </div>
-                    <Route exact path="/" render={() => <PrimeDataTableWrapper filters={{ date: this.state.date, timeContext: this.state.timeContext, numBuckets: this.state.numBuckets, limits: this.state.limits, levels: this.state.levels }} />}></Route>
-                    <Route exact path="/System/:systemName" render={({ match }) => <PrimeDataTableWrapper filters={{ date: this.state.date, timeContext: this.state.timeContext, numBuckets: this.state.numBuckets, limits: this.state.limits, levels: "Circuit", systemName: match.params.systemName }} />}></Route>
-                    <Route exact path="/Circuit/:circuitName" render={({ match }) => <PrimeDataTableWrapper filters={{ date: this.state.date, timeContext: this.state.timeContext, numBuckets: this.state.numBuckets, limits: this.state.limits, levels: "Device", circuitName: match.params.circuitName }} />}></Route>
+                  </div>
                 </div>
-            </Router>
+            
+                <br/>
+                <div style={{ 'width': '100%', 'margin': '0' }} className="row">
+                    <div className="col-lg-6 col-md-6 col-sm-6" style={{ textAlign: 'left', 'padding': '0'}}>
+                        <button className="btn btn-default" onClick={(e) => this.changeDate('<<')}>{'<<'} Step</button>
+                        <button className="btn btn-default" onClick={(e) => this.changeDate('<')}>{'<'} Nudge</button>
+                    </div>
+                    <div className="col-lg-6 col-md-6 col-sm-6" style={{ textAlign: 'right', 'padding': '0'}}>
+                        <button className="btn btn-default" onClick={(e) => this.changeDate('>')}>Nudge {'>'}</button>
+                        <button className="btn btn-default" onClick={(e) => this.changeDate('>>')}>Step {'>>'}</button>
+                    </div>
+                </div>
+                <PrimeDataTableWrapper filters={{ date: this.state.date, timeContext: this.state.context, numBuckets: this.state.buckets, limits: this.state.limits, levels: this.state.levels, filter: this.state.filter }} callback={this.tableCallback.bind(this)}/>
+            </div>
 
-            );
+          );
     }
 }
 

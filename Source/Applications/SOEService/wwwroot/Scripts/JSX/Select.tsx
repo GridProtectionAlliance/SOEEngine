@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
+import * as _ from "lodash";
 
 export default class Select extends React.Component<any,any>{
     constructor(props) {
@@ -39,6 +40,18 @@ export default class Select extends React.Component<any,any>{
         })});
         
     }
+
+    componentWillReceiveProps(nextProps) {
+        if (!(_.isEqual(this.props, nextProps)))
+            this.setState({
+                options: nextProps.options,
+                dynamicColumns: this.state.options.map((o, i) => {
+                    return <option key={o}>{o}</option>
+                }),
+                value: nextProps.value
+            });
+    }
+
 
     onChange(event) {
         this.setState({ value: event.target.value });

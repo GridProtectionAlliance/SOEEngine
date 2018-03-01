@@ -20,21 +20,42 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-
-
 import * as React from 'react';
+import * as PropTypes from 'prop-types';
+import * as _ from "lodash";
 
 export default class Select extends React.Component<any,any>{
+    static propTypes = {
+        class: PropTypes.string,
+        formLabel: PropTypes.string,
+        type: PropTypes.string,
+        value: PropTypes.any,
+        onChange: PropTypes.func,
+        clearable: PropTypes.bool
+    };
+
+    static defaultProps = {
+        class: 'form-control',
+        formLabel: null,
+        type: 'text',
+        value: null,
+        onChange: null,
+        clearable: false
+    };
 
     constructor(props) {
         super(props);
         this.state = {
-            value: props.value
+            value: (props.value != null ? props.value : '')
         };
+
     }
 
-    componentDidMount() {
-        
+    componentWillReceiveProps(nextProps) {
+        if (!(_.isEqual(this.props, nextProps)))
+            this.setState({
+                value: (nextProps.value != null ? nextProps.value : '')
+            });
     }
 
     onChange(event){
@@ -43,11 +64,19 @@ export default class Select extends React.Component<any,any>{
             this.props.onChange(event.target.value);
     }
 
+    clear() {
+        this.setState({ value: '' });
+        if (this.props.onChange != undefined)
+            this.props.onChange(null);
+
+    }
+
     render() {
         return (
-            <div className="form-group">
+            <div className={'form-group' + (this.props.clearable ? ' clearable-input' : '')} style={{width : '100%'}}>
                 { this.props.formLabel != undefined ? (<label>{this.props.formLabel}</label>):(null)}
-                <input className="form-control" type={this.props.type} onChange={this.onChange.bind(this)} value={this.state.value}/>
+                <input className={this.props.class} type={this.props.type} onChange={this.onChange.bind(this)} value={this.state.value} />
+                {this.props.clearable ? (<span data-clear-input onClick={this.clear.bind(this)}>&times;</span>) : (null)}
             </div>
         );
     }

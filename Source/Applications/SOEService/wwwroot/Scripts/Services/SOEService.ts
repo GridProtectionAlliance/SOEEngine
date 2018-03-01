@@ -28,13 +28,13 @@ export default class SOEService{
     getView(filters){
         return axios
             .post('/api/Main/GetView/model',{
-                date: moment(filters.date).format('YYYY-MM-DDTHH:mm:ssZ'),
+                date: moment(filters.date, 'YYYYMMDDHH').format('YYYY-MM-DDTHH:mm:ssZ'),
                 timeContext: filters.timeContext,
                 numBuckets: filters.numBuckets,
                 limits: filters.limits,
                 levels: filters.levels,
-                circuitName: filters.circuitName,
-                systemName: filters.systemName
+                circuitName: (filters.levels == 'Device'? filters.filter : null),
+                systemName: (filters.levels == 'Circuit' ? filters.filter : null)
             })
             .then(res => {
                 return res.data;

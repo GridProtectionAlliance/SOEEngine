@@ -3,6 +3,29 @@
   <ComponentGroupRef Id="wwwroot_Components" />
   <ComponentGroupRef Id="wwwroot_Content_Components" />
   <ComponentGroupRef Id="wwwroot_Images_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_PointCode_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_PointCode_BreakerElement_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_PointCode_StatusElement_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_PointCode_Summary_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_ProcessSteps_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_ProcessSteps_Large_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_ProcessSteps_Small_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Bobs_Set_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Bobs_Set_48_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Box_Set_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Box_Set_2_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Box_Set_3_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Circle_Set_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Circle_Set_48_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Glyph_Set_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Glyph_Set_48_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_psd_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Summary_Set_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Word_Set_Components" />
+  <ComponentGroupRef Id="wwwroot_Images_UpDownState_Word_Set_48_Components" />
   <ComponentGroupRef Id="wwwroot_Scripts_Components" />
+  <ComponentGroupRef Id="wwwroot_Scripts_JSX_Components" />
+  <ComponentGroupRef Id="wwwroot_Scripts_Services_Components" />
 </Feature>
 </Include>

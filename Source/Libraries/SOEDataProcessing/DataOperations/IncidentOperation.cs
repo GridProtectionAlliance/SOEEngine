@@ -81,6 +81,9 @@ namespace SOEDataProcessing.DataOperations
             m_incidents = new List<Incident>();
 
             CycleDataResource cycleDataResource = meterDataSet.GetResource<CycleDataResource>();
+
+            if (!cycleDataResource.DataGroups.Any()) return;
+
             DateTime startTime = cycleDataResource.DataGroups.Min(dataGroup => dataGroup.StartTime);
             DateTime endTime = cycleDataResource.DataGroups.Max(dataGroup => dataGroup.EndTime);
 

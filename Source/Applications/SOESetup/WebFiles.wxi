@@ -1,7 +1,13 @@
 <Include>
 <ComponentGroup Id="wwwroot_Components" Directory="wwwroot_WWWROOTFOLDER">
+  <Component Id="wwwroot_CycleDataSOEPointView_cshtml">
+    <File Id="wwwroot_CycleDataSOEPointView.cshtml" Name="CycleDataSOEPointView.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\CycleDataSOEPointView.cshtml" />
+  </Component>
   <Component Id="wwwroot_Groups_cshtml">
     <File Id="wwwroot_Groups.cshtml" Name="Groups.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Groups.cshtml" />
+  </Component>
+  <Component Id="wwwroot_IncidentEventCycleDataView_cshtml">
+    <File Id="wwwroot_IncidentEventCycleDataView.cshtml" Name="IncidentEventCycleDataView.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\IncidentEventCycleDataView.cshtml" />
   </Component>
   <Component Id="wwwroot_index_cshtml">
     <File Id="wwwroot_index.cshtml" Name="index.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\index.cshtml" />
@@ -9,11 +15,17 @@
   <Component Id="wwwroot_Layout_cshtml">
     <File Id="wwwroot_Layout.cshtml" Name="Layout.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Layout.cshtml" />
   </Component>
+  <Component Id="wwwroot_OpenSEE_cshtml">
+    <File Id="wwwroot_OpenSEE.cshtml" Name="OpenSEE.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\OpenSEE.cshtml" />
+  </Component>
   <Component Id="wwwroot_RemoteConsole_cshtml">
     <File Id="wwwroot_RemoteConsole.cshtml" Name="RemoteConsole.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\RemoteConsole.cshtml" />
   </Component>
   <Component Id="wwwroot_Settings_cshtml">
     <File Id="wwwroot_Settings.cshtml" Name="Settings.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Settings.cshtml" />
+  </Component>
+  <Component Id="wwwroot_Summary_cshtml">
+    <File Id="wwwroot_Summary.cshtml" Name="Summary.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Summary.cshtml" />
   </Component>
   <Component Id="wwwroot_Users_cshtml">
     <File Id="wwwroot_Users.cshtml" Name="Users.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Users.cshtml" />
@@ -56,6 +68,12 @@
   <Component Id="wwwroot_Content_bootstrap_theme_min_css">
     <File Id="wwwroot_Content_bootstrap_theme.min.css" Name="bootstrap-theme.min.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\bootstrap-theme.min.css" />
   </Component>
+  <Component Id="wwwroot_Content_ExtraMediaBootstrap_css">
+    <File Id="wwwroot_Content_ExtraMediaBootstrap.css" Name="ExtraMediaBootstrap.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\ExtraMediaBootstrap.css" />
+  </Component>
+  <Component Id="wwwroot_Content_OpenSEE_css">
+    <File Id="wwwroot_Content_OpenSEE.css" Name="OpenSEE.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\OpenSEE.css" />
+  </Component>
   <Component Id="wwwroot_Content_Popup_css">
     <File Id="wwwroot_Content_Popup.css" Name="Popup.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Popup.css" />
   </Component>
@@ -64,28 +82,2042 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Images_Components" Directory="wwwroot_IMAGESFOLDER">
+  <Component Id="wwwroot_Images_ajax_loader_gif">
+    <File Id="wwwroot_Images_ajax_loader.gif" Name="ajax-loader.gif" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ajax-loader.gif" />
+  </Component>
+  <Component Id="wwwroot_Images_GPA_Logo_30_pix_on_white_png">
+    <File Id="wwwroot_Images_GPA_Logo_30_pix_on_white.png" Name="GPA-Logo---30-pix(on-white).png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\GPA-Logo---30-pix(on-white).png" />
+  </Component>
+  <Component Id="wwwroot_Images_GPA_Logo_png">
+    <File Id="wwwroot_Images_GPA_Logo.png" Name="GPA-Logo.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\GPA-Logo.png" />
+  </Component>
   <Component Id="wwwroot_Images_gpa_smalllock_png">
     <File Id="wwwroot_Images_gpa_smalllock.png" Name="gpa-smalllock.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\gpa-smalllock.png" />
+  </Component>
+  <Component Id="wwwroot_Images_openSEET_png">
+    <File Id="wwwroot_Images_openSEET.png" Name="openSEET.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\openSEET.png" />
+  </Component>
+  <Component Id="wwwroot_Images_seeButton_png">
+    <File Id="wwwroot_Images_seeButton.png" Name="seeButton.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\seeButton.png" />
   </Component>
   <Component Id="wwwroot_Images_SOETools_png">
     <File Id="wwwroot_Images_SOETools.png" Name="SOETools.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\SOETools.png" />
   </Component>
 </ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_PointCode_Components" Directory="wwwroot_IMAGESPOINTCODEFOLDER">
+  <Component Id="wwwroot_Images_PointCode_pointCode_psd">
+    <File Id="wwwroot_Images_PointCode_pointCode.psd" Name="pointCode.psd" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\pointCode.psd" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_PointCode_BreakerElement_Components" Directory="wwwroot_IMAGESPOINTCODEBREAKERELEMENTFOLDER">
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_A0_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_A0.png" Name="A0.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\A0.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_A1_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_A1.png" Name="A1.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\A1.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_A2_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_A2.png" Name="A2.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\A2.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_A3_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_A3.png" Name="A3.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\A3.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_A4_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_A4.png" Name="A4.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\A4.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_A5_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_A5.png" Name="A5.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\A5.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_B0_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_B0.png" Name="B0.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\B0.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_B1_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_B1.png" Name="B1.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\B1.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_B2_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_B2.png" Name="B2.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\B2.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_B3_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_B3.png" Name="B3.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\B3.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_B4_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_B4.png" Name="B4.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\B4.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_B5_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_B5.png" Name="B5.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\B5.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_C0_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_C0.png" Name="C0.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\C0.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_C1_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_C1.png" Name="C1.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\C1.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_C2_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_C2.png" Name="C2.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\C2.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_C3_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_C3.png" Name="C3.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\C3.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_C4_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_C4.png" Name="C4.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\C4.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_BreakerElement_C5_png">
+    <File Id="wwwroot_Images_PointCode_BreakerElement_C5.png" Name="C5.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\BreakerElement\C5.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_PointCode_StatusElement_Components" Directory="wwwroot_IMAGESPOINTCODESTATUSELEMENTFOLDER">
+  <Component Id="wwwroot_Images_PointCode_StatusElement_00_png">
+    <File Id="wwwroot_Images_PointCode_StatusElement_00.png" Name="00.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\StatusElement\00.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_StatusElement_01_png">
+    <File Id="wwwroot_Images_PointCode_StatusElement_01.png" Name="01.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\StatusElement\01.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_StatusElement_02_png">
+    <File Id="wwwroot_Images_PointCode_StatusElement_02.png" Name="02.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\StatusElement\02.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_StatusElement_03_png">
+    <File Id="wwwroot_Images_PointCode_StatusElement_03.png" Name="03.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\StatusElement\03.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_StatusElement_11_png">
+    <File Id="wwwroot_Images_PointCode_StatusElement_11.png" Name="11.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\StatusElement\11.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_StatusElement_31_png">
+    <File Id="wwwroot_Images_PointCode_StatusElement_31.png" Name="31.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\StatusElement\31.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_StatusElement_32_png">
+    <File Id="wwwroot_Images_PointCode_StatusElement_32.png" Name="32.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\StatusElement\32.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_StatusElement_33_png">
+    <File Id="wwwroot_Images_PointCode_StatusElement_33.png" Name="33.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\StatusElement\33.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_StatusElement_70_png">
+    <File Id="wwwroot_Images_PointCode_StatusElement_70.png" Name="70.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\StatusElement\70.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_StatusElement_90_png">
+    <File Id="wwwroot_Images_PointCode_StatusElement_90.png" Name="90.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\StatusElement\90.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_StatusElement_99_png">
+    <File Id="wwwroot_Images_PointCode_StatusElement_99.png" Name="99.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\StatusElement\99.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_PointCode_Summary_Components" Directory="wwwroot_IMAGESPOINTCODESUMMARYFOLDER">
+  <Component Id="wwwroot_Images_PointCode_Summary_1_png">
+    <File Id="wwwroot_Images_PointCode_Summary_1.png" Name="1.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\Summary\1.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_Summary_2_png">
+    <File Id="wwwroot_Images_PointCode_Summary_2.png" Name="2.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\Summary\2.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_Summary_3_png">
+    <File Id="wwwroot_Images_PointCode_Summary_3.png" Name="3.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\Summary\3.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_Summary_4_png">
+    <File Id="wwwroot_Images_PointCode_Summary_4.png" Name="4.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\Summary\4.png" />
+  </Component>
+  <Component Id="wwwroot_Images_PointCode_Summary_5_png">
+    <File Id="wwwroot_Images_PointCode_Summary_5.png" Name="5.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\PointCode\Summary\5.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_ProcessSteps_Components" Directory="wwwroot_IMAGESPROCESSSTEPSFOLDER">
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_ProcessSteps_Large_Components" Directory="wwwroot_IMAGESPROCESSSTEPSLARGEFOLDER">
+  <Component Id="wwwroot_Images_ProcessSteps_Large_1settings_png">
+    <File Id="wwwroot_Images_ProcessSteps_Large_1settings.png" Name="1settings.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Large\1settings.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Large_2check_png">
+    <File Id="wwwroot_Images_ProcessSteps_Large_2check.png" Name="2check.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Large\2check.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Large_3new_png">
+    <File Id="wwwroot_Images_ProcessSteps_Large_3new.png" Name="3new.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Large\3new.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Large_4start_png">
+    <File Id="wwwroot_Images_ProcessSteps_Large_4start.png" Name="4start.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Large\4start.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Large_5assess_png">
+    <File Id="wwwroot_Images_ProcessSteps_Large_5assess.png" Name="5assess.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Large\5assess.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Large_6install_png">
+    <File Id="wwwroot_Images_ProcessSteps_Large_6install.png" Name="6install.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Large\6install.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Large_7plan_png">
+    <File Id="wwwroot_Images_ProcessSteps_Large_7plan.png" Name="7plan.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Large\7plan.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Large_8done_png">
+    <File Id="wwwroot_Images_ProcessSteps_Large_8done.png" Name="8done.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Large\8done.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_ProcessSteps_Small_Components" Directory="wwwroot_IMAGESPROCESSSTEPSSMALLFOLDER">
+  <Component Id="wwwroot_Images_ProcessSteps_Small_1settings_png">
+    <File Id="wwwroot_Images_ProcessSteps_Small_1settings.png" Name="1settings.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Small\1settings.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Small_2check_png">
+    <File Id="wwwroot_Images_ProcessSteps_Small_2check.png" Name="2check.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Small\2check.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Small_3new_png">
+    <File Id="wwwroot_Images_ProcessSteps_Small_3new.png" Name="3new.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Small\3new.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Small_4start_png">
+    <File Id="wwwroot_Images_ProcessSteps_Small_4start.png" Name="4start.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Small\4start.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Small_5assess_png">
+    <File Id="wwwroot_Images_ProcessSteps_Small_5assess.png" Name="5assess.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Small\5assess.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Small_6install_png">
+    <File Id="wwwroot_Images_ProcessSteps_Small_6install.png" Name="6install.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Small\6install.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Small_7plan_png">
+    <File Id="wwwroot_Images_ProcessSteps_Small_7plan.png" Name="7plan.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Small\7plan.png" />
+  </Component>
+  <Component Id="wwwroot_Images_ProcessSteps_Small_8done_png">
+    <File Id="wwwroot_Images_ProcessSteps_Small_8done.png" Name="8done.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\ProcessSteps\Small\8done.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Components" Directory="wwwroot_IMAGESUPDOWNSTATEFOLDER">
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Bobs_Set_Components" Directory="wwwroot_IMAGESUPDOWNSTATEBOBSSETFOLDER">
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Bobs_Set_48_Components" Directory="wwwroot_IMAGESUPDOWNSTATEBOBSSET48FOLDER">
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_000_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_000.png" Name="000.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\000.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_001_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_001.png" Name="001.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\001.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_002_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_002.png" Name="002.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\002.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_003_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_003.png" Name="003.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\003.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_010_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_010.png" Name="010.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\010.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_011_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_011.png" Name="011.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\011.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_012_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_012.png" Name="012.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\012.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_013_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_013.png" Name="013.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\013.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_020_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_020.png" Name="020.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\020.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_021_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_021.png" Name="021.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\021.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_022_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_022.png" Name="022.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\022.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_023_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_023.png" Name="023.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\023.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_030_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_030.png" Name="030.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\030.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_031_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_031.png" Name="031.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\031.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_032_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_032.png" Name="032.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\032.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_033_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_033.png" Name="033.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\033.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_100_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_100.png" Name="100.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\100.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_101_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_101.png" Name="101.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\101.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_102_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_102.png" Name="102.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\102.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_103_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_103.png" Name="103.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\103.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_110_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_110.png" Name="110.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\110.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_111_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_111.png" Name="111.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\111.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_112_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_112.png" Name="112.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\112.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_113_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_113.png" Name="113.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\113.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_120_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_120.png" Name="120.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\120.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_121_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_121.png" Name="121.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\121.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_122_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_122.png" Name="122.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\122.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_123_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_123.png" Name="123.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\123.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_130_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_130.png" Name="130.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\130.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_131_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_131.png" Name="131.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\131.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_132_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_132.png" Name="132.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\132.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_133_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_133.png" Name="133.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\133.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_200_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_200.png" Name="200.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\200.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_201_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_201.png" Name="201.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\201.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_202_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_202.png" Name="202.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\202.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_210_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_210.png" Name="210.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\210.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_211_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_211.png" Name="211.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\211.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_212_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_212.png" Name="212.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\212.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_213_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_213.png" Name="213.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\213.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_220_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_220.png" Name="220.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\220.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_221_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_221.png" Name="221.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\221.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_222_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_222.png" Name="222.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\222.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_223_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_223.png" Name="223.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\223.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_230_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_230.png" Name="230.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\230.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_231_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_231.png" Name="231.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\231.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_232_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_232.png" Name="232.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\232.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_233_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_233.png" Name="233.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\233.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_300_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_300.png" Name="300.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\300.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_301_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_301.png" Name="301.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\301.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_302_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_302.png" Name="302.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\302.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_310_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_310.png" Name="310.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\310.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_311_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_311.png" Name="311.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\311.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_312_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_312.png" Name="312.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\312.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_313_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_313.png" Name="313.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\313.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_320_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_320.png" Name="320.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\320.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_321_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_321.png" Name="321.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\321.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_322_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_322.png" Name="322.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\322.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_323_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_323.png" Name="323.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\323.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BobsSet_48_333_png">
+    <File Id="wwwroot_Images_UpDownState_BobsSet_48_333.png" Name="333.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Bobs Set\48\333.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Box_Set_Components" Directory="wwwroot_IMAGESUPDOWNSTATEBOXSETFOLDER">
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_000_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_000.png" Name="000.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\000.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_001_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_001.png" Name="001.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\001.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_002_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_002.png" Name="002.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\002.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_003_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_003.png" Name="003.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\003.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_010_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_010.png" Name="010.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\010.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_011_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_011.png" Name="011.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\011.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_012_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_012.png" Name="012.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\012.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_013_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_013.png" Name="013.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\013.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_020_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_020.png" Name="020.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\020.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_021_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_021.png" Name="021.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\021.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_022_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_022.png" Name="022.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\022.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_023_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_023.png" Name="023.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\023.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_030_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_030.png" Name="030.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\030.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_031_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_031.png" Name="031.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\031.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_032_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_032.png" Name="032.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\032.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_033_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_033.png" Name="033.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\033.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_100_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_100.png" Name="100.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\100.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_101_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_101.png" Name="101.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\101.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_102_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_102.png" Name="102.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\102.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_103_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_103.png" Name="103.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\103.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_110_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_110.png" Name="110.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\110.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_111_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_111.png" Name="111.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\111.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_112_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_112.png" Name="112.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\112.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_113_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_113.png" Name="113.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\113.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_120_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_120.png" Name="120.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\120.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_121_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_121.png" Name="121.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\121.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_122_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_122.png" Name="122.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\122.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_123_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_123.png" Name="123.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\123.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_130_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_130.png" Name="130.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\130.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_131_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_131.png" Name="131.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\131.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_132_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_132.png" Name="132.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\132.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_133_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_133.png" Name="133.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\133.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_200_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_200.png" Name="200.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\200.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_201_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_201.png" Name="201.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\201.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_202_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_202.png" Name="202.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\202.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_203_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_203.png" Name="203.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\203.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_210_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_210.png" Name="210.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\210.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_211_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_211.png" Name="211.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\211.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_212_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_212.png" Name="212.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\212.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_213_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_213.png" Name="213.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\213.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_220_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_220.png" Name="220.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\220.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_221_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_221.png" Name="221.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\221.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_222_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_222.png" Name="222.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\222.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_223_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_223.png" Name="223.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\223.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_230_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_230.png" Name="230.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\230.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_231_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_231.png" Name="231.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\231.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_232_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_232.png" Name="232.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\232.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_233_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_233.png" Name="233.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\233.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_300_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_300.png" Name="300.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\300.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_301_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_301.png" Name="301.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\301.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_302_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_302.png" Name="302.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\302.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_303_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_303.png" Name="303.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\303.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_310_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_310.png" Name="310.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\310.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_311_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_311.png" Name="311.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\311.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_312_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_312.png" Name="312.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\312.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_313_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_313.png" Name="313.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\313.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_321_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_321.png" Name="321.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\321.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_322_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_322.png" Name="322.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\322.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_323_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_323.png" Name="323.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\323.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_330_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_330.png" Name="330.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\330.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_331_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_331.png" Name="331.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\331.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_332_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_332.png" Name="332.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\332.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet_333_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet_333.png" Name="333.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set\333.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Box_Set_2_Components" Directory="wwwroot_IMAGESUPDOWNSTATEBOXSET2FOLDER">
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_000_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_000.png" Name="000.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\000.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_001_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_001.png" Name="001.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\001.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_002_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_002.png" Name="002.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\002.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_003_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_003.png" Name="003.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\003.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_004_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_004.png" Name="004.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\004.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_010_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_010.png" Name="010.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\010.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_011_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_011.png" Name="011.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\011.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_012_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_012.png" Name="012.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\012.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_013_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_013.png" Name="013.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\013.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_014_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_014.png" Name="014.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\014.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_020_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_020.png" Name="020.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\020.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_021_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_021.png" Name="021.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\021.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_022_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_022.png" Name="022.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\022.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_023_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_023.png" Name="023.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\023.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_024_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_024.png" Name="024.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\024.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_030_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_030.png" Name="030.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\030.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_031_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_031.png" Name="031.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\031.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_032_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_032.png" Name="032.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\032.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_033_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_033.png" Name="033.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\033.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_034_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_034.png" Name="034.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\034.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_040_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_040.png" Name="040.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\040.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_041_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_041.png" Name="041.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\041.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_042_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_042.png" Name="042.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\042.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_043_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_043.png" Name="043.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\043.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_044_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_044.png" Name="044.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\044.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_100_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_100.png" Name="100.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\100.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_101_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_101.png" Name="101.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\101.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_102_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_102.png" Name="102.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\102.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_103_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_103.png" Name="103.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\103.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_104_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_104.png" Name="104.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\104.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_110_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_110.png" Name="110.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\110.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_111_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_111.png" Name="111.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\111.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_112_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_112.png" Name="112.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\112.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_113_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_113.png" Name="113.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\113.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_114_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_114.png" Name="114.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\114.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_120_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_120.png" Name="120.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\120.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_121_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_121.png" Name="121.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\121.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_122_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_122.png" Name="122.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\122.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_123_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_123.png" Name="123.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\123.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_124_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_124.png" Name="124.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\124.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_130_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_130.png" Name="130.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\130.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_131_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_131.png" Name="131.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\131.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_132_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_132.png" Name="132.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\132.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_133_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_133.png" Name="133.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\133.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_134_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_134.png" Name="134.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\134.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_140_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_140.png" Name="140.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\140.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_141_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_141.png" Name="141.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\141.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_142_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_142.png" Name="142.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\142.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_143_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_143.png" Name="143.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\143.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_144_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_144.png" Name="144.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\144.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_200_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_200.png" Name="200.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\200.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_201_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_201.png" Name="201.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\201.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_202_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_202.png" Name="202.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\202.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_203_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_203.png" Name="203.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\203.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_204_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_204.png" Name="204.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\204.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_210_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_210.png" Name="210.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\210.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_211_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_211.png" Name="211.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\211.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_212_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_212.png" Name="212.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\212.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_213_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_213.png" Name="213.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\213.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_214_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_214.png" Name="214.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\214.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_220_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_220.png" Name="220.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\220.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_221_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_221.png" Name="221.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\221.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_222_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_222.png" Name="222.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\222.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_223_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_223.png" Name="223.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\223.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_224_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_224.png" Name="224.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\224.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_230_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_230.png" Name="230.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\230.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_231_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_231.png" Name="231.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\231.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_232_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_232.png" Name="232.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\232.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_233_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_233.png" Name="233.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\233.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_234_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_234.png" Name="234.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\234.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_240_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_240.png" Name="240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\240.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_241_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_241.png" Name="241.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\241.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_242_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_242.png" Name="242.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\242.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_243_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_243.png" Name="243.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\243.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_244_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_244.png" Name="244.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\244.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_300_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_300.png" Name="300.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\300.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_301_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_301.png" Name="301.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\301.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_302_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_302.png" Name="302.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\302.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_303_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_303.png" Name="303.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\303.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_304_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_304.png" Name="304.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\304.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_310_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_310.png" Name="310.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\310.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_311_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_311.png" Name="311.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\311.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_312_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_312.png" Name="312.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\312.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_313_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_313.png" Name="313.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\313.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_314_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_314.png" Name="314.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\314.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_320_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_320.png" Name="320.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\320.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_321_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_321.png" Name="321.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\321.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_322_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_322.png" Name="322.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\322.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_323_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_323.png" Name="323.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\323.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_324_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_324.png" Name="324.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\324.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_330_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_330.png" Name="330.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\330.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_331_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_331.png" Name="331.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\331.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_332_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_332.png" Name="332.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\332.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_333_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_333.png" Name="333.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\333.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_334_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_334.png" Name="334.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\334.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_340_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_340.png" Name="340.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\340.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_341_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_341.png" Name="341.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\341.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_342_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_342.png" Name="342.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\342.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_343_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_343.png" Name="343.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\343.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_344_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_344.png" Name="344.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\344.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_400_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_400.png" Name="400.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\400.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_401_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_401.png" Name="401.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\401.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_402_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_402.png" Name="402.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\402.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_403_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_403.png" Name="403.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\403.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_404_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_404.png" Name="404.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\404.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_410_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_410.png" Name="410.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\410.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_411_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_411.png" Name="411.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\411.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_412_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_412.png" Name="412.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\412.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_413_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_413.png" Name="413.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\413.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_414_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_414.png" Name="414.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\414.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_420_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_420.png" Name="420.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\420.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_421_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_421.png" Name="421.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\421.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_422_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_422.png" Name="422.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\422.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_423_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_423.png" Name="423.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\423.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_424_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_424.png" Name="424.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\424.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_430_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_430.png" Name="430.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\430.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_431_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_431.png" Name="431.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\431.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_432_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_432.png" Name="432.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\432.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_433_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_433.png" Name="433.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\433.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_434_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_434.png" Name="434.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\434.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_440_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_440.png" Name="440.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\440.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_441_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_441.png" Name="441.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\441.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_442_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_442.png" Name="442.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\442.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_443_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_443.png" Name="443.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\443.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet2_444_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet2_444.png" Name="444.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 2\444.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Box_Set_3_Components" Directory="wwwroot_IMAGESUPDOWNSTATEBOXSET3FOLDER">
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_000_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_000.png" Name="000.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\000.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_001_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_001.png" Name="001.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\001.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_002_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_002.png" Name="002.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\002.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_003_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_003.png" Name="003.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\003.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_004_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_004.png" Name="004.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\004.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_010_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_010.png" Name="010.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\010.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_011_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_011.png" Name="011.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\011.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_012_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_012.png" Name="012.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\012.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_013_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_013.png" Name="013.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\013.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_014_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_014.png" Name="014.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\014.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_020_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_020.png" Name="020.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\020.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_021_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_021.png" Name="021.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\021.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_022_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_022.png" Name="022.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\022.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_023_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_023.png" Name="023.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\023.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_024_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_024.png" Name="024.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\024.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_030_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_030.png" Name="030.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\030.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_031_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_031.png" Name="031.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\031.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_032_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_032.png" Name="032.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\032.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_033_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_033.png" Name="033.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\033.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_034_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_034.png" Name="034.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\034.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_040_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_040.png" Name="040.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\040.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_041_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_041.png" Name="041.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\041.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_042_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_042.png" Name="042.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\042.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_043_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_043.png" Name="043.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\043.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_044_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_044.png" Name="044.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\044.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_100_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_100.png" Name="100.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\100.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_101_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_101.png" Name="101.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\101.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_102_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_102.png" Name="102.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\102.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_103_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_103.png" Name="103.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\103.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_104_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_104.png" Name="104.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\104.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_110_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_110.png" Name="110.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\110.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_111_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_111.png" Name="111.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\111.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_112_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_112.png" Name="112.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\112.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_113_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_113.png" Name="113.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\113.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_114_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_114.png" Name="114.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\114.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_120_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_120.png" Name="120.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\120.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_121_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_121.png" Name="121.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\121.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_122_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_122.png" Name="122.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\122.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_123_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_123.png" Name="123.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\123.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_124_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_124.png" Name="124.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\124.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_130_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_130.png" Name="130.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\130.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_131_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_131.png" Name="131.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\131.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_132_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_132.png" Name="132.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\132.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_133_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_133.png" Name="133.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\133.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_134_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_134.png" Name="134.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\134.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_140_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_140.png" Name="140.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\140.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_141_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_141.png" Name="141.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\141.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_142_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_142.png" Name="142.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\142.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_143_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_143.png" Name="143.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\143.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_144_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_144.png" Name="144.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\144.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_200_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_200.png" Name="200.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\200.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_201_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_201.png" Name="201.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\201.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_202_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_202.png" Name="202.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\202.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_203_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_203.png" Name="203.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\203.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_204_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_204.png" Name="204.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\204.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_210_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_210.png" Name="210.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\210.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_211_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_211.png" Name="211.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\211.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_212_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_212.png" Name="212.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\212.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_213_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_213.png" Name="213.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\213.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_214_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_214.png" Name="214.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\214.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_220_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_220.png" Name="220.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\220.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_221_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_221.png" Name="221.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\221.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_222_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_222.png" Name="222.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\222.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_223_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_223.png" Name="223.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\223.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_224_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_224.png" Name="224.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\224.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_230_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_230.png" Name="230.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\230.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_231_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_231.png" Name="231.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\231.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_232_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_232.png" Name="232.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\232.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_233_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_233.png" Name="233.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\233.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_234_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_234.png" Name="234.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\234.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_240_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_240.png" Name="240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\240.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_241_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_241.png" Name="241.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\241.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_242_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_242.png" Name="242.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\242.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_243_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_243.png" Name="243.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\243.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_244_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_244.png" Name="244.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\244.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_300_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_300.png" Name="300.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\300.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_301_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_301.png" Name="301.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\301.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_302_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_302.png" Name="302.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\302.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_303_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_303.png" Name="303.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\303.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_304_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_304.png" Name="304.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\304.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_310_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_310.png" Name="310.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\310.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_311_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_311.png" Name="311.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\311.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_312_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_312.png" Name="312.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\312.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_313_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_313.png" Name="313.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\313.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_314_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_314.png" Name="314.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\314.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_320_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_320.png" Name="320.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\320.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_321_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_321.png" Name="321.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\321.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_322_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_322.png" Name="322.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\322.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_323_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_323.png" Name="323.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\323.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_324_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_324.png" Name="324.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\324.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_330_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_330.png" Name="330.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\330.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_331_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_331.png" Name="331.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\331.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_332_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_332.png" Name="332.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\332.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_333_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_333.png" Name="333.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\333.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_334_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_334.png" Name="334.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\334.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_340_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_340.png" Name="340.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\340.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_341_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_341.png" Name="341.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\341.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_342_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_342.png" Name="342.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\342.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_343_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_343.png" Name="343.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\343.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_344_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_344.png" Name="344.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\344.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_400_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_400.png" Name="400.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\400.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_401_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_401.png" Name="401.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\401.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_402_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_402.png" Name="402.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\402.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_403_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_403.png" Name="403.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\403.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_404_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_404.png" Name="404.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\404.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_410_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_410.png" Name="410.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\410.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_411_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_411.png" Name="411.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\411.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_412_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_412.png" Name="412.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\412.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_413_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_413.png" Name="413.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\413.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_414_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_414.png" Name="414.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\414.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_420_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_420.png" Name="420.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\420.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_421_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_421.png" Name="421.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\421.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_422_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_422.png" Name="422.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\422.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_423_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_423.png" Name="423.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\423.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_424_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_424.png" Name="424.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\424.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_430_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_430.png" Name="430.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\430.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_431_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_431.png" Name="431.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\431.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_432_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_432.png" Name="432.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\432.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_433_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_433.png" Name="433.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\433.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_434_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_434.png" Name="434.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\434.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_440_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_440.png" Name="440.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\440.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_441_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_441.png" Name="441.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\441.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_442_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_442.png" Name="442.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\442.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_443_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_443.png" Name="443.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\443.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_BoxSet3_444_png">
+    <File Id="wwwroot_Images_UpDownState_BoxSet3_444.png" Name="444.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Box Set 3\444.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Circle_Set_Components" Directory="wwwroot_IMAGESUPDOWNSTATECIRCLESETFOLDER">
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Circle_Set_48_Components" Directory="wwwroot_IMAGESUPDOWNSTATECIRCLESET48FOLDER">
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_000_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_000.png" Name="000.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\000.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_001_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_001.png" Name="001.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\001.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_002_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_002.png" Name="002.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\002.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_003_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_003.png" Name="003.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\003.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_010_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_010.png" Name="010.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\010.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_011_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_011.png" Name="011.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\011.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_012_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_012.png" Name="012.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\012.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_013_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_013.png" Name="013.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\013.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_020_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_020.png" Name="020.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\020.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_021_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_021.png" Name="021.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\021.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_022_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_022.png" Name="022.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\022.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_023_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_023.png" Name="023.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\023.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_030_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_030.png" Name="030.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\030.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_031_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_031.png" Name="031.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\031.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_032_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_032.png" Name="032.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\032.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_033_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_033.png" Name="033.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\033.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_100_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_100.png" Name="100.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\100.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_101_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_101.png" Name="101.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\101.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_102_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_102.png" Name="102.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\102.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_103_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_103.png" Name="103.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\103.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_110_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_110.png" Name="110.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\110.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_111_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_111.png" Name="111.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\111.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_112_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_112.png" Name="112.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\112.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_113_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_113.png" Name="113.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\113.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_120_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_120.png" Name="120.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\120.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_121_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_121.png" Name="121.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\121.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_122_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_122.png" Name="122.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\122.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_123_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_123.png" Name="123.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\123.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_130_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_130.png" Name="130.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\130.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_131_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_131.png" Name="131.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\131.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_132_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_132.png" Name="132.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\132.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_133_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_133.png" Name="133.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\133.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_200_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_200.png" Name="200.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\200.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_201_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_201.png" Name="201.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\201.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_202_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_202.png" Name="202.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\202.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_203_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_203.png" Name="203.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\203.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_210_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_210.png" Name="210.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\210.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_211_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_211.png" Name="211.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\211.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_212_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_212.png" Name="212.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\212.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_213_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_213.png" Name="213.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\213.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_220_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_220.png" Name="220.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\220.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_221_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_221.png" Name="221.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\221.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_222_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_222.png" Name="222.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\222.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_223_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_223.png" Name="223.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\223.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_230_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_230.png" Name="230.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\230.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_231_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_231.png" Name="231.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\231.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_232_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_232.png" Name="232.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\232.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_233_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_233.png" Name="233.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\233.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_300_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_300.png" Name="300.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\300.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_301_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_301.png" Name="301.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\301.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_302_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_302.png" Name="302.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\302.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_303_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_303.png" Name="303.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\303.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_310_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_310.png" Name="310.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\310.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_311_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_311.png" Name="311.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\311.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_312_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_312.png" Name="312.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\312.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_313_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_313.png" Name="313.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\313.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_320_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_320.png" Name="320.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\320.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_321_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_321.png" Name="321.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\321.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_322_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_322.png" Name="322.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\322.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_323_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_323.png" Name="323.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\323.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_330_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_330.png" Name="330.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\330.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_331_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_331.png" Name="331.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\331.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_332_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_332.png" Name="332.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\332.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_CircleSet_48_333_png">
+    <File Id="wwwroot_Images_UpDownState_CircleSet_48_333.png" Name="333.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Circle Set\48\333.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Glyph_Set_Components" Directory="wwwroot_IMAGESUPDOWNSTATEGLYPHSETFOLDER">
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Glyph_Set_48_Components" Directory="wwwroot_IMAGESUPDOWNSTATEGLYPHSET48FOLDER">
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_000_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_000.png" Name="000.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\000.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_001_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_001.png" Name="001.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\001.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_002_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_002.png" Name="002.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\002.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_003_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_003.png" Name="003.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\003.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_010_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_010.png" Name="010.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\010.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_011_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_011.png" Name="011.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\011.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_012_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_012.png" Name="012.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\012.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_013_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_013.png" Name="013.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\013.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_020_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_020.png" Name="020.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\020.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_021_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_021.png" Name="021.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\021.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_022_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_022.png" Name="022.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\022.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_023_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_023.png" Name="023.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\023.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_030_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_030.png" Name="030.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\030.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_031_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_031.png" Name="031.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\031.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_032_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_032.png" Name="032.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\032.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_033_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_033.png" Name="033.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\033.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_100_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_100.png" Name="100.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\100.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_101_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_101.png" Name="101.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\101.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_102_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_102.png" Name="102.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\102.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_103_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_103.png" Name="103.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\103.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_110_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_110.png" Name="110.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\110.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_111_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_111.png" Name="111.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\111.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_112_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_112.png" Name="112.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\112.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_113_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_113.png" Name="113.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\113.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_120_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_120.png" Name="120.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\120.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_121_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_121.png" Name="121.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\121.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_122_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_122.png" Name="122.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\122.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_123_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_123.png" Name="123.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\123.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_130_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_130.png" Name="130.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\130.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_131_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_131.png" Name="131.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\131.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_132_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_132.png" Name="132.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\132.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_133_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_133.png" Name="133.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\133.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_200_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_200.png" Name="200.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\200.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_201_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_201.png" Name="201.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\201.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_202_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_202.png" Name="202.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\202.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_203_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_203.png" Name="203.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\203.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_210_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_210.png" Name="210.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\210.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_211_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_211.png" Name="211.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\211.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_212_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_212.png" Name="212.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\212.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_213_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_213.png" Name="213.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\213.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_220_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_220.png" Name="220.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\220.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_221_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_221.png" Name="221.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\221.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_222_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_222.png" Name="222.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\222.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_223_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_223.png" Name="223.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\223.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_230_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_230.png" Name="230.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\230.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_231_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_231.png" Name="231.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\231.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_232_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_232.png" Name="232.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\232.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_233_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_233.png" Name="233.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\233.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_300_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_300.png" Name="300.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\300.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_301_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_301.png" Name="301.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\301.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_302_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_302.png" Name="302.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\302.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_303_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_303.png" Name="303.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\303.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_310_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_310.png" Name="310.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\310.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_311_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_311.png" Name="311.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\311.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_312_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_312.png" Name="312.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\312.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_313_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_313.png" Name="313.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\313.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_320_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_320.png" Name="320.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\320.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_321_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_321.png" Name="321.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\321.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_322_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_322.png" Name="322.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\322.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_323_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_323.png" Name="323.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\323.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_330_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_330.png" Name="330.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\330.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_331_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_331.png" Name="331.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\331.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_332_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_332.png" Name="332.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\332.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_GlyphSet_48_333_png">
+    <File Id="wwwroot_Images_UpDownState_GlyphSet_48_333.png" Name="333.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Glyph Set\48\333.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_psd_Components" Directory="wwwroot_IMAGESUPDOWNSTATEPSDFOLDER">
+  <Component Id="wwwroot_Images_UpDownState_psd_BobsSet_psd">
+    <File Id="wwwroot_Images_UpDownState_psd_BobsSet.psd" Name="BobsSet.psd" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\psd\BobsSet.psd" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_psd_Glyphs_psd">
+    <File Id="wwwroot_Images_UpDownState_psd_Glyphs.psd" Name="Glyphs.psd" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\psd\Glyphs.psd" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_psd_UpDownMaster_psd">
+    <File Id="wwwroot_Images_UpDownState_psd_UpDownMaster.psd" Name="UpDownMaster.psd" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\psd\UpDownMaster.psd" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_psd_UpDownWORDS_psd">
+    <File Id="wwwroot_Images_UpDownState_psd_UpDownWORDS.psd" Name="UpDownWORDS.psd" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\psd\UpDownWORDS.psd" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Summary_Set_Components" Directory="wwwroot_IMAGESUPDOWNSTATESUMMARYSETFOLDER">
+  <Component Id="wwwroot_Images_UpDownState_SummarySet_0_png">
+    <File Id="wwwroot_Images_UpDownState_SummarySet_0.png" Name="0.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Summary Set\0.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_SummarySet_1_png">
+    <File Id="wwwroot_Images_UpDownState_SummarySet_1.png" Name="1.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Summary Set\1.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_SummarySet_2_png">
+    <File Id="wwwroot_Images_UpDownState_SummarySet_2.png" Name="2.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Summary Set\2.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_SummarySet_3_png">
+    <File Id="wwwroot_Images_UpDownState_SummarySet_3.png" Name="3.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Summary Set\3.png" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Word_Set_Components" Directory="wwwroot_IMAGESUPDOWNSTATEWORDSETFOLDER">
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Images_UpDownState_Word_Set_48_Components" Directory="wwwroot_IMAGESUPDOWNSTATEWORDSET48FOLDER">
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_000_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_000.png" Name="000.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\000.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_001_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_001.png" Name="001.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\001.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_002_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_002.png" Name="002.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\002.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_003_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_003.png" Name="003.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\003.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_010_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_010.png" Name="010.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\010.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_011_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_011.png" Name="011.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\011.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_012_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_012.png" Name="012.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\012.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_013_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_013.png" Name="013.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\013.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_020_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_020.png" Name="020.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\020.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_021_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_021.png" Name="021.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\021.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_022_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_022.png" Name="022.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\022.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_023_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_023.png" Name="023.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\023.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_030_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_030.png" Name="030.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\030.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_031_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_031.png" Name="031.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\031.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_032_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_032.png" Name="032.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\032.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_033_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_033.png" Name="033.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\033.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_100_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_100.png" Name="100.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\100.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_101_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_101.png" Name="101.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\101.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_102_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_102.png" Name="102.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\102.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_103_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_103.png" Name="103.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\103.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_110_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_110.png" Name="110.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\110.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_111_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_111.png" Name="111.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\111.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_112_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_112.png" Name="112.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\112.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_113_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_113.png" Name="113.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\113.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_120_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_120.png" Name="120.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\120.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_121_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_121.png" Name="121.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\121.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_122_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_122.png" Name="122.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\122.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_123_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_123.png" Name="123.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\123.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_130_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_130.png" Name="130.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\130.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_131_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_131.png" Name="131.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\131.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_132_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_132.png" Name="132.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\132.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_133_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_133.png" Name="133.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\133.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_200_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_200.png" Name="200.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\200.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_201_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_201.png" Name="201.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\201.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_202_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_202.png" Name="202.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\202.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_203_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_203.png" Name="203.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\203.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_210_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_210.png" Name="210.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\210.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_211_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_211.png" Name="211.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\211.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_212_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_212.png" Name="212.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\212.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_213_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_213.png" Name="213.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\213.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_220_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_220.png" Name="220.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\220.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_221_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_221.png" Name="221.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\221.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_222_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_222.png" Name="222.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\222.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_223_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_223.png" Name="223.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\223.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_230_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_230.png" Name="230.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\230.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_231_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_231.png" Name="231.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\231.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_232_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_232.png" Name="232.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\232.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_233_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_233.png" Name="233.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\233.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_300_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_300.png" Name="300.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\300.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_301_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_301.png" Name="301.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\301.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_302_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_302.png" Name="302.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\302.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_303_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_303.png" Name="303.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\303.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_310_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_310.png" Name="310.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\310.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_311_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_311.png" Name="311.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\311.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_312_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_312.png" Name="312.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\312.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_313_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_313.png" Name="313.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\313.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_320_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_320.png" Name="320.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\320.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_321_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_321.png" Name="321.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\321.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_322_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_322.png" Name="322.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\322.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_323_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_323.png" Name="323.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\323.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_330_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_330.png" Name="330.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\330.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_331_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_331.png" Name="331.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\331.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_332_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_332.png" Name="332.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\332.png" />
+  </Component>
+  <Component Id="wwwroot_Images_UpDownState_WordSet_48_333_png">
+    <File Id="wwwroot_Images_UpDownState_WordSet_48_333.png" Name="333.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Images\UpDownState\Word Set\48\333.png" />
+  </Component>
+</ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_Components" Directory="wwwroot_SCRIPTSFOLDER">
-  <Component Id="wwwroot_Scripts_bootstrap_datetimepicker_min_js">
-    <File Id="wwwroot_Scripts_bootstrap_datetimepicker.min.js" Name="bootstrap-datetimepicker.min.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\bootstrap-datetimepicker.min.js" />
+  <Component Id="wwwroot_Scripts_bundle_js">
+    <File Id="wwwroot_Scripts_bundle.js" Name="bundle.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\bundle.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_bundle_js_map">
+    <File Id="wwwroot_Scripts_bundle.js.map" Name="bundle.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\bundle.js.map" />
   </Component>
   <Component Id="wwwroot_Scripts_dateFormat_js">
     <File Id="wwwroot_Scripts_dateFormat.js" Name="dateFormat.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\dateFormat.js" />
   </Component>
-  <Component Id="wwwroot_Scripts_modernizr_2_8_3_js">
-    <File Id="wwwroot_Scripts_modernizr_2.8.3.js" Name="modernizr-2.8.3.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\modernizr-2.8.3.js" />
+  <Component Id="wwwroot_Scripts_jquery_blockUI_js">
+    <File Id="wwwroot_Scripts_jquery.blockUI.js" Name="jquery.blockUI.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\jquery.blockUI.js" />
   </Component>
-  <Component Id="wwwroot_Scripts_moment_min_js">
-    <File Id="wwwroot_Scripts_moment.min.js" Name="moment.min.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\moment.min.js" />
+  <Component Id="wwwroot_Scripts_OpenSEE_js">
+    <File Id="wwwroot_Scripts_OpenSEE.js" Name="OpenSEE.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\OpenSEE.js" />
   </Component>
   <Component Id="wwwroot_Scripts_Site_js">
     <File Id="wwwroot_Scripts_Site.js" Name="Site.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Site.js" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Scripts_JSX_Components" Directory="wwwroot_SCRIPTSJSXFOLDER">
+  <Component Id="wwwroot_Scripts_JSX_ABNBDateRangePicker_js">
+    <File Id="wwwroot_Scripts_JSX_ABNBDateRangePicker.js" Name="ABNBDateRangePicker.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\ABNBDateRangePicker.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_ABNBDateRangePicker_js_map">
+    <File Id="wwwroot_Scripts_JSX_ABNBDateRangePicker.js.map" Name="ABNBDateRangePicker.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\ABNBDateRangePicker.js.map" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_ABNBDateRangePicker_tsx">
+    <File Id="wwwroot_Scripts_JSX_ABNBDateRangePicker.tsx" Name="ABNBDateRangePicker.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\ABNBDateRangePicker.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker_js">
+    <File Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker.js" Name="BootstrapDateRangePicker.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\BootstrapDateRangePicker.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker_js_map">
+    <File Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker.js.map" Name="BootstrapDateRangePicker.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\BootstrapDateRangePicker.js.map" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker_tsx">
+    <File Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker.tsx" Name="BootstrapDateRangePicker.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\BootstrapDateRangePicker.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Default_js">
+    <File Id="wwwroot_Scripts_JSX_Default.js" Name="Default.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Default.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Default_js_map">
+    <File Id="wwwroot_Scripts_JSX_Default.js.map" Name="Default.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Default.js.map" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Default_tsx">
+    <File Id="wwwroot_Scripts_JSX_Default.tsx" Name="Default.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Default.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Input_js">
+    <File Id="wwwroot_Scripts_JSX_Input.js" Name="Input.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Input.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Input_js_map">
+    <File Id="wwwroot_Scripts_JSX_Input.js.map" Name="Input.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Input.js.map" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Input_tsx">
+    <File Id="wwwroot_Scripts_JSX_Input.tsx" Name="Input.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Input.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper_js">
+    <File Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper.js" Name="PrimeDataTableWrapper.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeDataTableWrapper.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper_js_map">
+    <File Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper.js.map" Name="PrimeDataTableWrapper.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeDataTableWrapper.js.map" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper_tsx">
+    <File Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper.tsx" Name="PrimeDataTableWrapper.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeDataTableWrapper.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper_js">
+    <File Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper.js" Name="PrimeMultiselectWrapper.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeMultiselectWrapper.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper_js_map">
+    <File Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper.js.map" Name="PrimeMultiselectWrapper.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeMultiselectWrapper.js.map" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper_tsx">
+    <File Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper.tsx" Name="PrimeMultiselectWrapper.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeMultiselectWrapper.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Select_js">
+    <File Id="wwwroot_Scripts_JSX_Select.js" Name="Select.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Select.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Select_js_map">
+    <File Id="wwwroot_Scripts_JSX_Select.js.map" Name="Select.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Select.js.map" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Select_tsx">
+    <File Id="wwwroot_Scripts_JSX_Select.tsx" Name="Select.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Select.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Table_js">
+    <File Id="wwwroot_Scripts_JSX_Table.js" Name="Table.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Table.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Table_js_map">
+    <File Id="wwwroot_Scripts_JSX_Table.js.map" Name="Table.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Table.js.map" />
+  </Component>
+  <Component Id="wwwroot_Scripts_JSX_Table_tsx">
+    <File Id="wwwroot_Scripts_JSX_Table.tsx" Name="Table.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Table.tsx" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Scripts_Services_Components" Directory="wwwroot_SCRIPTSSERVICESFOLDER">
+  <Component Id="wwwroot_Scripts_Services_SOEService_js">
+    <File Id="wwwroot_Scripts_Services_SOEService.js" Name="SOEService.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Services\SOEService.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_Services_SOEService_js_map">
+    <File Id="wwwroot_Scripts_Services_SOEService.js.map" Name="SOEService.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Services\SOEService.js.map" />
+  </Component>
+  <Component Id="wwwroot_Scripts_Services_SOEService_ts">
+    <File Id="wwwroot_Scripts_Services_SOEService.ts" Name="SOEService.ts" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Services\SOEService.ts" />
   </Component>
 </ComponentGroup>
 </Include>

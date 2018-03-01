@@ -20,7 +20,6 @@ var Column_1 = require("primereact/components/column/Column");
 var _ = require("lodash");
 var moment = require("moment");
 var SOEService_1 = require("./../Services/SOEService");
-var react_router_dom_1 = require("react-router-dom");
 var PrimeDataTable = (function (_super) {
     __extends(PrimeDataTable, _super);
     function PrimeDataTable(props) {
@@ -30,6 +29,7 @@ var PrimeDataTable = (function (_super) {
             dynamicColumns: [React.createElement(Column_1.Column, { key: "", field: "", header: "" })]
         };
         _this.soeservice = new SOEService_1.default();
+        _this.callback = props.callback;
         return _this;
     }
     PrimeDataTable.prototype.getData = function (props) {
@@ -46,7 +46,7 @@ var PrimeDataTable = (function (_super) {
             var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE"];
             var dynamicColumns = Object.keys(data[0]).map(function (col, i) {
                 if (nonDynamicColumns.indexOf(col) < 0)
-                    return React.createElement(Column_1.Column, { key: col, field: col, body: _this.dateTemplate.bind(_this), header: React.createElement("div", { style: headerStyle }, col), sortable: true, footer: _this.footerTemplate });
+                    return React.createElement(Column_1.Column, { key: col, field: col, style: { 'textAlign': 'center' }, body: _this.dateTemplate.bind(_this), header: React.createElement("div", { style: headerStyle }, col), sortable: true, footer: _this.footerTemplate });
             });
             _this.setState({ dynamicColumns: dynamicColumns });
         });
@@ -57,12 +57,17 @@ var PrimeDataTable = (function (_super) {
             this.getData(nextProps);
     };
     PrimeDataTable.prototype.systemTemplate = function (rowData, column) {
-        return React.createElement(react_router_dom_1.Link, { to: "/System/" + rowData.System },
-            React.createElement("span", { style: { 'width': '100%', 'cursor': 'pointer' } }, rowData[column.field]));
+        var _this = this;
+        return React.createElement("button", { className: 'btn btn-link', style: { 'width': '100%' }, onClick: function () { return _this.callback(rowData, column); } },
+            React.createElement("span", null, rowData[column.field]));
     };
     PrimeDataTable.prototype.circuitTemplate = function (rowData, column) {
-        return React.createElement(react_router_dom_1.Link, { to: "/Circuit/" + rowData.Circuit },
-            React.createElement("span", { style: { 'width': '100%', 'cursor': 'pointer' } }, rowData[column.field]));
+        var _this = this;
+        if (Number.isInteger(rowData[column.field]))
+            return React.createElement("span", null, rowData[column.field]);
+        else
+            return React.createElement("button", { className: 'btn btn-link', style: { 'width': '100%' }, onClick: function () { return _this.callback(rowData, column); } },
+                React.createElement("span", null, rowData[column.field]));
     };
     PrimeDataTable.prototype.dateTemplate = function (rowData, column) {
         var nameString = "";
@@ -73,24 +78,24 @@ var PrimeDataTable = (function (_super) {
         else if (this.props.filters.levels == "Device")
             nameString = rowData.Device;
         if (this.props.filters.timeContext == "Days")
-            return React.createElement("a", { target: "_blank", href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + moment(column.field, "MM/DD/YYYY").format('YYYYMMDDHH') + "&name=" + nameString }, rowData[column.field]);
+            return React.createElement("a", { target: "_blank", style: { 'color': '#337ab7' }, href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + moment(column.field, "MM/DD/YYYY").format('YYYYMMDDHH') + "&name=" + nameString }, rowData[column.field]);
         else if (this.props.filters.timeContext == "Months")
-            return React.createElement("a", { target: "_blank", href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + moment(column.field + "-01", "MM/YYYY/DD").format('YYYYMMDDHH') + "&name=" + nameString }, rowData[column.field]);
+            return React.createElement("a", { target: "_blank", style: { 'color': '#337ab7' }, href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + moment(column.field + "-01", "MM/YYYY/DD").format('YYYYMMDDHH') + "&name=" + nameString }, rowData[column.field]);
         else
-            return React.createElement("a", { target: "_blank", href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + moment(column.field + "/" + this.props.filters.date.year(), "MM/DD HH/YYYY").format('YYYYMMDDHH') + "&name=" + nameString }, rowData[column.field]);
+            return React.createElement("a", { target: "_blank", style: { 'color': '#337ab7' }, href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + moment(column.field + "/" + this.props.filters.date.year(), "MM/DD HH/YYYY").format('YYYYMMDDHH') + "&name=" + nameString }, rowData[column.field]);
     };
     PrimeDataTable.prototype.footerTemplate = function (data) {
         return [React.createElement("td", null, "footers"), React.createElement("td", null, "totals")];
     };
     PrimeDataTable.prototype.render = function () {
         return (React.createElement(DataTable_1.DataTable, { value: this.state.data, paginator: true, rows: 25, rowGroupFooterTemplate: this.footerTemplate.bind(this.state.data) },
-            React.createElement(Column_1.Column, { style: { width: "100px" }, body: this.systemTemplate, field: "System", header: "Volt Class", sortable: true }),
-            React.createElement(Column_1.Column, { style: { width: "100px" }, body: this.circuitTemplate, field: "Circuit", header: "Circuit", sortable: true }),
-            React.createElement(Column_1.Column, { style: { width: "100px" }, field: "Device", header: "Device", sortable: true }),
+            React.createElement(Column_1.Column, { style: { width: "100px", 'textAlign': 'center' }, body: this.systemTemplate.bind(this), field: "System", header: "Volt Class", sortable: true }),
+            React.createElement(Column_1.Column, { style: { width: "100px", 'textAlign': 'center' }, body: this.circuitTemplate.bind(this), field: "Circuit", header: "Circuit", sortable: true }),
+            React.createElement(Column_1.Column, { style: { width: "100px", 'textAlign': 'center' }, field: "Device", header: "Device", sortable: true }),
             this.state.dynamicColumns,
-            React.createElement(Column_1.Column, { style: { width: "100px" }, field: "Total", header: "Total", sortable: true }),
-            React.createElement(Column_1.Column, { style: { width: "100px" }, field: "CT Files", header: "CT Files", sortable: true }),
-            React.createElement(Column_1.Column, { style: { width: "100px" }, field: "SOE", header: "SOE", sortable: true })));
+            React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "Total", header: "Total", sortable: true }),
+            React.createElement(Column_1.Column, { style: { width: "85px", 'textAlign': 'center' }, field: "CT Files", header: "CT Files", sortable: true }),
+            React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "SOE", header: "SOE", sortable: true })));
     };
     return PrimeDataTable;
 }(React.Component));

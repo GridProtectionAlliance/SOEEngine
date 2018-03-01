@@ -44,3 +44,27 @@
         width: 1380px;
     }
 }
+
+.clearable-input {
+    position: relative;
+    display: inline-block;
+}
+
+.clearable-input > input {
+    padding-right: 1.4em;
+}
+
+.clearable-input > [data-clear-input] {
+    position: absolute;
+    top: 33px;
+    right: 0;
+    font-weight: bold;
+    font-size: 1.4em;
+    padding: 0 0.2em;
+    line-height: 1em;
+    cursor: pointer;
+}
+
+.clearable-input > input::-ms-clear {
+    display: none;
+}

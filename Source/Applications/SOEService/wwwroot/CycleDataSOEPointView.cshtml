@@ -58,7 +58,7 @@
     };
 
     ViewBag.BodyRows = BodyRows(breakerElementPath, statusElementPath, simpleBreakerStatusPath).ToString();
-    ViewBag.AddNewEditDialog = AddNewEditDialog(dataContext).ToString();
+    ViewBag.AddNewEditDialog = "";
     ViewBag.HideAddNewButton = true;
     ViewBag.CanEdit = false;
     ViewBag.HideUnauthorizedControls = true;
@@ -115,9 +115,6 @@
 }
 
 
-@helper AddNewEditDialog(DataContext dataContext)
-{
-}
 @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
 
 @section Scripts {

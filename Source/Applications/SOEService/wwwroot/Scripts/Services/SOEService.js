@@ -8,13 +8,13 @@ var SOEService = (function () {
     SOEService.prototype.getView = function (filters) {
         return axios_1.default
             .post('/api/Main/GetView/model', {
-            date: moment(filters.date).format('YYYY-MM-DDTHH:mm:ssZ'),
+            date: moment(filters.date, 'YYYYMMDDHH').format('YYYY-MM-DDTHH:mm:ssZ'),
             timeContext: filters.timeContext,
             numBuckets: filters.numBuckets,
             limits: filters.limits,
             levels: filters.levels,
-            circuitName: filters.circuitName,
-            systemName: filters.systemName
+            circuitName: (filters.levels == 'Device' ? filters.filter : null),
+            systemName: (filters.levels == 'Circuit' ? filters.filter : null)
         })
             .then(function (res) {
             return res.data;

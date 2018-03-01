@@ -258,7 +258,7 @@ namespace DeviceDefinitionsMigrator
                         line = LoadLineAttributes(lookupTables, lineElement, connection);
 
                         // Provide a link between this line and the location housing the meter
-                        Link(meter, line, lineElement, lookupTables.MeterLineLookup, connection);
+                        Link(meter.ID, line.ID, lineElement, lookupTables.MeterLineLookup, connection);
                         Link(lookupTables.MeterLocationLookup.GetOrDefault((string)deviceAttributes.Element("stationID")).ID, line.ID, connection);
 
                         if ((string)lineElement.Element("endStationID") != null)
@@ -438,25 +438,27 @@ namespace DeviceDefinitionsMigrator
 
         }
 
-        private static void Link(Meter meter, Line line, XElement lineElement, Dictionary<Tuple<string, string>, MeterLine> meterLineLookup, AdoDataConnection connection)
+        private static void Link(int meterID, int lineID, XElement lineElement, Dictionary<Tuple<string, string>, MeterLine> meterLineLookup, AdoDataConnection connection)
         {
-            Tuple<string, string> key = Tuple.Create(meter.AssetKey, line.AssetKey);
-            MeterLine meterLine = new MeterLine()
-            {
-                MeterID = meter.ID,
-                LineID = line.ID,
-                LineName = (string)lineElement.Element("name")
-            }; ;
+            TableOperations<MeterLine> table = new TableOperations<MeterLine>(connection);
 
-            if (meterLineLookup.ContainsKey(key))
+            MeterLine record = table.QueryRecordWhere("MeterID = {0} AND LineID = {1}", meterID, lineID);
+
+            if (record == null)
             {
-                meterLine.ID = meterLineLookup[key].ID;
-                (new TableOperations<MeterLine>(connection)).UpdateRecord(meterLine);
+                record = new MeterLine()
+                {
+                    MeterID = meterID,
+                    LineID = lineID,
+                    LineName = (string)lineElement.Element("name")
+                };
+
+                table.AddNewRecord(record);
             }
             else {
-                meterLineLookup.Add(key, meterLine);
+                record.LineName = (string)lineElement.Element("name");
+                table.UpdateRecord(record);
             }
-
         }
 
         private static void Link(int meterLocationID, int lineID, AdoDataConnection connection)
