@@ -167,7 +167,6 @@ namespace DeviceDefinitionsMigrator
             public Dictionary<string, Meter> MeterLookup;
             public Dictionary<string, Line> LineLookup;
             public Dictionary<string, MeterLocation> MeterLocationLookup;
-            public Dictionary<Tuple<string, string>, MeterLine> MeterLineLookup;
             public Dictionary<string, MeasurementType> MeasurementTypeLookup;
             public Dictionary<string, MeasurementCharacteristic> MeasurementCharacteristicLookup;
             public Dictionary<string, Phase> PhaseLookup;
@@ -181,7 +180,6 @@ namespace DeviceDefinitionsMigrator
                 MeterLookup = (new TableOperations<Meter>(m_connection)).QueryRecords().ToDictionary(meter => meter.AssetKey, StringComparer.OrdinalIgnoreCase);
                 LineLookup = (new TableOperations<Line>(m_connection)).QueryRecords().ToDictionary(line => line.AssetKey, StringComparer.OrdinalIgnoreCase);
                 MeterLocationLookup = (new TableOperations<MeterLocation>(m_connection)).QueryRecords().ToDictionary(meterLocation => meterLocation.AssetKey, StringComparer.OrdinalIgnoreCase);
-                MeterLineLookup = (new TableOperations<MeterLine>(m_connection)).QueryRecords().ToDictionary(meterLine => Tuple.Create(meterLine.Meter.AssetKey, meterLine.Line.AssetKey), TupleIgnoreCase.Default);
                 MeasurementTypeLookup = (new TableOperations<MeasurementType>(m_connection)).QueryRecords().ToDictionary(measurementType => measurementType.Name, StringComparer.OrdinalIgnoreCase);
                 MeasurementCharacteristicLookup = (new TableOperations<MeasurementCharacteristic>(m_connection)).QueryRecords().ToDictionary(measurementCharacteristic => measurementCharacteristic.Name, StringComparer.OrdinalIgnoreCase); ;
                 PhaseLookup = (new TableOperations<Phase>(m_connection)).QueryRecords().ToDictionary(phase => phase.Name, StringComparer.OrdinalIgnoreCase);
@@ -258,7 +256,7 @@ namespace DeviceDefinitionsMigrator
                         line = LoadLineAttributes(lookupTables, lineElement, connection);
 
                         // Provide a link between this line and the location housing the meter
-                        Link(meter.ID, line.ID, lineElement, lookupTables.MeterLineLookup, connection);
+                        Link(meter.ID, line.ID, lineElement, connection);
                         Link(lookupTables.MeterLocationLookup.GetOrDefault((string)deviceAttributes.Element("stationID")).ID, line.ID, connection);
 
                         if ((string)lineElement.Element("endStationID") != null)
@@ -327,11 +325,10 @@ namespace DeviceDefinitionsMigrator
             Meter meter = new Meter {
                 Name = (string)deviceAttributes.Element("name") ?? (string)deviceAttributes.Element("stationName"),
                 AssetKey = (string)deviceElement.Attribute("id"),
-                ShortName = new string(((string)deviceAttributes.Element("name") ?? (string)deviceAttributes.Element("stationName")).Take(50).ToArray()),
                 Make = (string)deviceAttributes.Element("make") ?? string.Empty,
                 Model = (string)deviceAttributes.Element("model") ?? string.Empty,
                 Phasing = (string)deviceAttributes.Element("phaseLabels") ?? string.Empty,
-                Orientation = (string)deviceAttributes.Element("orientation") ?? string.Empty,
+                Orientation = (((string)deviceAttributes.Element("orientation")).ToLower() != "none"? (string)deviceAttributes.Element("orientation"): string.Empty) ?? string.Empty,
                 MeterLocationID = LoadMeterLocationAttributes(lookupTables,deviceAttributes, connection),
                 RootPNGFolder = (string)deviceAttributes.Element("rootPngFolder") ?? string.Empty,
                 AnalysisLink = (string)deviceAttributes.Element("analysisLink") ?? string.Empty,
@@ -438,7 +435,7 @@ namespace DeviceDefinitionsMigrator
 
         }
 
-        private static void Link(int meterID, int lineID, XElement lineElement, Dictionary<Tuple<string, string>, MeterLine> meterLineLookup, AdoDataConnection connection)
+        private static void Link(int meterID, int lineID, XElement lineElement, AdoDataConnection connection)
         {
             TableOperations<MeterLine> table = new TableOperations<MeterLine>(connection);
 
