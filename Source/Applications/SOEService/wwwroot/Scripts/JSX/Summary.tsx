@@ -39,7 +39,7 @@ import * as moment from 'moment';
 import createHistory from "history/createBrowserHistory"
 import * as queryString from "query-string";
 
-class MainPage extends React.Component<any, any> {
+class Summary extends React.Component<any, any> {
     values: object;
     history: object;
   constructor(props) {
@@ -166,4 +166,4 @@ class MainPage extends React.Component<any, any> {
     }
 }
 
-ReactDOM.render(<MainPage />, document.getElementById('bodyContainer'));
+ReactDOM.render(<Summary />, document.getElementById('bodyContainer'));

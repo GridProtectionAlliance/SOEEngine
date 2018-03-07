@@ -1,7 +1,10 @@
 ﻿module.exports = {
-    entry: "./wwwroot/Scripts/JSX/default.tsx",
+    entry: {
+        Summary: "./wwwroot/Scripts/JSX/Summary.tsx",
+        WaveformViewer: "./wwwroot/Scripts/JSX/WaveformViewer.tsx"
+    },
     output: {
-        filename: "./wwwroot/Scripts/bundle.js",
+        filename: "./wwwroot/Scripts/[name].js",
     },
 
     // Enable sourcemaps for debugging webpack's output.

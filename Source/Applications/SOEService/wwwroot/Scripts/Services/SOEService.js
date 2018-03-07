@@ -20,6 +20,32 @@ var SOEService = (function () {
             return res.data;
         });
     };
+    ;
+    SOEService.prototype.getIncidentGroups = function (filters) {
+        return axios_1.default
+            .post('/api/Main/GetIncidentGroups/model', {
+            circuitId: filters.circuitId,
+            startDate: filters.startDate,
+            endDate: filters.endDate
+        })
+            .then(function (res) {
+            return res.data;
+        });
+    };
+    SOEService.prototype.getIncidentData = function (filters) {
+        return axios_1.default
+            .post('/api/Main/GetIncidentData/' + filters.meterId + '-' + filters.type, {
+            circuitId: filters.circuitId,
+            startDate: filters.startDate,
+            endDate: filters.endDate,
+            meterId: filters.meterId,
+            type: filters.type,
+            pixels: filters.pixels
+        })
+            .then(function (res) {
+            return res.data;
+        });
+    };
     return SOEService;
 }());
 exports.default = SOEService;

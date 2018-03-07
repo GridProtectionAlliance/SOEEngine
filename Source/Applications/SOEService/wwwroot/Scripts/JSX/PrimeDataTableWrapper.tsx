@@ -44,7 +44,7 @@ import * as PropTypes from 'prop-types';
 import SOEService from './../Services/SOEService';
 
 export default class PrimeDataTable extends React.Component<any,any> {
-    soeservice: any;
+    soeservice: SOEService;
     callback: any;
     constructor(props) {
         super(props);

@@ -24,11 +24,9 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
 using System.Linq;
 using GSF;
 using GSF.Data;
-using SOEDataProcessing.Database.MeterDataTableAdapters;
 using SOEDataProcessing.DataResources;
 using SOEDataProcessing.DataSets;
 using GSF.Data.Model;

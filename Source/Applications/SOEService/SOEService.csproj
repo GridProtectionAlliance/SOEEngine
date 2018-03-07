@@ -400,6 +400,7 @@
     <Content Include="wwwroot\Content\Input.css" />
     <Content Include="wwwroot\Content\OpenSEE.css" />
     <Content Include="wwwroot\CycleDataSOEPointView.cshtml" />
+    <Content Include="wwwroot\CommonAggregateView.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
     <Content Include="webpack.config.js" />
     <Content Include="wwwroot\Content\ExtraMediaBootstrap.css" />
@@ -1065,13 +1066,16 @@
     <Content Include="wwwroot\Scripts\bundle.js" />
     <Content Include="wwwroot\Scripts\dateFormat.js" />
     <TypeScriptCompile Include="wwwroot\Scripts\JSX\BootstrapDateRangePicker.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\Default.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\JSX\IncidentGroup.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\JSX\Input.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\JSX\Select.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\JSX\PrimeDataTableWrapper.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\JSX\Summary.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\JSX\Table.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\JSX\PrimeMultiselectWrapper.tsx" />
     <Content Include="wwwroot\Scripts\Site.js" />
+    <TypeScriptCompile Include="wwwroot\Scripts\JSX\WaveformViewer.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\JSX\WaveformViewGraph.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\Services\SOEService.ts" />
   </ItemGroup>
   <ItemGroup>

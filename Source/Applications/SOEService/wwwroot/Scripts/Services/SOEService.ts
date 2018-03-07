@@ -39,5 +39,35 @@ export default class SOEService{
             .then(res => {
                 return res.data;
             });
+    };
+
+    getIncidentGroups(filters) {
+        return axios
+            .post('/api/Main/GetIncidentGroups/model', {
+                circuitId: filters.circuitId,
+                startDate: filters.startDate,
+                endDate: filters.endDate
+            })
+            .then(res => {
+                return res.data;
+            });
+
     }
+
+    getIncidentData(filters) {
+        return axios
+            .post('/api/Main/GetIncidentData/' + filters.meterId + '-' +filters.type, {
+                circuitId: filters.circuitId,
+                startDate: filters.startDate,
+                endDate: filters.endDate,
+                meterId: filters.meterId,
+                type: filters.type,
+                pixels: filters.pixels
+            })
+            .then(res => {
+                return res.data;
+            });
+
+    }
+
 }

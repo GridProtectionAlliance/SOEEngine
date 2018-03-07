@@ -1,9 +1,12 @@
 {
   "dependencies": {
+    "@types/flot": "0.0.31",
+    "flot": "^0.8.0-alpha",
+    "flot-charts": "^0.8.3",
+    "jquery": "^3.3.1",
     "react": "16.2.0",
-    "react-dom": "16.2.0",
-    "react-datetime-range-picker": "1.0.4"
-
+    "react-datetime-range-picker": "1.0.4",
+    "react-dom": "16.2.0"
   },
   "devDependencies": {
     "babel-core": "6.26.0",
