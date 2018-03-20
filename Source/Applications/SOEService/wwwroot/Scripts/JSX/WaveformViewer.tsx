@@ -33,6 +33,7 @@ class WaveformViewer extends React.Component<any, any>{
     soeservice: SOEService;
     history: object;
     resizeId: any;
+    dynamicRows: any;
     constructor(props){
         super(props);
         this.soeservice = new SOEService();
@@ -41,22 +42,55 @@ class WaveformViewer extends React.Component<any, any>{
         var query = queryString.parse(this.history['location'].search);
 
         this.state = {
-            circuitId: (query['CircuitID'] != undefined ? query['CircuitID'] : 0),
-            startDate: (query['StartDate'] != undefined ? query['StartDate'] : moment()),
-            endDate: (query['EndDate'] != undefined ? query['EndDate'] : moment()),
-            dynamicRows: [<div key="fake"></div>],
-            pixels: window.innerWidth
+            IncidentID: (query['IncidentID'] != undefined ? query['IncidentID'] : 0),
+            StartDate: query['StartDate'],
+            EndDate: query['EndDate']
         }
+
+        this.dynamicRows = [<div key="fake"></div>];
+        this.history['listen']((location, action) => {
+            var query = queryString.parse(this.history['location'].search);
+            this.setState({
+                IncidentID: (query['IncidentID'] != undefined ? query['IncidentID'] : 0),
+                StartDate: query['StartDate'],
+                EndDate: query['EndDate']
+            }, () => {
+                this.getData(this.state);
+            });
+        });
+
 
     }
 
     getData(state) {
         this.soeservice.getIncidentGroups(state).then(data => {
-            var dynamicRows = data.map((d, i) => {
-                return <IncidentGroup key={d["MeterID"]} circuitId={d["CircuitID"]} meterId={d["MeterID"]} startDate={d["StartTime"]} endDate={d["EndTime"]} pixels={this.state.pixels}></IncidentGroup>
-            });
 
-            this.setState({ dynamicRows: dynamicRows });
+            // if start and end date are not provided calculate them from the data set
+            if (this.state.StartDate == null) {
+                var startUnix = Math.min(...data.map((x) => moment(x.StartTime).unix() + (x.StartTime.indexOf('.') >= 0 ? parseFloat('.' + x.StartTime.split('.')[1]) : 0)));
+                var startString = '';
+                if (startUnix.toString().indexOf('.') >= 0)
+                    startString = moment.unix(parseInt(startUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + startUnix.toString().split('.')[1];
+                else
+                    startString = moment.unix(startUnix).format('YYYY-MM-DDTHH:mm:ss')
+
+                this.setState({ StartDate: startString });
+            }
+            if (this.state.EndDate == null) {
+                var endUnix = Math.max(...data.map((x) => moment(x.EndTime).unix() + (x.EndTime.indexOf('.') >=0 ? parseFloat('.' + x.EndTime.split('.')[1]) : 0)));
+                var endString = '';
+                if (endUnix.toString().indexOf('.') >= 0)
+                    endString = moment.unix(parseInt(endUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + endUnix.toString().split('.')[1];
+                else
+                    endString = moment.unix(endUnix).format('YYYY-MM-DDTHH:mm:ss')
+
+                this.setState({ EndDate: endString });
+            }
+
+            this.dynamicRows = data.map((d, i) => {
+                return <IncidentGroup key={d["MeterID"]} circuitId={d["CircuitID"]} meterId={d["MeterID"]} meterName={d["MeterName"]} startDate={this.state.StartDate} endDate={this.state.EndDate} pixels={window.innerWidth} stateSetter={this.stateSetter.bind(this)}></IncidentGroup>
+            });
+            this.forceUpdate();
         });
     }
 
@@ -68,14 +102,18 @@ class WaveformViewer extends React.Component<any, any>{
     handleScreenSizeChange() {
         clearTimeout(this.resizeId);
         this.resizeId = setTimeout(() => {
-            this.setState({ pixels: window.innerWidth });
             this.getData(this.state);
         }, 500);
     }
 
     render(){
-        return this.state.dynamicRows;
+        return this.dynamicRows;
     }
+
+    stateSetter(obj) {
+        this.setState(obj, () => this.history['push']('CommonAggregateView.cshtml?' + queryString.stringify(this.state, {encode: false})));
+    }
+
 }
 
 ReactDOM.render(<WaveformViewer />, document.getElementById('bodyContainer'));

@@ -79,7 +79,7 @@
     <td width="9%" class="text-center valign-middle" data-bind="text: IRMax.toFixed(0)"></td>
     <td width="9%" class="text-center valign-middle" data-bind="text: (Duration/1000*60).toFixed(1)"></td>
     <td width="9%" class="text-center valign-middle" nowrap>
-        <button type="button" class="btn btn-danger" data-bind="click: openSOEModal.bind($data)">A</button>
+        <button type="button" class="btn btn-danger" data-bind="click: openCAV.bind($data)">A</button>
         <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <button type="button" class="btn btn-danger" data-bind="">W</button>
     </td>
@@ -119,6 +119,10 @@
 
 
             $("#openSOEDialog").modal("show");
+        }
+
+        function openCAV(record) {
+            window.open('@Url.Content("CommonAggregateView.cshtml?IncidentID=")' + record.ID.toString())
         }
     </script>
 }

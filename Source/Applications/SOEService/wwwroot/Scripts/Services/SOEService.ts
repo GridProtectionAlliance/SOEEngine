@@ -44,9 +44,7 @@ export default class SOEService{
     getIncidentGroups(filters) {
         return axios
             .post('/api/Main/GetIncidentGroups/model', {
-                circuitId: filters.circuitId,
-                startDate: filters.startDate,
-                endDate: filters.endDate
+                IncidentID: filters.IncidentID
             })
             .then(res => {
                 return res.data;

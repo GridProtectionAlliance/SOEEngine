@@ -12,6 +12,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var WaveformViewGraph_1 = require("./WaveformViewGraph");
+var _ = require("lodash");
 var IncidentGroup = (function (_super) {
     __extends(IncidentGroup, _super);
     function IncidentGroup(props) {
@@ -20,15 +21,26 @@ var IncidentGroup = (function (_super) {
             meterId: props.meterId,
             startDate: props.startDate,
             endDate: props.endDate,
-            circuitId: props.circuitId
+            circuitId: props.circuitId,
+            pixels: props.pixels,
+            meterName: props.meterName
         };
         return _this;
     }
+    IncidentGroup.prototype.componentWillReceiveProps = function (nextProps) {
+        if (!(_.isEqual(this.props, nextProps))) {
+            this.setState(nextProps);
+        }
+    };
     IncidentGroup.prototype.render = function () {
-        return (React.createElement("div", null,
-            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX" }),
-            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I" }),
-            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY" })));
+        return (React.createElement("div", { style: { height: '620px' } },
+            React.createElement("div", { style: { height: '20px', textAlign: 'center' } }, this.state.meterName),
+            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
+            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
+            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter })));
+    };
+    IncidentGroup.prototype.stateSetter = function (obj) {
+        this.setState(obj);
     };
     return IncidentGroup;
 }(React.Component));

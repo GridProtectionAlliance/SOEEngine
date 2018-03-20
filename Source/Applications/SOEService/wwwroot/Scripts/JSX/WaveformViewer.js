@@ -25,27 +25,55 @@ var WaveformViewer = (function (_super) {
         _this.history = createBrowserHistory_1.default();
         var query = queryString.parse(_this.history['location'].search);
         _this.state = {
-            circuitId: (query['CircuitID'] != undefined ? query['CircuitID'] : 0),
-            startDate: (query['StartDate'] != undefined ? query['StartDate'] : moment()),
-            endDate: (query['EndDate'] != undefined ? query['EndDate'] : moment()),
-            dynamicRows: [React.createElement("div", { key: "fake" })]
+            IncidentID: (query['IncidentID'] != undefined ? query['IncidentID'] : 0),
+            StartDate: query['StartDate'],
+            EndDate: query['EndDate']
         };
+        _this.dynamicRows = [React.createElement("div", { key: "fake" })];
+        _this.history['listen'](function (location, action) {
+            var query = queryString.parse(_this.history['location'].search);
+            _this.setState({
+                IncidentID: (query['IncidentID'] != undefined ? query['IncidentID'] : 0),
+                StartDate: query['StartDate'],
+                EndDate: query['EndDate']
+            }, function () {
+                _this.getData(_this.state);
+            });
+        });
         return _this;
     }
     WaveformViewer.prototype.getData = function (state) {
         var _this = this;
         this.soeservice.getIncidentGroups(state).then(function (data) {
-            var dynamicRows = data.map(function (d, i) {
-                return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], circuitId: d["CircuitID"], meterId: d["MeterID"], startDate: d["StartTime"], endDate: d["EndTime"] });
+            if (_this.state.StartDate == null) {
+                _this.setState({
+                    StartDate: moment.unix(Math.min.apply(Math, data.map(function (x) { return moment(x.StartTime).unix(); }))).format('YYYY-MM-DDTHH:mm:ss.SSSSSSSSS'),
+                    EndDate: moment.unix(Math.max.apply(Math, data.map(function (x) { return moment(x.EndTime).unix(); }))).format('YYYY-MM-DDTHH:mm:ss.SSSSSSSSS')
+                });
+            }
+            _this.dynamicRows = data.map(function (d, i) {
+                return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
             });
-            _this.setState({ dynamicRows: dynamicRows });
+            _this.forceUpdate();
         });
     };
     WaveformViewer.prototype.componentDidMount = function () {
         this.getData(this.state);
+        window.addEventListener("resize", this.handleScreenSizeChange.bind(this));
+    };
+    WaveformViewer.prototype.handleScreenSizeChange = function () {
+        var _this = this;
+        clearTimeout(this.resizeId);
+        this.resizeId = setTimeout(function () {
+            _this.getData(_this.state);
+        }, 500);
     };
     WaveformViewer.prototype.render = function () {
-        return this.state.dynamicRows;
+        return this.dynamicRows;
+    };
+    WaveformViewer.prototype.stateSetter = function (obj) {
+        var _this = this;
+        this.setState(obj, function () { return _this.history['push']('CommonAggregateView.cshtml?' + queryString.stringify(_this.state, { encode: false })); });
     };
     return WaveformViewer;
 }(React.Component));

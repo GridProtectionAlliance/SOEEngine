@@ -389,9 +389,7 @@ namespace SOEService
         [ValidateAntiForgeryToken]
         public IHttpActionResult GetIncidentGroups(string modelName, [FromBody]JObject record)
         {
-            int circuitID;
-            DateTime startTime;
-            DateTime endTime;
+            int incidentID;
             DataTable table;
 
             // Proxy all other requests
@@ -401,9 +399,7 @@ namespace SOEService
                 return BadRequest($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
             try
             {
-                circuitID = record["circuitId"]?.Value<int>() ?? 0;
-                startTime = DateTime.Parse(record["startDate"].ToString());
-                endTime = DateTime.Parse(record["endDate"].ToString());
+                incidentID = record["IncidentID"]?.Value<int>() ?? 0;
             }
             catch (Exception ex)
             {
@@ -414,7 +410,11 @@ namespace SOEService
             {
                 try
                 {
-                    string s = $"select * from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', 0)";
+                    int circuitID = conn.ExecuteScalar<int>("SELECT CircuitNormalID FROM Meter JOIN Event ON Meter.ID = Event.MeterID WHERE Event.IncidentID = {0}", incidentID);
+                    DateTime startTime = conn.ExecuteScalar<DateTime>("SELECT StartTime FROM Incident WHERE ID = {0}", incidentID);
+                    DateTime endTime = conn.ExecuteScalar<DateTime>("SELECT EndTime FROM Incident WHERE ID = {0}", incidentID);
+                    int timeTolerance = conn.ExecuteScalar<int?>("SELECT Value FROM Setting WHERE Name = 'TimeTolerance'") ?? 22;
+                    string s = $"select * from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', {timeTolerance})";
 
                     table = conn.RetrieveData(s);
                     return Ok(table);
@@ -465,7 +465,7 @@ namespace SOEService
                 {
                     Dictionary<string, List<double[]>> dict = new Dictionary<string, List<double[]>>();
 
-                    string s = $"select Event.ID from GetNearbyIncidentsByCircuit({circuitId},'{startTime.ToString()}', '{endTime.ToString()}', 0)as incident join event on Incident.ID = event.IncidentID where event.MeterID = {meterId}";
+                    string s = $"select ID from Event WHERE StartTime <= '{endTime.ToString()}' AND EndTime >= '{startTime.ToString()}' and MeterID = {meterId}";
 
                     table = conn.RetrieveData(s);
                     foreach (DataRow row in table.Rows) {                        
@@ -674,6 +674,8 @@ namespace SOEService
                 }
             }
 
+            data.Insert(0, null);
+            data.Add(null);
             return data;
 
         }

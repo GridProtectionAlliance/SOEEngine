@@ -25,6 +25,21 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import SOEService from './../Services/SOEService';
 import * as _ from "lodash";
+import * as moment from "moment";
+import Legend from './Legend';
+
+const color = {
+    VX1: '#A30000',
+    VX2: '#0029A3',
+    VX3: '#007A29',
+    VY1: '#A30000',
+    VY2: '#0029A3',
+    VY3: '#007A29',
+    I1: '#FF0000',
+    I2: '#0066CC',
+    I3: '#33CC33',
+    IR: '#999999'
+}
 
 export default class WaveformViewerGraph extends React.Component<any, any>{
     soeservice: SOEService;
@@ -33,16 +48,20 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
     constructor(props) {
         super(props);
         this.soeservice = new SOEService();
+        var ctrl = this;
 
-        this.state = {
+        ctrl.state = {
             circuitId: props.circuitId,
             meterId: props.meterId,
             startDate: props.startDate,
             endDate: props.endDate,
             type: props.type,
-            pixels: props.pixels
+            pixels: props.pixels,
+            stateSetter: props.stateSetter,
+            legendRow: [], 
+            dataSet: []
         };
-        this.options = {
+        ctrl.options = {
             canvas: true,
             legend: { show: false },
             crosshair: { mode: "x" },
@@ -54,7 +73,58 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
             },
             xaxis: {
                 mode: "time",
-                tickLength: 10
+                tickLength: 10,
+                min: ctrl.state.StartDate,
+                max: ctrl.state.EndDate,
+                ticks: function (axis) {
+                    var ticks = [],
+                        start = ctrl.floorInBase(axis.min, axis.tickSize),
+                        i = 0,
+                        v = Number.NaN,
+                        prev;
+
+                    do {
+                        prev = v;
+                        v = start + i * axis.tickSize;
+                        ticks.push(v);
+                        ++i;
+                    } while (v < axis.max && v != prev);
+                    return ticks;
+                },
+                tickFormatter: function (value, axis) {
+                    if (axis.delta < 1) {
+                        var trunc = value - ctrl.floorInBase(value, 1000);
+                        return ctrl.defaultTickFormatter(trunc, axis) + " ms";
+                    }
+
+                    if (axis.delta < 1000) {
+                        var format = moment(value).format("mm:ss");
+                        var ticks = Math.floor(value * 10000);
+                        var subsecond = ticks % 10000000;
+
+                        while (subsecond > 0 && subsecond % 10 == 0)
+                            subsecond /= 10;
+
+                        if (subsecond != 0)
+                            return format + "." + subsecond;
+
+                        return format;
+                    }
+                    else {
+                        var format = moment(value).utc().format("HH:mm:ss");
+                        var ticks = Math.floor(value * 10000);
+                        var subsecond = ticks % 10000000;
+
+                        while (subsecond > 0 && subsecond % 10 == 0)
+                            subsecond /= 10;
+
+                        if (subsecond != 0)
+                            return format + "." + subsecond;
+
+                        return format;
+
+                    }
+                }
             },
             yaxis: {
                 labelWidth: 50,
@@ -73,13 +143,18 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
     }
 
     getData(state) {
-        this.soeservice.getIncidentData(state).then(data => {
+        var ctrl = this;
+
+        ctrl.soeservice.getIncidentData(state).then(data => {
             var newVessel = [];
+            var legend = [];
             $.each(Object.keys(data), function (i, key) {
-                newVessel.push({ label: key, data: data[key] });
+                newVessel.push({ label: key, data: data[key], color: color[key] });
+                legend.push({ label: key, color: color[key], enabled: true });
             });
             $.plot($("#" + state.meterId + "-" + state.type), newVessel, this.options);
-            console.log(newVessel);
+            this.setState({ legendRows: legend, dataSet: data });
+            ctrl.plotSelected();
         });
     }
     componentWillReceiveProps(nextProps) {
@@ -94,8 +169,61 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
     componentDidMount() {
         this.getData(this.state);
     }
+    componentWillUnmount() {
+        $("#" + this.state.meterId + "-" + this.state.type).off("plotselected");    
+    }
+
+
+    plotSelected() {
+        var ctrl = this;
+
+        $("#" + ctrl.state.meterId + "-" + ctrl.state.type).bind("plotselected", function(event, ranges){
+            ctrl.state.stateSetter({ StartDate: moment(ranges.xaxis.from).utc().format('YYYY-MM-DDTHH:mm:ss.SSSSSSSSS'), EndDate: moment(ranges.xaxis.to).utc().format('YYYY-MM-DDTHH:mm:ss.SSSSSSSSS')});
+        });
+    }
+    defaultTickFormatter(value, axis) {
+
+        var factor = axis.tickDecimals ? Math.pow(10, axis.tickDecimals) : 1;
+        var formatted = "" + Math.round(value * factor) / factor;
+
+        // If tickDecimals was specified, ensure that we have exactly that
+        // much precision; otherwise default to the value's own precision.
+
+        if (axis.tickDecimals != null) {
+            var decimal = formatted.indexOf(".");
+            var precision = decimal == -1 ? 0 : formatted.length - decimal - 1;
+            if (precision < axis.tickDecimals) {
+                return (precision ? formatted : formatted + ".") + ("" + factor).substr(1, axis.tickDecimals - precision);
+            }
+        }
+
+        return formatted;
+    };
+        // round to nearby lower multiple of base
+    floorInBase(n, base) {
+        return base * Math.floor(n / base);
+    }
+
+    handleSeriesLegendClick() {
+        var newVessel = [];
+        var legendKeys = this.state.legendRows.filter(x => x.enabled).map(x => x.label);
+        $.each(Object.keys(this.state.dataSet), (i, key) => {
+            if(legendKeys.indexOf(key) >= 0)
+                newVessel.push({ label: key, data: this.state.dataSet[key], color: color[key] })
+        });
+        $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
+
+    }
 
     render() {
-        return <div id={this.state.meterId + "-" + this.state.type} style={{'height': '200px'}}></div>;
+        return (
+            <div>
+                <div id={this.state.meterId + "-" + this.state.type} style={{ height: '200px', float: 'left', width: this.state.pixels - 95 }}></div>
+                <div id={this.state.meterId + "-" + this.state.type + '-legend'} style={{ height: '165px', marginTop: '5px', float: 'right', width: '75px', borderStyle: 'solid', borderWidth: '2px' }}>
+                    <Legend data={this.state.legendRows} callback={this.handleSeriesLegendClick.bind(this)} />
+                </div>
+            </div>
+        );
     }
+
 }

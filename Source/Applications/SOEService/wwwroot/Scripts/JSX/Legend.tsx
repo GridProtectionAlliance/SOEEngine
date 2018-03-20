@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IncidentGroup.tsx - Gbtc
+//  Legend.tsx - Gbtc
 //
 //  Copyright © 2018, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,49 +16,66 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  03/06/2018 - Billy Ernest
+//  03/09/2018 - Billy Ernest
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import WaveformViewerGraph from './WaveformViewGraph';
 import * as _ from "lodash";
 
-export default class IncidentGroup extends React.Component<any, any>{
+export default class Legend extends React.Component<any, any>{
     constructor(props) {
         super(props);
+
         this.state = {
-            meterId: props.meterId,
-            startDate: props.startDate,
-            endDate: props.endDate,
-            circuitId: props.circuitId,
-            pixels: props.pixels,
-            meterName: props.meterName
-        };
+            data: props.data,
+            callback: props.callback
+        }
     }
+
     componentWillReceiveProps(nextProps) {
         if (!(_.isEqual(this.props, nextProps))) {
             this.setState(nextProps);
         }
-    }
 
+    }
     render() {
+        if (this.state.data == null) return null;
+
+        let rows = this.state.data.map(row => {
+            return <Row key={row.label} label={row.label} color={row.color} enabled={row.enabled} callback={() => {
+                row.enabled = !row.enabled;
+                this.setState({ data: this.state.data });
+                this.state.callback();
+            }} />
+        });
+
         return (
-            <div style={{height: '620px'}}>
-                <div style={{ height: '20px', textAlign: 'center'}}>
-                    {this.state.meterName}
-                </div>
-                <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VX" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
-                <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="I" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
-                <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VY" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
-            </div>
+            <table>
+                <tbody>
+                    {rows}
+                </tbody>
+            </table>
         );
     }
+}
 
-    stateSetter(obj) {
-        this.setState(obj);
-    }
-
+const Row = (props) => {
+    return (
+        <tr>
+            <td>
+                <button className="btn btn-link" onClick={props.callback}>
+                    <div style={{ border: '1px solid #ccc', padding: '1px' }}>
+                        <div style={{ width: ' 4px', height: 0, border: '5px solid ' + props.color + (props.enabled? 'FF' : '60'), overflow: 'hidden' }}>
+                        </div>
+                    </div>
+                </button>
+            </td>
+            <td>
+                <span>{props.label}</span>
+            </td>
+        </tr>
+    );
 }

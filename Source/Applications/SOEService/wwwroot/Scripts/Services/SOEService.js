@@ -24,9 +24,7 @@ var SOEService = (function () {
     SOEService.prototype.getIncidentGroups = function (filters) {
         return axios_1.default
             .post('/api/Main/GetIncidentGroups/model', {
-            circuitId: filters.circuitId,
-            startDate: filters.startDate,
-            endDate: filters.endDate
+            IncidentID: filters.IncidentID
         })
             .then(function (res) {
             return res.data;
