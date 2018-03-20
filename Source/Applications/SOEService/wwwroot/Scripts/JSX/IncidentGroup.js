@@ -34,7 +34,8 @@ var IncidentGroup = (function (_super) {
     };
     IncidentGroup.prototype.render = function () {
         return (React.createElement("div", { style: { height: '620px' } },
-            React.createElement("div", { style: { height: '20px', textAlign: 'center' } }, this.state.meterName),
+            React.createElement("div", { style: { height: '20px', textAlign: 'center' } },
+                React.createElement("h4", null, this.state.meterName)),
             React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
             React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
             React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter })));

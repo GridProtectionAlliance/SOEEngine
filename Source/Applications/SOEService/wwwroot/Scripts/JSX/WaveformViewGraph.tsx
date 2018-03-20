@@ -98,7 +98,7 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
                     }
 
                     if (axis.delta < 1000) {
-                        var format = moment(value).format("mm:ss");
+                        var format = moment(value).utc().format("mm:ss");
                         var ticks = Math.floor(value * 10000);
                         var subsecond = ticks % 10000000;
 
@@ -152,6 +152,8 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
                 newVessel.push({ label: key, data: data[key], color: color[key] });
                 legend.push({ label: key, color: color[key], enabled: true });
             });
+            newVessel.push({ label: null, color: null, data: [[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]] });
+
             $.plot($("#" + state.meterId + "-" + state.type), newVessel, this.options);
             this.setState({ legendRows: legend, dataSet: data });
             ctrl.plotSelected();
@@ -176,9 +178,9 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
 
     plotSelected() {
         var ctrl = this;
-
+        $("#" + this.state.meterId + "-" + this.state.type).off("plotselected");    
         $("#" + ctrl.state.meterId + "-" + ctrl.state.type).bind("plotselected", function(event, ranges){
-            ctrl.state.stateSetter({ StartDate: moment(ranges.xaxis.from).utc().format('YYYY-MM-DDTHH:mm:ss.SSSSSSSSS'), EndDate: moment(ranges.xaxis.to).utc().format('YYYY-MM-DDTHH:mm:ss.SSSSSSSSS')});
+            ctrl.state.stateSetter({ StartDate: ctrl.getDateString(ranges.xaxis.from), EndDate: ctrl.getDateString(ranges.xaxis.to)});
         });
     }
     defaultTickFormatter(value, axis) {
@@ -211,8 +213,25 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
             if(legendKeys.indexOf(key) >= 0)
                 newVessel.push({ label: key, data: this.state.dataSet[key], color: color[key] })
         });
+
+        newVessel.push([[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]]);
+
         $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
 
+    }
+
+    getMillisecondTime(date) {
+        var milliseconds = moment.utc(date).valueOf();
+        var millisecondsFractionFloat = parseFloat((date.toString().indexOf('.') >= 0 ? '.' + date.toString().split('.')[1] : '0'))*1000;
+      
+        return milliseconds + millisecondsFractionFloat - Math.floor(millisecondsFractionFloat);
+    }
+
+    getDateString(float) {
+        var date = moment.utc(float).format('YYYY-MM-DDTHH:mm:ss.SSS');
+        var millisecondFraction = parseInt((float.toString().indexOf('.') >= 0 ? float.toString().split('.')[1] : '0'))
+
+        return date + millisecondFraction.toString();
     }
 
     render() {

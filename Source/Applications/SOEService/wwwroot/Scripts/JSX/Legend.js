@@ -11,6 +11,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
+var _ = require("lodash");
 var Legend = (function (_super) {
     __extends(Legend, _super);
     function Legend(props) {
@@ -21,17 +22,21 @@ var Legend = (function (_super) {
         };
         return _this;
     }
+    Legend.prototype.componentWillReceiveProps = function (nextProps) {
+        if (!(_.isEqual(this.props, nextProps))) {
+            this.setState(nextProps);
+        }
+    };
     Legend.prototype.render = function () {
         var _this = this;
-        var rows = [];
-        $.each(this.state.data, function (i, d) {
-            rows.push((React.createElement("tr", null,
-                React.createElement("td", null,
-                    React.createElement("button", { className: "btn btn-link", onClick: _this.state.callback },
-                        React.createElement("div", { style: { border: '1px solid #ccc', padding: '1px' } },
-                            React.createElement("div", { style: { width: ' 4px', height: 0, border: '5px solid ' + d.color, overflow: 'hidden' } })))),
-                React.createElement("td", null,
-                    React.createElement("span", null, d.label)))));
+        if (this.state.data == null)
+            return null;
+        var rows = this.state.data.map(function (row) {
+            return React.createElement(Row, { key: row.label, label: row.label, color: row.color, enabled: row.enabled, callback: function () {
+                    row.enabled = !row.enabled;
+                    _this.setState({ data: _this.state.data });
+                    _this.state.callback();
+                } });
         });
         return (React.createElement("table", null,
             React.createElement("tbody", null, rows)));
@@ -39,4 +44,13 @@ var Legend = (function (_super) {
     return Legend;
 }(React.Component));
 exports.default = Legend;
+var Row = function (props) {
+    return (React.createElement("tr", null,
+        React.createElement("td", null,
+            React.createElement("button", { className: "btn btn-link", onClick: props.callback },
+                React.createElement("div", { style: { border: '1px solid #ccc', padding: '1px' } },
+                    React.createElement("div", { style: { width: ' 4px', height: 0, border: '5px solid ' + props.color + (props.enabled ? 'FF' : '60'), overflow: 'hidden' } })))),
+        React.createElement("td", null,
+            React.createElement("span", null, props.label))));
+};
 //# sourceMappingURL=Legend.js.map

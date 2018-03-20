@@ -449,8 +449,8 @@ namespace SOEService
             {
                 meterId = record["meterId"]?.Value<int>() ?? 0;
                 circuitId = record["circuitId"]?.Value<int>() ?? 0;
-                startTime = DateTime.Parse(record["startDate"].ToString());
-                endTime = DateTime.Parse(record["endDate"].ToString());
+                startTime = record["startDate"].Value<DateTime>();
+                endTime = record["endDate"].Value<DateTime>();
                 pixels = record["pixels"]?.Value<int>() ?? 0;
                 type = record["type"].Value<string>();
             }
@@ -464,10 +464,7 @@ namespace SOEService
                 try
                 {
                     Dictionary<string, List<double[]>> dict = new Dictionary<string, List<double[]>>();
-
-                    string s = $"select ID from Event WHERE StartTime <= '{endTime.ToString()}' AND EndTime >= '{startTime.ToString()}' and MeterID = {meterId}";
-
-                    table = conn.RetrieveData(s);
+                    table = conn.RetrieveData("select ID from Event WHERE StartTime <= {0} AND EndTime >= {1} and MeterID = {2}", endTime, startTime, meterId);
                     foreach (DataRow row in table.Rows) {                        
                         Dictionary<string, List<double[]>> temp = QueryEventData(int.Parse(row["ID"].ToString()), type);
                         foreach(string key in temp.Keys)
@@ -630,7 +627,11 @@ namespace SOEService
         {
             List<double[]> data = new List<double[]>();
             DateTime epoch = new DateTime(1970, 1, 1);
-            double startTime = range.Start.Subtract(epoch).TotalMilliseconds;          
+            double startTime = range.Start.Subtract(epoch).TotalMilliseconds;
+            double endTime = range.End.Subtract(epoch).TotalMilliseconds;
+            series = series.Where(x => x[0] >= startTime && x[0] <= endTime).ToList();
+            if (sampleCount > series.Count) return series;
+
             int index = 0;
 
             for (int n = 0; n < sampleCount; n += 2)
@@ -674,8 +675,6 @@ namespace SOEService
                 }
             }
 
-            data.Insert(0, null);
-            data.Add(null);
             return data;
 
         }

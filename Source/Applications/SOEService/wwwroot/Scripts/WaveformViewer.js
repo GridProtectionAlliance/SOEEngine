@@ -54892,7 +54892,8 @@ var IncidentGroup = (function (_super) {
     };
     IncidentGroup.prototype.render = function () {
         return (React.createElement("div", { style: { height: '620px' } },
-            React.createElement("div", { style: { height: '20px', textAlign: 'center' } }, this.state.meterName),
+            React.createElement("div", { style: { height: '20px', textAlign: 'center' } },
+                React.createElement("h4", null, this.state.meterName)),
             React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
             React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
             React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter })));
@@ -54987,7 +54988,7 @@ var WaveformViewerGraph = (function (_super) {
                         return ctrl.defaultTickFormatter(trunc, axis) + " ms";
                     }
                     if (axis.delta < 1000) {
-                        var format = moment(value).format("mm:ss");
+                        var format = moment(value).utc().format("mm:ss");
                         var ticks = Math.floor(value * 10000);
                         var subsecond = ticks % 10000000;
                         while (subsecond > 0 && subsecond % 10 == 0)
@@ -55034,6 +55035,7 @@ var WaveformViewerGraph = (function (_super) {
                 newVessel.push({ label: key, data: data[key], color: color[key] });
                 legend.push({ label: key, color: color[key], enabled: true });
             });
+            newVessel.push({ label: null, color: null, data: [[_this.getMillisecondTime(_this.state.startDate), null], [_this.getMillisecondTime(_this.state.endDate), null]] });
             $.plot($("#" + state.meterId + "-" + state.type), newVessel, _this.options);
             _this.setState({ legendRows: legend, dataSet: data });
             ctrl.plotSelected();
@@ -55053,8 +55055,9 @@ var WaveformViewerGraph = (function (_super) {
     };
     WaveformViewerGraph.prototype.plotSelected = function () {
         var ctrl = this;
+        $("#" + this.state.meterId + "-" + this.state.type).off("plotselected");
         $("#" + ctrl.state.meterId + "-" + ctrl.state.type).bind("plotselected", function (event, ranges) {
-            ctrl.state.stateSetter({ StartDate: moment(ranges.xaxis.from).utc().format('YYYY-MM-DDTHH:mm:ss.SSSSSSSSS'), EndDate: moment(ranges.xaxis.to).utc().format('YYYY-MM-DDTHH:mm:ss.SSSSSSSSS') });
+            ctrl.state.stateSetter({ StartDate: ctrl.getDateString(ranges.xaxis.from), EndDate: ctrl.getDateString(ranges.xaxis.to) });
         });
     };
     WaveformViewerGraph.prototype.defaultTickFormatter = function (value, axis) {
@@ -55081,7 +55084,18 @@ var WaveformViewerGraph = (function (_super) {
             if (legendKeys.indexOf(key) >= 0)
                 newVessel.push({ label: key, data: _this.state.dataSet[key], color: color[key] });
         });
+        newVessel.push([[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]]);
         $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
+    };
+    WaveformViewerGraph.prototype.getMillisecondTime = function (date) {
+        var milliseconds = moment.utc(date).valueOf();
+        var millisecondsFractionFloat = parseFloat((date.toString().indexOf('.') >= 0 ? '.' + date.toString().split('.')[1] : '0')) * 1000;
+        return milliseconds + millisecondsFractionFloat - Math.floor(millisecondsFractionFloat);
+    };
+    WaveformViewerGraph.prototype.getDateString = function (float) {
+        var date = moment.utc(float).format('YYYY-MM-DDTHH:mm:ss.SSS');
+        var millisecondFraction = parseInt((float.toString().indexOf('.') >= 0 ? float.toString().split('.')[1] : '0'));
+        return date + millisecondFraction.toString();
     };
     WaveformViewerGraph.prototype.render = function () {
         return (React.createElement("div", null,

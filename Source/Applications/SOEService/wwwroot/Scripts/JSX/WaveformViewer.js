@@ -46,10 +46,22 @@ var WaveformViewer = (function (_super) {
         var _this = this;
         this.soeservice.getIncidentGroups(state).then(function (data) {
             if (_this.state.StartDate == null) {
-                _this.setState({
-                    StartDate: moment.unix(Math.min.apply(Math, data.map(function (x) { return moment(x.StartTime).unix(); }))).format('YYYY-MM-DDTHH:mm:ss.SSSSSSSSS'),
-                    EndDate: moment.unix(Math.max.apply(Math, data.map(function (x) { return moment(x.EndTime).unix(); }))).format('YYYY-MM-DDTHH:mm:ss.SSSSSSSSS')
-                });
+                var startUnix = Math.min.apply(Math, data.map(function (x) { return moment(x.StartTime).unix() + (x.StartTime.indexOf('.') >= 0 ? parseFloat('.' + x.StartTime.split('.')[1]) : 0); }));
+                var startString = '';
+                if (startUnix.toString().indexOf('.') >= 0)
+                    startString = moment.unix(parseInt(startUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + startUnix.toString().split('.')[1];
+                else
+                    startString = moment.unix(startUnix).format('YYYY-MM-DDTHH:mm:ss');
+                _this.setState({ StartDate: startString });
+            }
+            if (_this.state.EndDate == null) {
+                var endUnix = Math.max.apply(Math, data.map(function (x) { return moment(x.EndTime).unix() + (x.EndTime.indexOf('.') >= 0 ? parseFloat('.' + x.EndTime.split('.')[1]) : 0); }));
+                var endString = '';
+                if (endUnix.toString().indexOf('.') >= 0)
+                    endString = moment.unix(parseInt(endUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + endUnix.toString().split('.')[1];
+                else
+                    endString = moment.unix(endUnix).format('YYYY-MM-DDTHH:mm:ss');
+                _this.setState({ EndDate: endString });
             }
             _this.dynamicRows = data.map(function (d, i) {
                 return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });

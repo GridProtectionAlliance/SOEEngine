@@ -48,7 +48,7 @@ export default class IncidentGroup extends React.Component<any, any>{
         return (
             <div style={{height: '620px'}}>
                 <div style={{ height: '20px', textAlign: 'center'}}>
-                    {this.state.meterName}
+                    <h4>{this.state.meterName}</h4>
                 </div>
                 <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VX" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
                 <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="I" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
