@@ -54799,6 +54799,11 @@ var WaveformViewer = (function (_super) {
                 _this.getData(_this.state);
             });
         });
+        var div = document.createElement('div');
+        var ul = document.querySelector('#navbar ul');
+        var r = ReactDOM.render(React.createElement(AggViewNavBar, { collapseCallback: _this.collapseAllPanels, zoomCallback: _this.resetZoom.bind(_this) }), div, function () {
+            ul.appendChild(ReactDOM.findDOMNode(div.firstElementChild));
+        });
         return _this;
     }
     WaveformViewer.prototype.getData = function (state) {
@@ -54848,8 +54853,25 @@ var WaveformViewer = (function (_super) {
         var _this = this;
         this.setState(obj, function () { return _this.history['push']('CommonAggregateView.cshtml?' + queryString.stringify(_this.state, { encode: false })); });
     };
+    WaveformViewer.prototype.collapseAllPanels = function () {
+        $('.in').removeClass('in');
+    };
+    WaveformViewer.prototype.resetZoom = function () {
+        this.history['push']('CommonAggregateView.cshtml?' + queryString.stringify({ IncidentID: this.state.IncidentID }, { encode: false }));
+    };
     return WaveformViewer;
 }(React.Component));
+var AggViewNavBar = function (props) {
+    return (React.createElement("li", { className: "active dropdown" },
+        React.createElement("a", { href: "", className: "dropdown-toggle", "data-toggle": "dropdown", role: "button", "aria-haspopup": "true", "aria-expanded": "false" },
+            "Aggr View ",
+            React.createElement("span", { className: "caret" })),
+        React.createElement("ul", { className: "dropdown-menu" },
+            React.createElement("li", null,
+                React.createElement("a", { onClick: props.zoomCallback }, "Reset Zoom")),
+            React.createElement("li", null,
+                React.createElement("a", { onClick: props.collapseCallback }, "Collapse Panels")))));
+};
 ReactDOM.render(React.createElement(WaveformViewer, null), document.getElementById('bodyContainer'));
 
 

@@ -59,6 +59,12 @@ class WaveformViewer extends React.Component<any, any>{
             });
         });
 
+        var div = document.createElement('div')
+        var ul = document.querySelector('#navbar ul');
+        var r = ReactDOM.render(<AggViewNavBar collapseCallback={this.collapseAllPanels} zoomCallback={this.resetZoom.bind(this)}/>, div, function () {
+            ul.appendChild(ReactDOM.findDOMNode(div.firstElementChild));
+        });
+
 
     }
 
@@ -121,6 +127,27 @@ class WaveformViewer extends React.Component<any, any>{
         this.setState(obj, () => this.history['push']('CommonAggregateView.cshtml?' + queryString.stringify(this.state, {encode: false})));
     }
 
+    collapseAllPanels() {
+        $('.in').removeClass('in')
+    }
+
+    resetZoom() {
+        this.history['push']('CommonAggregateView.cshtml?' + queryString.stringify({ IncidentID: this.state.IncidentID }, { encode: false }));
+
+    }
+
+}
+
+const AggViewNavBar = (props) => {
+    return (
+        <li className="active dropdown">
+            <a href="" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Aggr View <span className="caret"></span></a>
+            <ul className="dropdown-menu">
+                <li><a onClick={props.zoomCallback}>Reset Zoom</a></li>
+                <li><a onClick={props.collapseCallback}>Collapse Panels</a></li>
+            </ul>
+        </li>
+    );
 }
 
 ReactDOM.render(<WaveformViewer />, document.getElementById('bodyContainer'));

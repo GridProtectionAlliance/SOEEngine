@@ -45,8 +45,12 @@
         $('#bodyContainer').removeClass('container');
         $('#bodyContainer').css('padding-top', 'inherit');
         window.onwheel = function (event, info) {
-            $(event.path[1]).trigger('plotzoom', event);
-            return false;
+            if (event.path[0].tagName == "CANVAS") {
+                $(event.path[1]).trigger('plotzoom', event);
+                return false;
+            }
+            else
+                return true;
         }
     </script>
 }
