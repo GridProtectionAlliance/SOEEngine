@@ -87,6 +87,9 @@ class WaveformViewer extends React.Component<any, any>{
                 this.setState({ EndDate: endString });
             }
 
+            var parentIds = data.map(x => x.ParentID);
+            var meterIds = data.map(x => x.MeterID);
+            var parentMeterIndex = 
             this.dynamicRows = data.map((d, i) => {
                 return <IncidentGroup key={d["MeterID"]} circuitId={d["CircuitID"]} meterId={d["MeterID"]} meterName={d["MeterName"]} startDate={this.state.StartDate} endDate={this.state.EndDate} pixels={window.innerWidth} stateSetter={this.stateSetter.bind(this)}></IncidentGroup>
             });
@@ -107,7 +110,11 @@ class WaveformViewer extends React.Component<any, any>{
     }
 
     render(){
-        return this.dynamicRows;
+        return (
+            <div className="panel-group">
+                {this.dynamicRows}
+            </div>
+        );
     }
 
     stateSetter(obj) {

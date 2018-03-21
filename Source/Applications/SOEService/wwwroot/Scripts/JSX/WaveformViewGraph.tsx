@@ -43,8 +43,10 @@ const color = {
 
 export default class WaveformViewerGraph extends React.Component<any, any>{
     soeservice: SOEService;
-    flot: any;
+    plot: any;
     options: object;
+    xaxisHover;
+
     constructor(props) {
         super(props);
         this.soeservice = new SOEService();
@@ -98,31 +100,10 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
                     }
 
                     if (axis.delta < 1000) {
-                        var format = moment(value).utc().format("mm:ss");
-                        var ticks = Math.floor(value * 10000);
-                        var subsecond = ticks % 10000000;
-
-                        while (subsecond > 0 && subsecond % 10 == 0)
-                            subsecond /= 10;
-
-                        if (subsecond != 0)
-                            return format + "." + subsecond;
-
-                        return format;
+                        return moment(value).format("mm:ss.SS");
                     }
                     else {
-                        var format = moment(value).utc().format("HH:mm:ss");
-                        var ticks = Math.floor(value * 10000);
-                        var subsecond = ticks % 10000000;
-
-                        while (subsecond > 0 && subsecond % 10 == 0)
-                            subsecond /= 10;
-
-                        if (subsecond != 0)
-                            return format + "." + subsecond;
-
-                        return format;
-
+                        return moment(value).utc().format("HH:mm:ss.S");
                     }
                 }
             },
@@ -143,22 +124,16 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
     }
 
     getData(state) {
-        var ctrl = this;
+        this.soeservice.getIncidentData(state).then(data => {
+            var legend = this.state.legendRows;
 
-        ctrl.soeservice.getIncidentData(state).then(data => {
-            var newVessel = [];
-            var legend = [];
-            $.each(Object.keys(data), function (i, key) {
-                newVessel.push({ label: key, data: data[key], color: color[key] });
-                legend.push({ label: key, color: color[key], enabled: true });
-            });
-            newVessel.push({ label: null, color: null, data: [[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]] });
-
-            $.plot($("#" + state.meterId + "-" + state.type), newVessel, this.options);
-            this.setState({ legendRows: legend, dataSet: data });
-            ctrl.plotSelected();
+            if (this.state.legendRows == undefined)
+                legend = this.createLegendRows(data);
+            this.createDataRows(data, legend);
+            this.setState({ dataSet: data });
         });
     }
+
     componentWillReceiveProps(nextProps) {
         if (!(_.isEqual(this.props, nextProps))) {
             this.setState(nextProps);
@@ -172,9 +147,97 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
         this.getData(this.state);
     }
     componentWillUnmount() {
-        $("#" + this.state.meterId + "-" + this.state.type).off("plotselected");    
+        $("#" + this.state.meterId + "-" + this.state.type).off("plotselected");
+        $("#" + this.state.meterId + "-" + this.state.type).off("plotzoom");
+        $("#" + this.state.meterId + "-" + this.state.type).off("plothover");
     }
 
+    createLegendRows(data) {
+        var legend = [];
+        $.each(Object.keys(data), function (i, key) {
+            legend.push({ label: key, color: color[key], enabled: true });
+        });
+
+        this.setState({ legendRows: legend });
+        return legend;
+    }
+
+    createDataRows(data, legend) {
+        var newVessel = [];
+        var legendKeys = legend.filter(x => x.enabled).map(x => x.label);
+        $.each(Object.keys(data), (i, key) => {
+            if (legendKeys.indexOf(key) >= 0)
+                newVessel.push({ label: key, data: data[key], color: color[key] })
+        });
+
+        newVessel.push([[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]]);
+        this.plot = $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
+        this.plotSelected();
+        this.plotZoom();
+        this.plotHover();
+    }
+
+    plotZoom() {
+        var ctrl = this;
+        $("#" + this.state.meterId + "-" + this.state.type).off("plotzoom");
+        $("#" + ctrl.state.meterId + "-" + ctrl.state.type).bind("plotzoom", function (event, originalEvent) {
+            //console.log(event, ctrl.plot.getAxes().xaxis, originalEvent, ctrl.xaxisHover);
+            var minDelta = null;
+            var maxDelta = 5;
+            var xaxis = ctrl.plot.getAxes().xaxis;
+            var xcenter = ctrl.xaxisHover;
+            var xmin = xaxis.options.min;
+            var xmax = xaxis.options.max;
+            var datamin = xaxis.datamin;
+            var datamax = xaxis.datamax;
+
+            var deltaMagnitude;
+            var delta;
+            var factor;
+
+            if (xmin == null)
+                xmin = datamin;
+
+            if (xmax == null)
+                xmax = datamax;
+
+            if (xmin == null || xmax == null)
+                return;
+
+            xcenter = Math.max(xcenter, xmin);
+            xcenter = Math.min(xcenter, xmax);
+
+            if (originalEvent.wheelDelta != undefined)
+                delta = originalEvent.wheelDelta;
+            else
+                delta = -originalEvent.detail;
+
+            deltaMagnitude = Math.abs(delta);
+
+            if (minDelta == null || deltaMagnitude < minDelta)
+                minDelta = deltaMagnitude;
+
+            deltaMagnitude /= minDelta;
+            deltaMagnitude = Math.min(deltaMagnitude, maxDelta);
+            factor = deltaMagnitude / 10;
+
+            if (delta > 0) {
+                xmin = xmin * (1 - factor) + xcenter * factor;
+                xmax = xmax * (1 - factor) + xcenter * factor;
+            } else {
+                xmin = (xmin - xcenter * factor) / (1 - factor);
+                xmax = (xmax - xcenter * factor) / (1 - factor);
+            }
+
+            if (xmin == xaxis.options.xmin && xmax == xaxis.options.xmax)
+                return;
+
+            //console.log(ctrl.getDateString(xmin), ctrl.getDateString(xmax));
+            ctrl.state.stateSetter({ StartDate: ctrl.getDateString(xmin), EndDate: ctrl.getDateString(xmax) });
+
+        });
+
+    }
 
     plotSelected() {
         var ctrl = this;
@@ -183,6 +246,17 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
             ctrl.state.stateSetter({ StartDate: ctrl.getDateString(ranges.xaxis.from), EndDate: ctrl.getDateString(ranges.xaxis.to)});
         });
     }
+
+    plotHover() {
+        var ctrl = this;
+        $("#" + this.state.meterId + "-" + this.state.type).off("plothover");
+        $("#" + ctrl.state.meterId + "-" + ctrl.state.type).bind("plothover", function (event, pos, item) {
+            ctrl.xaxisHover = pos.x;
+        });
+    }
+
+
+
     defaultTickFormatter(value, axis) {
 
         var factor = axis.tickDecimals ? Math.pow(10, axis.tickDecimals) : 1;
@@ -207,17 +281,7 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
     }
 
     handleSeriesLegendClick() {
-        var newVessel = [];
-        var legendKeys = this.state.legendRows.filter(x => x.enabled).map(x => x.label);
-        $.each(Object.keys(this.state.dataSet), (i, key) => {
-            if(legendKeys.indexOf(key) >= 0)
-                newVessel.push({ label: key, data: this.state.dataSet[key], color: color[key] })
-        });
-
-        newVessel.push([[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]]);
-
-        $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
-
+        this.createDataRows(this.state.dataSet, this.state.legendRows);
     }
 
     getMillisecondTime(date) {

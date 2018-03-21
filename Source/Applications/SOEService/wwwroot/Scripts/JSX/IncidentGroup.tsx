@@ -46,13 +46,16 @@ export default class IncidentGroup extends React.Component<any, any>{
 
     render() {
         return (
-            <div style={{height: '620px'}}>
-                <div style={{ height: '20px', textAlign: 'center'}}>
-                    <h4>{this.state.meterName}</h4>
+            <div className="panel panel-default" >
+                <div className="panel-heading" style={{textAlign: 'center'}}>
+                    <h4 className="panel-title"><a href={'#' + this.state.meterName} data-toggle="collapse">{this.state.meterName}</a></h4>
                 </div>
-                <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VX" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
-                <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="I" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
-                <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VY" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
+                <div id={this.state.meterName} className="panel-body collapse in" style={{ padding: '0' }}>
+                    <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VX" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
+                    <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="I" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
+                    <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VY" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
+                </div>
+                <br />
             </div>
         );
     }

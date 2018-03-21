@@ -75,24 +75,10 @@ var WaveformViewerGraph = (function (_super) {
                         return ctrl.defaultTickFormatter(trunc, axis) + " ms";
                     }
                     if (axis.delta < 1000) {
-                        var format = moment(value).utc().format("mm:ss");
-                        var ticks = Math.floor(value * 10000);
-                        var subsecond = ticks % 10000000;
-                        while (subsecond > 0 && subsecond % 10 == 0)
-                            subsecond /= 10;
-                        if (subsecond != 0)
-                            return format + "." + subsecond;
-                        return format;
+                        return moment(value).format("mm:ss.SS");
                     }
                     else {
-                        var format = moment(value).utc().format("HH:mm:ss");
-                        var ticks = Math.floor(value * 10000);
-                        var subsecond = ticks % 10000000;
-                        while (subsecond > 0 && subsecond % 10 == 0)
-                            subsecond /= 10;
-                        if (subsecond != 0)
-                            return format + "." + subsecond;
-                        return format;
+                        return moment(value).utc().format("HH:mm:ss.S");
                     }
                 }
             },
@@ -114,18 +100,12 @@ var WaveformViewerGraph = (function (_super) {
     }
     WaveformViewerGraph.prototype.getData = function (state) {
         var _this = this;
-        var ctrl = this;
-        ctrl.soeservice.getIncidentData(state).then(function (data) {
-            var newVessel = [];
-            var legend = [];
-            $.each(Object.keys(data), function (i, key) {
-                newVessel.push({ label: key, data: data[key], color: color[key] });
-                legend.push({ label: key, color: color[key], enabled: true });
-            });
-            newVessel.push({ label: null, color: null, data: [[_this.getMillisecondTime(_this.state.startDate), null], [_this.getMillisecondTime(_this.state.endDate), null]] });
-            $.plot($("#" + state.meterId + "-" + state.type), newVessel, _this.options);
-            _this.setState({ legendRows: legend, dataSet: data });
-            ctrl.plotSelected();
+        this.soeservice.getIncidentData(state).then(function (data) {
+            var legend = _this.state.legendRows;
+            if (_this.state.legendRows == undefined)
+                legend = _this.createLegendRows(data);
+            _this.createDataRows(data, legend);
+            _this.setState({ dataSet: data });
         });
     };
     WaveformViewerGraph.prototype.componentWillReceiveProps = function (nextProps) {
@@ -139,6 +119,25 @@ var WaveformViewerGraph = (function (_super) {
     };
     WaveformViewerGraph.prototype.componentWillUnmount = function () {
         $("#" + this.state.meterId + "-" + this.state.type).off("plotselected");
+    };
+    WaveformViewerGraph.prototype.createLegendRows = function (data) {
+        var legend = [];
+        $.each(Object.keys(data), function (i, key) {
+            legend.push({ label: key, color: color[key], enabled: true });
+        });
+        this.setState({ legendRows: legend });
+        return legend;
+    };
+    WaveformViewerGraph.prototype.createDataRows = function (data, legend) {
+        var newVessel = [];
+        var legendKeys = legend.filter(function (x) { return x.enabled; }).map(function (x) { return x.label; });
+        $.each(Object.keys(data), function (i, key) {
+            if (legendKeys.indexOf(key) >= 0)
+                newVessel.push({ label: key, data: data[key], color: color[key] });
+        });
+        newVessel.push([[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]]);
+        $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
+        this.plotSelected();
     };
     WaveformViewerGraph.prototype.plotSelected = function () {
         var ctrl = this;
@@ -164,15 +163,7 @@ var WaveformViewerGraph = (function (_super) {
         return base * Math.floor(n / base);
     };
     WaveformViewerGraph.prototype.handleSeriesLegendClick = function () {
-        var _this = this;
-        var newVessel = [];
-        var legendKeys = this.state.legendRows.filter(function (x) { return x.enabled; }).map(function (x) { return x.label; });
-        $.each(Object.keys(this.state.dataSet), function (i, key) {
-            if (legendKeys.indexOf(key) >= 0)
-                newVessel.push({ label: key, data: _this.state.dataSet[key], color: color[key] });
-        });
-        newVessel.push([[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]]);
-        $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
+        this.createDataRows(this.state.dataSet, this.state.legendRows);
     };
     WaveformViewerGraph.prototype.getMillisecondTime = function (date) {
         var milliseconds = moment.utc(date).valueOf();

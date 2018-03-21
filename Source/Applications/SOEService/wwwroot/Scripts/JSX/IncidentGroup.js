@@ -33,12 +33,15 @@ var IncidentGroup = (function (_super) {
         }
     };
     IncidentGroup.prototype.render = function () {
-        return (React.createElement("div", { style: { height: '620px' } },
-            React.createElement("div", { style: { height: '20px', textAlign: 'center' } },
-                React.createElement("h4", null, this.state.meterName)),
-            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
-            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
-            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter })));
+        return (React.createElement("div", { className: "panel panel-default" },
+            React.createElement("div", { className: "panel-heading", style: { textAlign: 'center' } },
+                React.createElement("h4", { className: "panel-title" },
+                    React.createElement("a", { href: '#' + this.state.meterName, "data-toggle": "collapse" }, this.state.meterName))),
+            React.createElement("div", { id: this.state.meterName, className: "panel-body collapse in", style: { padding: '0' } },
+                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
+                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
+                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter })),
+            React.createElement("br", null)));
     };
     IncidentGroup.prototype.stateSetter = function (obj) {
         this.setState(obj);

@@ -54822,7 +54822,9 @@ var WaveformViewer = (function (_super) {
                     endString = moment.unix(endUnix).format('YYYY-MM-DDTHH:mm:ss');
                 _this.setState({ EndDate: endString });
             }
-            _this.dynamicRows = data.map(function (d, i) {
+            var parentIds = data.map(function (x) { return x.ParentID; });
+            var meterIds = data.map(function (x) { return x.MeterID; });
+            var parentMeterIndex = _this.dynamicRows = data.map(function (d, i) {
                 return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
             });
             _this.forceUpdate();
@@ -54840,7 +54842,7 @@ var WaveformViewer = (function (_super) {
         }, 500);
     };
     WaveformViewer.prototype.render = function () {
-        return this.dynamicRows;
+        return (React.createElement("div", { className: "panel-group" }, this.dynamicRows));
     };
     WaveformViewer.prototype.stateSetter = function (obj) {
         var _this = this;
@@ -54891,12 +54893,15 @@ var IncidentGroup = (function (_super) {
         }
     };
     IncidentGroup.prototype.render = function () {
-        return (React.createElement("div", { style: { height: '620px' } },
-            React.createElement("div", { style: { height: '20px', textAlign: 'center' } },
-                React.createElement("h4", null, this.state.meterName)),
-            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
-            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
-            React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter })));
+        return (React.createElement("div", { className: "panel panel-default" },
+            React.createElement("div", { className: "panel-heading", style: { textAlign: 'center' } },
+                React.createElement("h4", { className: "panel-title" },
+                    React.createElement("a", { href: '#' + this.state.meterName, "data-toggle": "collapse" }, this.state.meterName))),
+            React.createElement("div", { id: this.state.meterName, className: "panel-body collapse in", style: { padding: '0' } },
+                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
+                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
+                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter })),
+            React.createElement("br", null)));
     };
     IncidentGroup.prototype.stateSetter = function (obj) {
         this.setState(obj);
@@ -54988,24 +54993,10 @@ var WaveformViewerGraph = (function (_super) {
                         return ctrl.defaultTickFormatter(trunc, axis) + " ms";
                     }
                     if (axis.delta < 1000) {
-                        var format = moment(value).utc().format("mm:ss");
-                        var ticks = Math.floor(value * 10000);
-                        var subsecond = ticks % 10000000;
-                        while (subsecond > 0 && subsecond % 10 == 0)
-                            subsecond /= 10;
-                        if (subsecond != 0)
-                            return format + "." + subsecond;
-                        return format;
+                        return moment(value).format("mm:ss.SS");
                     }
                     else {
-                        var format = moment(value).utc().format("HH:mm:ss");
-                        var ticks = Math.floor(value * 10000);
-                        var subsecond = ticks % 10000000;
-                        while (subsecond > 0 && subsecond % 10 == 0)
-                            subsecond /= 10;
-                        if (subsecond != 0)
-                            return format + "." + subsecond;
-                        return format;
+                        return moment(value).utc().format("HH:mm:ss.S");
                     }
                 }
             },
@@ -55027,18 +55018,12 @@ var WaveformViewerGraph = (function (_super) {
     }
     WaveformViewerGraph.prototype.getData = function (state) {
         var _this = this;
-        var ctrl = this;
-        ctrl.soeservice.getIncidentData(state).then(function (data) {
-            var newVessel = [];
-            var legend = [];
-            $.each(Object.keys(data), function (i, key) {
-                newVessel.push({ label: key, data: data[key], color: color[key] });
-                legend.push({ label: key, color: color[key], enabled: true });
-            });
-            newVessel.push({ label: null, color: null, data: [[_this.getMillisecondTime(_this.state.startDate), null], [_this.getMillisecondTime(_this.state.endDate), null]] });
-            $.plot($("#" + state.meterId + "-" + state.type), newVessel, _this.options);
-            _this.setState({ legendRows: legend, dataSet: data });
-            ctrl.plotSelected();
+        this.soeservice.getIncidentData(state).then(function (data) {
+            var legend = _this.state.legendRows;
+            if (_this.state.legendRows == undefined)
+                legend = _this.createLegendRows(data);
+            _this.createDataRows(data, legend);
+            _this.setState({ dataSet: data });
         });
     };
     WaveformViewerGraph.prototype.componentWillReceiveProps = function (nextProps) {
@@ -55052,12 +55037,88 @@ var WaveformViewerGraph = (function (_super) {
     };
     WaveformViewerGraph.prototype.componentWillUnmount = function () {
         $("#" + this.state.meterId + "-" + this.state.type).off("plotselected");
+        $("#" + this.state.meterId + "-" + this.state.type).off("plotzoom");
+        $("#" + this.state.meterId + "-" + this.state.type).off("plothover");
+    };
+    WaveformViewerGraph.prototype.createLegendRows = function (data) {
+        var legend = [];
+        $.each(Object.keys(data), function (i, key) {
+            legend.push({ label: key, color: color[key], enabled: true });
+        });
+        this.setState({ legendRows: legend });
+        return legend;
+    };
+    WaveformViewerGraph.prototype.createDataRows = function (data, legend) {
+        var newVessel = [];
+        var legendKeys = legend.filter(function (x) { return x.enabled; }).map(function (x) { return x.label; });
+        $.each(Object.keys(data), function (i, key) {
+            if (legendKeys.indexOf(key) >= 0)
+                newVessel.push({ label: key, data: data[key], color: color[key] });
+        });
+        newVessel.push([[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]]);
+        this.plot = $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
+        this.plotSelected();
+        this.plotZoom();
+        this.plotHover();
+    };
+    WaveformViewerGraph.prototype.plotZoom = function () {
+        var ctrl = this;
+        $("#" + this.state.meterId + "-" + this.state.type).off("plotzoom");
+        $("#" + ctrl.state.meterId + "-" + ctrl.state.type).bind("plotzoom", function (event, originalEvent) {
+            var minDelta = null;
+            var maxDelta = 5;
+            var xaxis = ctrl.plot.getAxes().xaxis;
+            var xcenter = ctrl.xaxisHover;
+            var xmin = xaxis.options.min;
+            var xmax = xaxis.options.max;
+            var datamin = xaxis.datamin;
+            var datamax = xaxis.datamax;
+            var deltaMagnitude;
+            var delta;
+            var factor;
+            if (xmin == null)
+                xmin = datamin;
+            if (xmax == null)
+                xmax = datamax;
+            if (xmin == null || xmax == null)
+                return;
+            xcenter = Math.max(xcenter, xmin);
+            xcenter = Math.min(xcenter, xmax);
+            if (originalEvent.wheelDelta != undefined)
+                delta = originalEvent.wheelDelta;
+            else
+                delta = -originalEvent.detail;
+            deltaMagnitude = Math.abs(delta);
+            if (minDelta == null || deltaMagnitude < minDelta)
+                minDelta = deltaMagnitude;
+            deltaMagnitude /= minDelta;
+            deltaMagnitude = Math.min(deltaMagnitude, maxDelta);
+            factor = deltaMagnitude / 10;
+            if (delta > 0) {
+                xmin = xmin * (1 - factor) + xcenter * factor;
+                xmax = xmax * (1 - factor) + xcenter * factor;
+            }
+            else {
+                xmin = (xmin - xcenter * factor) / (1 - factor);
+                xmax = (xmax - xcenter * factor) / (1 - factor);
+            }
+            if (xmin == xaxis.options.xmin && xmax == xaxis.options.xmax)
+                return;
+            ctrl.state.stateSetter({ StartDate: ctrl.getDateString(xmin), EndDate: ctrl.getDateString(xmax) });
+        });
     };
     WaveformViewerGraph.prototype.plotSelected = function () {
         var ctrl = this;
         $("#" + this.state.meterId + "-" + this.state.type).off("plotselected");
         $("#" + ctrl.state.meterId + "-" + ctrl.state.type).bind("plotselected", function (event, ranges) {
             ctrl.state.stateSetter({ StartDate: ctrl.getDateString(ranges.xaxis.from), EndDate: ctrl.getDateString(ranges.xaxis.to) });
+        });
+    };
+    WaveformViewerGraph.prototype.plotHover = function () {
+        var ctrl = this;
+        $("#" + this.state.meterId + "-" + this.state.type).off("plothover");
+        $("#" + ctrl.state.meterId + "-" + ctrl.state.type).bind("plothover", function (event, pos, item) {
+            ctrl.xaxisHover = pos.x;
         });
     };
     WaveformViewerGraph.prototype.defaultTickFormatter = function (value, axis) {
@@ -55077,15 +55138,7 @@ var WaveformViewerGraph = (function (_super) {
         return base * Math.floor(n / base);
     };
     WaveformViewerGraph.prototype.handleSeriesLegendClick = function () {
-        var _this = this;
-        var newVessel = [];
-        var legendKeys = this.state.legendRows.filter(function (x) { return x.enabled; }).map(function (x) { return x.label; });
-        $.each(Object.keys(this.state.dataSet), function (i, key) {
-            if (legendKeys.indexOf(key) >= 0)
-                newVessel.push({ label: key, data: _this.state.dataSet[key], color: color[key] });
-        });
-        newVessel.push([[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]]);
-        $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
+        this.createDataRows(this.state.dataSet, this.state.legendRows);
     };
     WaveformViewerGraph.prototype.getMillisecondTime = function (date) {
         var milliseconds = moment.utc(date).valueOf();

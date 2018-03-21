@@ -44,5 +44,9 @@
     <script>
         $('#bodyContainer').removeClass('container');
         $('#bodyContainer').css('padding-top', 'inherit');
+        window.onwheel = function (event, info) {
+            $(event.path[1]).trigger('plotzoom', event);
+            return false;
+        }
     </script>
 }

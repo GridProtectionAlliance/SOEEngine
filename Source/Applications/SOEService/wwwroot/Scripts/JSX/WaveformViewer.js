@@ -63,7 +63,9 @@ var WaveformViewer = (function (_super) {
                     endString = moment.unix(endUnix).format('YYYY-MM-DDTHH:mm:ss');
                 _this.setState({ EndDate: endString });
             }
-            _this.dynamicRows = data.map(function (d, i) {
+            var parentIds = data.map(function (x) { return x.ParentID; });
+            var meterIds = data.map(function (x) { return x.MeterID; });
+            var parentMeterIndex = _this.dynamicRows = data.map(function (d, i) {
                 return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
             });
             _this.forceUpdate();
@@ -81,7 +83,7 @@ var WaveformViewer = (function (_super) {
         }, 500);
     };
     WaveformViewer.prototype.render = function () {
-        return this.dynamicRows;
+        return (React.createElement("div", { className: "panel-group" }, this.dynamicRows));
     };
     WaveformViewer.prototype.stateSetter = function (obj) {
         var _this = this;
