@@ -41,6 +41,15 @@
     string timeContext = parameters["timeContext"] ?? "";
     string date = parameters["date"] ?? "";
     string name = parameters["name"] ?? "";
+    int count = int.Parse(parameters["count"] ?? "0");
+    int id = 0;
+    if (count == 1) {
+
+        DateTime startDate = DateTime.ParseExact(date, "yyyyMMddHH", CultureInfo.InvariantCulture);
+        DateTime endDate = (DateTime)typeof(DateTime).GetMethod("Add" + timeContext).Invoke(startDate, new object[] { 1 });
+
+        id =  dataContext.Connection.ExecuteScalar<int>("SELECT ID FROM IncidentEventCycleDataView WHERE StartTime BETWEEN {0} AND {1} AND " + levels + " = {2}", startDate, endDate, name);
+    }
 
     ViewBag.AddNewEditTitle = "";
     ViewBag.HeaderColumns = new[]
@@ -106,6 +115,9 @@
     <script>
         @Raw(dataContext.RenderViewModelConfiguration<IncidentEventCycleDataView, DataHub>(ViewBag, "StartTime", null, date, name, levels, limits, timeContext))
 
+        var id = @id;
+        if (id > 0)
+            window.location.href = '@Url.Content("CommonAggregateView.cshtml?IncidentID=" + id)'
         $(function () {
             $("#openSOEDialog").modal({ show: false, backdrop: "static", keyboard: false });
         });
