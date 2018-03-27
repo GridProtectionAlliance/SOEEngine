@@ -25,11 +25,17 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import WaveformViewerGraph from './WaveformViewGraph';
 import * as _ from "lodash";
+import SOEService from './../Services/SOEService';
 
 export default class IncidentGroup extends React.Component<any, any>{
+    soeservice: SOEService;
+
     constructor(props) {
         super(props);
+        this.soeservice = new SOEService();
+
         this.state = {
+            incidentId: props.incidentId,
             meterId: props.meterId,
             startDate: props.startDate,
             endDate: props.endDate,
@@ -46,11 +52,12 @@ export default class IncidentGroup extends React.Component<any, any>{
 
     render() {
         return (
-            <div className="panel panel-default" >
+            <div id={this.state.meterName} className="list-group-item" >
                 <div className="panel-heading" style={{textAlign: 'center'}}>
-                    <h4 className="panel-title"><a href={'#' + this.state.meterName} data-toggle="collapse">{this.state.meterName}</a></h4>
+                    <h4 className="panel-title">{this.state.meterName}</h4>
+                    <a onClick={(e)=> this.goToOpenSEE(this.state.incidentId)}>View in OpenSEE</a>
                 </div>
-                <div id={this.state.meterName} className="panel-body collapse in" style={{ padding: '0' }}>
+                <div className="panel-body collapse in" style={{ padding: '0' }}>
                     <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VX" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
                     <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="I" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
                     <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VY" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
@@ -58,6 +65,12 @@ export default class IncidentGroup extends React.Component<any, any>{
                 <br />
             </div>
         );
+    }
+
+    goToOpenSEE(incidentId) {
+        this.soeservice.getEventID(incidentId).then(res => {
+            window.open('/OpenSEE.cshtml?EventID=' + res.toString());
+        })
     }
 
     stateSetter(obj) {

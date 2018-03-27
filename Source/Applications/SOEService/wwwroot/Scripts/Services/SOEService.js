@@ -44,6 +44,13 @@ var SOEService = (function () {
             return res.data;
         });
     };
+    SOEService.prototype.getEventID = function (incidentId) {
+        return axios_1.default
+            .get('/api/Main/GetEventID/event/' + incidentId)
+            .then(function (res) {
+            return res.data;
+        });
+    };
     return SOEService;
 }());
 exports.default = SOEService;

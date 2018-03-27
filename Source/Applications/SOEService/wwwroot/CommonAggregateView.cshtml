@@ -32,6 +32,58 @@
     ViewBag.Title = "Aggregate Waveform Viewer";
 }
 @section StyleSheets {
+    <style>
+        .vertical-menu {
+            width: 150px; /* Set a width if you like */
+            height: inherit;
+            background-color: #eee; /* Grey background color */
+            position:relative;
+            float:left;
+        }
+
+        .vertical-menu a {
+            background-color: #eee; /* Grey background color */
+            color: black; /* Black text color */
+            display: block; /* Make the links appear below each other */
+            padding: 12px; /* Add some padding */
+            text-decoration: none; /* Remove underline from links */
+        }
+
+        .vertical-menu a:hover {
+            background-color: #ccc; /* Dark grey background on mouse-over */
+        }
+
+        .vertical-menu a.active {
+            background-color: #4CAF50; /* Add a green color to the "active/current" link */
+            color: white;
+        }
+
+        .horizontal-row {
+            position: relative;
+            width: auto;
+            height: 40px;
+            background-color: #eee; /* Grey background color */
+            color: black; /* Black text color */
+            display: block; /* Make the links appear below each other */
+        }
+
+        .waveform-viewer {
+            position: relative;
+            float: right;
+            height: inherit;
+        }
+        body{
+            overflow-y: hidden;
+        }
+        .screen {
+            position: absolute;
+            top:60px;
+        }
+
+        :focus {
+            outline: none;
+        }
+    </style>
 }
 @section Scripts {
     <script src="@Resources.Root/Shared/Scripts/flot/jquery.flot.min.js"></script>

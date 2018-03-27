@@ -255,8 +255,6 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
         });
     }
 
-
-
     defaultTickFormatter(value, axis) {
 
         var factor = axis.tickDecimals ? Math.pow(10, axis.tickDecimals) : 1;
@@ -301,7 +299,7 @@ export default class WaveformViewerGraph extends React.Component<any, any>{
     render() {
         return (
             <div>
-                <div id={this.state.meterId + "-" + this.state.type} style={{ height: '200px', float: 'left', width: this.state.pixels - 95 }}></div>
+                <div id={this.state.meterId + "-" + this.state.type} style={{ height: '200px', float: 'left', width: this.state.pixels - 95 - 180 }}></div>
                 <div id={this.state.meterId + "-" + this.state.type + '-legend'} style={{ height: '165px', marginTop: '5px', float: 'right', width: '75px', borderStyle: 'solid', borderWidth: '2px' }}>
                     <Legend data={this.state.legendRows} callback={this.handleSeriesLegendClick.bind(this)} />
                 </div>

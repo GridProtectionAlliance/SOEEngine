@@ -164,8 +164,8 @@ $(document).ready(function () {
     if (eventInfo)
         xaxisHover = Number(eventInfo.milliseconds);
 
-    $("#showdetails").hide();
-    $("#showphasor").hide();
+    //$("#showdetails").hide();
+    //$("#showphasor").hide();
 
     if (eventInfo) {
         resetWaveformDiv();

@@ -24,6 +24,7 @@
 using GSF;
 using GSF.Collections;
 using GSF.Data;
+using GSF.Data.Model;
 using GSF.Security;
 using GSF.Web.Hosting;
 using GSF.Web.Model;
@@ -215,6 +216,38 @@ namespace SOEService
             return Ok(record);
         }
 
+        /// <summary>
+        /// Return single Record
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IHttpActionResult GetEventID(int id, string modelName)
+        {
+            // Proxy all other requests
+            SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
+
+            if ((object)securityPrincipal == null || (object)securityPrincipal.Identity == null || !securityPrincipal.IsInRole("Viewer,Administrator"))
+                return BadRequest($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
+
+
+            object record;
+
+            using (DataContext dataContext = new DataContext("systemSettings"))
+            {
+                try
+                {
+                    record = dataContext.Table<Event>().QueryRecordsWhere("IncidentID = {0}", id).OrderBy(x=> x.StartTime).FirstOrDefault().ID;
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.ToString());
+                }
+            }
+
+            return Ok(record);
+        }
+
+
         #endregion
 
         #region [ PUT Operations ]
@@ -361,7 +394,7 @@ namespace SOEService
                                            "GROUP BY Incident.Id, Incident.StartTime, Incident.MeterID " +
                                         ") AS IncidentQuery Join " +
                                         "Meter ON Meter.ID = incidentquery.MeterID Join " +
-                                        "Circuit ON Circuit.ID = Meter.CircuitNormalID JOIN " +
+                                        "Circuit ON Circuit.ID = Meter.CircuitID JOIN " +
                                         "System ON System.ID = Circuit.SystemID " +
                                     (circuitName != null ? $"WHERE Circuit.Name LIKE '{circuitName}'" : "") +
                                     (systemName != null ? $"WHERE System.Name LIKE '{systemName}'" : "") +
@@ -390,7 +423,6 @@ namespace SOEService
         public IHttpActionResult GetIncidentGroups(string modelName, [FromBody]JObject record)
         {
             int incidentID;
-            DataTable table;
 
             // Proxy all other requests
             SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
@@ -410,14 +442,31 @@ namespace SOEService
             {
                 try
                 {
-                    int circuitID = conn.ExecuteScalar<int>("SELECT CircuitNormalID FROM Meter JOIN Event ON Meter.ID = Event.MeterID WHERE Event.IncidentID = {0}", incidentID);
+                    int circuitID = conn.ExecuteScalar<int>("SELECT CircuitID FROM Meter JOIN Event ON Meter.ID = Event.MeterID WHERE Event.IncidentID = {0}", incidentID);
+
+                    IEnumerable<Meter> devicesForCircuit = (new TableOperations<Meter>(conn)).QueryRecordsWhere("CircuitID = {0}", circuitID);
+                    Dictionary<int, Meter> deviceForCircuitDict = devicesForCircuit.ToDictionary(x => x.ID);
+                    Meter nullMeter = new Meter() { AssetKey= "null"};
+                    Dictionary<string, IEnumerable<Meter>> childGrouping = devicesForCircuit.GroupBy(x =>
+                    {
+                        if (deviceForCircuitDict.ContainsKey(x.ParentNormalID ?? 0))
+                            return deviceForCircuitDict[x.ParentNormalID ?? 0];
+                        else
+                            return nullMeter;
+                    }).ToDictionary(x => x.Key.AssetKey, x => x.AsEnumerable());
+                    List<Meter> devices = new List<Meter>();
+                    IEnumerable<Meter> childDevices = childGrouping[nullMeter.AssetKey];
+                    selfFunction(devices, childDevices, childGrouping);
+
                     DateTime startTime = conn.ExecuteScalar<DateTime>("SELECT StartTime FROM Incident WHERE ID = {0}", incidentID);
                     DateTime endTime = conn.ExecuteScalar<DateTime>("SELECT EndTime FROM Incident WHERE ID = {0}", incidentID);
                     int timeTolerance = conn.ExecuteScalar<int?>("SELECT Value FROM Setting WHERE Name = 'TimeTolerance'") ?? 22;
                     string s = $"select * from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', {timeTolerance})";
+                    string s2 = $"select distinct Timestamp from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', {timeTolerance}) as tbl join CycleDataSOEPointView ON CycleDataSOEPointView.IncidentID = tbl.ID Order By Timestamp";
 
-                    table = conn.RetrieveData(s);
-                    return Ok(table);
+                    DataTable table = conn.RetrieveData(s);
+                    DataTable table2 = conn.RetrieveData(s2);
+                    return Ok(new List<dynamic>() { table, devices, table2 });
 
                 }
                 catch (Exception ex)
@@ -493,6 +542,76 @@ namespace SOEService
                     return BadRequest(ex.ToString());
                 }
 
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IHttpActionResult GetDeviceOrder(string modelName, [FromBody]JObject record)
+        {
+            int incidentID;
+            // Proxy all other requests
+            SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
+
+            if ((object)securityPrincipal == null || (object)securityPrincipal.Identity == null || !securityPrincipal.IsInRole("Viewer,Administrator"))
+                return BadRequest($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
+            try
+            {
+                incidentID = record["incidentId"]?.Value<int>() ?? 0;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.ToString()}");
+            }
+
+            using (AdoDataConnection conn = new AdoDataConnection("systemSettings"))
+            {
+                try
+                {
+
+                    int circuitID = conn.ExecuteScalar<int>("SELECT CircuitID FROM Meter JOIN Event ON Meter.ID = Event.MeterID WHERE Event.IncidentID = {0}", incidentID);
+                    IEnumerable<Meter> devicesForCircuit = (new TableOperations<Meter>(conn)).QueryRecordsWhere("CircuitID = ", circuitID);
+                    Dictionary<int, Meter> deviceForCircuitDict = devicesForCircuit.ToDictionary(x => x.ID);
+                    Meter nullMeter = new Meter();
+                    Dictionary<string, IEnumerable<Meter>> childGrouping = devicesForCircuit.GroupBy(x =>
+                    {
+                        if (deviceForCircuitDict.ContainsKey(x.ParentNormalID ?? 0))
+                            return deviceForCircuitDict[x.ParentNormalID ?? 0];
+                        else
+                            return nullMeter;
+                    }).ToDictionary(x => x.Key.AssetKey, x => x.AsEnumerable());
+                    List<Meter> devices = new List<Meter>();
+                    IEnumerable<Meter> childDevices = childGrouping[nullMeter.AssetKey];
+                    selfFunction(devices, childDevices, childGrouping);
+
+                    DateTime startTime = conn.ExecuteScalar<DateTime>("SELECT StartTime FROM Incident WHERE ID = {0}", incidentID);
+                    DateTime endTime = conn.ExecuteScalar<DateTime>("SELECT EndTime FROM Incident WHERE ID = {0}", incidentID);
+                    int timeTolerance = conn.ExecuteScalar<int?>("SELECT Value FROM Setting WHERE Name = 'TimeTolerance'") ?? 22;
+                    string s = $"select * from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', {timeTolerance})";
+
+                    DataTable dataTableForInstancesByCircuit = conn.RetrieveData(s);
+
+                    return Ok();
+
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.ToString());
+                }
+
+            }
+        }
+
+        private void selfFunction(List<Meter> devices, IEnumerable<Meter> childDevices, Dictionary<string, IEnumerable<Meter>> dictionary)
+        {
+            foreach (Meter childDevice in childDevices)
+            {
+                devices.Add(childDevice);
+                if (dictionary.ContainsKey(childDevice.AssetKey))
+                {
+                    IEnumerable<Meter> subChildDevices = dictionary[childDevice.AssetKey];
+                    selfFunction(devices, subChildDevices, dictionary);
+                }
             }
         }
 

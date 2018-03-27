@@ -68,4 +68,13 @@ export default class SOEService{
 
     }
 
+    getEventID(incidentId) {
+        return axios
+            .get('/api/Main/GetEventID/event/' + incidentId)
+            .then(res => {
+                return res.data;
+            });
+
+    }
 }
+

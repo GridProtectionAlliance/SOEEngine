@@ -119,6 +119,8 @@ var WaveformViewerGraph = (function (_super) {
     };
     WaveformViewerGraph.prototype.componentWillUnmount = function () {
         $("#" + this.state.meterId + "-" + this.state.type).off("plotselected");
+        $("#" + this.state.meterId + "-" + this.state.type).off("plotzoom");
+        $("#" + this.state.meterId + "-" + this.state.type).off("plothover");
     };
     WaveformViewerGraph.prototype.createLegendRows = function (data) {
         var legend = [];
@@ -136,14 +138,69 @@ var WaveformViewerGraph = (function (_super) {
                 newVessel.push({ label: key, data: data[key], color: color[key] });
         });
         newVessel.push([[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]]);
-        $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
+        this.plot = $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
         this.plotSelected();
+        this.plotZoom();
+        this.plotHover();
+    };
+    WaveformViewerGraph.prototype.plotZoom = function () {
+        var ctrl = this;
+        $("#" + this.state.meterId + "-" + this.state.type).off("plotzoom");
+        $("#" + ctrl.state.meterId + "-" + ctrl.state.type).bind("plotzoom", function (event, originalEvent) {
+            var minDelta = null;
+            var maxDelta = 5;
+            var xaxis = ctrl.plot.getAxes().xaxis;
+            var xcenter = ctrl.xaxisHover;
+            var xmin = xaxis.options.min;
+            var xmax = xaxis.options.max;
+            var datamin = xaxis.datamin;
+            var datamax = xaxis.datamax;
+            var deltaMagnitude;
+            var delta;
+            var factor;
+            if (xmin == null)
+                xmin = datamin;
+            if (xmax == null)
+                xmax = datamax;
+            if (xmin == null || xmax == null)
+                return;
+            xcenter = Math.max(xcenter, xmin);
+            xcenter = Math.min(xcenter, xmax);
+            if (originalEvent.wheelDelta != undefined)
+                delta = originalEvent.wheelDelta;
+            else
+                delta = -originalEvent.detail;
+            deltaMagnitude = Math.abs(delta);
+            if (minDelta == null || deltaMagnitude < minDelta)
+                minDelta = deltaMagnitude;
+            deltaMagnitude /= minDelta;
+            deltaMagnitude = Math.min(deltaMagnitude, maxDelta);
+            factor = deltaMagnitude / 10;
+            if (delta > 0) {
+                xmin = xmin * (1 - factor) + xcenter * factor;
+                xmax = xmax * (1 - factor) + xcenter * factor;
+            }
+            else {
+                xmin = (xmin - xcenter * factor) / (1 - factor);
+                xmax = (xmax - xcenter * factor) / (1 - factor);
+            }
+            if (xmin == xaxis.options.xmin && xmax == xaxis.options.xmax)
+                return;
+            ctrl.state.stateSetter({ StartDate: ctrl.getDateString(xmin), EndDate: ctrl.getDateString(xmax) });
+        });
     };
     WaveformViewerGraph.prototype.plotSelected = function () {
         var ctrl = this;
         $("#" + this.state.meterId + "-" + this.state.type).off("plotselected");
         $("#" + ctrl.state.meterId + "-" + ctrl.state.type).bind("plotselected", function (event, ranges) {
             ctrl.state.stateSetter({ StartDate: ctrl.getDateString(ranges.xaxis.from), EndDate: ctrl.getDateString(ranges.xaxis.to) });
+        });
+    };
+    WaveformViewerGraph.prototype.plotHover = function () {
+        var ctrl = this;
+        $("#" + this.state.meterId + "-" + this.state.type).off("plothover");
+        $("#" + ctrl.state.meterId + "-" + ctrl.state.type).bind("plothover", function (event, pos, item) {
+            ctrl.xaxisHover = pos.x;
         });
     };
     WaveformViewerGraph.prototype.defaultTickFormatter = function (value, axis) {
@@ -177,7 +234,7 @@ var WaveformViewerGraph = (function (_super) {
     };
     WaveformViewerGraph.prototype.render = function () {
         return (React.createElement("div", null,
-            React.createElement("div", { id: this.state.meterId + "-" + this.state.type, style: { height: '200px', float: 'left', width: this.state.pixels - 95 } }),
+            React.createElement("div", { id: this.state.meterId + "-" + this.state.type, style: { height: '200px', float: 'left', width: this.state.pixels - 95 - 180 } }),
             React.createElement("div", { id: this.state.meterId + "-" + this.state.type + '-legend', style: { height: '165px', marginTop: '5px', float: 'right', width: '75px', borderStyle: 'solid', borderWidth: '2px' } },
                 React.createElement(Legend_1.default, { data: this.state.legendRows, callback: this.handleSeriesLegendClick.bind(this) }))));
     };

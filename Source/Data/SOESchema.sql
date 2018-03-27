@@ -234,12 +234,8 @@ CREATE TABLE Meter
     MeterLocationID INT NOT NULL REFERENCES MeterLocation(ID),
     ParentNormalID INT NULL REFERENCES Meter(ID),
 	ParentAlternateID INT NULL REFERENCES Meter(ID),
-	CircuitNormalID INT NULL REFERENCES Circuit(ID),
-	CircuitAlternateID INT NULL REFERENCES Circuit(ID),
+	CircuitID INT NULL REFERENCES Circuit(ID),
 	IsNormallyOpen bit not null,
-	RootPNGFolder varchar(max) null,
-	AnalysisLink varchar(max) null,
-	ClassifyLink varchar(max) null,
     Name VARCHAR(200) NOT NULL,
     Alias VARCHAR(200) NULL,
     ShortName VARCHAR(50) NULL,
@@ -248,7 +244,8 @@ CREATE TABLE Meter
     TimeZone VARCHAR(200) NULL,
     Description VARCHAR(MAX) NULL,
     Phasing VARCHAR(3) NULL,
-    Orientation VARCHAR(2) NULL
+    Orientation VARCHAR(2) NULL,
+	ExtraData VARCHAR(max) NULL
 )
 GO
 
@@ -855,6 +852,70 @@ AS RETURN
 )
 GO
 
+CREATE FUNCTION [dbo].[GetNearbyIncidentsByCircuit]
+(
+    @circuitID INT,
+    @startTime DATETIME2,
+    @endTime DATETIME2,
+    @timeTolerance FLOAT
+)
+RETURNS TABLE
+AS RETURN
+(
+    WITH LeftIncidentGroup AS
+    (
+        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID
+        FROM Incident Join 
+			 Meter ON Incident.MeterID = meter.ID
+        WHERE
+            Meter.CircuitID = @circuitID AND
+            EndTime < @endTime AND
+            EndTime >= dbo.AdjustDateTime2(@startTime, -@timeTolerance)
+        UNION ALL
+        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID
+        FROM Incident Join 
+			 Meter ON Incident.MeterID = meter.ID JOIN 
+			 LeftIncidentGroup ON
+				Meter.CircuitID = LeftIncidentGroup.CircuitID AND
+				Incident.EndTime < LeftIncidentGroup.EndTime AND
+				Incident.EndTime >= dbo.AdjustDateTime2(LeftIncidentGroup.StartTime, -@timeTolerance)
+    ),
+    RightIncidentGroup AS
+    (
+        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID
+        FROM Incident Join 
+			 Meter ON Incident.MeterID = meter.ID
+        WHERE
+            Meter.CircuitID = @circuitID AND
+            StartTime > @startTime AND
+            StartTime <= dbo.AdjustDateTime2(@endTime, @timeTolerance)
+        UNION ALL
+        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID
+        FROM Incident Join 
+			 Meter ON Incident.MeterID = meter.ID JOIN 
+			 RightIncidentGroup ON
+				Meter.CircuitID = RightIncidentGroup.CircuitID AND
+				Incident.StartTime > RightIncidentGroup.StartTime AND
+				Incident.StartTime <= dbo.AdjustDateTime2(RightIncidentGroup.EndTime, @timeTolerance)
+    ),
+    MiddleIncidentGroup AS
+    (
+        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID
+        FROM Incident Join 
+			 Meter ON Incident.MeterID = meter.ID
+        WHERE
+            Meter.CircuitID = @circuitID AND
+            StartTime <= @endTime AND
+            EndTime >= @startTime
+    )
+    SELECT * FROM LeftIncidentGroup UNION
+    SELECT * FROM RightIncidentGroup UNION
+    SELECT * FROM MiddleIncidentGroup
+)
+
+GO
+
+
 ----- VIEWS -----
 
 CREATE VIEW EventDetail AS
@@ -1391,7 +1452,7 @@ WITH IncidentEventCycleDataView0 AS
 		Meter ON Incident.MeterID = Meter.ID INNER JOIN
 		MeterLine ON Meter.ID = MeterLine.MeterID INNER JOIN
 		Line ON MeterLine.LineID = Line.ID INNER JOIN
-		Circuit ON Circuit.ID = Meter.CircuitNormalID INNER JOIN
+		Circuit ON Circuit.ID = Meter.CircuitID INNER JOIN
 		System ON System.ID = Circuit.SystemID
 )
 SELECT
@@ -1549,5 +1610,34 @@ BEGIN
     DEALLOCATE DeleteCursor
 
     DROP TABLE #DeleteCascade
+END
+GO
+
+CREATE PROCEDURE [dbo].[GetPreviousAndNextEventIdsForCircuit]
+    @EventID as INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @currentTime DATETIME2,
+            @meterID INT,
+            @lineID INT,
+			@parentID INT
+
+    SELECT @currentTime = StartTime, @meterID = MeterID, @lineID = LineID, @parentID = (SELECT ParentNormalID FROM Meter WHERE ID = Event.MeterID)
+    FROM Event
+    WHERE ID = @EventID
+
+    SELECT evt2.ID as previd, evt3.ID as nextid
+    FROM Event evt1 LEFT OUTER JOIN 
+         Event evt2 ON evt2.StartTime = (SELECT MAX(StartTime)
+										 FROM Event
+										 WHERE StartTime < @currentTime AND MeterID = @meterID AND LineID = @lineID) AND evt2.MeterID = @parentID
+         LEFT OUTER JOIN 
+         Event evt3 ON evt3.StartTime = (SELECT MIN(StartTime)
+										 FROM Event
+										 WHERE StartTime > @currentTime AND MeterID = @meterID) 
+         AND evt3.MeterID = (SELECT ID FROM Meter WHERE ParentNormalID = @parentID)
+    WHERE evt1.ID = @EventID
 END
 GO

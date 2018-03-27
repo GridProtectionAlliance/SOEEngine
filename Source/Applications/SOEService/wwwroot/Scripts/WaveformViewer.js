@@ -4817,7 +4817,7 @@ process.umask = function() { return 0; };
 "use strict";
 
 
-var bind = __webpack_require__(144);
+var bind = __webpack_require__(145);
 var isBuffer = __webpack_require__(169);
 
 /*global toString:true*/
@@ -22531,10 +22531,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(145);
+    adapter = __webpack_require__(146);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(145);
+    adapter = __webpack_require__(146);
   }
   return adapter;
 }
@@ -34696,6 +34696,69 @@ return zhTw;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
+var axios_1 = __webpack_require__(167);
+var moment = __webpack_require__(0);
+var SOEService = (function () {
+    function SOEService() {
+    }
+    SOEService.prototype.getView = function (filters) {
+        return axios_1.default
+            .post('/api/Main/GetView/model', {
+            date: moment(filters.date, 'YYYYMMDDHH').format('YYYY-MM-DDTHH:mm:ssZ'),
+            timeContext: filters.timeContext,
+            numBuckets: filters.numBuckets,
+            limits: filters.limits,
+            levels: filters.levels,
+            circuitName: (filters.levels == 'Device' ? filters.filter : null),
+            systemName: (filters.levels == 'Circuit' ? filters.filter : null)
+        })
+            .then(function (res) {
+            return res.data;
+        });
+    };
+    ;
+    SOEService.prototype.getIncidentGroups = function (filters) {
+        return axios_1.default
+            .post('/api/Main/GetIncidentGroups/model', {
+            IncidentID: filters.IncidentID
+        })
+            .then(function (res) {
+            return res.data;
+        });
+    };
+    SOEService.prototype.getIncidentData = function (filters) {
+        return axios_1.default
+            .post('/api/Main/GetIncidentData/' + filters.meterId + '-' + filters.type, {
+            circuitId: filters.circuitId,
+            startDate: filters.startDate,
+            endDate: filters.endDate,
+            meterId: filters.meterId,
+            type: filters.type,
+            pixels: filters.pixels
+        })
+            .then(function (res) {
+            return res.data;
+        });
+    };
+    SOEService.prototype.getEventID = function (incidentId) {
+        return axios_1.default
+            .get('/api/Main/GetEventID/event/' + incidentId)
+            .then(function (res) {
+            return res.data;
+        });
+    };
+    return SOEService;
+}());
+exports.default = SOEService;
+
+
+/***/ }),
+/* 145 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = function bind(fn, thisArg) {
   return function wrap() {
@@ -34709,7 +34772,7 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34720,7 +34783,7 @@ var settle = __webpack_require__(172);
 var buildURL = __webpack_require__(174);
 var parseHeaders = __webpack_require__(175);
 var isURLSameOrigin = __webpack_require__(176);
-var createError = __webpack_require__(146);
+var createError = __webpack_require__(147);
 var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(177);
 
 module.exports = function xhrAdapter(config) {
@@ -34897,7 +34960,7 @@ module.exports = function xhrAdapter(config) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34922,7 +34985,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34934,7 +34997,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 148 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34960,7 +35023,7 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 149 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35028,7 +35091,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35095,7 +35158,7 @@ var createPath = exports.createPath = function createPath(location) {
 };
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35141,63 +35204,7 @@ if (process.env.NODE_ENV === 'production') {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 152 */,
-/* 153 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var axios_1 = __webpack_require__(167);
-var moment = __webpack_require__(0);
-var SOEService = (function () {
-    function SOEService() {
-    }
-    SOEService.prototype.getView = function (filters) {
-        return axios_1.default
-            .post('/api/Main/GetView/model', {
-            date: moment(filters.date, 'YYYYMMDDHH').format('YYYY-MM-DDTHH:mm:ssZ'),
-            timeContext: filters.timeContext,
-            numBuckets: filters.numBuckets,
-            limits: filters.limits,
-            levels: filters.levels,
-            circuitName: (filters.levels == 'Device' ? filters.filter : null),
-            systemName: (filters.levels == 'Circuit' ? filters.filter : null)
-        })
-            .then(function (res) {
-            return res.data;
-        });
-    };
-    ;
-    SOEService.prototype.getIncidentGroups = function (filters) {
-        return axios_1.default
-            .post('/api/Main/GetIncidentGroups/model', {
-            IncidentID: filters.IncidentID
-        })
-            .then(function (res) {
-            return res.data;
-        });
-    };
-    SOEService.prototype.getIncidentData = function (filters) {
-        return axios_1.default
-            .post('/api/Main/GetIncidentData/' + filters.meterId + '-' + filters.type, {
-            circuitId: filters.circuitId,
-            startDate: filters.startDate,
-            endDate: filters.endDate,
-            meterId: filters.meterId,
-            type: filters.type,
-            pixels: filters.pixels
-        })
-            .then(function (res) {
-            return res.data;
-        });
-    };
-    return SOEService;
-}());
-exports.default = SOEService;
-
-
-/***/ }),
+/* 153 */,
 /* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -52742,7 +52749,7 @@ module.exports = __webpack_require__(168);
 
 
 var utils = __webpack_require__(3);
-var bind = __webpack_require__(144);
+var bind = __webpack_require__(145);
 var Axios = __webpack_require__(170);
 var defaults = __webpack_require__(13);
 
@@ -52777,9 +52784,9 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(148);
+axios.Cancel = __webpack_require__(149);
 axios.CancelToken = __webpack_require__(184);
-axios.isCancel = __webpack_require__(147);
+axios.isCancel = __webpack_require__(148);
 
 // Expose all/spread
 axios.all = function all(promises) {
@@ -52932,7 +52939,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 "use strict";
 
 
-var createError = __webpack_require__(146);
+var createError = __webpack_require__(147);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -53367,7 +53374,7 @@ module.exports = InterceptorManager;
 
 var utils = __webpack_require__(3);
 var transformData = __webpack_require__(181);
-var isCancel = __webpack_require__(147);
+var isCancel = __webpack_require__(148);
 var defaults = __webpack_require__(13);
 var isAbsoluteURL = __webpack_require__(182);
 var combineURLs = __webpack_require__(183);
@@ -53527,7 +53534,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 "use strict";
 
 
-var Cancel = __webpack_require__(148);
+var Cancel = __webpack_require__(149);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -53631,7 +53638,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _warning = __webpack_require__(149);
+var _warning = __webpack_require__(150);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -53641,7 +53648,7 @@ var _invariant2 = _interopRequireDefault(_invariant);
 
 var _LocationUtils = __webpack_require__(188);
 
-var _PathUtils = __webpack_require__(150);
+var _PathUtils = __webpack_require__(151);
 
 var _createTransitionManager = __webpack_require__(191);
 
@@ -54010,7 +54017,7 @@ var _valueEqual = __webpack_require__(190);
 
 var _valueEqual2 = _interopRequireDefault(_valueEqual);
 
-var _PathUtils = __webpack_require__(150);
+var _PathUtils = __webpack_require__(151);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -54205,7 +54212,7 @@ function valueEqual(a, b) {
 
 exports.__esModule = true;
 
-var _warning = __webpack_require__(149);
+var _warning = __webpack_require__(150);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -54770,8 +54777,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(1);
-var ReactDOM = __webpack_require__(151);
-var SOEService_1 = __webpack_require__(153);
+var ReactDOM = __webpack_require__(152);
+var SOEService_1 = __webpack_require__(144);
 var IncidentGroup_1 = __webpack_require__(259);
 var createBrowserHistory_1 = __webpack_require__(186);
 var queryString = __webpack_require__(193);
@@ -54799,18 +54806,14 @@ var WaveformViewer = (function (_super) {
                 _this.getData(_this.state);
             });
         });
-        var div = document.createElement('div');
-        var ul = document.querySelector('#navbar ul');
-        var r = ReactDOM.render(React.createElement(AggViewNavBar, { collapseCallback: _this.collapseAllPanels, zoomCallback: _this.resetZoom.bind(_this) }), div, function () {
-            ul.appendChild(ReactDOM.findDOMNode(div.firstElementChild));
-        });
         return _this;
     }
     WaveformViewer.prototype.getData = function (state) {
         var _this = this;
         this.soeservice.getIncidentGroups(state).then(function (data) {
+            var orderedData = data[1].filter(function (x) { return data[0].map(function (y) { return y.MeterID; }).indexOf(x.ID) >= 0; }).map(function (x) { return data[0][data[0].map(function (y) { return y.MeterID; }).indexOf(x.ID)]; });
             if (_this.state.StartDate == null) {
-                var startUnix = Math.min.apply(Math, data.map(function (x) { return moment(x.StartTime).unix() + (x.StartTime.indexOf('.') >= 0 ? parseFloat('.' + x.StartTime.split('.')[1]) : 0); }));
+                var startUnix = Math.min.apply(Math, orderedData.map(function (x) { return moment(x.StartTime).unix() + (x.StartTime.indexOf('.') >= 0 ? parseFloat('.' + x.StartTime.split('.')[1]) : 0); }));
                 var startString = '';
                 if (startUnix.toString().indexOf('.') >= 0)
                     startString = moment.unix(parseInt(startUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + startUnix.toString().split('.')[1];
@@ -54819,7 +54822,7 @@ var WaveformViewer = (function (_super) {
                 _this.setState({ StartDate: startString });
             }
             if (_this.state.EndDate == null) {
-                var endUnix = Math.max.apply(Math, data.map(function (x) { return moment(x.EndTime).unix() + (x.EndTime.indexOf('.') >= 0 ? parseFloat('.' + x.EndTime.split('.')[1]) : 0); }));
+                var endUnix = Math.max.apply(Math, orderedData.map(function (x) { return moment(x.EndTime).unix() + (x.EndTime.indexOf('.') >= 0 ? parseFloat('.' + x.EndTime.split('.')[1]) : 0); }));
                 var endString = '';
                 if (endUnix.toString().indexOf('.') >= 0)
                     endString = moment.unix(parseInt(endUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + endUnix.toString().split('.')[1];
@@ -54827,17 +54830,44 @@ var WaveformViewer = (function (_super) {
                     endString = moment.unix(endUnix).format('YYYY-MM-DDTHH:mm:ss');
                 _this.setState({ EndDate: endString });
             }
-            var parentIds = data.map(function (x) { return x.ParentID; });
-            var meterIds = data.map(function (x) { return x.MeterID; });
-            var parentMeterIndex = _this.dynamicRows = data.map(function (d, i) {
-                return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
+            var parentIds = orderedData.map(function (x) { return x.ParentID; });
+            var meterIds = orderedData.map(function (x) { return x.MeterID; });
+            _this.meterList = orderedData.map(function (x) {
+                return React.createElement("a", { key: '#' + x.MeterName, onClick: function (e) { return _this.goToDiv(x.MeterName); } }, x.MeterName);
+            });
+            _this.timeList = data[2].map(function (x, i) { return React.createElement("button", { key: i + x, onClick: function (e) { return _this.goToTime(x); }, className: "btn" }, i + 1); });
+            _this.dynamicRows = orderedData.map(function (d, i) {
+                return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], incidentId: d["ID"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
             });
             _this.forceUpdate();
         });
     };
+    WaveformViewer.prototype.goToTime = function (timeStamp) {
+        var milliseconds = this.getMillisecondTime(timeStamp.Timestamp);
+        var startDate = this.getDateString(milliseconds - 20);
+        var endDate = this.getDateString(milliseconds + 20);
+        this.stateSetter({
+            StartDate: startDate,
+            EndDate: endDate
+        });
+    };
+    WaveformViewer.prototype.goToDiv = function (meterName) {
+        var element = document.getElementById(meterName);
+        if (element) {
+            if (!/^(?:a|select|input|button|textarea)$/i.test(element.tagName)) {
+                element.tabIndex = -1;
+            }
+            element.focus();
+        }
+    };
     WaveformViewer.prototype.componentDidMount = function () {
         this.getData(this.state);
         window.addEventListener("resize", this.handleScreenSizeChange.bind(this));
+        window.addEventListener("keyup", this.moveCharts.bind(this));
+    };
+    WaveformViewer.prototype.componentWillUnmount = function () {
+        $(window).off('resize');
+        $(window).off('keyup');
     };
     WaveformViewer.prototype.handleScreenSizeChange = function () {
         var _this = this;
@@ -54847,7 +54877,14 @@ var WaveformViewer = (function (_super) {
         }, 500);
     };
     WaveformViewer.prototype.render = function () {
-        return (React.createElement("div", { className: "panel-group" }, this.dynamicRows));
+        return (React.createElement("div", { className: "screen", style: { height: window.innerHeight - 60 } },
+            React.createElement("div", { className: "vertical-menu" }, this.meterList),
+            React.createElement("div", { className: "waveform-viewer", style: { width: window.innerWidth - 150 } },
+                React.createElement("div", { className: "horizontal-row" },
+                    React.createElement("span", null, "Points of Interest:"),
+                    this.timeList,
+                    React.createElement("button", { className: "btn", onClick: this.resetZoom.bind(this) }, "Reset")),
+                React.createElement("div", { className: "list-group", style: { maxHeight: window.innerHeight - 100, overflowY: 'auto' } }, this.dynamicRows))));
     };
     WaveformViewer.prototype.stateSetter = function (obj) {
         var _this = this;
@@ -54859,19 +54896,20 @@ var WaveformViewer = (function (_super) {
     WaveformViewer.prototype.resetZoom = function () {
         this.history['push']('CommonAggregateView.cshtml?' + queryString.stringify({ IncidentID: this.state.IncidentID }, { encode: false }));
     };
+    WaveformViewer.prototype.moveCharts = function () {
+    };
+    WaveformViewer.prototype.getMillisecondTime = function (date) {
+        var milliseconds = moment.utc(date).valueOf();
+        var millisecondsFractionFloat = parseFloat((date.toString().indexOf('.') >= 0 ? '.' + date.toString().split('.')[1] : '0')) * 1000;
+        return milliseconds + millisecondsFractionFloat - Math.floor(millisecondsFractionFloat);
+    };
+    WaveformViewer.prototype.getDateString = function (float) {
+        var date = moment.utc(float).format('YYYY-MM-DDTHH:mm:ss.SSS');
+        var millisecondFraction = parseInt((float.toString().indexOf('.') >= 0 ? float.toString().split('.')[1] : '0'));
+        return date + millisecondFraction.toString();
+    };
     return WaveformViewer;
 }(React.Component));
-var AggViewNavBar = function (props) {
-    return (React.createElement("li", { className: "active dropdown" },
-        React.createElement("a", { href: "", className: "dropdown-toggle", "data-toggle": "dropdown", role: "button", "aria-haspopup": "true", "aria-expanded": "false" },
-            "Aggr View ",
-            React.createElement("span", { className: "caret" })),
-        React.createElement("ul", { className: "dropdown-menu" },
-            React.createElement("li", null,
-                React.createElement("a", { onClick: props.zoomCallback }, "Reset Zoom")),
-            React.createElement("li", null,
-                React.createElement("a", { onClick: props.collapseCallback }, "Collapse Panels")))));
-};
 ReactDOM.render(React.createElement(WaveformViewer, null), document.getElementById('bodyContainer'));
 
 
@@ -54895,11 +54933,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(1);
 var WaveformViewGraph_1 = __webpack_require__(260);
 var _ = __webpack_require__(11);
+var SOEService_1 = __webpack_require__(144);
 var IncidentGroup = (function (_super) {
     __extends(IncidentGroup, _super);
     function IncidentGroup(props) {
         var _this = _super.call(this, props) || this;
+        _this.soeservice = new SOEService_1.default();
         _this.state = {
+            incidentId: props.incidentId,
             meterId: props.meterId,
             startDate: props.startDate,
             endDate: props.endDate,
@@ -54915,15 +54956,21 @@ var IncidentGroup = (function (_super) {
         }
     };
     IncidentGroup.prototype.render = function () {
-        return (React.createElement("div", { className: "panel panel-default" },
+        var _this = this;
+        return (React.createElement("div", { id: this.state.meterName, className: "list-group-item" },
             React.createElement("div", { className: "panel-heading", style: { textAlign: 'center' } },
-                React.createElement("h4", { className: "panel-title" },
-                    React.createElement("a", { href: '#' + this.state.meterName, "data-toggle": "collapse" }, this.state.meterName))),
-            React.createElement("div", { id: this.state.meterName, className: "panel-body collapse in", style: { padding: '0' } },
+                React.createElement("h4", { className: "panel-title" }, this.state.meterName),
+                React.createElement("a", { onClick: function (e) { return _this.goToOpenSEE(_this.state.incidentId); } }, "View in OpenSEE")),
+            React.createElement("div", { className: "panel-body collapse in", style: { padding: '0' } },
                 React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
                 React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
                 React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter })),
             React.createElement("br", null)));
+    };
+    IncidentGroup.prototype.goToOpenSEE = function (incidentId) {
+        this.soeservice.getEventID(incidentId).then(function (res) {
+            window.open('/OpenSEE.cshtml?EventID=' + res.toString());
+        });
     };
     IncidentGroup.prototype.stateSetter = function (obj) {
         this.setState(obj);
@@ -54951,7 +54998,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(1);
-var SOEService_1 = __webpack_require__(153);
+var SOEService_1 = __webpack_require__(144);
 var _ = __webpack_require__(11);
 var moment = __webpack_require__(0);
 var Legend_1 = __webpack_require__(261);
@@ -55174,7 +55221,7 @@ var WaveformViewerGraph = (function (_super) {
     };
     WaveformViewerGraph.prototype.render = function () {
         return (React.createElement("div", null,
-            React.createElement("div", { id: this.state.meterId + "-" + this.state.type, style: { height: '200px', float: 'left', width: this.state.pixels - 95 } }),
+            React.createElement("div", { id: this.state.meterId + "-" + this.state.type, style: { height: '200px', float: 'left', width: this.state.pixels - 95 - 180 } }),
             React.createElement("div", { id: this.state.meterId + "-" + this.state.type + '-legend', style: { height: '165px', marginTop: '5px', float: 'right', width: '75px', borderStyle: 'solid', borderWidth: '2px' } },
                 React.createElement(Legend_1.default, { data: this.state.legendRows, callback: this.handleSeriesLegendClick.bind(this) }))));
     };

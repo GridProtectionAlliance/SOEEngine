@@ -4817,7 +4817,7 @@ process.umask = function() { return 0; };
 "use strict";
 
 
-var bind = __webpack_require__(144);
+var bind = __webpack_require__(145);
 var isBuffer = __webpack_require__(169);
 
 /*global toString:true*/
@@ -23005,10 +23005,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(145);
+    adapter = __webpack_require__(146);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(145);
+    adapter = __webpack_require__(146);
   }
   return adapter;
 }
@@ -35563,6 +35563,69 @@ return zhTw;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
+var axios_1 = __webpack_require__(167);
+var moment = __webpack_require__(0);
+var SOEService = (function () {
+    function SOEService() {
+    }
+    SOEService.prototype.getView = function (filters) {
+        return axios_1.default
+            .post('/api/Main/GetView/model', {
+            date: moment(filters.date, 'YYYYMMDDHH').format('YYYY-MM-DDTHH:mm:ssZ'),
+            timeContext: filters.timeContext,
+            numBuckets: filters.numBuckets,
+            limits: filters.limits,
+            levels: filters.levels,
+            circuitName: (filters.levels == 'Device' ? filters.filter : null),
+            systemName: (filters.levels == 'Circuit' ? filters.filter : null)
+        })
+            .then(function (res) {
+            return res.data;
+        });
+    };
+    ;
+    SOEService.prototype.getIncidentGroups = function (filters) {
+        return axios_1.default
+            .post('/api/Main/GetIncidentGroups/model', {
+            IncidentID: filters.IncidentID
+        })
+            .then(function (res) {
+            return res.data;
+        });
+    };
+    SOEService.prototype.getIncidentData = function (filters) {
+        return axios_1.default
+            .post('/api/Main/GetIncidentData/' + filters.meterId + '-' + filters.type, {
+            circuitId: filters.circuitId,
+            startDate: filters.startDate,
+            endDate: filters.endDate,
+            meterId: filters.meterId,
+            type: filters.type,
+            pixels: filters.pixels
+        })
+            .then(function (res) {
+            return res.data;
+        });
+    };
+    SOEService.prototype.getEventID = function (incidentId) {
+        return axios_1.default
+            .get('/api/Main/GetEventID/event/' + incidentId)
+            .then(function (res) {
+            return res.data;
+        });
+    };
+    return SOEService;
+}());
+exports.default = SOEService;
+
+
+/***/ }),
+/* 145 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 module.exports = function bind(fn, thisArg) {
   return function wrap() {
@@ -35576,7 +35639,7 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35587,7 +35650,7 @@ var settle = __webpack_require__(172);
 var buildURL = __webpack_require__(174);
 var parseHeaders = __webpack_require__(175);
 var isURLSameOrigin = __webpack_require__(176);
-var createError = __webpack_require__(146);
+var createError = __webpack_require__(147);
 var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(177);
 
 module.exports = function xhrAdapter(config) {
@@ -35764,7 +35827,7 @@ module.exports = function xhrAdapter(config) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35789,7 +35852,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35801,7 +35864,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 148 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35827,7 +35890,7 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 149 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35895,7 +35958,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35962,7 +36025,7 @@ var createPath = exports.createPath = function createPath(location) {
 };
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36008,7 +36071,7 @@ if (process.env.NODE_ENV === 'production') {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 152 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36269,62 +36332,6 @@ ObjectUtils.filterConstraints = {
     }
 };
 exports.default = ObjectUtils;
-
-/***/ }),
-/* 153 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var axios_1 = __webpack_require__(167);
-var moment = __webpack_require__(0);
-var SOEService = (function () {
-    function SOEService() {
-    }
-    SOEService.prototype.getView = function (filters) {
-        return axios_1.default
-            .post('/api/Main/GetView/model', {
-            date: moment(filters.date, 'YYYYMMDDHH').format('YYYY-MM-DDTHH:mm:ssZ'),
-            timeContext: filters.timeContext,
-            numBuckets: filters.numBuckets,
-            limits: filters.limits,
-            levels: filters.levels,
-            circuitName: (filters.levels == 'Device' ? filters.filter : null),
-            systemName: (filters.levels == 'Circuit' ? filters.filter : null)
-        })
-            .then(function (res) {
-            return res.data;
-        });
-    };
-    ;
-    SOEService.prototype.getIncidentGroups = function (filters) {
-        return axios_1.default
-            .post('/api/Main/GetIncidentGroups/model', {
-            IncidentID: filters.IncidentID
-        })
-            .then(function (res) {
-            return res.data;
-        });
-    };
-    SOEService.prototype.getIncidentData = function (filters) {
-        return axios_1.default
-            .post('/api/Main/GetIncidentData/' + filters.meterId + '-' + filters.type, {
-            circuitId: filters.circuitId,
-            startDate: filters.startDate,
-            endDate: filters.endDate,
-            meterId: filters.meterId,
-            type: filters.type,
-            pixels: filters.pixels
-        })
-            .then(function (res) {
-            return res.data;
-        });
-    };
-    return SOEService;
-}());
-exports.default = SOEService;
-
 
 /***/ }),
 /* 154 */
@@ -53892,7 +53899,7 @@ module.exports = __webpack_require__(168);
 
 
 var utils = __webpack_require__(3);
-var bind = __webpack_require__(144);
+var bind = __webpack_require__(145);
 var Axios = __webpack_require__(170);
 var defaults = __webpack_require__(13);
 
@@ -53927,9 +53934,9 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(148);
+axios.Cancel = __webpack_require__(149);
 axios.CancelToken = __webpack_require__(184);
-axios.isCancel = __webpack_require__(147);
+axios.isCancel = __webpack_require__(148);
 
 // Expose all/spread
 axios.all = function all(promises) {
@@ -54082,7 +54089,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 "use strict";
 
 
-var createError = __webpack_require__(146);
+var createError = __webpack_require__(147);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -54517,7 +54524,7 @@ module.exports = InterceptorManager;
 
 var utils = __webpack_require__(3);
 var transformData = __webpack_require__(181);
-var isCancel = __webpack_require__(147);
+var isCancel = __webpack_require__(148);
 var defaults = __webpack_require__(13);
 var isAbsoluteURL = __webpack_require__(182);
 var combineURLs = __webpack_require__(183);
@@ -54677,7 +54684,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 "use strict";
 
 
-var Cancel = __webpack_require__(148);
+var Cancel = __webpack_require__(149);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -54781,7 +54788,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _warning = __webpack_require__(149);
+var _warning = __webpack_require__(150);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -54791,7 +54798,7 @@ var _invariant2 = _interopRequireDefault(_invariant);
 
 var _LocationUtils = __webpack_require__(188);
 
-var _PathUtils = __webpack_require__(150);
+var _PathUtils = __webpack_require__(151);
 
 var _createTransitionManager = __webpack_require__(191);
 
@@ -55160,7 +55167,7 @@ var _valueEqual = __webpack_require__(190);
 
 var _valueEqual2 = _interopRequireDefault(_valueEqual);
 
-var _PathUtils = __webpack_require__(150);
+var _PathUtils = __webpack_require__(151);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -55355,7 +55362,7 @@ function valueEqual(a, b) {
 
 exports.__esModule = true;
 
-var _warning = __webpack_require__(149);
+var _warning = __webpack_require__(150);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -66457,7 +66464,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(1);
-var ReactDOM = __webpack_require__(151);
+var ReactDOM = __webpack_require__(152);
 var BootstrapDateRangePicker_1 = __webpack_require__(205);
 var PrimeDataTableWrapper_1 = __webpack_require__(219);
 var Select_1 = __webpack_require__(256);
@@ -69215,7 +69222,7 @@ var DataTable_1 = __webpack_require__(232);
 var Column_1 = __webpack_require__(255);
 var _ = __webpack_require__(11);
 var moment = __webpack_require__(0);
-var SOEService_1 = __webpack_require__(153);
+var SOEService_1 = __webpack_require__(144);
 var PrimeDataTable = (function (_super) {
     __extends(PrimeDataTable, _super);
     function PrimeDataTable(props) {
@@ -69433,7 +69440,7 @@ var _TableFooter = __webpack_require__(252);
 
 var _ScrollableView = __webpack_require__(254);
 
-var _ObjectUtils = __webpack_require__(152);
+var _ObjectUtils = __webpack_require__(153);
 
 var _ObjectUtils2 = _interopRequireDefault(_ObjectUtils);
 
@@ -71299,7 +71306,7 @@ var _DomHandler = __webpack_require__(12);
 
 var _DomHandler2 = _interopRequireDefault(_DomHandler);
 
-var _ObjectUtils = __webpack_require__(152);
+var _ObjectUtils = __webpack_require__(153);
 
 var _ObjectUtils2 = _interopRequireDefault(_ObjectUtils);
 
@@ -71917,7 +71924,7 @@ var _propTypes = __webpack_require__(4);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _reactDom = __webpack_require__(151);
+var _reactDom = __webpack_require__(152);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -72701,7 +72708,7 @@ var _DomHandler = __webpack_require__(12);
 
 var _DomHandler2 = _interopRequireDefault(_DomHandler);
 
-var _ObjectUtils = __webpack_require__(152);
+var _ObjectUtils = __webpack_require__(153);
 
 var _ObjectUtils2 = _interopRequireDefault(_ObjectUtils);
 
@@ -73301,7 +73308,7 @@ var _classnames = __webpack_require__(5);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
-var _ObjectUtils = __webpack_require__(152);
+var _ObjectUtils = __webpack_require__(153);
 
 var _ObjectUtils2 = _interopRequireDefault(_ObjectUtils);
 

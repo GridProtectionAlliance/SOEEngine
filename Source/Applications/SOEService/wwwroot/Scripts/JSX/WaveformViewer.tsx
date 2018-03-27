@@ -34,6 +34,8 @@ class WaveformViewer extends React.Component<any, any>{
     history: object;
     resizeId: any;
     dynamicRows: any;
+    meterList: any;
+    timeList: any;
     constructor(props){
         super(props);
         this.soeservice = new SOEService();
@@ -49,6 +51,7 @@ class WaveformViewer extends React.Component<any, any>{
 
         this.dynamicRows = [<div key="fake"></div>];
         this.history['listen']((location, action) => {
+
             var query = queryString.parse(this.history['location'].search);
             this.setState({
                 IncidentID: (query['IncidentID'] != undefined ? query['IncidentID'] : 0),
@@ -59,21 +62,15 @@ class WaveformViewer extends React.Component<any, any>{
             });
         });
 
-        var div = document.createElement('div')
-        var ul = document.querySelector('#navbar ul');
-        var r = ReactDOM.render(<AggViewNavBar collapseCallback={this.collapseAllPanels} zoomCallback={this.resetZoom.bind(this)}/>, div, function () {
-            ul.appendChild(ReactDOM.findDOMNode(div.firstElementChild));
-        });
-
-
     }
 
     getData(state) {
         this.soeservice.getIncidentGroups(state).then(data => {
 
+            var orderedData = data[1].filter(x => data[0].map(y => y.MeterID).indexOf(x.ID) >= 0).map(x => data[0][data[0].map(y => y.MeterID).indexOf(x.ID)])
             // if start and end date are not provided calculate them from the data set
             if (this.state.StartDate == null) {
-                var startUnix = Math.min(...data.map((x) => moment(x.StartTime).unix() + (x.StartTime.indexOf('.') >= 0 ? parseFloat('.' + x.StartTime.split('.')[1]) : 0)));
+                var startUnix = Math.min(...orderedData.map((x) => moment(x.StartTime).unix() + (x.StartTime.indexOf('.') >= 0 ? parseFloat('.' + x.StartTime.split('.')[1]) : 0)));
                 var startString = '';
                 if (startUnix.toString().indexOf('.') >= 0)
                     startString = moment.unix(parseInt(startUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + startUnix.toString().split('.')[1];
@@ -83,7 +80,7 @@ class WaveformViewer extends React.Component<any, any>{
                 this.setState({ StartDate: startString });
             }
             if (this.state.EndDate == null) {
-                var endUnix = Math.max(...data.map((x) => moment(x.EndTime).unix() + (x.EndTime.indexOf('.') >=0 ? parseFloat('.' + x.EndTime.split('.')[1]) : 0)));
+                var endUnix = Math.max(...orderedData.map((x) => moment(x.EndTime).unix() + (x.EndTime.indexOf('.') >=0 ? parseFloat('.' + x.EndTime.split('.')[1]) : 0)));
                 var endString = '';
                 if (endUnix.toString().indexOf('.') >= 0)
                     endString = moment.unix(parseInt(endUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + endUnix.toString().split('.')[1];
@@ -93,20 +90,54 @@ class WaveformViewer extends React.Component<any, any>{
                 this.setState({ EndDate: endString });
             }
 
-            var parentIds = data.map(x => x.ParentID);
-            var meterIds = data.map(x => x.MeterID);
-            var parentMeterIndex = 
-            this.dynamicRows = data.map((d, i) => {
-                return <IncidentGroup key={d["MeterID"]} circuitId={d["CircuitID"]} meterId={d["MeterID"]} meterName={d["MeterName"]} startDate={this.state.StartDate} endDate={this.state.EndDate} pixels={window.innerWidth} stateSetter={this.stateSetter.bind(this)}></IncidentGroup>
+            var parentIds = orderedData.map(x => x.ParentID);
+            var meterIds = orderedData.map(x => x.MeterID);
+
+            this.meterList = orderedData.map(x => {
+                return <a key={'#' + x.MeterName} onClick={(e) => this.goToDiv(x.MeterName)}>{x.MeterName}</a>;
+            });
+            this.timeList = data[2].map((x, i) => <button key={i + x} onClick={(e)=> this.goToTime(x)}className="btn">{i + 1}</button>);
+            this.dynamicRows = orderedData.map((d, i) => {
+                return <IncidentGroup key={d["MeterID"]} incidentId={d["ID"]} circuitId={d["CircuitID"]} meterId={d["MeterID"]} meterName={d["MeterName"]} startDate={this.state.StartDate} endDate={this.state.EndDate} pixels={window.innerWidth} stateSetter={this.stateSetter.bind(this)}></IncidentGroup>
             });
             this.forceUpdate();
         });
     }
 
+    goToTime(timeStamp) {
+        var milliseconds = this.getMillisecondTime(timeStamp.Timestamp);
+        var startDate = this.getDateString(milliseconds - 20);
+        var endDate = this.getDateString(milliseconds + 20);
+        this.stateSetter({
+            StartDate: startDate,
+            EndDate: endDate
+        });
+    }
+
+    goToDiv(meterName) {
+        var element = document.getElementById(meterName);
+
+        if (element) {
+
+            if (!/^(?:a|select|input|button|textarea)$/i.test(element.tagName)) {
+                element.tabIndex = -1;
+            }
+
+            element.focus();
+        }
+    }
+
     componentDidMount() {
         this.getData(this.state);
         window.addEventListener("resize", this.handleScreenSizeChange.bind(this));
+        window.addEventListener("keyup", this.moveCharts.bind(this));
     }
+
+    componentWillUnmount() {
+        $(window).off('resize');
+        $(window).off('keyup');
+    }
+
 
     handleScreenSizeChange() {
         clearTimeout(this.resizeId);
@@ -115,10 +146,23 @@ class WaveformViewer extends React.Component<any, any>{
         }, 500);
     }
 
-    render(){
+    render() {
+
         return (
-            <div className="panel-group">
-                {this.dynamicRows}
+            <div className="screen" style={{ height: window.innerHeight - 60 }}>
+                <div className="vertical-menu">
+                    {this.meterList}
+                </div>
+                <div className="waveform-viewer" style={{ width: window.innerWidth - 150 }}>
+                    <div className="horizontal-row">
+                        <span>Points of Interest:</span>
+                        {this.timeList}
+                        <button className="btn" onClick={this.resetZoom.bind(this)}>Reset</button>
+                    </div>
+                    <div className="list-group" style={{ maxHeight: window.innerHeight - 100, overflowY: 'auto' }}>
+                        {this.dynamicRows}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -136,18 +180,25 @@ class WaveformViewer extends React.Component<any, any>{
 
     }
 
-}
+    moveCharts() {
 
-const AggViewNavBar = (props) => {
-    return (
-        <li className="active dropdown">
-            <a href="" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Aggr View <span className="caret"></span></a>
-            <ul className="dropdown-menu">
-                <li><a onClick={props.zoomCallback}>Reset Zoom</a></li>
-                <li><a onClick={props.collapseCallback}>Collapse Panels</a></li>
-            </ul>
-        </li>
-    );
+    }
+
+    getMillisecondTime(date) {
+        var milliseconds = moment.utc(date).valueOf();
+        var millisecondsFractionFloat = parseFloat((date.toString().indexOf('.') >= 0 ? '.' + date.toString().split('.')[1] : '0')) * 1000;
+
+        return milliseconds + millisecondsFractionFloat - Math.floor(millisecondsFractionFloat);
+    }
+
+    getDateString(float) {
+        var date = moment.utc(float).format('YYYY-MM-DDTHH:mm:ss.SSS');
+        var millisecondFraction = parseInt((float.toString().indexOf('.') >= 0 ? float.toString().split('.')[1] : '0'))
+
+        return date + millisecondFraction.toString();
+    }
+
+
 }
 
 ReactDOM.render(<WaveformViewer />, document.getElementById('bodyContainer'));

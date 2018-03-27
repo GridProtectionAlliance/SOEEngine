@@ -52,12 +52,9 @@ namespace SOE.Model
         public int? SubStationID { get; set; }
         public int? ParentNormalID { get; set; }
         public int? ParentAlternateID { get; set; }
-        public int? CircuitNormalID { get; set; }
-        public int? CircuitAlternateID { get; set; }
+        public int? CircuitID { get; set; }
         public bool IsNormallyOpen { get; set; }
-        public string RootPNGFolder { get; set; }
-        public string AnalysisLink {get; set;}
-        public string ClassifyLink { get; set; }
+        public string ExtraData { get; set; }
 
         [Required]
         [StringLength(50)]

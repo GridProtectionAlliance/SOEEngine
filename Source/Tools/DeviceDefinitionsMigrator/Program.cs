@@ -30,6 +30,7 @@ using GSF.Collections;
 using SOE.Model;
 using GSF.Data;
 using GSF.Data.Model;
+using Newtonsoft.Json;
 
 namespace DeviceDefinitionsMigrator
 {
@@ -329,17 +330,14 @@ namespace DeviceDefinitionsMigrator
                 Model = (string)deviceAttributes.Element("model") ?? string.Empty,
                 Phasing = (string)deviceAttributes.Element("phaseLabels") ?? string.Empty,
                 Orientation = (((string)deviceAttributes.Element("orientation")).ToLower() != "none"? (string)deviceAttributes.Element("orientation"): string.Empty) ?? string.Empty,
-                MeterLocationID = LoadMeterLocationAttributes(lookupTables,deviceAttributes, connection),
-                RootPNGFolder = (string)deviceAttributes.Element("rootPngFolder") ?? string.Empty,
-                AnalysisLink = (string)deviceAttributes.Element("analysisLink") ?? string.Empty,
-                ClassifyLink = (string)deviceAttributes.Element("classifyLink") ?? string.Empty
+                MeterLocationID = LoadMeterLocationAttributes(lookupTables,deviceAttributes, connection)
             };
 
-            if ((string)deviceAttributes.Element("sourcePreferred") != null)
-                meter.CircuitNormalID = GetOrAddCircuit((string)deviceAttributes.Element("sourcePreferred"), deviceElement, lookupTables, connection);
+            List<string> listOfNames = new List<string> { "name", "id", "make", "model", "phaseLabels", "orientation", "circuit", "subStation", "parentNormal", "parentAlternate", "stationID", "stationName", "stationLatitude", "stationLongitude" };
+            meter.ExtraData = JsonConvert.SerializeObject(deviceAttributes.Elements().Where(x => !listOfNames.Contains(x.Name.LocalName)).ToDictionary(x => x.Name.LocalName, x => x.Value));
 
-            if ((string)deviceAttributes.Element("sourceAlternate") != null && (string)deviceAttributes.Element("sourceAlternate") != "none")
-                meter.CircuitAlternateID = GetOrAddCircuit((string)deviceAttributes.Element("sourceAlternate"), deviceElement, lookupTables, connection);
+            if ((string)deviceAttributes.Element("circuit") != null)
+                meter.CircuitID = GetOrAddCircuit((string)deviceAttributes.Element("circuit"), deviceElement, lookupTables, connection);
 
             if ((string)deviceAttributes.Element("subStation") != null)
                 meter.SubStationID = GetOrAddSubStation((string)deviceAttributes.Element("subStation"), lookupTables, connection);
