@@ -1620,24 +1620,30 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @currentTime DATETIME2,
+			@beginTime DATETIME2,
+			@endTime DATETIME2,
             @meterID INT,
-            @lineID INT,
-			@parentID INT
+			@parentID INT,
+			@childID INT
 
-    SELECT @currentTime = StartTime, @meterID = MeterID, @lineID = LineID, @parentID = (SELECT ParentNormalID FROM Meter WHERE ID = Event.MeterID)
+    SELECT @currentTime = StartTime, @meterID = MeterID, @parentID = (SELECT ParentNormalID FROM Meter WHERE ID = Event.MeterID), @childID = (SELECT ID FROM Meter WHERE ParentNormalID = Event.MeterID)
     FROM Event
     WHERE ID = @EventID
 
+	SET @beginTime = DATEADD(SECOND, -11, @currentTime)
+	SET @endTime = DATEADD(SECOND, 11, @currentTime)
+
+	select * into #childEvents from (select ID, DATEDIFF(MILLISECOND, @currentTime, StartTime) as diff from event where StartTime BETWEEN @beginTime AND @endTime AND MeterID = @childID) as tbl order by diff
+    select * into #parentEvents from (select ID, DATEDIFF(MILLISECOND, @currentTime, StartTime) as diff from event where StartTime BETWEEN @beginTime AND @endTime AND MeterID = @parentID) as tbl order by diff
+
     SELECT evt2.ID as previd, evt3.ID as nextid
     FROM Event evt1 LEFT OUTER JOIN 
-         Event evt2 ON evt2.StartTime = (SELECT MAX(StartTime)
-										 FROM Event
-										 WHERE StartTime < @currentTime AND MeterID = @meterID AND LineID = @lineID) AND evt2.MeterID = @parentID
+         Event evt2 ON evt2.ID = (SELECT TOP 1 ID FROM #parentEvents)
          LEFT OUTER JOIN 
-         Event evt3 ON evt3.StartTime = (SELECT MIN(StartTime)
-										 FROM Event
-										 WHERE StartTime > @currentTime AND MeterID = @meterID) 
-         AND evt3.MeterID = (SELECT ID FROM Meter WHERE ParentNormalID = @parentID)
+         Event evt3 ON evt3.ID = (SELECT TOP 1 ID FROM #childEvents)
     WHERE evt1.ID = @EventID
+
+	drop table #childEvents
+	drop table #parentEvents
 END
 GO

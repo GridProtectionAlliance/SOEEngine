@@ -47,6 +47,12 @@
     Dictionary<string, string> parameters = request.QueryParameters();
 
     int eventID = int.Parse(parameters["EventID"] ?? "-1");
+    string navigation = "";
+    parameters.TryGetValue("navigation", out navigation);
+    string slideShow = "";
+    parameters.TryGetValue("slideshow", out slideShow);
+
+
     string soeHighlight = (parameters.ContainsKey("SOEHighlight") ? parameters["SOEHighlight"] ?? "-1" : "-1");
     string channels = "";
     EventInfo eventInfo = dataContext.Table<EventInfo>().QueryRecords(restriction: new RecordRestriction("EventID = {0}", eventID)).FirstOrDefault();
@@ -204,29 +210,38 @@
         </table>
     </div>
 
-    <div class="DockWaveformHeader table-responsive">
+    <div class="DockWaveformHeader table-responsive" style="text-align: center">
         <table class="table" style="width: 100%">
-            <tr>
+            <tr style="width: 75%">
                 <td><input class="smallbutton" type="button" value="Reset Zoom" id="resetZoom" /></td>
                 <td><input class="smallbutton" type="button" value="Show Points" onclick="showhidePoints(this);" id="showpoints" /></td>
                 <td>
+                    @NextBackButton(nextBackLookup[NextBackForCircuit].Item1, "circuit-back-ss", "&navigation=circuit&slideshow=back", "<<")
                     @NextBackButton(nextBackLookup[NextBackForCircuit].Item1, "circuit-back", "&navigation=circuit", "<")
+                    @NextBackButton(nextBackLookup[NextBackForMeter].Item1, "meter-back-ss", "&navigation=meter&slideshow=back", "<<")
                     @NextBackButton(nextBackLookup[NextBackForMeter].Item1, "meter-back", "&navigation=meter", "<")
-
                     <select id="next-back-selection">
-                        <option value="circuit" selected>Circuit</option>
-                        <option value="meter">Meter</option>
+                        <option value="circuit" @(navigation == "circuit" ? "selected" : "")>Circuit</option>
+                        <option value="meter" @(navigation == "meter" ? "selected" : "")>Meter</option>
                     </select>
-
                     @NextBackButton(nextBackLookup[NextBackForCircuit].Item2, "circuit-next", "&navigation=circuit", ">")
+                    @NextBackButton(nextBackLookup[NextBackForCircuit].Item2, "circuit-next-ss", "&navigation=circuit&slideshow=forward", ">>")
                     @NextBackButton(nextBackLookup[NextBackForMeter].Item2, "meter-next", "&navigation=meter", ">")
+                    @NextBackButton(nextBackLookup[NextBackForMeter].Item2, "meter-next-ss", "&navigation=meter&slideshow=forward", ">>")
+
                 </td>
+
+                @if (slideShow != null)
+                {
+                    <td><input class="smallbutton" type="button" value="Stop Slide Show" onclick="stopSlideShow()" id="stopslideshow" /></td>
+                }
+
                 <td><input class="smallbutton" type="button" value="Show Tooltip" onclick="showhideTooltip(this);" id="showtooltip" /></td>
 
 
                 @*<td><input class="smallbutton" type="button" value="Show Phasor" onclick="showhidePhasor(this);" id="showphasor" /></td>
         <td><input class="smallbutton" type="button" value="Fault Details" onclick="showdetails(this);" id="showdetails" /></td>*@
-            </tr>
+            </trstyle="width:>
         </table>
     </div>
     <div id="DockCharts"></div>
@@ -244,8 +259,28 @@
         $('.nextbackbutton').hide();
         $('#' + nextBackType + '-back').show();
         $('#' + nextBackType + '-next').show();
+        $('#' + nextBackType + '-back-ss').show();
+        $('#' + nextBackType + '-next-ss').show();
+
     }
 
+    var timeoutVar;
+
+    @if(slideShow != null)
+    {
+        @Raw(
+            "timeoutVar = setTimeout(function(){ " +
+            "  if ("+ (slideShow=="forward"? "true": "false").ToString() + "){ " +
+            "      document.getElementById('"+navigation+"-next-ss').click()" +
+            "  }else{ " +
+            "      document.getElementById('" + navigation+"-back-ss').click()" +
+            "}},10000);"
+         )
+    }
+
+    function stopSlideShow() {
+        clearTimeout(timeoutVar);
+    }
 </script>
 
 @helper NextBackButton(Event evt, string id, string postedURLQueryString, string text)
