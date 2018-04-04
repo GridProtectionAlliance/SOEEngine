@@ -208,6 +208,7 @@
       <ComponentRef Id="Microsoft.Owin.Security" />
       <ComponentRef Id="Microsoft.AspNet.Cors" />
       <ComponentRef Id="System.Web.Http" />
+      <ComponentRef Id="System.Web.Http.Cors" />
       <ComponentRef Id="System.Web.Http.Owin" />
       <ComponentRef Id="Newtonsoft.Json" />
       <ComponentRef Id="Owin" />
@@ -221,6 +222,7 @@
       <ComponentRef Id="System.Web.WebPages.Deployment" />
       <ComponentRef Id="System.Web.WebPages" />
       <ComponentRef Id="System.Web.WebPages.Razor" />
+      <ComponentRef Id="System.Web.Optimization" />
 
       <!-- Cleanup -->
       <Component Id="Cleanup" Guid="{C8EBB158-C708-4C94-87C1-F5DBC77D7BDE}">
@@ -338,6 +340,9 @@
       <Component Id="System.Web.Http">
         <File Id="System.Web.Http.dll" Name="System.Web.Http.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.Http.dll" />
       </Component>
+      <Component Id="System.Web.Http.Cors">
+        <File Id="System.Web.Http.Cors.dll" Name="System.Web.Http.Cors.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.Http.Cors.dll" />
+      </Component>
       <Component Id="System.Web.Http.Owin">
         <File Id="System.Web.Http.Owin.dll" Name="System.Web.Http.Owin.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.Http.Owin.dll" />
       </Component>
@@ -388,6 +393,9 @@
       </Component>
       <Component Id="System.Web.WebPages.Razor">
         <File Id="System.Web.WebPages.Razor.dll" Name="System.Web.WebPages.Razor.dll" Source="$(var.SolutionDir)Dependencies\GSF\System.Web.WebPages.Razor.dll" />
+      </Component>
+      <Component Id="System.Web.Optimization">
+        <File Id="System.Web.Optimization.dll" Name="System.Web.Optimization.dll" Source="$(var.SolutionDir)Dependencies\NuGet\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll" />
       </Component>
 
     </ComponentGroup>

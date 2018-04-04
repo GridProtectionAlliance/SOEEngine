@@ -66,7 +66,7 @@ const Row = (props) => {
     return (
         <tr>
             <td>
-                <button className="btn btn-link" onClick={props.callback}>
+                <button className="btn-link" onClick={props.callback}>
                     <div style={{ border: '1px solid #ccc', padding: '1px' }}>
                         <div style={{ width: ' 4px', height: 0, border: '5px solid ' + props.color + (props.enabled? 'FF' : '60'), overflow: 'hidden' }}>
                         </div>

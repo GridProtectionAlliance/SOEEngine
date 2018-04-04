@@ -462,11 +462,11 @@ namespace SOEService
                     DateTime endTime = conn.ExecuteScalar<DateTime>("SELECT EndTime FROM Incident WHERE ID = {0}", incidentID);
                     int timeTolerance = conn.ExecuteScalar<int?>("SELECT Value FROM Setting WHERE Name = 'TimeTolerance'") ?? 22;
                     string s = $"select * from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', {timeTolerance})";
-                    string s2 = $"select distinct Timestamp from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', {timeTolerance}) as tbl join CycleDataSOEPointView ON CycleDataSOEPointView.IncidentID = tbl.ID Order By Timestamp";
+                    //string s2 = $"select distinct Timestamp from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', {timeTolerance}) as tbl join CycleDataSOEPointView ON CycleDataSOEPointView.IncidentID = tbl.ID Order By Timestamp";
 
                     DataTable table = conn.RetrieveData(s);
-                    DataTable table2 = conn.RetrieveData(s2);
-                    return Ok(new List<dynamic>() { table, devices, table2 });
+                    //DataTable table2 = conn.RetrieveData(s2);
+                    return Ok(new List<dynamic>() { table, devices });
 
                 }
                 catch (Exception ex)

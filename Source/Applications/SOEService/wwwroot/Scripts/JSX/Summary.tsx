@@ -134,7 +134,7 @@ class Summary extends React.Component<any, any> {
                                 startDate={moment(ctrl.state.date, 'YYYYMMDDHH')}
                                 singleDatePicker={true}
                                 showDropdowns={true}
-                                applyDateRangePicker={function (msg) {
+                                applyDateRangePicker={(msg)=> {
                                     this.setState({ 'date': msg.date.format('YYYYMMDDHH') }, () => ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)));
                                 }}
                             />

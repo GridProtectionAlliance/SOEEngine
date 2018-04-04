@@ -115,9 +115,9 @@ var WaveformViewer = (function (_super) {
             React.createElement("div", { className: "vertical-menu" }, this.meterList),
             React.createElement("div", { className: "waveform-viewer", style: { width: window.innerWidth - 150 } },
                 React.createElement("div", { className: "horizontal-row" },
-                    React.createElement("span", null, "Points of Interest:"),
-                    this.timeList,
-                    React.createElement("button", { className: "btn", onClick: this.resetZoom.bind(this) }, "Reset")),
+                    React.createElement("button", { className: "btn", onClick: this.resetZoom.bind(this) }, "Reset"),
+                    React.createElement("span", { style: { marginLeft: '3px', marginRight: '3px' } }, "Points of Interest:"),
+                    this.timeList),
                 React.createElement("div", { className: "list-group", style: { maxHeight: window.innerHeight - 100, overflowY: 'auto' } }, this.dynamicRows))));
     };
     WaveformViewer.prototype.stateSetter = function (obj) {

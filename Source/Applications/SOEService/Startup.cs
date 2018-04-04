@@ -24,6 +24,7 @@
 using System;
 using System.Security;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.ExceptionHandling;
 using GSF.Web;
 using GSF.Web.Hosting;
@@ -56,6 +57,7 @@ namespace SOEService
             settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             JsonSerializer serializer = JsonSerializer.Create(settings);
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
+            AppModel model = Program.Host.Model;
 
             // Load security hub into application domain before establishing SignalR hub configuration
             try
@@ -87,8 +89,18 @@ namespace SOEService
             // Enable GSF role-based security authentication
             app.UseAuthentication(AuthenticationOptions);
 
-            // Enable cross-domain scripting
-            app.UseCors(CorsOptions.AllowAll);
+            // Enable cross-domain scripting default policy - controllers can manually
+            // apply "EnableCors" attribute to class or an action to override default
+            // policy configured here
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(model.Global.DefaultCorsOrigins))
+                    httpConfig.EnableCors(new EnableCorsAttribute(model.Global.DefaultCorsOrigins, model.Global.DefaultCorsHeaders, model.Global.DefaultCorsMethods) { SupportsCredentials = model.Global.DefaultCorsSupportsCredentials });
+            }
+            catch (Exception ex)
+            {
+                Program.Host.LogException(new InvalidOperationException($"Failed to establish default CORS policy: {ex.Message}", ex));
+            }
 
             // Load ServiceHub SignalR class
             app.MapSignalR(hubConfig);

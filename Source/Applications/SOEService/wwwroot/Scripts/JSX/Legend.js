@@ -47,7 +47,7 @@ exports.default = Legend;
 var Row = function (props) {
     return (React.createElement("tr", null,
         React.createElement("td", null,
-            React.createElement("button", { className: "btn btn-link", onClick: props.callback },
+            React.createElement("button", { className: "btn-link", onClick: props.callback },
                 React.createElement("div", { style: { border: '1px solid #ccc', padding: '1px' } },
                     React.createElement("div", { style: { width: ' 4px', height: 0, border: '5px solid ' + props.color + (props.enabled ? 'FF' : '60'), overflow: 'hidden' } })))),
         React.createElement("td", null,

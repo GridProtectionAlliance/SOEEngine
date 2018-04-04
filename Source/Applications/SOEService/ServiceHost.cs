@@ -97,7 +97,6 @@ using System.Data;
 using GSF.Identity;
 using System.Security.Principal;
 using GSF.Security;
-using System.Web.Optimization;
 
 namespace SOEService
 {
@@ -316,8 +315,6 @@ namespace SOEService
         {
             try
             {
-                BundleConfig.RegisterBundles(BundleTable.Bundles);
-
                 ConfigurationFile.Current.Reload();
                 AdoDataConnection.ReloadConfigurationSettings();
 
@@ -336,6 +333,12 @@ namespace SOEService
 
                 securityProvider.Add("ConnectionString", "Eval(systemSettings.ConnectionString)", "Connection connection string to be used for connection to the backend security datastore.");
                 securityProvider.Add("DataProviderString", "Eval(systemSettings.DataProviderString)", "Configuration database ADO.NET data provider assembly type creation string to be used for connection to the backend security datastore.");
+                systemSettings.Add("DefaultCorsOrigins", "", "Comma-separated list of allowed origins (including http:// prefix) that define the default CORS policy. Use '*' to allow all or empty string to disable CORS.");
+                systemSettings.Add("DefaultCorsHeaders", "*", "Comma-separated list of supported headers that define the default CORS policy. Use '*' to allow all or empty string to allow none.");
+                systemSettings.Add("DefaultCorsMethods", "*", "Comma-separated list of supported methods that define the default CORS policy. Use '*' to allow all or empty string to allow none.");
+                systemSettings.Add("DefaultCorsSupportsCredentials", true, "Boolean flag for the default CORS policy indicating whether the resource supports user credentials in the request.");
+
+
 
                 using (AdoDataConnection connection = new AdoDataConnection("securityProvider"))
                 {
@@ -354,6 +357,10 @@ namespace SOEService
                 Model.Global.TimeFormat = systemSettings["TimeFormat"].Value;
                 Model.Global.DateTimeFormat = $"{Model.Global.DateFormat} {Model.Global.TimeFormat}";
                 Model.Global.BootstrapTheme = systemSettings["BootstrapTheme"].Value;
+                Model.Global.DefaultCorsOrigins = systemSettings["DefaultCorsOrigins"].Value;
+                Model.Global.DefaultCorsHeaders = systemSettings["DefaultCorsHeaders"].Value;
+                Model.Global.DefaultCorsMethods = systemSettings["DefaultCorsMethods"].Value;
+                Model.Global.DefaultCorsSupportsCredentials = systemSettings["DefaultCorsSupportsCredentials"].ValueAsBoolean(true);
 
                 // Attach to default web server events
                 WebServer webServer = WebServer.Default;

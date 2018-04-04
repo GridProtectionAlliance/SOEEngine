@@ -216,18 +216,18 @@
                 <td><input class="smallbutton" type="button" value="Reset Zoom" id="resetZoom" /></td>
                 <td><input class="smallbutton" type="button" value="Show Points" onclick="showhidePoints(this);" id="showpoints" /></td>
                 <td>
-                    @NextBackButton(nextBackLookup[NextBackForCircuit].Item1, "circuit-back-ss", "&navigation=circuit&slideshow=back", "<<")
-                    @NextBackButton(nextBackLookup[NextBackForCircuit].Item1, "circuit-back", "&navigation=circuit", "<")
-                    @NextBackButton(nextBackLookup[NextBackForMeter].Item1, "meter-back-ss", "&navigation=meter&slideshow=back", "<<")
-                    @NextBackButton(nextBackLookup[NextBackForMeter].Item1, "meter-back", "&navigation=meter", "<")
+                    @NextBackButton(nextBackLookup[NextBackForCircuit].Item1, "circuit-back-ss", "&navigation=circuit&slideshow=back", "<<", true)
+                    @NextBackButton(nextBackLookup[NextBackForCircuit].Item1, "circuit-back", "&navigation=circuit", "<", false)
+                    @NextBackButton(nextBackLookup[NextBackForMeter].Item1, "meter-back-ss", "&navigation=meter&slideshow=back", "<<", true)
+                    @NextBackButton(nextBackLookup[NextBackForMeter].Item1, "meter-back", "&navigation=meter", "<", false)
                     <select id="next-back-selection">
                         <option value="circuit" @(navigation == "circuit" ? "selected" : "")>Circuit</option>
                         <option value="meter" @(navigation == "meter" ? "selected" : "")>Meter</option>
                     </select>
-                    @NextBackButton(nextBackLookup[NextBackForCircuit].Item2, "circuit-next", "&navigation=circuit", ">")
-                    @NextBackButton(nextBackLookup[NextBackForCircuit].Item2, "circuit-next-ss", "&navigation=circuit&slideshow=forward", ">>")
-                    @NextBackButton(nextBackLookup[NextBackForMeter].Item2, "meter-next", "&navigation=meter", ">")
-                    @NextBackButton(nextBackLookup[NextBackForMeter].Item2, "meter-next-ss", "&navigation=meter&slideshow=forward", ">>")
+                    @NextBackButton(nextBackLookup[NextBackForCircuit].Item2, "circuit-next", "&navigation=circuit", ">", false)
+                    @NextBackButton(nextBackLookup[NextBackForCircuit].Item2, "circuit-next-ss", "&navigation=circuit&slideshow=forward", ">>", true)
+                    @NextBackButton(nextBackLookup[NextBackForMeter].Item2, "meter-next", "&navigation=meter", ">", false)
+                    @NextBackButton(nextBackLookup[NextBackForMeter].Item2, "meter-next-ss", "&navigation=meter&slideshow=forward", ">>", true)
 
                 </td>
 
@@ -283,13 +283,13 @@
     }
 </script>
 
-@helper NextBackButton(Event evt, string id, string postedURLQueryString, string text)
+@helper NextBackButton(Event evt, string id, string postedURLQueryString, string text, bool slideShow)
     {
         if ((object)evt != null)
         {
             string title = evt.StartTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff");
             string url = "?eventid=" + evt.ID + postedURLQueryString;
-            <a href="@url" id="@id" class="nextbackbutton smallbutton" title="@title" style="padding: 4px 20px">@text</a>
+            <a href="@url" id="@id" class="nextbackbutton smallbutton" title="@(!slideShow ? title : "Slide Show - " + title)" style="padding: 4px 20px">@text</a>
         }
         else
         {

@@ -52,15 +52,15 @@ export default class IncidentGroup extends React.Component<any, any>{
 
     render() {
         return (
-            <div id={this.state.meterName} className="list-group-item" >
-                <div className="panel-heading" style={{textAlign: 'center'}}>
+            <div id={this.state.meterName} className="list-group-item" style={{padding: 0}}>
+                <div className="panel-heading" style={{ textAlign: 'center', padding: '3px 0 0 0'}}>
                     <h4 className="panel-title">{this.state.meterName}</h4>
                     <a onClick={(e)=> this.goToOpenSEE(this.state.incidentId)}>View in OpenSEE</a>
                 </div>
                 <div className="panel-body collapse in" style={{ padding: '0' }}>
-                    <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VX" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
-                    <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="I" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
-                    <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VY" pixels={this.state.pixels} stateSetter={this.props.stateSetter}></WaveformViewerGraph>
+                    <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VX" pixels={this.state.pixels} stateSetter={this.props.stateSetter} showXAxis={false}></WaveformViewerGraph>
+                    <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="I" pixels={this.state.pixels} stateSetter={this.props.stateSetter} showXAxis={false}></WaveformViewerGraph>
+                    <WaveformViewerGraph circuitId={this.state.circuitId} meterId={this.state.meterId} startDate={this.state.startDate} endDate={this.state.endDate} type="VY" pixels={this.state.pixels} stateSetter={this.props.stateSetter} showXAxis={true}></WaveformViewerGraph>
                 </div>
                 <br />
             </div>

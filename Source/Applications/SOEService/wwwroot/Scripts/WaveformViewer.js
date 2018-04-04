@@ -54812,40 +54812,45 @@ var WaveformViewer = (function (_super) {
         var _this = this;
         this.soeservice.getIncidentGroups(state).then(function (data) {
             var orderedData = data[1].filter(function (x) { return data[0].map(function (y) { return y.MeterID; }).indexOf(x.ID) >= 0; }).map(function (x) { return data[0][data[0].map(function (y) { return y.MeterID; }).indexOf(x.ID)]; });
-            if (_this.state.StartDate == null) {
-                var startUnix = Math.min.apply(Math, orderedData.map(function (x) { return moment(x.StartTime).unix() + (x.StartTime.indexOf('.') >= 0 ? parseFloat('.' + x.StartTime.split('.')[1]) : 0); }));
-                var startString = '';
-                if (startUnix.toString().indexOf('.') >= 0)
-                    startString = moment.unix(parseInt(startUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + startUnix.toString().split('.')[1];
-                else
-                    startString = moment.unix(startUnix).format('YYYY-MM-DDTHH:mm:ss');
+            var startString = '';
+            var startUnix = Math.min.apply(Math, orderedData.map(function (x) { return moment(x.StartTime).unix() + (x.StartTime.indexOf('.') >= 0 ? parseFloat('.' + x.StartTime.split('.')[1]) : 0); }));
+            if (startUnix.toString().indexOf('.') >= 0)
+                startString = moment.unix(parseInt(startUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + startUnix.toString().split('.')[1];
+            else
+                startString = moment.unix(startUnix).format('YYYY-MM-DDTHH:mm:ss');
+            var endString = '';
+            var endUnix = Math.max.apply(Math, orderedData.map(function (x) { return moment(x.EndTime).unix() + (x.EndTime.indexOf('.') >= 0 ? parseFloat('.' + x.EndTime.split('.')[1]) : 0); }));
+            if (endUnix.toString().indexOf('.') >= 0)
+                endString = moment.unix(parseInt(endUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + endUnix.toString().split('.')[1];
+            else
+                endString = moment.unix(endUnix).format('YYYY-MM-DDTHH:mm:ss');
+            if (_this.state.StartDate == null)
                 _this.setState({ StartDate: startString });
-            }
-            if (_this.state.EndDate == null) {
-                var endUnix = Math.max.apply(Math, orderedData.map(function (x) { return moment(x.EndTime).unix() + (x.EndTime.indexOf('.') >= 0 ? parseFloat('.' + x.EndTime.split('.')[1]) : 0); }));
-                var endString = '';
-                if (endUnix.toString().indexOf('.') >= 0)
-                    endString = moment.unix(parseInt(endUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + endUnix.toString().split('.')[1];
-                else
-                    endString = moment.unix(endUnix).format('YYYY-MM-DDTHH:mm:ss');
+            if (_this.state.EndDate == null)
                 _this.setState({ EndDate: endString });
-            }
             var parentIds = orderedData.map(function (x) { return x.ParentID; });
             var meterIds = orderedData.map(function (x) { return x.MeterID; });
+            var numOfDates = 20;
+            var interval = (_this.getMillisecondTime(endString) - _this.getMillisecondTime(startString)) / numOfDates;
+            var dates = [startString];
+            for (var i = 1; i < numOfDates - 1; ++i) {
+                dates.push(_this.getDateString(_this.getMillisecondTime(startString) + i * interval));
+            }
+            dates.push(endString);
             _this.meterList = orderedData.map(function (x) {
                 return React.createElement("a", { key: '#' + x.MeterName, onClick: function (e) { return _this.goToDiv(x.MeterName); } }, x.MeterName);
             });
-            _this.timeList = data[2].map(function (x, i) { return React.createElement("button", { key: i + x, onClick: function (e) { return _this.goToTime(x); }, className: "btn" }, i + 1); });
+            _this.timeList = dates.map(function (date, i) { return React.createElement("button", { key: i, onClick: function (e) { return _this.goToTime(date, interval / 2); }, title: date.toString(), className: "btn" }, i + 1); });
             _this.dynamicRows = orderedData.map(function (d, i) {
                 return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], incidentId: d["ID"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
             });
             _this.forceUpdate();
         });
     };
-    WaveformViewer.prototype.goToTime = function (timeStamp) {
-        var milliseconds = this.getMillisecondTime(timeStamp.Timestamp);
-        var startDate = this.getDateString(milliseconds - 20);
-        var endDate = this.getDateString(milliseconds + 20);
+    WaveformViewer.prototype.goToTime = function (timeStamp, windowSize) {
+        var milliseconds = this.getMillisecondTime(timeStamp);
+        var startDate = this.getDateString(milliseconds - windowSize);
+        var endDate = this.getDateString(milliseconds + windowSize);
         this.stateSetter({
             StartDate: startDate,
             EndDate: endDate
@@ -54881,9 +54886,9 @@ var WaveformViewer = (function (_super) {
             React.createElement("div", { className: "vertical-menu" }, this.meterList),
             React.createElement("div", { className: "waveform-viewer", style: { width: window.innerWidth - 150 } },
                 React.createElement("div", { className: "horizontal-row" },
-                    React.createElement("span", null, "Points of Interest:"),
-                    this.timeList,
-                    React.createElement("button", { className: "btn", onClick: this.resetZoom.bind(this) }, "Reset")),
+                    React.createElement("button", { className: "btn", onClick: this.resetZoom.bind(this) }, "Reset"),
+                    React.createElement("span", { style: { marginLeft: '3px', marginRight: '3px' } }, " Quick Jump(Tmax/20):"),
+                    this.timeList),
                 React.createElement("div", { className: "list-group", style: { maxHeight: window.innerHeight - 100, overflowY: 'auto' } }, this.dynamicRows))));
     };
     WaveformViewer.prototype.stateSetter = function (obj) {
@@ -54957,14 +54962,14 @@ var IncidentGroup = (function (_super) {
     };
     IncidentGroup.prototype.render = function () {
         var _this = this;
-        return (React.createElement("div", { id: this.state.meterName, className: "list-group-item" },
-            React.createElement("div", { className: "panel-heading", style: { textAlign: 'center' } },
+        return (React.createElement("div", { id: this.state.meterName, className: "list-group-item", style: { padding: 0 } },
+            React.createElement("div", { className: "panel-heading", style: { textAlign: 'center', padding: '3px 0 0 0' } },
                 React.createElement("h4", { className: "panel-title" }, this.state.meterName),
                 React.createElement("a", { onClick: function (e) { return _this.goToOpenSEE(_this.state.incidentId); } }, "View in OpenSEE")),
             React.createElement("div", { className: "panel-body collapse in", style: { padding: '0' } },
-                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
-                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter }),
-                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter })),
+                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: false }),
+                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: false }),
+                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: true })),
             React.createElement("br", null)));
     };
     IncidentGroup.prototype.goToOpenSEE = function (incidentId) {
@@ -55039,13 +55044,21 @@ var WaveformViewerGraph = (function (_super) {
             grid: {
                 autoHighlight: false,
                 clickable: true,
-                hoverable: true
+                hoverable: true,
+                borderWidth: {
+                    top: 0,
+                    left: 1,
+                    bottom: (props.showXAxis ? 1 : 0),
+                    right: 0
+                }
             },
             xaxis: {
+                show: props.showXAxis,
                 mode: "time",
                 tickLength: 10,
                 min: ctrl.state.StartDate,
                 max: ctrl.state.EndDate,
+                reserveSpace: false,
                 ticks: function (axis) {
                     var ticks = [], start = ctrl.floorInBase(axis.min, axis.tickSize), i = 0, v = Number.NaN, prev;
                     do {
@@ -55072,6 +55085,7 @@ var WaveformViewerGraph = (function (_super) {
             yaxis: {
                 labelWidth: 50,
                 panRange: false,
+                ticks: 1,
                 tickLength: 10,
                 tickFormatter: function (val, axis) {
                     if (axis.delta > 1000000 && (val > 1000000 || val < -1000000))
@@ -55221,8 +55235,8 @@ var WaveformViewerGraph = (function (_super) {
     };
     WaveformViewerGraph.prototype.render = function () {
         return (React.createElement("div", null,
-            React.createElement("div", { id: this.state.meterId + "-" + this.state.type, style: { height: '200px', float: 'left', width: this.state.pixels - 95 - 180 } }),
-            React.createElement("div", { id: this.state.meterId + "-" + this.state.type + '-legend', style: { height: '165px', marginTop: '5px', float: 'right', width: '75px', borderStyle: 'solid', borderWidth: '2px' } },
+            React.createElement("div", { id: this.state.meterId + "-" + this.state.type, style: { height: (this.props.showXAxis ? '95px' : '75px'), float: 'left', width: this.state.pixels - 100 - 180, margin: '0x', padding: '0px' } }),
+            React.createElement("div", { id: this.state.meterId + "-" + this.state.type + '-legend', style: { float: 'right', width: '75px' } },
                 React.createElement(Legend_1.default, { data: this.state.legendRows, callback: this.handleSeriesLegendClick.bind(this) }))));
     };
     return WaveformViewerGraph;
@@ -55284,7 +55298,7 @@ exports.default = Legend;
 var Row = function (props) {
     return (React.createElement("tr", null,
         React.createElement("td", null,
-            React.createElement("button", { className: "btn btn-link", onClick: props.callback },
+            React.createElement("button", { className: "btn-link", onClick: props.callback },
                 React.createElement("div", { style: { border: '1px solid #ccc', padding: '1px' } },
                     React.createElement("div", { style: { width: ' 4px', height: 0, border: '5px solid ' + props.color + (props.enabled ? 'FF' : '60'), overflow: 'hidden' } })))),
         React.createElement("td", null,
