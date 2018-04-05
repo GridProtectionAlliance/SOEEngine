@@ -46,40 +46,45 @@ var WaveformViewer = (function (_super) {
         var _this = this;
         this.soeservice.getIncidentGroups(state).then(function (data) {
             var orderedData = data[1].filter(function (x) { return data[0].map(function (y) { return y.MeterID; }).indexOf(x.ID) >= 0; }).map(function (x) { return data[0][data[0].map(function (y) { return y.MeterID; }).indexOf(x.ID)]; });
-            if (_this.state.StartDate == null) {
-                var startUnix = Math.min.apply(Math, orderedData.map(function (x) { return moment(x.StartTime).unix() + (x.StartTime.indexOf('.') >= 0 ? parseFloat('.' + x.StartTime.split('.')[1]) : 0); }));
-                var startString = '';
-                if (startUnix.toString().indexOf('.') >= 0)
-                    startString = moment.unix(parseInt(startUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + startUnix.toString().split('.')[1];
-                else
-                    startString = moment.unix(startUnix).format('YYYY-MM-DDTHH:mm:ss');
+            var startString = '';
+            var startUnix = Math.min.apply(Math, orderedData.map(function (x) { return moment(x.StartTime).unix() + (x.StartTime.indexOf('.') >= 0 ? parseFloat('.' + x.StartTime.split('.')[1]) : 0); }));
+            if (startUnix.toString().indexOf('.') >= 0)
+                startString = moment.unix(parseInt(startUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + startUnix.toString().split('.')[1];
+            else
+                startString = moment.unix(startUnix).format('YYYY-MM-DDTHH:mm:ss');
+            var endString = '';
+            var endUnix = Math.max.apply(Math, orderedData.map(function (x) { return moment(x.EndTime).unix() + (x.EndTime.indexOf('.') >= 0 ? parseFloat('.' + x.EndTime.split('.')[1]) : 0); }));
+            if (endUnix.toString().indexOf('.') >= 0)
+                endString = moment.unix(parseInt(endUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + endUnix.toString().split('.')[1];
+            else
+                endString = moment.unix(endUnix).format('YYYY-MM-DDTHH:mm:ss');
+            if (_this.state.StartDate == null)
                 _this.setState({ StartDate: startString });
-            }
-            if (_this.state.EndDate == null) {
-                var endUnix = Math.max.apply(Math, orderedData.map(function (x) { return moment(x.EndTime).unix() + (x.EndTime.indexOf('.') >= 0 ? parseFloat('.' + x.EndTime.split('.')[1]) : 0); }));
-                var endString = '';
-                if (endUnix.toString().indexOf('.') >= 0)
-                    endString = moment.unix(parseInt(endUnix.toString().split('.')[0])).format('YYYY-MM-DDTHH:mm:ss') + '.' + endUnix.toString().split('.')[1];
-                else
-                    endString = moment.unix(endUnix).format('YYYY-MM-DDTHH:mm:ss');
+            if (_this.state.EndDate == null)
                 _this.setState({ EndDate: endString });
-            }
             var parentIds = orderedData.map(function (x) { return x.ParentID; });
             var meterIds = orderedData.map(function (x) { return x.MeterID; });
+            var numOfDates = 20;
+            var interval = (_this.getMillisecondTime(endString) - _this.getMillisecondTime(startString)) / numOfDates;
+            var dates = [startString];
+            for (var i = 1; i < numOfDates - 1; ++i) {
+                dates.push(_this.getDateString(_this.getMillisecondTime(startString) + i * interval));
+            }
+            dates.push(endString);
             _this.meterList = orderedData.map(function (x) {
                 return React.createElement("a", { key: '#' + x.MeterName, onClick: function (e) { return _this.goToDiv(x.MeterName); } }, x.MeterName);
             });
-            _this.timeList = data[2].map(function (x, i) { return React.createElement("button", { key: i + x, onClick: function (e) { return _this.goToTime(x); }, className: "btn" }, i + 1); });
+            _this.timeList = dates.map(function (date, i) { return React.createElement("button", { key: i, onClick: function (e) { return _this.goToTime(date, interval / 2); }, title: date.toString(), className: "btn" }, i + 1); });
             _this.dynamicRows = orderedData.map(function (d, i) {
                 return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], incidentId: d["ID"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
             });
             _this.forceUpdate();
         });
     };
-    WaveformViewer.prototype.goToTime = function (timeStamp) {
-        var milliseconds = this.getMillisecondTime(timeStamp.Timestamp);
-        var startDate = this.getDateString(milliseconds - 20);
-        var endDate = this.getDateString(milliseconds + 20);
+    WaveformViewer.prototype.goToTime = function (timeStamp, windowSize) {
+        var milliseconds = this.getMillisecondTime(timeStamp);
+        var startDate = this.getDateString(milliseconds - windowSize);
+        var endDate = this.getDateString(milliseconds + windowSize);
         this.stateSetter({
             StartDate: startDate,
             EndDate: endDate
@@ -116,7 +121,7 @@ var WaveformViewer = (function (_super) {
             React.createElement("div", { className: "waveform-viewer", style: { width: window.innerWidth - 150 } },
                 React.createElement("div", { className: "horizontal-row" },
                     React.createElement("button", { className: "btn", onClick: this.resetZoom.bind(this) }, "Reset"),
-                    React.createElement("span", { style: { marginLeft: '3px', marginRight: '3px' } }, "Points of Interest:"),
+                    React.createElement("span", { style: { marginLeft: '3px', marginRight: '3px' } }, " Quick Jump(Tmax/20):"),
                     this.timeList),
                 React.createElement("div", { className: "list-group", style: { maxHeight: window.innerHeight - 100, overflowY: 'auto' } }, this.dynamicRows))));
     };
