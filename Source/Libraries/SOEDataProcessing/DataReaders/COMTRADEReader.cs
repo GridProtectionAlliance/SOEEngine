@@ -236,7 +236,7 @@ namespace SOEDataProcessing.DataReaders
             channel.MeasurementType = new MeasurementType() { Name = "Unknown" };
             channel.MeasurementCharacteristic = new MeasurementCharacteristic() { Name = "Unknown" };
             channel.Phase = new Phase() { Name = phaseName };
-            channel.Name = analogChannel.Name;
+            channel.Name = analogChannel.Name.Replace($"({analogChannel.Units})", "");
             channel.Description = analogChannel.CircuitComponent;
             channel.HarmonicGroup = 0;
 

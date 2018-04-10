@@ -25,7 +25,14 @@ var color = {
     I1: '#FF0000',
     I2: '#0066CC',
     I3: '#33CC33',
-    IR: '#999999'
+    IR: '#999999',
+    VA: '#A30000',
+    VB: '#0029A3',
+    VC: '#007A29',
+    IA: '#FF0000',
+    IB: '#0066CC',
+    IC: '#33CC33',
+    IN: '#999999'
 };
 var WaveformViewerGraph = (function (_super) {
     __extends(WaveformViewerGraph, _super);

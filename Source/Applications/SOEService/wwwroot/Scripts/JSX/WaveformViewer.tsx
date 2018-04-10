@@ -103,7 +103,7 @@ class WaveformViewer extends React.Component<any, any>{
             });
             this.timeList = dates.map((date, i) => <button key={i} onClick={(e) => this.goToTime(date, interval/2)} title={date.toString()} className="btn">{i + 1}</button>);
             this.dynamicRows = orderedData.map((d, i) => {
-                return <IncidentGroup key={d["MeterID"]} incidentId={d["ID"]} circuitId={d["CircuitID"]} meterId={d["MeterID"]} meterName={d["MeterName"]} startDate={this.state.StartDate} endDate={this.state.EndDate} pixels={window.innerWidth} stateSetter={this.stateSetter.bind(this)}></IncidentGroup>
+                return <IncidentGroup key={d["MeterID"]} lineName={d["LineName"]} incidentId={d["ID"]} orientation={d["Orientation"]} circuitId={d["CircuitID"]} meterId={d["MeterID"]} meterName={d["MeterName"]} startDate={this.state.StartDate} endDate={this.state.EndDate} pixels={window.innerWidth} stateSetter={this.stateSetter.bind(this)}></IncidentGroup>
             });
             this.forceUpdate();
         });

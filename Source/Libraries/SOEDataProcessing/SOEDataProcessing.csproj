@@ -120,6 +120,7 @@
     <Compile Include="DataOperations\DataOperationBase.cs" />
     <Compile Include="DataOperations\IncidentAttributeOperation.cs" />
     <Compile Include="DataOperations\IncidentOperation.cs" />
+    <Compile Include="DataOperations\LTECalculationOperation.cs" />
     <Compile Include="DataOperations\SOEPointOperation.cs" />
     <Compile Include="DataResources\CycleDataResource.cs" />
     <Compile Include="DataResources\EventClassificationResource.cs" />

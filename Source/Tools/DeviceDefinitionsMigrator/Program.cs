@@ -272,7 +272,7 @@ namespace DeviceDefinitionsMigrator
                         // Get a lookup table for the channels monitoring this line
                         channelLookup = lookupTables.GetChannelLookup(meter, line, connection);
 
-                        foreach (string channelName in new[] { "VX1", "VX2", "VX3", "VY1", "VY2", "VY3", "I1", "I2", "I3" })
+                        foreach (string channelName in new[] { "VX1", "VX2", "VX3", "VY1", "VY2", "VY3", "I1", "I2", "I3", "VA", "VB", "VC", "IA", "IB", "IC", "IN" })
                         {
                             if (channelLookup.ContainsKey(channelName))
                                 continue;

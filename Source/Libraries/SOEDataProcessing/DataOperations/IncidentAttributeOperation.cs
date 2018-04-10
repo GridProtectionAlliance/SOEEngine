@@ -82,12 +82,12 @@ namespace SOEDataProcessing.DataOperations
                     $"        MAX(IBRMS) AS IBMax, " +
                     $"        MAX(ICRMS) AS ICMax, " +
                     $"        MAX(IRRMS) AS IRMax, " +
-                    $"        CASE WHEN MAX(VXARMS) > MAX(VYARMS) THEN MAX(VXARMS) ELSE MAX(VYARMS) END AS VAMax, " +
-                    $"        CASE WHEN MAX(VXBRMS) > MAX(VYBRMS) THEN MAX(VXBRMS) ELSE MAX(VYBRMS) END AS VBMax, " +
-                    $"        CASE WHEN MAX(VXCRMS) > MAX(VYCRMS) THEN MAX(VXCRMS) ELSE MAX(VYCRMS) END AS VCMax, " +
-                    $"        CASE WHEN MIN(VXARMS) < MIN(VYARMS) THEN MIN(VXARMS) ELSE MIN(VYARMS) END AS VAMin, " +
-                    $"        CASE WHEN MIN(VXBRMS) < MIN(VYBRMS) THEN MIN(VXBRMS) ELSE MIN(VYBRMS) END AS VBMin, " +
-                    $"        CASE WHEN MIN(VXCRMS) < MIN(VYCRMS) THEN MIN(VXCRMS) ELSE MIN(VYCRMS) END AS VCMin " +
+                    $"        CASE WHEN MAX(VYARMS) IS NULL THEN MAX(VXARMS) WHEN MAX(VXARMS) > MAX(VYARMS) THEN MAX(VXARMS) ELSE MAX(VYARMS) END AS VAMax, " +
+                    $"        CASE WHEN MAX(VYBRMS) IS NULL THEN MAX(VXBRMS) WHEN MAX(VXBRMS) > MAX(VYBRMS) THEN MAX(VXBRMS) ELSE MAX(VYBRMS) END AS VBMax, " +
+                    $"        CASE WHEN MAX(VYCRMS) IS NULL THEN MAX(VXCRMS) WHEN MAX(VXCRMS) > MAX(VYCRMS) THEN MAX(VXCRMS) ELSE MAX(VYCRMS) END AS VCMax, " +
+                    $"        CASE WHEN MIN(VYARMS) IS NULL THEN MIN(VXARMS) WHEN MIN(VXARMS) < MIN(VYARMS) THEN MIN(VXARMS) ELSE MIN(VYARMS) END AS VAMin, " +
+                    $"        CASE WHEN MIN(VYBRMS) IS NULL THEN MIN(VXBRMS) WHEN MIN(VXBRMS) < MIN(VYBRMS) THEN MIN(VXBRMS) ELSE MIN(VYBRMS) END AS VBMin, " +
+                    $"        CASE WHEN MIN(VYCRMS) IS NULL THEN MIN(VXCRMS) WHEN MIN(VXCRMS) < MIN(VYCRMS) THEN MIN(VXCRMS) ELSE MIN(VYCRMS) END AS VCMin " +
                     $"    FROM " +
                     $"        IMaxCycleData JOIN " +
                     $"        Event ON IMaxCycleData.EventID = Event.ID " +

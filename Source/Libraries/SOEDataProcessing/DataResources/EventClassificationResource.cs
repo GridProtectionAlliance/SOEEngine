@@ -97,9 +97,9 @@ namespace SOEDataProcessing.DataResources
             nominalVoltage = dataGroup.Line.VoltageKV * 1000.0D / Math.Sqrt(3.0D);
 
             // Per-unit voltage waveforms based on nominal voltage
-            v1 = viCycleDataGroup.VX1.RMS.Multiply(1.0D / nominalVoltage);
-            v2 = viCycleDataGroup.VX2.RMS.Multiply(1.0D / nominalVoltage);
-            v3 = viCycleDataGroup.VX3.RMS.Multiply(1.0D / nominalVoltage);
+            v1 = viCycleDataGroup.VX1?.RMS.Multiply(1.0D / nominalVoltage) ?? viCycleDataGroup.VA.RMS.Multiply(1.0D / nominalVoltage);
+            v2 = viCycleDataGroup.VX2?.RMS.Multiply(1.0D / nominalVoltage) ?? viCycleDataGroup.VB.RMS.Multiply(1.0D / nominalVoltage);
+            v3 = viCycleDataGroup.VX3?.RMS.Multiply(1.0D / nominalVoltage) ?? viCycleDataGroup.VC.RMS.Multiply(1.0D / nominalVoltage);
 
             if (HasInterruption(v1, v2, v3))
                 return EventClassification.Interruption;

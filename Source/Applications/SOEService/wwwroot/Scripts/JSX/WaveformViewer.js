@@ -76,7 +76,7 @@ var WaveformViewer = (function (_super) {
             });
             _this.timeList = dates.map(function (date, i) { return React.createElement("button", { key: i, onClick: function (e) { return _this.goToTime(date, interval / 2); }, title: date.toString(), className: "btn" }, i + 1); });
             _this.dynamicRows = orderedData.map(function (d, i) {
-                return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], incidentId: d["ID"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
+                return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], lineName: d["LineName"], incidentId: d["ID"], orientation: d["Orientation"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
             });
             _this.forceUpdate();
         });

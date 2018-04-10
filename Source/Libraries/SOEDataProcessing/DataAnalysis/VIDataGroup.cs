@@ -44,6 +44,13 @@ namespace SOEDataProcessing.DataAnalysis
         private int m_i2Index;
         private int m_i3Index;
         private int m_irIndex;
+        private int m_vaIndex;
+        private int m_vbIndex;
+        private int m_vcIndex;
+        private int m_iaIndex;
+        private int m_ibIndex;
+        private int m_icIndex;
+        private int m_inIndex;
 
         private DataGroup m_dataGroup;
 
@@ -67,6 +74,13 @@ namespace SOEDataProcessing.DataAnalysis
             m_i2Index = -1;
             m_i3Index = -1;
             m_irIndex = -1;
+            m_vaIndex = -1;
+            m_vbIndex = -1;
+            m_vcIndex = -1;
+            m_iaIndex = -1;
+            m_ibIndex = -1;
+            m_icIndex = -1;
+            m_inIndex = -1;
 
             // Initialize the data group
             m_dataGroup = new DataGroup(dataGroup.DataSeries);
@@ -101,6 +115,20 @@ namespace SOEDataProcessing.DataAnalysis
                     m_i2Index = i;
                 else if (dataGroup[i].SeriesInfo.Channel.Name == "I3")
                     m_i3Index = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "VA")
+                    m_vaIndex = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "VB")
+                    m_vbIndex = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "VC")
+                    m_vcIndex = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "IA")
+                    m_iaIndex = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "IB")
+                    m_ibIndex = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "IC")
+                    m_icIndex = i;
+                else if (dataGroup[i].SeriesInfo.Channel.Name == "IN")
+                    m_inIndex = i;
             }
         }
 
@@ -192,6 +220,62 @@ namespace SOEDataProcessing.DataAnalysis
             }
         }
 
+        public DataSeries VA
+        {
+            get
+            {
+                return (m_vaIndex >= 0) ? m_dataGroup[m_vaIndex] : null;
+            }
+        }
+
+        public DataSeries VB
+        {
+            get
+            {
+                return (m_vbIndex >= 0) ? m_dataGroup[m_vbIndex] : null;
+            }
+        }
+
+        public DataSeries VC
+        {
+            get
+            {
+                return (m_vcIndex >= 0) ? m_dataGroup[m_vcIndex] : null;
+            }
+        }
+
+        public DataSeries IA
+        {
+            get
+            {
+                return (m_iaIndex >= 0) ? m_dataGroup[m_iaIndex] : null;
+            }
+        }
+
+        public DataSeries IB
+        {
+            get
+            {
+                return (m_ibIndex >= 0) ? m_dataGroup[m_ibIndex] : null;
+            }
+        }
+
+        public DataSeries IC
+        {
+            get
+            {
+                return (m_icIndex >= 0) ? m_dataGroup[m_icIndex] : null;
+            }
+        }
+
+        public DataSeries IN
+        {
+            get
+            {
+                return (m_inIndex >= 0) ? m_dataGroup[m_inIndex] : null;
+            }
+        }
+
         public int DefinedVoltages
         {
             get
@@ -222,7 +306,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
-                return new int[] { m_vx1Index, m_vx2Index, m_vx3Index };
+                return new int[] { m_vx1Index, m_vx2Index, m_vx3Index, m_vaIndex, m_vbIndex, m_vcIndex };
             }
         }
 
@@ -230,7 +314,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
-                return new int[] { m_i1Index, m_i2Index, m_i3Index, m_irIndex };
+                return new int[] { m_i1Index, m_i2Index, m_i3Index, m_irIndex, m_iaIndex, m_ibIndex, m_icIndex, m_inIndex };
             }
         }
 
@@ -257,7 +341,7 @@ namespace SOEDataProcessing.DataAnalysis
             // Get the meter associated with the channels in this data group
             meter = (I1 ?? I2).SeriesInfo.Channel.Meter;
 
-            if (m_i1Index == -1)
+            if (m_i1Index == -1 && m_i2Index >= 0 && m_i3Index >=0)
             {
                 // Calculate I1 = IR - I2 - I3
                 missingSeries = IR.Add(I2.Negate()).Add(I3.Negate());
@@ -265,7 +349,7 @@ namespace SOEDataProcessing.DataAnalysis
                 m_i1Index = m_dataGroup.DataSeries.Count;
                 m_dataGroup.Add(missingSeries);
             }
-            else if (m_i2Index == -1)
+            else if (m_i2Index == -1 && m_i1Index >= 0 && m_i3Index >= 0)
             {
                 // Calculate I2 = IR - I1 - I3
                 missingSeries = IR.Add(I1.Negate()).Add(I3.Negate());
@@ -273,7 +357,7 @@ namespace SOEDataProcessing.DataAnalysis
                 m_i1Index = m_dataGroup.DataSeries.Count;
                 m_dataGroup.Add(missingSeries);
             }
-            else if (m_i3Index == -1)
+            else if (m_i3Index == -1 && m_i1Index >= 0 && m_i2Index >= 0)
             {
                 // Calculate I3 = IR - I1 - I2
                 missingSeries = IR.Add(I1.Negate()).Add(I2.Negate());
@@ -281,11 +365,43 @@ namespace SOEDataProcessing.DataAnalysis
                 m_i1Index = m_dataGroup.DataSeries.Count;
                 m_dataGroup.Add(missingSeries);
             }
-            else
+            else if(m_irIndex == -1 && m_i1Index >= 0  && m_i2Index >= 0 && m_i3Index >= 0)
             {
                 // Calculate IR = I1 + I2 + I3
                 missingSeries = I1.Add(I2).Add(I3);
                 missingSeries.SeriesInfo = GetSeriesInfo( meter, m_dataGroup, "Current", "RES");
+                m_i1Index = m_dataGroup.DataSeries.Count;
+                m_dataGroup.Add(missingSeries);
+            }
+            else if (m_iaIndex == -1 && m_ibIndex >= 0 && m_icIndex >= 0)
+            {
+                // Calculate IA = IN - IB - IC
+                missingSeries = IN.Add(IB.Negate()).Add(IC.Negate());
+                missingSeries.SeriesInfo = GetSeriesInfo(meter, m_dataGroup, "Current", "General1");
+                m_i1Index = m_dataGroup.DataSeries.Count;
+                m_dataGroup.Add(missingSeries);
+            }
+            else if (m_ibIndex == -1 && m_iaIndex >= 0 && m_icIndex >= 0)
+            {
+                // Calculate I2 = IN - IA - IC
+                missingSeries = IN.Add(IA.Negate()).Add(IC.Negate());
+                missingSeries.SeriesInfo = GetSeriesInfo(meter, m_dataGroup, "Current", "General2");
+                m_i1Index = m_dataGroup.DataSeries.Count;
+                m_dataGroup.Add(missingSeries);
+            }
+            else if (m_icIndex == -1 && m_iaIndex >= 0 && m_ibIndex >= 0)
+            {
+                // Calculate IC = IN - IA -IB
+                missingSeries = IR.Add(IA.Negate()).Add(IB.Negate());
+                missingSeries.SeriesInfo = GetSeriesInfo(meter, m_dataGroup, "Current", "General3");
+                m_i1Index = m_dataGroup.DataSeries.Count;
+                m_dataGroup.Add(missingSeries);
+            }
+            else
+            {
+                // Calculate IN = IA + IB + IC
+                missingSeries = IA.Add(IB).Add(IC);
+                missingSeries.SeriesInfo = GetSeriesInfo(meter, m_dataGroup, "Current", "RES");
                 m_i1Index = m_dataGroup.DataSeries.Count;
                 m_dataGroup.Add(missingSeries);
             }
@@ -312,6 +428,13 @@ namespace SOEDataProcessing.DataAnalysis
             subGroup.m_i2Index = m_i2Index;
             subGroup.m_i3Index = m_i3Index;
             subGroup.m_irIndex = m_irIndex;
+            subGroup.m_vaIndex = m_vaIndex;
+            subGroup.m_vbIndex = m_vbIndex;
+            subGroup.m_vcIndex = m_vcIndex;
+            subGroup.m_iaIndex = m_iaIndex;
+            subGroup.m_ibIndex = m_ibIndex;
+            subGroup.m_icIndex = m_icIndex;
+            subGroup.m_inIndex = m_inIndex;
 
             subGroup.m_dataGroup = m_dataGroup.ToSubGroup(startIndex, endIndex);
 

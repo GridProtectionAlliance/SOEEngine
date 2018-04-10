@@ -45,6 +45,8 @@ namespace SOE.Model
         [FieldDataType(DbType.DateTime2, DatabaseType.SQLServer)]
         public DateTime EndTime { get; set; }
 
+        public double? LTE { get; set; }
+        public double? PQS { get; set; }
     }
 
 }

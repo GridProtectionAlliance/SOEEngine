@@ -470,6 +470,9 @@ GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.IncidentAttributeOperation', 6)
 GO
 
+INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.LTECalculationOperation', 7)
+GO
+
 -- ------ --
 -- Events --
 -- ------ --
@@ -507,7 +510,9 @@ CREATE TABLE Incident
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
     MeterID INT NOT NULL REFERENCES Meter(ID),
     StartTime DATETIME2 NOT NULL,
-    EndTime DATETIME2 NOT NULL
+    EndTime DATETIME2 NOT NULL,
+	LTE FLOAT NULL,
+	PQS FLOAT NULL
 )
 GO
 
@@ -636,15 +641,15 @@ CREATE TABLE CycleData
     VX3RMS FLOAT NOT NULL,
     VX3Phase FLOAT NOT NULL,
     VX3Peak FLOAT NOT NULL,
-    VY1RMS FLOAT NOT NULL,
-    VY1Phase FLOAT NOT NULL,
-    VY1Peak FLOAT NOT NULL,
-    VY2RMS FLOAT NOT NULL,
-    VY2Phase FLOAT NOT NULL,
-    VY2Peak FLOAT NOT NULL,
-    VY3RMS FLOAT NOT NULL,
-    VY3Phase FLOAT NOT NULL,
-    VY3Peak FLOAT NOT NULL,
+    VY1RMS FLOAT NULL,
+    VY1Phase FLOAT NULL,
+    VY1Peak FLOAT NULL,
+    VY2RMS FLOAT NULL,
+    VY2Phase FLOAT NULL,
+    VY2Peak FLOAT NULL,
+    VY3RMS FLOAT NULL,
+    VY3Phase FLOAT NULL,
+    VY3Peak FLOAT NULL,
     I1RMS FLOAT NOT NULL,
     I1Phase FLOAT NOT NULL,
     I1Peak FLOAT NOT NULL,
@@ -657,6 +662,7 @@ CREATE TABLE CycleData
     IRRMS FLOAT NOT NULL,
     IRPhase FLOAT NOT NULL,
     IRPeak FLOAT NOT NULL
+
 )
 GO
 
@@ -864,17 +870,21 @@ AS RETURN
 (
     WITH LeftIncidentGroup AS
     (
-        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID
+        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID, Meter.Orientation, Line.AssetKey as LineName
         FROM Incident Join 
-			 Meter ON Incident.MeterID = meter.ID
+			 Meter ON Incident.MeterID = meter.ID join
+			 MeterLine ON Meter.ID = MeterLine.MeterID JOIN
+			 Line ON Line.ID = MeterLine.LineID
         WHERE
             Meter.CircuitID = @circuitID AND
             EndTime < @endTime AND
             EndTime >= dbo.AdjustDateTime2(@startTime, -@timeTolerance)
         UNION ALL
-        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID
+        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID, Meter.Orientation, Line.AssetKey as LineName
         FROM Incident Join 
-			 Meter ON Incident.MeterID = meter.ID JOIN 
+			 Meter ON Incident.MeterID = meter.ID join
+			 MeterLine ON Meter.ID = MeterLine.MeterID JOIN
+			 Line ON Line.ID = MeterLine.LineID JOIN 
 			 LeftIncidentGroup ON
 				Meter.CircuitID = LeftIncidentGroup.CircuitID AND
 				Incident.EndTime < LeftIncidentGroup.EndTime AND
@@ -882,17 +892,21 @@ AS RETURN
     ),
     RightIncidentGroup AS
     (
-        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID
+        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID, Meter.Orientation, Line.AssetKey as LineName
         FROM Incident Join 
-			 Meter ON Incident.MeterID = meter.ID
+			 Meter ON Incident.MeterID = meter.ID join
+			 MeterLine ON Meter.ID = MeterLine.MeterID JOIN
+			 Line ON Line.ID = MeterLine.LineID
         WHERE
             Meter.CircuitID = @circuitID AND
             StartTime > @startTime AND
             StartTime <= dbo.AdjustDateTime2(@endTime, @timeTolerance)
         UNION ALL
-        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID
+        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID, Meter.Orientation, Line.AssetKey as LineName
         FROM Incident Join 
-			 Meter ON Incident.MeterID = meter.ID JOIN 
+			 Meter ON Incident.MeterID = meter.ID join
+			 MeterLine ON Meter.ID = MeterLine.MeterID JOIN
+			 Line ON Line.ID = MeterLine.LineID JOIN 
 			 RightIncidentGroup ON
 				Meter.CircuitID = RightIncidentGroup.CircuitID AND
 				Incident.StartTime > RightIncidentGroup.StartTime AND
@@ -900,9 +914,11 @@ AS RETURN
     ),
     MiddleIncidentGroup AS
     (
-        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID
+        SELECT Incident.*, Meter.Name as MeterName, Meter.CircuitID as CircuitID, Meter.ParentNormalID as ParentID, Meter.Orientation, Line.AssetKey as LineName
         FROM Incident Join 
-			 Meter ON Incident.MeterID = meter.ID
+			 Meter ON Incident.MeterID = meter.ID join
+			 MeterLine ON Meter.ID = MeterLine.MeterID JOIN
+			 Line ON Line.ID = MeterLine.LineID
         WHERE
             Meter.CircuitID = @circuitID AND
             StartTime <= @endTime AND
@@ -912,6 +928,7 @@ AS RETURN
     SELECT * FROM RightIncidentGroup UNION
     SELECT * FROM MiddleIncidentGroup
 )
+
 
 GO
 

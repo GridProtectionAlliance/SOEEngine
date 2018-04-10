@@ -54842,7 +54842,7 @@ var WaveformViewer = (function (_super) {
             });
             _this.timeList = dates.map(function (date, i) { return React.createElement("button", { key: i, onClick: function (e) { return _this.goToTime(date, interval / 2); }, title: date.toString(), className: "btn" }, i + 1); });
             _this.dynamicRows = orderedData.map(function (d, i) {
-                return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], incidentId: d["ID"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
+                return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], lineName: d["LineName"], incidentId: d["ID"], orientation: d["Orientation"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
             });
             _this.forceUpdate();
         });
@@ -54951,7 +54951,9 @@ var IncidentGroup = (function (_super) {
             endDate: props.endDate,
             circuitId: props.circuitId,
             pixels: props.pixels,
-            meterName: props.meterName
+            meterName: props.meterName,
+            orientation: props.orientation,
+            lineName: props.lineName
         };
         return _this;
     }
@@ -54964,12 +54966,25 @@ var IncidentGroup = (function (_super) {
         var _this = this;
         return (React.createElement("div", { id: this.state.meterName, className: "list-group-item", style: { padding: 0 } },
             React.createElement("div", { className: "panel-heading", style: { textAlign: 'center', padding: '3px 0 0 0' } },
-                React.createElement("h4", { className: "panel-title" }, this.state.meterName),
+                React.createElement("h4", { className: "panel-title" }, this.state.meterName + ' [' + this.state.lineName + '] '),
                 React.createElement("a", { onClick: function (e) { return _this.goToOpenSEE(_this.state.incidentId); } }, "View in OpenSEE")),
-            React.createElement("div", { className: "panel-body collapse in", style: { padding: '0' } },
-                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: false }),
-                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: false }),
-                React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: true })),
+            (this.state.orientation.toUpperCase() == "XY" ?
+                React.createElement("div", { className: "panel-body collapse in", style: { padding: '0' } },
+                    React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: false }),
+                    React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: false }),
+                    React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: true }))
+                : ''),
+            (this.state.orientation.toUpperCase() == "YX" ?
+                React.createElement("div", { className: "panel-body collapse in", style: { padding: '0' } },
+                    React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VY", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: false }),
+                    React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: false }),
+                    React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "VX", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: true }))
+                : ''),
+            (this.state.orientation.toUpperCase() == "" ?
+                React.createElement("div", { className: "panel-body collapse in", style: { padding: '0' } },
+                    React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "V", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: false }),
+                    React.createElement(WaveformViewGraph_1.default, { circuitId: this.state.circuitId, meterId: this.state.meterId, startDate: this.state.startDate, endDate: this.state.endDate, type: "I", pixels: this.state.pixels, stateSetter: this.props.stateSetter, showXAxis: true }))
+                : ''),
             React.createElement("br", null)));
     };
     IncidentGroup.prototype.goToOpenSEE = function (incidentId) {
@@ -55017,7 +55032,14 @@ var color = {
     I1: '#FF0000',
     I2: '#0066CC',
     I3: '#33CC33',
-    IR: '#999999'
+    IR: '#999999',
+    VA: '#A30000',
+    VB: '#0029A3',
+    VC: '#007A29',
+    IA: '#FF0000',
+    IB: '#0066CC',
+    IC: '#33CC33',
+    IN: '#999999'
 };
 var WaveformViewerGraph = (function (_super) {
     __extends(WaveformViewerGraph, _super);

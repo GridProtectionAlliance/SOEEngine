@@ -42,6 +42,13 @@ namespace SOEDataProcessing.DataAnalysis
         private int m_i2Index;
         private int m_i3Index;
         private int m_irIndex;
+        private int m_vaIndex;
+        private int m_vbIndex;
+        private int m_vcIndex;
+        private int m_iaIndex;
+        private int m_ibIndex;
+        private int m_icIndex;
+        private int m_inIndex;
 
         private List<CycleDataGroup> m_cycleDataGroups;
 
@@ -61,6 +68,13 @@ namespace SOEDataProcessing.DataAnalysis
             m_i2Index = -1;
             m_i3Index = -1;
             m_irIndex = -1;
+            m_vaIndex = -1;
+            m_vbIndex = -1;
+            m_vcIndex = -1;
+            m_iaIndex = -1;
+            m_ibIndex = -1;
+            m_icIndex = -1;
+            m_inIndex = -1;
 
             m_cycleDataGroups = dataGroup.DataSeries
                 .Select((dataSeries, index) => new { DataSeries = dataSeries, Index = index })
@@ -75,6 +89,24 @@ namespace SOEDataProcessing.DataAnalysis
 
         public VICycleDataGroup(List<CycleDataGroup> cycleDataGroups)
         {
+            m_vx1Index = -1;
+            m_vx2Index = -1;
+            m_vx3Index = -1;
+            m_vy1Index = -1;
+            m_vy2Index = -1;
+            m_vy3Index = -1;
+            m_i1Index = -1;
+            m_i2Index = -1;
+            m_i3Index = -1;
+            m_irIndex = -1;
+            m_vaIndex = -1;
+            m_vbIndex = -1;
+            m_vcIndex = -1;
+            m_iaIndex = -1;
+            m_ibIndex = -1;
+            m_icIndex = -1;
+            m_inIndex = -1;
+
             m_cycleDataGroups = new List<CycleDataGroup>(cycleDataGroups);
             MapIndexes();
         }
@@ -87,6 +119,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
+                if (m_vx1Index == -1) return null;
                 return m_cycleDataGroups[m_vx1Index];
             }
         }
@@ -95,6 +128,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
+                if (m_vx2Index == -1) return null;
                 return m_cycleDataGroups[m_vx2Index];
             }
         }
@@ -103,6 +137,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
+                if (m_vx3Index == -1) return null;
                 return m_cycleDataGroups[m_vx3Index];
             }
         }
@@ -111,6 +146,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
+                if (m_vy1Index == -1) return null;
                 return m_cycleDataGroups[m_vy1Index];
             }
         }
@@ -119,6 +155,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
+                if (m_vy2Index == -1) return null;
                 return m_cycleDataGroups[m_vy2Index];
             }
         }
@@ -127,6 +164,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
+                if (m_vy3Index == -1) return null;
                 return m_cycleDataGroups[m_vy3Index];
             }
         }
@@ -135,6 +173,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
+                if (m_i1Index == -1) return null;
                 return m_cycleDataGroups[m_i1Index];
             }
         }
@@ -143,6 +182,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
+                if (m_i2Index == -1) return null;
                 return m_cycleDataGroups[m_i2Index];
             }
         }
@@ -151,6 +191,7 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
+                if (m_i3Index == -1) return null;
                 return m_cycleDataGroups[m_i3Index];
             }
         }
@@ -159,10 +200,73 @@ namespace SOEDataProcessing.DataAnalysis
         {
             get
             {
+                if (m_irIndex == -1) return null;
                 return m_cycleDataGroups[m_irIndex];
             }
         }
 
+        public CycleDataGroup VA
+        {
+            get
+            {
+                if (m_vaIndex == -1) return null;
+                return m_cycleDataGroups[m_vaIndex];
+            }
+        }
+
+        public CycleDataGroup VB
+        {
+            get
+            {
+                if (m_vbIndex == -1) return null;
+                return m_cycleDataGroups[m_vbIndex];
+            }
+        }
+
+        public CycleDataGroup VC
+        {
+            get
+            {
+                if (m_vcIndex == -1) return null;
+                return m_cycleDataGroups[m_vcIndex];
+            }
+        }
+
+        public CycleDataGroup IA
+        {
+            get
+            {
+                if (m_iaIndex == -1) return null;
+                return m_cycleDataGroups[m_iaIndex];
+            }
+        }
+
+        public CycleDataGroup IB
+        {
+            get
+            {
+                if (m_ibIndex == -1) return null;
+                return m_cycleDataGroups[m_ibIndex];
+            }
+        }
+
+        public CycleDataGroup IC
+        {
+            get
+            {
+                if (m_icIndex == -1) return null;
+                return m_cycleDataGroups[m_icIndex];
+            }
+        }
+
+        public CycleDataGroup IN
+        {
+            get
+            {
+                if (m_inIndex == -1) return null;
+                return m_cycleDataGroups[m_inIndex];
+            }
+        }
         #endregion
 
         #region [ Methods ]
@@ -205,6 +309,21 @@ namespace SOEDataProcessing.DataAnalysis
                     m_i3Index = i;
                 else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("IR", StringComparison.OrdinalIgnoreCase))
                     m_irIndex = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VA", StringComparison.OrdinalIgnoreCase))
+                    m_vaIndex = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VB", StringComparison.OrdinalIgnoreCase))
+                    m_vbIndex = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("VC", StringComparison.OrdinalIgnoreCase))
+                    m_vcIndex = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("IA", StringComparison.OrdinalIgnoreCase))
+                    m_iaIndex = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("IB", StringComparison.OrdinalIgnoreCase))
+                    m_ibIndex = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("IC", StringComparison.OrdinalIgnoreCase))
+                    m_icIndex = i;
+                else if (m_cycleDataGroups[i].RMS.SeriesInfo.Channel.Name.StartsWith("IN", StringComparison.OrdinalIgnoreCase))
+                    m_inIndex = i;
+
             }
         }
 

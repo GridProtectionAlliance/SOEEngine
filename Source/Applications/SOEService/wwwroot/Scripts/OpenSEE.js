@@ -326,6 +326,11 @@ function populateDivWithLineChartByInstanceID(theeventinstance) {
             series.ChannelName = series.ChannelName.replace("3", series.Phasing[2]);
             series.Phase = series.Phasing[2];
         }
+        else {
+            if (series.MeasurementCharacteristic == "Instantaneous")
+                series.Phase = series.ChannelName[1];
+        }
+
 
         series.flotSeries = {
             data: [],
@@ -413,7 +418,8 @@ function populateDivWithLineChartByInstanceID(theeventinstance) {
 
             var upstream =
                 (series.Orientation == "XY" && series.ChannelName[1] == "X") ||
-                (series.Orientation == "YX" && series.ChannelName[1] == "Y");
+                (series.Orientation == "YX" && series.ChannelName[1] == "Y") || 
+                (series.Orientation == "");
 
             var include =
                 upstream &&

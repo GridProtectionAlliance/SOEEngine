@@ -169,10 +169,12 @@ namespace SOEDataProcessing.DataOperations
             }
         }
 
-        private string GetVoltageState(double rms, double lineKV)
+        private string GetVoltageState(double? rms, double lineKV)
         {
+            if (rms == null) return "1";
+
             double nominal = lineKV * 1000.0D / Math.Sqrt(3.0D);
-            double perUnit = rms / nominal;
+            double perUnit = (double)rms / nominal;
 
             if (perUnit <= 0.1D)
                 return "0";

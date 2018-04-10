@@ -44,15 +44,15 @@ namespace SOE.Model
         public double VX3RMS { get; set; }
         public double VX3Phase { get; set; }
         public double VX3Peak { get; set; }
-        public double VY1RMS { get; set; }
-        public double VY1Phase { get; set; }
-        public double VY1Peak { get; set; }
-        public double VY2RMS { get; set; }
-        public double VY2Phase { get; set; }
-        public double VY2Peak { get; set; }
-        public double VY3RMS { get; set; }
-        public double VY3Phase { get; set; }
-        public double VY3Peak { get; set; }
+        public double? VY1RMS { get; set; }
+        public double? VY1Phase { get; set; }
+        public double? VY1Peak { get; set; }
+        public double? VY2RMS { get; set; }
+        public double? VY2Phase { get; set; }
+        public double? VY2Peak { get; set; }
+        public double? VY3RMS { get; set; }
+        public double? VY3Phase { get; set; }
+        public double? VY3Peak { get; set; }
         public double I1RMS { get; set; }
         public double I1Phase { get; set; }
         public double I1Peak { get; set; }
@@ -85,15 +85,15 @@ namespace SOE.Model
         public double VXCRMS { get; set; }
         public double VXCPhase { get; set; }
         public double VXCPeak { get; set; }
-        public double VYARMS { get; set; }
-        public double VYAPhase { get; set; }
-        public double VYAPeak { get; set; }
-        public double VYBRMS { get; set; }
-        public double VYBPhase { get; set; }
-        public double VYBPeak { get; set; }
-        public double VYCRMS { get; set; }
-        public double VYCPhase { get; set; }
-        public double VYCPeak { get; set; }
+        public double? VYARMS { get; set; }
+        public double? VYAPhase { get; set; }
+        public double? VYAPeak { get; set; }
+        public double? VYBRMS { get; set; }
+        public double? VYBPhase { get; set; }
+        public double? VYBPeak { get; set; }
+        public double? VYCRMS { get; set; }
+        public double? VYCPhase { get; set; }
+        public double? VYCPeak { get; set; }
         public double IARMS { get; set; }
         public double IAPhase { get; set; }
         public double IAPeak { get; set; }

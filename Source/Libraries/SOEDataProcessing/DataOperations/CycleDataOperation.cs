@@ -116,7 +116,9 @@ namespace SOEDataProcessing.DataOperations
 
         private void Process(EventKey eventKey, VICycleDataGroup viCycleDataGroup, int samplesPerCycle)
         {
-            int length = viCycleDataGroup.VX1.RMS.DataPoints.Count;
+            int length = 0;
+            if (viCycleDataGroup.VX1?.RMS.DataPoints.Any() ?? false) length = viCycleDataGroup.VX1.RMS.DataPoints.Count();
+            else length = viCycleDataGroup.VA.RMS.DataPoints.Count();
 
             int sampleNumber = 0;
             CycleData row;
@@ -127,40 +129,40 @@ namespace SOEDataProcessing.DataOperations
 
                 row.CycleNumber = i;
                 row.SampleNumber = sampleNumber;
-                row.Timestamp = viCycleDataGroup.VX1.RMS[i].Time;
+                row.Timestamp = viCycleDataGroup.VX1?.RMS[i].Time ?? viCycleDataGroup.VA.RMS[i].Time;
 
-                row.VX1RMS = viCycleDataGroup.VX1.RMS[i].Value;
-                row.VX1Phase = viCycleDataGroup.VX1.Phase[i].Value;
-                row.VX1Peak = viCycleDataGroup.VX1.Peak[i].Value;
-                row.VX2RMS = viCycleDataGroup.VX2.RMS[i].Value;
-                row.VX2Phase = viCycleDataGroup.VX2.Phase[i].Value;
-                row.VX2Peak = viCycleDataGroup.VX2.Peak[i].Value;
-                row.VX3RMS = viCycleDataGroup.VX3.RMS[i].Value;
-                row.VX3Phase = viCycleDataGroup.VX3.Phase[i].Value;
-                row.VX3Peak = viCycleDataGroup.VX3.Peak[i].Value;
+                row.VX1RMS = viCycleDataGroup.VX1?.RMS[i].Value ?? viCycleDataGroup.VA.RMS[i].Value;
+                row.VX1Phase = viCycleDataGroup.VX1?.Phase[i].Value ?? viCycleDataGroup.VA.Phase[i].Value;
+                row.VX1Peak = viCycleDataGroup.VX1?.Peak[i].Value ?? viCycleDataGroup.VA.Peak[i].Value;
+                row.VX2RMS = viCycleDataGroup.VX2?.RMS[i].Value ?? viCycleDataGroup.VB.RMS[i].Value;
+                row.VX2Phase = viCycleDataGroup.VX2?.Phase[i].Value ?? viCycleDataGroup.VB.Phase[i].Value;
+                row.VX2Peak = viCycleDataGroup.VX2?.Peak[i].Value ?? viCycleDataGroup.VB.Peak[i].Value;
+                row.VX3RMS = viCycleDataGroup.VX3?.RMS[i].Value ?? viCycleDataGroup.VC.RMS[i].Value;
+                row.VX3Phase = viCycleDataGroup.VX3?.Phase[i].Value ?? viCycleDataGroup.VC.Phase[i].Value;
+                row.VX3Peak = viCycleDataGroup.VX3?.Peak[i].Value ?? viCycleDataGroup.VC.Peak[i].Value;
 
-                row.VY1RMS = viCycleDataGroup.VY1.RMS[i].Value;
-                row.VY1Phase = viCycleDataGroup.VY1.Phase[i].Value;
-                row.VY1Peak = viCycleDataGroup.VY1.Peak[i].Value;
-                row.VY2RMS = viCycleDataGroup.VY2.RMS[i].Value;
-                row.VY2Phase = viCycleDataGroup.VY2.Phase[i].Value;
-                row.VY2Peak = viCycleDataGroup.VY2.Peak[i].Value;
-                row.VY3RMS = viCycleDataGroup.VY3.RMS[i].Value;
-                row.VY3Phase = viCycleDataGroup.VY3.Phase[i].Value;
-                row.VY3Peak = viCycleDataGroup.VY3.Peak[i].Value;
+                row.VY1RMS = viCycleDataGroup.VY1?.RMS[i].Value ?? null;
+                row.VY1Phase = viCycleDataGroup.VY1?.Phase[i].Value ?? null;
+                row.VY1Peak = viCycleDataGroup.VY1?.Peak[i].Value ?? null;
+                row.VY2RMS = viCycleDataGroup.VY2?.RMS[i].Value ?? null;
+                row.VY2Phase = viCycleDataGroup.VY2?.Phase[i].Value ?? null;
+                row.VY2Peak = viCycleDataGroup.VY2?.Peak[i].Value ?? null;
+                row.VY3RMS = viCycleDataGroup.VY3?.RMS[i].Value ?? null;
+                row.VY3Phase = viCycleDataGroup.VY3?.Phase[i].Value ?? null;
+                row.VY3Peak = viCycleDataGroup.VY3?.Peak[i].Value ?? null;
 
-                row.I1RMS = viCycleDataGroup.I1.RMS[i].Value;
-                row.I1Phase = viCycleDataGroup.I1.Phase[i].Value;
-                row.I1Peak = viCycleDataGroup.I1.Peak[i].Value;
-                row.I2RMS = viCycleDataGroup.I2.RMS[i].Value;
-                row.I2Phase = viCycleDataGroup.I2.Phase[i].Value;
-                row.I2Peak = viCycleDataGroup.I2.Peak[i].Value;
-                row.I3RMS = viCycleDataGroup.I3.RMS[i].Value;
-                row.I3Phase = viCycleDataGroup.I3.Phase[i].Value;
-                row.I3Peak = viCycleDataGroup.I3.Peak[i].Value;
-                row.IRRMS = viCycleDataGroup.IR.RMS[i].Value;
-                row.IRPhase = viCycleDataGroup.IR.Phase[i].Value;
-                row.IRPeak = viCycleDataGroup.IR.Peak[i].Value;
+                row.I1RMS = viCycleDataGroup.I1?.RMS[i].Value ?? viCycleDataGroup.IA.RMS[i].Value;
+                row.I1Phase = viCycleDataGroup.I1?.Phase[i].Value ?? viCycleDataGroup.IA.Phase[i].Value;
+                row.I1Peak = viCycleDataGroup.I1?.Peak[i].Value ?? viCycleDataGroup.IA.Peak[i].Value;
+                row.I2RMS = viCycleDataGroup.I2?.RMS[i].Value ?? viCycleDataGroup.IB.RMS[i].Value;
+                row.I2Phase = viCycleDataGroup.I2?.Phase[i].Value ?? viCycleDataGroup.IB.Phase[i].Value;
+                row.I2Peak = viCycleDataGroup.I2?.Peak[i].Value ?? viCycleDataGroup.IB.Peak[i].Value;
+                row.I3RMS = viCycleDataGroup.I3?.RMS[i].Value ?? viCycleDataGroup.IC.RMS[i].Value;
+                row.I3Phase = viCycleDataGroup.I3?.Phase[i].Value ?? viCycleDataGroup.IC.Phase[i].Value;
+                row.I3Peak = viCycleDataGroup.I3?.Peak[i].Value ?? viCycleDataGroup.IC.Peak[i].Value;
+                row.IRRMS = viCycleDataGroup.IR?.RMS[i].Value ?? viCycleDataGroup.IN.RMS[i].Value;
+                row.IRPhase = viCycleDataGroup.IR?.Phase[i].Value ?? viCycleDataGroup.IN.Phase[i].Value;
+                row.IRPeak = viCycleDataGroup.IR?.Peak[i].Value ?? viCycleDataGroup.IN.Peak[i].Value;
 
                 m_cycleDataList.Add(Tuple.Create(eventKey, row));
                 sampleNumber += samplesPerCycle;
