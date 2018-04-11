@@ -63,10 +63,12 @@ namespace SOEDataProcessing.DataOperations
 
             string query = @"SELECT CycleData.TimeStamp, SOEPoint.FaultType
                              FROM
-                                 Event JOIN
-                                 CycleData ON Event.id = CycleData.EventID JOIN
+                                 Incident JOIN
+                                 IncidentAttribute ON Incident.ID = IncidentAttribute.IncidentID JOIN
+                                 Event ON Event.IncidentID = Incident.ID JOIN
+                                 CycleData ON Event.ID = CycleData.EventID JOIN
                                  SOEPoint ON CycleData.ID = SOEPoint.CycleDataID
-                             WHERE Event.IncidentID = " + incident.ID + @"
+                             WHERE Incident.ID = " + incident.ID + @" AND IncidentAttribute.FaultType IS NOT NULL
                              ORDER BY CycleData.Timestamp";
 
             DataTable table = connection.RetrieveData(query);

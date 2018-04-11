@@ -124,7 +124,6 @@
     <Compile Include="DataOperations\PQSeverityCalculationOperation.cs" />
     <Compile Include="DataOperations\SOEPointOperation.cs" />
     <Compile Include="DataResources\CycleDataResource.cs" />
-    <Compile Include="DataResources\EventClassificationResource.cs" />
     <Compile Include="DataResources\DataGroupsResource.cs" />
     <Compile Include="DataResources\DataResourceBase.cs" />
     <Compile Include="DataOperations\EventOperation.cs" />

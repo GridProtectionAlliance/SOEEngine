@@ -86,24 +86,22 @@ namespace SOEDataProcessing.DataOperations
         {
             DataGroupsResource dataGroupsResource = meterDataSet.GetResource<DataGroupsResource>();
             CycleDataResource cycleDataResource = meterDataSet.GetResource<CycleDataResource>();
-            EventClassificationResource eventClassificationResource = meterDataSet.GetResource<EventClassificationResource>();
 
             using (AdoDataConnection connection = meterDataSet.CreateDbConnection())
             {
                 List<DataGroup> dataGroups = new List<DataGroup>(cycleDataResource.DataGroups);
                 dataGroups.AddRange(dataGroupsResource.DataGroups.Where(dataGroup => dataGroup.DataSeries.Count == 0));
 
-                List<Event> events = GetEvents(connection, meterDataSet, dataGroups, cycleDataResource.VICycleDataGroups, eventClassificationResource.Classifications);
+                List<Event> events = GetEvents(connection, meterDataSet, dataGroups, cycleDataResource.VICycleDataGroups);
                 LoadEvents(connection, events);
             }
         }
 
-        private List<Event> GetEvents(AdoDataConnection connection, MeterDataSet meterDataSet, List<DataGroup> dataGroups, List<VICycleDataGroup> viCycleDataGroups, Dictionary<DataGroup, EventClassification> eventClassifications)
+        private List<Event> GetEvents(AdoDataConnection connection, MeterDataSet meterDataSet, List<DataGroup> dataGroups, List<VICycleDataGroup> viCycleDataGroups)
         {
             int count = dataGroups
                 .Where(dataGroup => dataGroup.Classification != DataClassification.Trend)
                 .Where(dataGroup => dataGroup.Classification != DataClassification.Unknown)
-                .Where(dataGroup => eventClassifications.ContainsKey(dataGroup))
                 .Count();
 
             if (count == 0)
@@ -117,21 +115,16 @@ namespace SOEDataProcessing.DataOperations
             List<Event> events = new List<Event>(count);
 
             TableOperations<Event> eventTable = new TableOperations<Event>(connection);
-            TableOperations<EventType> eventTypeTable = new TableOperations<EventType>(connection);
             TableOperations<EventData> eventDataTable = new TableOperations<EventData>(connection);
             TableOperations<Incident> incidentTable = new TableOperations<Incident>(connection);
             for (int i = 0; i < dataGroups.Count; i++)
             {
                 DataGroup dataGroup = dataGroups[i];
-                EventClassification eventClassification;
 
                 if (dataGroup.Classification == DataClassification.Trend)
                     continue;
 
                 if (dataGroup.Classification == DataClassification.Unknown)
-                    continue;
-
-                if (!eventClassifications.TryGetValue(dataGroup, out eventClassification))
                     continue;
 
                 if ((object)dataGroup.Line == null && meterDataSet.Meter.MeterLocation.MeterLocationLines.Count != 1)
@@ -142,7 +135,6 @@ namespace SOEDataProcessing.DataOperations
                 if (eventTable.QueryRecordCountWhere("StartTime = {0} AND EndTime = {1} AND Samples = {2} AND MeterID = {3} AND LineID = {4}", dataGroup.StartTime, dataGroup.EndTime, dataGroup.Samples, meterDataSet.Meter.ID, line.ID) > 0)
                     continue;
 
-                EventType eventType = eventTypeTable.GetOrAdd(eventClassification.ToString());
                 Incident incident = incidentTable.QueryRecordWhere("MeterID = {0} AND {1} BETWEEN StartTime AND EndTime", meterDataSet.Meter.ID, ToDateTime2(connection, dataGroup.StartTime));
 
                 Event evt = new Event()
@@ -150,7 +142,6 @@ namespace SOEDataProcessing.DataOperations
                     FileGroupID = meterDataSet.FileGroup.ID,
                     MeterID = meterDataSet.Meter.ID,
                     LineID = line.ID,
-                    EventTypeID = eventType.ID,
                     EventDataID = null,
                     IncidentID = incident.ID,
                     Name = string.Empty,

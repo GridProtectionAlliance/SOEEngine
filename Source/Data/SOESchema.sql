@@ -534,21 +534,12 @@ CREATE TABLE IncidentAttribute
 )
 GO
 
-CREATE TABLE EventType
-(
-    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    Name VARCHAR(200) NOT NULL,
-    Description VARCHAR(MAX) NULL
-)
-GO
-
 CREATE TABLE Event
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
     FileGroupID INT NOT NULL REFERENCES FileGroup(ID),
     MeterID INT NOT NULL REFERENCES Meter(ID),
     LineID INT NOT NULL REFERENCES Line(ID),
-    EventTypeID INT NOT NULL REFERENCES EventType(ID),
     EventDataID INT NOT NULL REFERENCES EventData(ID),
     IncidentID INT NOT NULL REFERENCES Incident(ID),
     Name VARCHAR(200) NOT NULL,
@@ -580,10 +571,6 @@ CREATE NONCLUSTERED INDEX IX_Event_LineID
 ON Event(LineID ASC)
 GO
 
-CREATE NONCLUSTERED INDEX IX_Event_EventTypeID
-ON Event(EventTypeID ASC)
-GO
-
 CREATE NONCLUSTERED INDEX IX_Event_EventDataID
 ON Event(EventDataID ASC)
 GO
@@ -600,30 +587,6 @@ CREATE NONCLUSTERED INDEX IX_Event_EndTime
 ON Event(EndTime ASC)
 GO
 
-CREATE TABLE Disturbance
-(
-    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    EventID INT NOT NULL REFERENCES Event(ID),
-    EventTypeID INT NOT NULL REFERENCES EventType(ID),
-    PhaseID INT NOT NULL REFERENCES Phase(ID),
-    Magnitude FLOAT NOT NULL,
-    PerUnitMagnitude FLOAT NOT NULL,
-    StartTime DATETIME2 NOT NULL,
-    EndTime DATETIME2 NOT NULL,
-    DurationSeconds FLOAT NOT NULL,
-    DurationCycles FLOAT NOT NULL,
-    StartIndex INT NOT NULL,
-    EndIndex INT NOT NULL
-)
-GO
-
-CREATE NONCLUSTERED INDEX IX_Disturbance_EventID
-ON Disturbance(EventID ASC)
-GO
-
-CREATE NONCLUSTERED INDEX IX_Disturbance_EventTypeID
-ON Disturbance(EventTypeID ASC)
-GO
 
 CREATE TABLE CycleData
 (
@@ -951,7 +914,6 @@ SELECT
             Event.ID AS [Event/ID],
             Event.StartTime AS [Event/StartTime],
             Event.EndTime AS [Event/EndTime],
-            EventType.Name AS [Event/Type],
             Meter.AssetKey AS [Meter/AssetKey],
             Meter.Name AS [Meter/Name],
             Meter.ShortName AS [Meter/ShortName],
@@ -973,8 +935,7 @@ SELECT
             Line LEFT OUTER JOIN
             MeterLocation ON Meter.MeterLocationID = MeterLocation.ID LEFT OUTER JOIN
             MeterLine ON MeterLine.MeterID = Meter.ID AND MeterLine.LineID = Line.ID LEFT OUTER JOIN
-            MeterLocationLine ON MeterLocationLine.MeterLocationID = MeterLocation.ID AND MeterLocationLine.LineID = Line.ID LEFT OUTER JOIN
-            EventType ON Event.EventTypeID = EventType.ID
+            MeterLocationLine ON MeterLocationLine.MeterLocationID = MeterLocation.ID AND MeterLocationLine.LineID = Line.ID
         WHERE
             Event.MeterID = Meter.ID AND
             Event.LineID = Line.ID
@@ -1009,30 +970,16 @@ CREATE VIEW EventInfo AS
 SELECT
     Event.ID AS EventID,
     Event.IncidentID,
-    EventType.Name AS EventType,
     Event.MeterID,
     Event.StartTime,
     Meter.Name AS MeterName,
     MeterLine.LineName,
-    Line.Length AS LineLength,
-    Disturbance.StartTime AS DisturbanceStartTime,
-    CASE WHEN Disturbance.PerUnitMagnitude <> -1E308 THEN Disturbance.PerUnitMagnitude ELSE NULL END AS DisturbanceMagnitude,
-    Disturbance.DurationCycles AS DisturbanceDuration
+    Line.Length AS LineLength
 FROM
     Event JOIN
-    EventType ON Event.EventTypeID = EventType.ID JOIN
     Meter ON Event.MeterID = Meter.ID JOIN
     MeterLine ON Event.MeterID = MeterLine.MeterID AND Event.LineID = MeterLine.LineID JOIN
-    Line ON Event.LineID = Line.ID LEFT OUTER JOIN
-    (
-        SELECT *
-        FROM
-        (
-            SELECT ROW_NUMBER() OVER(PARTITION BY EventID ORDER BY Magnitude DESC, StartTime) AS Precedence, *
-            FROM Disturbance
-        ) Disturbance
-        WHERE Precedence = 1
-    ) Disturbance ON Disturbance.EventID = Event.ID
+    Line ON Event.LineID = Line.ID
 GO
 
 CREATE VIEW RotatedCycleData AS

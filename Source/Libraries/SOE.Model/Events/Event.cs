@@ -43,8 +43,6 @@ namespace SOE.Model
 
         public int LineID { get; set; }
 
-        public int EventTypeID { get; set; }
-
         public int? EventDataID { get; set; }
 
         public int IncidentID { get; set; }
