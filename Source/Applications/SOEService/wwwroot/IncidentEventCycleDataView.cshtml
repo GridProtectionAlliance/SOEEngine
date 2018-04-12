@@ -43,29 +43,32 @@
     string name = parameters["name"] ?? "";
     int count = int.Parse(parameters["count"] ?? "0");
     int id = 0;
-    if (count == 1) {
+    if (count == 1)
+    {
 
         DateTime startDate = DateTime.ParseExact(date, "yyyyMMddHH", CultureInfo.InvariantCulture);
         DateTime endDate = (DateTime)typeof(DateTime).GetMethod("Add" + timeContext).Invoke(startDate, new object[] { 1 });
 
-        id =  dataContext.Connection.ExecuteScalar<int>("SELECT ID FROM IncidentEventCycleDataView WHERE StartTime BETWEEN {0} AND {1} AND " + levels + " = {2}", startDate, endDate, name);
+        id = dataContext.Connection.ExecuteScalar<int>("SELECT ID FROM IncidentEventCycleDataView WHERE StartTime BETWEEN {0} AND {1} AND " + levels + " = {2}", startDate, endDate, name);
     }
 
     ViewBag.AddNewEditTitle = "";
     ViewBag.HeaderColumns = new[]
 {   //    { "Field", "Label", "Classes" }
-        new[] { "StartTime", "Date/Time", "text-center" },
-        new[] { "System", "System", "text-center" },
-        new[] { "Circuit", "Circuit", "text-center" },
-        new[] { "Device", "Device", "text-center" },
-        new[] { null, "Type", "text-center valign-middle"},
-        new[] { null, "A", "text-center valign-middle" },
-        new[] { null, "C", "text-center valign-middle" },
-        new[] { null, "B", "text-center valign-middle" },
-        new[] { null, "G", "text-center valign-middle" },
-        new[] { null, "Duration", "text-center valign-middle" },
-        new[] { null, "SOE Data", "text-center valign-middle" },
-    };
+new[] { "StartTime", "Date/Time", "text-center" },
+new[] { "System", "System", "text-center" },
+new[] { "Circuit", "Circuit", "text-center" },
+new[] { "Device", "Device", "text-center" },
+new[] { null, "Type", "text-center valign-middle"},
+new[] { null, "A", "text-center valign-middle" },
+new[] { null, "C", "text-center valign-middle" },
+new[] { null, "B", "text-center valign-middle" },
+new[] { null, "G", "text-center valign-middle" },
+new[] { "LTE", "LTE", "text-center"},
+new[] { "PQS", "PQS", "text-center"},
+new[] { null, "Duration", "text-center valign-middle" },
+new[] { null, "SOE Data", "text-center valign-middle" },
+};
     ViewBag.ShowSearchFilter = true;
 
     ViewBag.BodyRows = BodyRows().ToString();
@@ -76,26 +79,28 @@
 }
 
 @helper BodyRows()
-{
-    <td width="9%" class="text-center valign-middle" data-bind="text: StartTime.formatDate(DateTimeFormat)"></td>
-    <td width="9%" class="text-center valign-middle" data-bind="text: System"></td>
-    <td width="9%" class="text-center valign-middle" data-bind="text: Circuit"></td>
-    <td width="9%" class="text-center valign-middle" data-bind="text: Device"></td>
-    <td width="9%" class="text-center valign-middle" data-bind="text: FaultType"></td>
-    <td width="9%" class="text-center valign-middle" data-bind="text: IAMax.toFixed(0)"></td>
-    <td width="9%" class="text-center valign-middle" data-bind="text: ICMax.toFixed(0)"></td>
-    <td width="9%" class="text-center valign-middle" data-bind="text: IBMax.toFixed(0)"></td>
-    <td width="9%" class="text-center valign-middle" data-bind="text: IRMax.toFixed(0)"></td>
-    <td width="9%" class="text-center valign-middle" data-bind="text: (Duration/1000*60).toFixed(1)"></td>
-    <td width="9%" class="text-center valign-middle" nowrap>
-        <button type="button" class="btn btn-danger" data-bind="click: openCAV.bind($data)">A</button>
-        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-        <button type="button" class="btn btn-danger" data-bind="">W</button>
-    </td>
+    {
+        <td width="9%" class="text-center valign-middle" data-bind="text: StartTime.formatDate(DateTimeFormat)"></td>
+        <td width="9%" class="text-center valign-middle" data-bind="text: System"></td>
+        <td width="9%" class="text-center valign-middle" data-bind="text: Circuit"></td>
+        <td width="9%" class="text-center valign-middle" data-bind="text: Device"></td>
+        <td width="9%" class="text-center valign-middle" data-bind="text: FaultType"></td>
+        <td width="9%" class="text-center valign-middle" data-bind="text: IAMax.toFixed(0)"></td>
+        <td width="9%" class="text-center valign-middle" data-bind="text: ICMax.toFixed(0)"></td>
+        <td width="9%" class="text-center valign-middle" data-bind="text: IBMax.toFixed(0)"></td>
+        <td width="9%" class="text-center valign-middle" data-bind="text: IRMax.toFixed(0)"></td>
+        <td width="9%" class="text-center valign-middle" data-bind="text: ToFixed(LTE,0)"></td>
+        <td width="9%" class="text-center valign-middle" data-bind="text: PQS.toFixed(1)"></td>
+        <td width="9%" class="text-center valign-middle" data-bind="text: (Duration/1000*60).toFixed(1)"></td>
+        <td width="9%" class="text-center valign-middle" nowrap>
+            <button type="button" class="btn btn-danger" data-bind="click: openCAV.bind($data)">A</button>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <button type="button" class="btn btn-danger" data-bind="">M</button>
+        </td>
 }
 
 @helper AddNewEditDialog(DataContext dataContext)
-{
+    {
 }
 @Html.RenderResource("GSF.Web.Model.Views.PagedViewModel.cshtml")
 
@@ -135,6 +140,11 @@
 
         function openCAV(record) {
             window.open('@Url.Content("CommonAggregateView.cshtml?IncidentID=")' + record.ID.toString())
+        }
+
+        function ToFixed(value, precision) {
+            if (value == null) return null;
+            return value.toFixed(precision);
         }
     </script>
 }

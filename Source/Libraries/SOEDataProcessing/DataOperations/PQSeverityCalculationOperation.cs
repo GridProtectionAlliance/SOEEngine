@@ -34,6 +34,7 @@ using GSF;
 using log4net;
 using SOEDataProcessing.DataResources;
 using SOEDataProcessing.DataAnalysis;
+using System.Configuration;
 
 namespace SOEDataProcessing.DataOperations
 {
@@ -42,7 +43,23 @@ namespace SOEDataProcessing.DataOperations
         #region [ Members ]
 
         // Fields
+        private double m_systemFrequency;
+        #endregion
 
+        #region [ Properties ]
+
+        [Setting]
+        public double SystemFrequency
+        {
+            get
+            {
+                return m_systemFrequency;
+            }
+            set
+            {
+                m_systemFrequency = value;
+            }
+        }
         #endregion
 
         #region [ Methods ]
@@ -65,43 +82,74 @@ namespace SOEDataProcessing.DataOperations
             Incident incident = incidentAdapter.QueryRecordWhere("ID IN (SELECT DISTINCT IncidentID FROM Event WHERE FileGroupID = {0})", meterDataSet.FileGroup.ID);
             if (incident == null) return;
 
-            string query = @"SELECT CycleData.TimeStamp, SOEPoint.FaultType
+            string query = @"SELECT
+	                            RotatedCycleData.Timestamp, RotatedCycleData.VXARMS, RotatedCycleData.VXBRMS, RotatedCycleData.VXCRMS, SOEPoint.UpState, Line.VoltageKV
                              FROM
-                                 Event JOIN
-                                 CycleData ON Event.id = CycleData.EventID JOIN
-                                 SOEPoint ON CycleData.ID = SOEPoint.CycleDataID
-                             WHERE Event.IncidentID = " + incident.ID + @"
-                             ORDER BY CycleData.Timestamp";
+	                             Event JOIN
+	                             Meter ON Event.MeterID = Meter.ID JOIN
+                                 Line ON Event.LineID = Line.ID JOIN
+	                             RotatedCycleData ON Event.ID = RotatedCycleData.EventID LEFT JOIN
+	                             SOEPoint ON RotatedCycleData.ID = SOEPoint.CycleDataID
+                             WHERE Event.IncidentID = {0}
+                             Order BY RotatedCycleData.Timestamp";
 
-            DataTable table = connection.RetrieveData(query);
+            DataTable table = connection.RetrieveData(query, incident.ID);
 
-            DateTime start = default(DateTime);
-            double? value = null;
+            double valueA = 0;
+            double valueB = 0;
+            double valueC = 0;
+            string previousState = string.Empty;
 
             foreach (DataRow row in table.Rows) {
-                if (start == default(DateTime) && row["FaultType"].ToString() != "")
-                    start = (DateTime)row["TimeStamp"];
-                else if (start != default(DateTime) && row["FaultType"].ToString() == "") {
-                    DateTime end = (DateTime)row["TimeStamp"];
-                    string query2 = @"SELECT MAX(I1RMS) as I1RMS, MAX(I2RMS)as I2RMS, MAX(I3RMS) as I3RMS
-                                      FROM 
-	                                      Event JOIN
-	                                      CycleData ON Event.ID = CycleData.EventID
-                                      WHERE Event.IncidentID = {0} AND CycleData.TimeStamp BETWEEN {1} AND {2}
-                                        ";
-                    DataTable table2 = connection.RetrieveData(query2, incident.ID, ToDateTime2(connection,start), ToDateTime2(connection, end));
-                    double max = table2.Select().Select(x => new List<double>(){ (double)x["I1RMS"], (double)x["I2RMS"], (double)x["I3RMS"]}).FirstOrDefault().Max();
-                    double calc = max * max * (end - start).TotalSeconds;
-                    if (value == null || calc > value) value = calc;
+                int index = table.Rows.IndexOf(row);
+                double nominal = (double)row["VoltageKV"] * 1000.0D / Math.Sqrt(3.0D);
+                double perUnitA = (double)row["VXARMS"] / nominal;
+                double perUnitB = (double)row["VXBRMS"] / nominal;
+                double perUnitC = (double)row["VXCRMS"] / nominal;
+                string state = row["UpState"].ToString();
 
-                    start = default(DateTime);
-                }
-                else
+                if (state == string.Empty && previousState == string.Empty)
                     continue;
+                else if (state == string.Empty && previousState != string.Empty)
+                    state = previousState;
+                else
+                    previousState = state;
+
+                valueA += GetDisturbanceEnergyForCycle('A', state, perUnitA);
+                valueB += GetDisturbanceEnergyForCycle('B', state, perUnitB);
+                valueC += GetDisturbanceEnergyForCycle('C', state, perUnitC);
+
+            }
+            incident.PQS = (new List<double>() { valueA, valueB, valueC }).Max();
+            incidentAdapter.UpdateRecord(incident);
+        }
+
+        private double GetDisturbanceEnergyForCycle(char phase, string state, double perUnitValue)
+        {
+            int phaseState;
+            switch (phase)
+            {              
+                case 'A':
+                    phaseState = int.Parse(state[0].ToString());
+                    break;
+                case 'B':
+                    phaseState = int.Parse(state[2].ToString());
+                    break;
+                case 'C':
+                    phaseState = int.Parse(state[1].ToString());
+                    break;
+                default:
+                    return 0;
+                
             }
 
-            incident.LTE = value;
-            incidentAdapter.UpdateRecord(incident);
+            if (phaseState == 1)
+                return 0;
+            else if (phaseState == 3)
+                return (perUnitValue * perUnitValue - 1) / SystemFrequency;
+            else
+                return (1 - perUnitValue * perUnitValue) / SystemFrequency;
+
         }
 
         private IDbDataParameter ToDateTime2(AdoDataConnection connection, DateTime dateTime)

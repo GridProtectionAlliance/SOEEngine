@@ -68,18 +68,20 @@ namespace SOEDataProcessing.DataOperations
                                  Event ON Event.IncidentID = Incident.ID JOIN
                                  CycleData ON Event.ID = CycleData.EventID JOIN
                                  SOEPoint ON CycleData.ID = SOEPoint.CycleDataID
-                             WHERE Incident.ID = " + incident.ID + @" AND IncidentAttribute.FaultType IS NOT NULL
+                             WHERE Incident.ID = {0} AND IncidentAttribute.FaultType IS NOT NULL
                              ORDER BY CycleData.Timestamp";
 
-            DataTable table = connection.RetrieveData(query);
+            DataTable table = connection.RetrieveData(query, incident.ID);
 
             DateTime start = default(DateTime);
             double? value = null;
 
             foreach (DataRow row in table.Rows) {
+                int index = table.Rows.IndexOf(row);
+
                 if (start == default(DateTime) && row["FaultType"].ToString() != "")
                     start = (DateTime)row["TimeStamp"];
-                else if (start != default(DateTime) && row["FaultType"].ToString() == "") {
+                else if (start != default(DateTime) && (row["FaultType"].ToString() == "" || index == (table.Rows.Count - 1))) {
                     DateTime end = (DateTime)row["TimeStamp"];
                     string query2 = @"SELECT MAX(I1RMS) as I1RMS, MAX(I2RMS)as I2RMS, MAX(I3RMS) as I3RMS
                                       FROM 
@@ -88,7 +90,9 @@ namespace SOEDataProcessing.DataOperations
                                       WHERE Event.IncidentID = {0} AND CycleData.TimeStamp BETWEEN {1} AND {2}
                                         ";
                     DataTable table2 = connection.RetrieveData(query2, incident.ID, ToDateTime2(connection,start), ToDateTime2(connection, end));
-                    double max = table2.Select().Select(x => new List<double>(){ (double)x["I1RMS"], (double)x["I2RMS"], (double)x["I3RMS"]}).FirstOrDefault().Max();
+                    if (table2.Rows.Count == 0)
+                        continue;
+                    double max = table2.Select().Select(x => new List<double>(){ (double)x["I1RMS"] , (double)x["I2RMS"], (double)x["I3RMS"]}).FirstOrDefault().Max();
                     double calc = max * max * (end - start).TotalSeconds;
                     if (value == null || calc > value) value = calc;
 

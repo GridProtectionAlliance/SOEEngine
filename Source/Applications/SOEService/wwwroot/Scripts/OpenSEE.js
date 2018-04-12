@@ -273,25 +273,8 @@ function showData() {
         var separator = "&nbsp;&nbsp;&nbsp;||&nbsp;&nbsp;&nbsp;";
 
         label += "Meter: " + eventInfo.meterName;
-        label += separator + "Event Type: " + eventInfo.eventType;
         label += separator + "Event Time: " + eventInfo.startTime;
 
-        if (eventInfo.disturbanceStartTime != "")
-            details += "Start: " + eventInfo.disturbanceStartTime;
-
-        if (eventInfo.disturbanceDuration != "") {
-            if (details != "")
-                details += separator;
-
-            details += "Duration: " + eventInfo.disturbanceDuration + " cycles";
-        }
-
-        if (eventInfo.disturbanceMagnitude != "") {
-            if (details != "")
-                details += separator;
-
-            details += "Magnitude: " + eventInfo.disturbanceMagnitude + " pu (RMS)";
-        }
 
         if (details != "")
             label += "<br />" + details;

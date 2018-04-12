@@ -42,6 +42,9 @@ namespace SOE.Model
         [Searchable]
         public string Device { get; set; }
 
+        public double? PQS { get; set; }
+        public double? LTE { get; set; }
+
         [Label("Date/Time")]
         public DateTime StartTime { get; set; }
 

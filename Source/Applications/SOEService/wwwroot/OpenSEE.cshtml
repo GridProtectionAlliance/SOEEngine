@@ -148,7 +148,7 @@
     <script src="/Scripts/Site.js"></script>
 
     <script type="text/javascript">
-        var eventInfo;
+        var eventInfo = JSON.parse('@Raw(JsonConvert.SerializeObject(eventInfo))');
         var seriesList = JSON.parse('@Raw(channels)');
     </script>
 
@@ -157,7 +157,6 @@
         <script type="text/javascript">
             eventInfo = {
                 eventID: @eventInfo.EventID,
-                eventType: '@eventInfo.EventType',
                 startTime: '@eventInfo.StartTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff")',
                 meterName: '@eventInfo.MeterName',
                 lineName: '@eventInfo.LineName',
@@ -241,7 +240,7 @@
 
                 @*<td><input class="smallbutton" type="button" value="Show Phasor" onclick="showhidePhasor(this);" id="showphasor" /></td>
         <td><input class="smallbutton" type="button" value="Fault Details" onclick="showdetails(this);" id="showdetails" /></td>*@
-            </trstyle="width:>
+            </tr>
         </table>
     </div>
     <div id="DockCharts"></div>

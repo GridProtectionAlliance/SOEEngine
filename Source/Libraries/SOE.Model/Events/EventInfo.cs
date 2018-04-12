@@ -32,14 +32,10 @@ namespace SOE.Model
         [PrimaryKey(true)]
         public int EventID { get; set; }
         public int IncidentID { get; set; }
-        public string EventType { get; set; }
         public int MeterID { get; set; }
         public DateTime StartTime { get; set; }
         public string MeterName { get; set; }
         public string LineName { get; set; }
         public double LineLength { get; set; }
-        public DateTime? DisturbanceStartTime { get; set; }
-        public double? DisturbanceMagnitude { get; set; }
-        public double? DisturbanceDuration { get; set; }
     }
 }

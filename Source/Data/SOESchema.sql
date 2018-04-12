@@ -388,46 +388,6 @@ CREATE TABLE Series
 )
 GO
 
-CREATE TABLE BreakerChannel
-(
-    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    ChannelID INT NOT NULL REFERENCES Channel(ID),
-    BreakerNumber VARCHAR(120) NOT NULL
-)
-GO
-
-CREATE TABLE [Group]
-(
-    ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-    GroupName NVARCHAR(100) NOT NULL,
-    Active BIT NOT NULL
-)
-GO
-
-CREATE TABLE GroupMeter
-(
-    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    GroupID INT NOT NULL REFERENCES [Group](ID),
-    MeterID INT NOT NULL REFERENCES Meter(ID)
-)
-GO
-
-CREATE TABLE [User]
-(
-    ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-    Name NVARCHAR(100) NOT NULL,
-    Active BIT NOT NULL,
-)
-GO
-
-CREATE TABLE UserGroup
-(
-    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
-    UserID INT NOT NULL REFERENCES [User](ID),
-    GroupID INT NOT NULL REFERENCES [Group](ID)
-)
-GO
-
 CREATE TABLE Recipient
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
@@ -472,6 +432,10 @@ GO
 
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.LTECalculationOperation', 7)
 GO
+
+INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.PQSeverityCalculationOperation', 8)
+GO
+
 
 -- ------ --
 -- Events --
@@ -1590,7 +1554,7 @@ BEGIN
 			@parentID INT,
 			@childID INT
 
-    SELECT @currentTime = StartTime, @meterID = MeterID, @parentID = (SELECT ParentNormalID FROM Meter WHERE ID = Event.MeterID), @childID = (SELECT ID FROM Meter WHERE ParentNormalID = Event.MeterID)
+    SELECT @currentTime = StartTime, @meterID = MeterID, @parentID = (SELECT ParentNormalID FROM Meter WHERE ID = Event.MeterID), @childID = (SELECT TOP 1 ID FROM Meter WHERE ParentNormalID = Event.MeterID)
     FROM Event
     WHERE ID = @EventID
 
@@ -1610,4 +1574,16 @@ BEGIN
 	drop table #childEvents
 	drop table #parentEvents
 END
+GO
+
+/****** Object:  UserDefinedFunction [dbo].[GetJSONValueForProperty]    Script Date: 6/30/2017 8:32:57 AM ******/
+CREATE Function [dbo].GetJSONValueForProperty(@data varchar(max), @columnName varchar(max))
+Returns VarChar(max)
+AS
+Begin
+
+	   Return Substring(@Data, 
+				   CHARINDEX('"'+@columnName+'":"', @data) + LEN('"'+@columnName+'":"'),
+				   CHARINDEX('"', @data, CHARINDEX('"'+@columnName+'":"', @data) + LEN('"'+@columnName+'":"')) - CHARINDEX('"'+@columnName+'":"', @data) - LEN('"'+@columnName+'":"'))
+End
 GO
