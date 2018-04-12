@@ -353,20 +353,20 @@ namespace SOEService
             string sumDates;
 
             if (timeContext == "Months") {
-                dates = string.Join(",", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddMonths(offset)).Select(x => "[" + x.Date.ToString("M/yyyy") + "]"));
-                sumDates = string.Join(",", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddMonths(offset)).Select(x => "SUM([" + x.Date.ToString("M/yyyy") + "]) as [" + x.Date.ToString("M/yyyy") + "]"));
+                dates = string.Join(",\n\t", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddMonths(offset)).Select(x => "[" + x.Date.ToString("M/yyyy") + "]"));
+                sumDates = string.Join(",\n\t", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddMonths(offset)).Select(x => "SUM([" + x.Date.ToString("M/yyyy") + "]) as [" + x.Date.ToString("M/yyyy") + "]"));
                 groupByString = "cast(datepart(Month, IncidentQuery.StartTime) as varchar(max)) + '/' + cast(datepart(year,IncidentQuery.StartTime) as varchar(max))";
                 sumString = string.Join("+", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddMonths(offset)).Select(x => "COALESCE([" + x.Date.ToString("M/yyyy") + "],0)"));
             }
             else if (timeContext == "Days") {
-                dates = string.Join(",", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddDays(offset)).Select(x => "[" + x.Date.ToString("MM/dd/yyyy") + "]"));
-                sumDates = string.Join(",", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddDays(offset)).Select(x => "SUM([" + x.Date.ToString("MM/dd/yyyy") + "]) as [" + x.Date.ToString("MM/dd/yyyy") + "]"));
+                dates = string.Join(",\n\t", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddDays(offset)).Select(x => "[" + x.Date.ToString("MM/dd/yyyy") + "]"));
+                sumDates = string.Join(",\n\t", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddDays(offset)).Select(x => "SUM([" + x.Date.ToString("MM/dd/yyyy") + "]) as [" + x.Date.ToString("MM/dd/yyyy") + "]"));
                 groupByString = "Cast(IncidentQuery.StartTime as date)";
                 sumString = string.Join("+", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddDays(offset)).Select(x => "COALESCE([" + x.Date.ToString("MM/dd/yyyy") + "],0)"));
             }
             else {
-                dates = string.Join(",", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddHours(offset)).Select(x => "[" + x.ToString("M/dd H:00") + "]"));
-                sumDates = string.Join(",", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddHours(offset)).Select(x => "SUM([" + x.ToString("M/dd H:00") + "]) as [" + x.ToString("M/dd H:00") + "]"));
+                dates = string.Join(",\n\t", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddHours(offset)).Select(x => "[" + x.ToString("M/dd H:00") + "]"));
+                sumDates = string.Join(",\n\t", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddHours(offset)).Select(x => "SUM([" + x.ToString("M/dd H:00") + "]) as [" + x.ToString("M/dd H:00") + "]"));
                 groupByString = "cast(datepart(Month, IncidentQuery.StartTime) as varchar(max)) + '/' + cast(datepart(day, IncidentQuery.StartTime) as varchar(max)) + ' '+ cast(datepart(HOUR,IncidentQuery.StartTime) as varchar(max)) + ':00'";
                 sumString = string.Join("+", Enumerable.Range(0, 1 + numBuckets).Select(offset => (startDate).AddHours(offset)).Select(x => "COALESCE([" + x.ToString("M/dd H:00") + "],0)"));
             }
@@ -375,34 +375,55 @@ namespace SOEService
             {
                 try
                 {
-                    string s = $"SELECT {(limits.ToUpper() != "ALL" ? limits : "")} SystemName as System, {(levels.ToUpper() == "SYSTEM" ? "COUNT(DISTINCT CircuitName)" : "CircuitName")} as Circuit, {(levels.ToUpper() == "SYSTEM" ? "COUNT(MeterName)" : "")}{(levels.ToUpper() == "CIRCUIT" ? "COUNT(DISTINCT MeterName)" : "")}{(levels.ToUpper() == "DEVICE" ? "MeterName" : "")} as Device, {sumDates}, SUM({sumString}) as Total, SUM(FileCount) as [CT Files], SUM(SOECount) as SOE " +
-                                "FROM ( " +
-                                   $"SELECT System.Name as SystemName, Circuit.Name as CircuitName, {(levels.ToUpper() == "SYSTEM" ? "COUNT(DISTINCT Meter.Name)": "Meter.Name")} as MeterName, COUNT(*) as Count, {groupByString} as date, SUM(IncidentQuery.FileCount) as FileCount, SUM(SOECount) as SOECount " +
-                                    "FROM " +
-                                        "( " +
-                                           "SELECT Incident.Id, Incident.StartTime, Incident.MeterID, Count(EventQuery.FileGroupID) as FileCount, SUM(SOECount) as SOECount " +
-                                           "FROM " +
-                                                "Incident Join " +
-                                                "( " +
-                                                    "SELECT Event.ID, Event.FileGroupID, Event.IncidentID, Count(SOEPoint.ID) as SOECount " +
-                                                    "FROM Event JOIN " +
-                                                         "CycleData ON CycleData.EventID = event.ID JOIN " +
-                                                         "SOEPoint ON SOEPoint.CycleDataID = CycleData.ID " +
-                                                    "Group By Event.ID, Event.FileGroupID, Event.IncidentID " +
-                                                ") as EventQuery On Incident.ID = EventQuery.IncidentID " +
+                    string s = $"SELECT\n\t {(limits.ToUpper() != "ALL" ? limits : "")} SystemName as System, \n\t" + 
+                                    $"{(levels.ToUpper() == "SYSTEM" ? "COUNT(DISTINCT CircuitName)" : "CircuitName")} as Circuit, \n\t"+ 
+                                    $"{(levels.ToUpper() == "SYSTEM" ? "COUNT(MeterName)" : "")}{(levels.ToUpper() == "CIRCUIT" ? "COUNT(DISTINCT MeterName)" : "")}{(levels.ToUpper() == "DEVICE" ? "MeterName" : "")} as Device, "+ 
+                                    $"{sumDates}, "+ 
+                                    $"SUM({sumString}) as Total, " +
+                                    @"SUM(FileCount) as [CT Files], 
+                                      SUM(SOECount) as SOE, 
+                                      MAX(LTE) as LTE, 
+                                      MAX(PQS) as PQS 
+                                FROM ( 
+                                   SELECT 
+                                        System.Name as SystemName, 
+                                        Circuit.Name as CircuitName, " +
+                                        $"{(levels.ToUpper() == "SYSTEM" ? "COUNT(DISTINCT Meter.Name)": "Meter.Name")} as MeterName, "+ 
+                                        $"COUNT(*) as Count, {groupByString} as date, "+
+                                        @"SUM(IncidentQuery.FileCount) as FileCount, 
+                                          SUM(SOECount) as SOECount,
+                                          MAX(LTE) as LTE,
+                                          MAX(PQS) as PQS 
+                                    FROM
+                                        (
+                                           SELECT Incident.Id, 
+                                                  Incident.StartTime, 
+                                                  Incident.MeterID, 
+                                                  Count(EventQuery.FileGroupID) as FileCount, 
+                                                  SUM(SOECount) as SOECount,
+  	                                              Incident.LTE,
+                                                  Incident.PQS
+                                           FROM 
+                                                Incident Join
+                                                (
+                                                    SELECT Event.ID, Event.FileGroupID, Event.IncidentID, Count(SOEPoint.ID) as SOECount
+                                                    FROM Event JOIN
+                                                         CycleData ON CycleData.EventID = event.ID JOIN
+                                                         SOEPoint ON SOEPoint.CycleDataID = CycleData.ID
+                                                    Group By Event.ID, Event.FileGroupID, Event.IncidentID
+                                                ) as EventQuery On Incident.ID = EventQuery.IncidentID " +
                                           $"Where Incident.StartTime BETWEEN '{startDate}' AND '{endDate}' " +
-                                           "GROUP BY Incident.Id, Incident.StartTime, Incident.MeterID " +
-                                        ") AS IncidentQuery Join " +
-                                        "Meter ON Meter.ID = incidentquery.MeterID Join " +
-                                        "Circuit ON Circuit.ID = Meter.CircuitID JOIN " +
-                                        "System ON System.ID = Circuit.SystemID " +
-                                    (circuitName != null ? $"WHERE Circuit.Name LIKE '{circuitName}'" : "") +
-                                    (systemName != null ? $"WHERE System.Name LIKE '{systemName}'" : "") +
-                                    "GROUP BY " +
+                                           @"GROUP BY Incident.Id, Incident.StartTime, Incident.MeterID, Incident.LTE, Incident.PQS 
+                                        ) AS IncidentQuery Join 
+                                        Meter ON Meter.ID = incidentquery.MeterID Join 
+                                        Circuit ON Circuit.ID = Meter.CircuitID JOIN
+                                        System ON System.ID = Circuit.SystemID " +
+                                    (circuitName != null ? $"WHERE Circuit.Name LIKE '%{circuitName}%'" : "") +
+                                    (systemName != null ? $"WHERE System.Name LIKE '%{systemName}%'" : "") +
+                                    " GROUP BY " +
                                         $"System.Name, Circuit.Name, Meter.Name, {groupByString} " +
-
-                                " ) as t " +
-                                " PIVOT(SUM(count) " +
+                                @" ) as t 
+                                 PIVOT(SUM(count) " +
                                $"       FOR Date IN ({dates})) AS Pivoted " +
                                $"Group By SystemName{(levels.ToUpper() != "SYSTEM" ? ", CircuitName" : "")}{(levels.ToUpper() == "DEVICE" ? ", MeterName" : "")}";
 

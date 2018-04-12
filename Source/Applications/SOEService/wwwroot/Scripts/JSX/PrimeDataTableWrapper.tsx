@@ -69,7 +69,7 @@ export default class PrimeDataTable extends React.Component<any,any> {
 
             this.setState({ data: data });
 
-            var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE"]
+            var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE", "LTE", "PQS"]
             var dynamicColumns = Object.keys(data[0]).map((col,i) =>{
                 if(nonDynamicColumns.indexOf(col) < 0)
                     return <Column key={col} field={col} style={{'textAlign': 'center' }} body={this.dateTemplate.bind(this)} header={<div style={headerStyle}>{col}</div>} sortable={true}></Column>
@@ -110,7 +110,7 @@ export default class PrimeDataTable extends React.Component<any,any> {
         else if (this.props.filters.timeContext == "Months")
             dateString = moment(column.field + "-01", "MM/YYYY/DD").format('YYYYMMDDHH');
         else
-            dateString = moment(column.field + "/" + this.props.filters.date.year(), "MM/DD HH/YYYY").format('YYYYMMDDHH');
+            dateString = moment(column.field + "/" + moment(this.props.filters.date, 'YYYYMMDDHH').year(), "MM/DD HH/YYYY").format('YYYYMMDDHH');
 
         return <a target="_blank" style={{ 'color': '#337ab7' }} href={`/IncidentEventCycleDataView.cshtml?levels=${this.props.filters.levels}&limits=${this.props.filters.limits}&timeContext=${this.props.filters.timeContext}&date=${dateString}&name=${nameString}&count=${rowData[column.field]}`}>{rowData[column.field]}</a>
 
@@ -128,6 +128,8 @@ export default class PrimeDataTable extends React.Component<any,any> {
                 <Column style={{ width: "100px", 'textAlign': 'center' }} field="Device" header="Device" sortable={true}></Column>
                 {this.state.dynamicColumns}
                 <Column style={{ width: "75px", 'textAlign': 'center' }} field="Total" header="Total" sortable={true}></Column>
+                <Column style={{ width: "75px", 'textAlign': 'center' }} field="LTE" header="LTE" sortable={true} body={(data) => { if (data.LTE == null) return null; return data.LTE.toFixed(0)}}></Column>
+                <Column style={{ width: "75px", 'textAlign': 'center' }} field="PQS" header="PQS" sortable={true} body={(data) => { if (data.PQS == null) return null; return data.PQS.toFixed(2)}}></Column>
                 <Column style={{ width: "85px", 'textAlign': 'center' }} field="CT Files" header="CT Files" sortable={true}></Column>
                 <Column style={{ width: "75px", 'textAlign': 'center' }} field="SOE" header="SOE" sortable={true}></Column>
             </DataTable>

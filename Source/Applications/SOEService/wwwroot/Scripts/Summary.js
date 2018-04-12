@@ -69246,7 +69246,7 @@ var PrimeDataTable = (function (_super) {
                 'transformOrigin': 'left top 0'
             };
             _this.setState({ data: data });
-            var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE"];
+            var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE", "LTE", "PQS"];
             var dynamicColumns = Object.keys(data[0]).map(function (col, i) {
                 if (nonDynamicColumns.indexOf(col) < 0)
                     return React.createElement(Column_1.Column, { key: col, field: col, style: { 'textAlign': 'center' }, body: _this.dateTemplate.bind(_this), header: React.createElement("div", { style: headerStyle }, col), sortable: true });
@@ -69286,7 +69286,7 @@ var PrimeDataTable = (function (_super) {
         else if (this.props.filters.timeContext == "Months")
             dateString = moment(column.field + "-01", "MM/YYYY/DD").format('YYYYMMDDHH');
         else
-            dateString = moment(column.field + "/" + this.props.filters.date.year(), "MM/DD HH/YYYY").format('YYYYMMDDHH');
+            dateString = moment(column.field + "/" + moment(this.props.filters.date, 'YYYYMMDDHH').year(), "MM/DD HH/YYYY").format('YYYYMMDDHH');
         return React.createElement("a", { target: "_blank", style: { 'color': '#337ab7' }, href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + dateString + "&name=" + nameString + "&count=" + rowData[column.field] }, rowData[column.field]);
     };
     PrimeDataTable.prototype.getHref = function (props, rowData, column, nameString) {
@@ -69298,6 +69298,10 @@ var PrimeDataTable = (function (_super) {
             React.createElement(Column_1.Column, { style: { width: "100px", 'textAlign': 'center' }, field: "Device", header: "Device", sortable: true }),
             this.state.dynamicColumns,
             React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "Total", header: "Total", sortable: true }),
+            React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "LTE", header: "LTE", sortable: true, body: function (data) { if (data.LTE == null)
+                    return null; return data.LTE.toFixed(0); } }),
+            React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "PQS", header: "PQS", sortable: true, body: function (data) { if (data.PQS == null)
+                    return null; return data.PQS.toFixed(2); } }),
             React.createElement(Column_1.Column, { style: { width: "85px", 'textAlign': 'center' }, field: "CT Files", header: "CT Files", sortable: true }),
             React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "SOE", header: "SOE", sortable: true })));
     };
