@@ -108,7 +108,7 @@
         channels = JsonConvert.SerializeObject(dataContext.Table<ChannelInfo>().QueryRecords(restriction: new RecordRestriction("MeterID = {0}", eventInfo.MeterID)));
     }
 
-
+    ViewBag.SSTime = dataContext.Connection.ExecuteScalar<int?>("SELECT Value FROM Setting WHERE Name = 'openSEE.SlideShowTime'") ?? 3;
     ViewBag.Title = "openSEE Waveform Viewer";
     ViewBag.PageHasMenu = false;
 }
@@ -273,7 +273,7 @@
             "      document.getElementById('"+navigation+"-next-ss').click()" +
             "  }else{ " +
             "      document.getElementById('" + navigation+"-back-ss').click()" +
-            "}},10000);"
+            "}},1000* " + ViewBag.SSTime + " );"
          )
     }
 

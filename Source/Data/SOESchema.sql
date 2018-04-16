@@ -397,6 +397,13 @@ CREATE TABLE Recipient
 )
 GO
 
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('WatchDirectories', 'Watch', 'Watch')
+GO
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('TimeWindow', '120', '120')
+GO
+INSERT INTO Setting(Name, Value, DefaultValue) VALUES('openSEE.SlideShowTime', '3', '3')
+GO
+
 INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\IntelliRupters\*.zip', 'IntelliRupters.dll', 'IntelliRupters.ZipReader', 1)
 GO
 
@@ -1373,7 +1380,9 @@ WITH IncidentEventCycleDataView0 AS
 			WHEN IncidentAttribute.VBMin < IncidentAttribute.VCMin THEN IncidentAttribute.VBMin
 			ELSE IncidentAttribute.VCMin
 		END AS VMin,
-		Line.VoltageKV * 1000 / SQRT(3) AS NominalVoltage
+		Line.VoltageKV * 1000 / SQRT(3) AS NominalVoltage,
+		Incident.LTE,
+		Incident.PQS
 	FROM
 		Incident INNER JOIN
 		IncidentAttribute ON IncidentAttribute.IncidentID = Incident.ID INNER JOIN

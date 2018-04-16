@@ -146,6 +146,24 @@ namespace SOEService
         {
             DataContext.Table<IncidentEventCycleDataView>().UpdateRecord(record);
         }
+
+        [AuthorizeHubRole("Administrator")]
+        public DataTable GetMeterData(int incidentId)
+        {
+            string query = @"
+                SELECT TOP 1 
+                	Event.ID, 
+                	dbo.GetJSONValueForProperty(Meter.ExtraData, 'pngLink' ) AS Link
+                FROM 
+                	Event JOIN
+                	Meter ON Event.MeterID = Meter.ID
+                WHERE IncidentID = {0}
+                ORDER BY Event.StartTime
+            ";
+
+            return DataContext.Connection.RetrieveData(query, incidentId);
+        }
+
         #endregion
 
         #region [ CycleDataSOEPointView Table Operations ]

@@ -83,7 +83,7 @@ var PrimeDataTable = (function (_super) {
         else if (this.props.filters.timeContext == "Months")
             dateString = moment(column.field + "-01", "MM/YYYY/DD").format('YYYYMMDDHH');
         else
-            dateString = moment(column.field + "/" + this.props.filters.date.year(), "MM/DD HH/YYYY").format('YYYYMMDDHH');
+            dateString = moment(column.field + "/" + moment(this.props.filters.date, 'YYYYMMDDHH').year(), "MM/DD HH/YYYY").format('YYYYMMDDHH');
         return React.createElement("a", { target: "_blank", style: { 'color': '#337ab7' }, href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + dateString + "&name=" + nameString + "&count=" + rowData[column.field] }, rowData[column.field]);
     };
     PrimeDataTable.prototype.getHref = function (props, rowData, column, nameString) {

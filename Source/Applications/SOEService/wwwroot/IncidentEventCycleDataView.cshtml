@@ -95,7 +95,7 @@ new[] { null, "SOE Data", "text-center valign-middle" },
         <td width="9%" class="text-center valign-middle" nowrap>
             <button type="button" class="btn btn-danger" data-bind="click: openCAV.bind($data)">A</button>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <button type="button" class="btn btn-danger" data-bind="">M</button>
+            <button type="button" class="btn btn-danger" data-bind="click: openMatlab.bind($data)">M</button>
         </td>
 }
 
@@ -140,6 +140,12 @@ new[] { null, "SOE Data", "text-center valign-middle" },
 
         function openCAV(record) {
             window.open('@Url.Content("CommonAggregateView.cshtml?IncidentID=")' + record.ID.toString())
+        }
+
+        function openMatlab(record) {
+            dataHub.getMeterData(record.ID).done(function (d) {
+                window.open(d[0].Link + record.Device + '-EAS-' + d[0].ID + '-1');
+            });
         }
 
         function ToFixed(value, precision) {
