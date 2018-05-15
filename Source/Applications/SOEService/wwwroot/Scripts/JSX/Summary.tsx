@@ -123,7 +123,7 @@ class Summary extends React.Component<any, any> {
                             {/*<PrimeMultiSelectWrapper value={ctrl.state.classifications} options={ctrl.state.cars} style={{ width: '100%' }} formLabel="Classification Filter:"/>*/}
                             <Select value={ctrl.state['limits']} options={["All", "Top 100", "Top 50", "Top 25", "Top 10"]} formLabel="Record Limits:" onChange={function (value) { ctrl.setState({ 'limits': value }, () => ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)))}}/>
                             <Select value={ctrl.state['levels']} options={["System", "Circuit", "Device"]} formLabel="Search Levels:" onChange={function (value) { ctrl.setState({ 'levels': value }, () => ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state))) }}/>
-                            <Input value={ctrl.state['filter']} clearable={true} formLabel="Filter Text:" onChange={function (value) { ctrl.setState({ 'filter': value }, () => ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state))) }} />
+                            {(this.state.levels != "System" ? <Input value={ctrl.state.filter} clearable={true} formLabel={ (this.state.levels == "Circuit" ? "System": "Circuit") + " Filter:"} onChange={function (value) { ctrl.setState({ 'filter': value }, () => ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state))) }} /> : null)}
 
                              {/*<Select value={ctrl.state.severity} options={["PQ","LTE", "Both"]} formLabel="Severity Filter:" onChange={function(value){ctrl.setState({severity: value})}}/>*/}
  

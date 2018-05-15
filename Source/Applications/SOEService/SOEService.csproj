@@ -146,9 +146,6 @@
     <Reference Include="Ionic.Zlib">
       <HintPath>..\..\Dependencies\GSF\Ionic.Zlib.dll</HintPath>
     </Reference>
-    <Reference Include="JSPool">
-      <HintPath>..\..\Dependencies\GSF\JSPool.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\Dependencies\GSF\log4net.dll</HintPath>
     </Reference>
@@ -323,7 +320,6 @@
     <Content Include="package.json" />
     <None Include="packages.config" />
     <Content Include="gruntfile.js" />
-    <Content Include="readme.txt" />
     <Content Include="tsconfig.json" />
     <Content Include="web.config" />
     <None Include="web.Debug.config">

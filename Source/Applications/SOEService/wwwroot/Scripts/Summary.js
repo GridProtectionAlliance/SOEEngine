@@ -66548,7 +66548,7 @@ var Summary = (function (_super) {
                             React.createElement("div", { className: "col-md-4" },
                                 React.createElement(Select_1.default, { value: ctrl.state['limits'], options: ["All", "Top 100", "Top 50", "Top 25", "Top 10"], formLabel: "Record Limits:", onChange: function (value) { ctrl.setState({ 'limits': value }, function () { return ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)); }); } }),
                                 React.createElement(Select_1.default, { value: ctrl.state['levels'], options: ["System", "Circuit", "Device"], formLabel: "Search Levels:", onChange: function (value) { ctrl.setState({ 'levels': value }, function () { return ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)); }); } }),
-                                React.createElement(Input_1.default, { value: ctrl.state['filter'], clearable: true, formLabel: "Filter Text:", onChange: function (value) { ctrl.setState({ 'filter': value }, function () { return ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)); }); } })),
+                                (this.state.levels != "System" ? React.createElement(Input_1.default, { value: ctrl.state.filter, clearable: true, formLabel: (this.state.levels == "Circuit" ? "System" : "Circuit") + " Filter:", onChange: function (value) { ctrl.setState({ 'filter': value }, function () { return ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)); }); } }) : null)),
                             React.createElement("div", { className: "col-md-4" },
                                 React.createElement(BootstrapDateRangePicker_1.default, { formLabel: "Start Date:", startDate: moment(ctrl.state.date, 'YYYYMMDDHH'), singleDatePicker: true, showDropdowns: true, applyDateRangePicker: function (msg) {
                                         _this.setState({ 'date': msg.date.format('YYYYMMDDHH') }, function () { return ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)); });
@@ -69238,25 +69238,23 @@ var PrimeDataTable = (function (_super) {
     PrimeDataTable.prototype.getData = function (props) {
         var _this = this;
         this.soeservice.getView(props.filters).then(function (data) {
-            _this.setState({ data: data });
             if (data.length == 0)
                 return _this.setState({ dynamicColumns: [React.createElement(Column_1.Column, { key: "", field: "", header: "" })] });
             var headerStyle = {
                 'transform': 'rotate(-45deg)',
                 'transformOrigin': 'left top 0'
             };
-            _this.setState({ data: data });
             var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE", "LTE", "PQS"];
             var dynamicColumns = Object.keys(data[0]).map(function (col, i) {
                 if (nonDynamicColumns.indexOf(col) < 0)
                     return React.createElement(Column_1.Column, { key: col, field: col, style: { 'textAlign': 'center' }, body: _this.dateTemplate.bind(_this), header: React.createElement("div", { style: headerStyle }, col), sortable: true });
             });
-            _this.setState({ dynamicColumns: dynamicColumns });
+            _this.setState({ data: data, dynamicColumns: dynamicColumns });
         });
     };
     PrimeDataTable.prototype.componentDidMount = function () { this.getData(this.props); };
     PrimeDataTable.prototype.componentWillReceiveProps = function (nextProps) {
-        if (!(_.isEqual(this.props, nextProps)))
+        if (!(_.isEqual(this.props.filters, nextProps.filters)))
             this.getData(nextProps);
     };
     PrimeDataTable.prototype.systemTemplate = function (rowData, column) {
@@ -69292,7 +69290,7 @@ var PrimeDataTable = (function (_super) {
     PrimeDataTable.prototype.getHref = function (props, rowData, column, nameString) {
     };
     PrimeDataTable.prototype.render = function () {
-        return (React.createElement(DataTable_1.DataTable, { value: this.state.data, paginator: true, rows: 25 },
+        return (React.createElement(DataTable_1.DataTable, { value: this.state.data, paginator: true, rows: 10, first: 0 },
             React.createElement(Column_1.Column, { style: { width: "100px", 'textAlign': 'center' }, body: this.systemTemplate.bind(this), field: "System", header: "Volt Class", sortable: true }),
             React.createElement(Column_1.Column, { style: { width: "100px", 'textAlign': 'center' }, body: this.circuitTemplate.bind(this), field: "Circuit", header: "Circuit", sortable: true }),
             React.createElement(Column_1.Column, { style: { width: "100px", 'textAlign': 'center' }, field: "Device", header: "Device", sortable: true }),

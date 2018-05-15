@@ -58,7 +58,6 @@ export default class PrimeDataTable extends React.Component<any,any> {
     
     getData(props){
         this.soeservice.getView(props.filters).then(data => {
-            this.setState({ data: data });
             if (data.length == 0) return this.setState({ dynamicColumns: [<Column key="" field="" header=""></Column>] });
             
             var headerStyle = {
@@ -67,7 +66,6 @@ export default class PrimeDataTable extends React.Component<any,any> {
             }
 
 
-            this.setState({ data: data });
 
             var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE", "LTE", "PQS"]
             var dynamicColumns = Object.keys(data[0]).map((col,i) =>{
@@ -75,14 +73,14 @@ export default class PrimeDataTable extends React.Component<any,any> {
                     return <Column key={col} field={col} style={{'textAlign': 'center' }} body={this.dateTemplate.bind(this)} header={<div style={headerStyle}>{col}</div>} sortable={true}></Column>
             });
       
-            this.setState({dynamicColumns: dynamicColumns});
+            this.setState({data: data, dynamicColumns: dynamicColumns});
         });
 
     }
 
     componentDidMount(){ this.getData(this.props);}
     componentWillReceiveProps(nextProps){ 
-        if(!(_.isEqual(this.props, nextProps)))
+        if(!(_.isEqual(this.props.filters, nextProps.filters)))
             this.getData(nextProps);
     }
 
@@ -122,7 +120,7 @@ export default class PrimeDataTable extends React.Component<any,any> {
     render() {
 
         return (
-            <DataTable value={this.state.data} paginator={true} rows={25}>
+            <DataTable value={this.state.data} paginator={true} rows={10} first={0}>
                 <Column style={{ width: "100px", 'textAlign': 'center' }} body={this.systemTemplate.bind(this)} field="System" header="Volt Class" sortable={true}></Column>
                 <Column style={{ width: "100px", 'textAlign': 'center' }} body={this.circuitTemplate.bind(this)} field="Circuit" header="Circuit" sortable={true}></Column>
                 <Column style={{ width: "100px", 'textAlign': 'center' }} field="Device" header="Device" sortable={true}></Column>

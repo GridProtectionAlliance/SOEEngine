@@ -182,7 +182,7 @@ namespace DeviceDefinitionsMigrator
                 LineLookup = (new TableOperations<Line>(m_connection)).QueryRecords().ToDictionary(line => line.AssetKey, StringComparer.OrdinalIgnoreCase);
                 MeterLocationLookup = (new TableOperations<MeterLocation>(m_connection)).QueryRecords().ToDictionary(meterLocation => meterLocation.AssetKey, StringComparer.OrdinalIgnoreCase);
                 MeasurementTypeLookup = (new TableOperations<MeasurementType>(m_connection)).QueryRecords().ToDictionary(measurementType => measurementType.Name, StringComparer.OrdinalIgnoreCase);
-                MeasurementCharacteristicLookup = (new TableOperations<MeasurementCharacteristic>(m_connection)).QueryRecords().ToDictionary(measurementCharacteristic => measurementCharacteristic.Name, StringComparer.OrdinalIgnoreCase); ;
+                MeasurementCharacteristicLookup = (new TableOperations<MeasurementCharacteristic>(m_connection)).QueryRecords().ToDictionary(measurementCharacteristic => measurementCharacteristic.Name, StringComparer.OrdinalIgnoreCase);
                 PhaseLookup = (new TableOperations<Phase>(m_connection)).QueryRecords().ToDictionary(phase => phase.Name, StringComparer.OrdinalIgnoreCase);
                 SeriesTypeLookup = (new TableOperations<SeriesType>(m_connection)).QueryRecords().ToDictionary(seriesType => seriesType.Name, StringComparer.OrdinalIgnoreCase);
                 CircuitsLookup = (new TableOperations<Circuit>(m_connection)).QueryRecords().ToDictionary(circuit => circuit.Name, StringComparer.OrdinalIgnoreCase);
