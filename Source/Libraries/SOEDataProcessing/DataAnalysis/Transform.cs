@@ -44,6 +44,118 @@ namespace SOEDataProcessing.DataAnalysis
             return combination;
         }
 
+        public static VICycleDataGroup ToVICycleDataGroup(VIDataGroup viDataGroup, double frequency)
+        {
+            DataSeries[] cycleSeries =
+            {
+                viDataGroup.VX1,
+                viDataGroup.VX2,
+                viDataGroup.VX3,
+                viDataGroup.VY1,
+                viDataGroup.VY2,
+                viDataGroup.VY3,
+                viDataGroup.I1,
+                viDataGroup.I2,
+                viDataGroup.I3,
+                viDataGroup.IR
+            };
+
+            return new VICycleDataGroup(cycleSeries
+                .Where(dataSeries => (object)dataSeries != null)
+                .Select(dataSeries => ToFullResolutionCycleDataGroup(dataSeries, frequency))
+                .Select(dataGroup => new CycleDataGroup(dataGroup))
+                .ToList());
+        }
+
+        public static DataGroup ToFullResolutionCycleDataGroup(DataSeries dataSeries, double frequency)
+        {
+            DataGroup dataGroup = new DataGroup();
+
+            DataSeries rmsSeries = new DataSeries();
+            DataSeries phaseSeries = new DataSeries();
+            DataSeries peakSeries = new DataSeries();
+            DataSeries errorSeries = new DataSeries();
+
+            int samplesPerCycle;
+            double[] yValues;
+            double[] tValues;
+            double sum;
+
+            DateTime cycleTime;
+            SineWave sineFit;
+
+            if ((object)dataSeries == null)
+                return null;
+
+            // Set series info to the source series info
+            rmsSeries.SeriesInfo = dataSeries.SeriesInfo;
+            phaseSeries.SeriesInfo = dataSeries.SeriesInfo;
+            peakSeries.SeriesInfo = dataSeries.SeriesInfo;
+            errorSeries.SeriesInfo = dataSeries.SeriesInfo;
+
+            // Get samples per cycle of the data series based on the given frequency
+            samplesPerCycle = CalculateSamplesPerCycle(dataSeries, frequency);
+
+            // Initialize arrays of y-values and t-values for calculating cycle data
+            yValues = new double[samplesPerCycle];
+            tValues = new double[samplesPerCycle];
+
+            for (int i = 0; i <= dataSeries.DataPoints.Count - samplesPerCycle; i++)
+            {
+                // Use the time of the first data point in the cycle as the time of the cycle
+                cycleTime = dataSeries.DataPoints[i].Time;
+                sum = 0.0D;
+
+                // Copy values from the original data series into the y-value and t-value arrays
+                for (int j = 0; j < samplesPerCycle; j++)
+                {
+                    yValues[j] = dataSeries.DataPoints[i + j].Value;
+                    tValues[j] = (dataSeries.DataPoints[i + j].Time - cycleTime).TotalSeconds;
+                    sum += yValues[j] * yValues[j];
+                }
+
+                // Use a curve fitting algorithm to estimate the sine wave over this cycle
+                sineFit = WaveFit.SineFit(yValues, tValues, frequency);
+
+                // Add data points to each of the cycle data series
+                rmsSeries.DataPoints.Add(new DataPoint()
+                {
+                    Time = cycleTime,
+                    Value = Math.Sqrt(sum / samplesPerCycle)
+                });
+
+                phaseSeries.DataPoints.Add(new DataPoint()
+                {
+                    Time = cycleTime,
+                    Value = sineFit.Phase
+                });
+
+                peakSeries.DataPoints.Add(new DataPoint()
+                {
+                    Time = cycleTime,
+                    Value = sineFit.Amplitude
+                });
+
+                errorSeries.DataPoints.Add(new DataPoint()
+                {
+                    Time = cycleTime,
+
+                    Value = tValues
+                        .Select(sineFit.CalculateY)
+                        .Zip(yValues, (estimate, value) => Math.Abs(estimate - value))
+                        .Sum()
+                });
+            }
+
+            // Add a series to the data group for each series of cycle data
+            dataGroup.Add(rmsSeries);
+            dataGroup.Add(phaseSeries);
+            dataGroup.Add(peakSeries);
+            dataGroup.Add(errorSeries);
+
+            return dataGroup;
+        }
+
         public static DataGroup ToCycleDataGroup(DataSeries dataSeries, double frequency)
         {
             DataGroup dataGroup = new DataGroup();
