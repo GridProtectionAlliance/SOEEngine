@@ -156,7 +156,6 @@ var WaveformViewerGraph = (function (_super) {
         newVessel.push([[this.getMillisecondTime(this.state.startDate), null], [this.getMillisecondTime(this.state.endDate), null]]);
         this.plot = $.plot($("#" + this.state.meterId + "-" + this.state.type), newVessel, this.options);
         this.plotSelected();
-        this.plotZoom();
         this.plotHover();
     };
     WaveformViewerGraph.prototype.plotZoom = function () {

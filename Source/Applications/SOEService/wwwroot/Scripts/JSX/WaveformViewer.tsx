@@ -28,6 +28,8 @@ import createHistory from "history/createBrowserHistory"
 import * as queryString from "query-string";
 import * as moment from 'moment';
 import * as _ from "lodash";
+import { Moment } from 'moment';
+
 
 class WaveformViewer extends React.Component<any, any>{
     soeservice: SOEService;
@@ -101,7 +103,7 @@ class WaveformViewer extends React.Component<any, any>{
             this.meterList = orderedData.map(x => {
                 return <a key={'#' + x.MeterName} onClick={(e) => this.goToDiv(x.MeterName)}>{x.MeterName}</a>;
             });
-            this.timeList = dates.map((date, i) => <button key={i} onClick={(e) => this.goToTime(date, interval/2)} title={date.toString()} className="btn">{i + 1}</button>);
+            this.timeList = dates.map((date, i) => <TimeSpanButton key={i} meterIds={meterIds} index={i} onClick={(e) => this.goToTime(date, interval / 2)} date={date} interval={interval}></TimeSpanButton>);
             this.dynamicRows = orderedData.map((d, i) => {
                 return <IncidentGroup key={d["MeterID"]} lineName={d["LineName"]} incidentId={d["ID"]} orientation={d["Orientation"]} circuitId={d["CircuitID"]} meterId={d["MeterID"]} meterName={d["MeterName"]} startDate={this.state.StartDate} endDate={this.state.EndDate} pixels={window.innerWidth} stateSetter={this.stateSetter.bind(this)}></IncidentGroup>
             });
@@ -159,11 +161,20 @@ class WaveformViewer extends React.Component<any, any>{
                     {this.meterList}
                 </div>
                 <div className="waveform-viewer" style={{ width: window.innerWidth - 150 }}>
-                    <div className="horizontal-row">
-                        <button className="btn" onClick={this.resetZoom.bind(this)}>Reset</button>
-                        <span style={{marginLeft: '3px', marginRight: '3px'}}> Quick Jump(Tmax/20):</span>
-                        {this.timeList}
-                        
+                    <div className="horizontal-row" style={{ width: '100%' }}>
+                        <table className='table' style={{ width: '100%' }}>
+                            <tbody>
+                                <tr>
+                                    <td><button className="btn" onClick={this.resetZoom.bind(this)}>Reset</button></td>
+                                    <td>
+                                        <span style={{ marginLeft: '3px', marginRight: '3px' }}> Quick Jump(Tmax/20):</span>
+                                        {this.timeList}
+                                    </td>
+                                    <td><span style={{ marginLeft: '3px', marginRight: '3px' }}>Start: {this.state.StartDate}</span></td>
+                                    <td><span style={{ marginLeft: '3px', marginRight: '3px' }}>Duration: {moment.duration(moment(this.state.EndDate).diff(moment(this.state.StartDate))).asSeconds()}s</span></td>
+                                </tr>
+                            </tbody>
+                        </table>                     
                     </div>
                     <div className="list-group" style={{ maxHeight: window.innerHeight - 100, overflowY: 'auto' }}>
                         {this.dynamicRows}
@@ -205,6 +216,29 @@ class WaveformViewer extends React.Component<any, any>{
     }
 
 
+}
+
+class TimeSpanButton extends React.Component<any, any>{
+    props: { date: string, onClick: Function, index: number, interval: number, meterIds: Array<number> }
+    state: { color: string }
+    soeservice: SOEService;
+    constructor(props) {
+        super(props);
+        this.soeservice = new SOEService();
+        this.state = {
+            color: 'lightgrey'
+        }
+    }
+
+    componentDidMount() {
+        this.soeservice.getButtonColor(this.props.date, moment(this.props.date).add('milliseconds', this.props.interval).format('YYYY-MM-DDTHH:mm:ss.SSSSSSS'), this.props.meterIds).then(data => {
+            this.setState({ color: (data.data ? 'yellow' : 'lightgrey') });
+        });
+    }
+
+    render() {
+        return <button style={{backgroundColor: this.state.color }} onClick={(e) => this.props.onClick(this.props.date, this.props.interval / 2)} title={this.props.date.toString()} className="btn">{this.props.index + 1}</button>;
+    }
 }
 
 ReactDOM.render(<WaveformViewer />, document.getElementById('bodyContainer'));

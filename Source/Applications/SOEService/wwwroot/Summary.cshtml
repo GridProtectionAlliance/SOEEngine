@@ -27,11 +27,15 @@
 @{
     Layout = "Layout.cshtml";
     ViewBag.Title = "Summary";
+    int buckets = ViewBag.DataContext.Connection.ExecuteScalar<int?>("SELECT Value FROM Setting WHERE Name = 'Summary.DefaultNumberOfBuckets'") ?? 7;
 
 }
 @section StyleSheets {
     <link href="~/Content/ExtraMediaBootstrap.css" rel="stylesheet">
 }
 @section Scripts {
+    <script>
+        var numberOfBuckets = @buckets;
+    </script>
     <script src="~/Scripts/Summary.js"></script>
 }

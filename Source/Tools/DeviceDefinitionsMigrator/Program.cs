@@ -480,7 +480,7 @@ namespace DeviceDefinitionsMigrator
             string measurementType = (channelName[0] == 'V') ? "Voltage" : "Current";
             string measurementCharacteristic = "Instantaneous";
             string phase = "";
-
+            
             if (channelName.Contains("1") || channelName.Contains("2") || channelName.Contains("3"))
                 phase = "General" + channelName.Last();
             else if(channelName.Contains("A")|| channelName.Contains("B")|| channelName.Contains("C"))

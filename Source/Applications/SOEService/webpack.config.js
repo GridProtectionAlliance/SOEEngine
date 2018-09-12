@@ -1,4 +1,7 @@
-﻿module.exports = {
+﻿"use strict";
+const webpack = require("webpack");
+
+module.exports = {
     entry: {
         Summary: "./wwwroot/Scripts/JSX/Summary.tsx",
         WaveformViewer: "./wwwroot/Scripts/JSX/WaveformViewer.tsx"

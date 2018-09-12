@@ -51,6 +51,14 @@ var SOEService = (function () {
             return res.data;
         });
     };
+    SOEService.prototype.getButtonColor = function (startDate, endDate, meterIds) {
+        return axios_1.default
+            .post('/api/Main/GetButtonColor/model', {
+            startDate: startDate,
+            endDate: endDate,
+            meterIds: meterIds,
+        });
+    };
     return SOEService;
 }());
 exports.default = SOEService;

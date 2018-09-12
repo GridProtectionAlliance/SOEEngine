@@ -114,6 +114,33 @@ export default class PrimeDataTable extends React.Component<any,any> {
 
     }
 
+    lteTemplate(rowData, column) {
+        if (rowData.LTE == null) return null;
+        var nameString = "";
+        if (this.props.filters.levels == "System")
+            nameString = rowData.System;
+        else if (this.props.filters.levels == "Circuit")
+            nameString = rowData.Circuit;
+        else if (this.props.filters.levels == "Device")
+            nameString = rowData.Device;
+
+        return <a target="_blank" style={{ 'color': '#337ab7' }} href={`/IncidentEventCycleDataView.cshtml?levels=${this.props.filters.levels}&limits=${this.props.filters.limits}&timeContext=${this.props.filters.timeContext}&date=${this.props.filters.date}&name=${nameString}&buckets=${this.props.filters.numBuckets}&LTE=1`}>{rowData.LTE.toFixed(0)}</a>
+
+    }
+    pqsTemplate(rowData, column) {
+        if (rowData.PQS == null) return null;
+        var nameString = "";
+        if (this.props.filters.levels == "System")
+            nameString = rowData.System;
+        else if (this.props.filters.levels == "Circuit")
+            nameString = rowData.Circuit;
+        else if (this.props.filters.levels == "Device")
+            nameString = rowData.Device;
+
+        return <a target="_blank" style={{ 'color': '#337ab7' }} href={`/IncidentEventCycleDataView.cshtml?levels=${this.props.filters.levels}&limits=${this.props.filters.limits}&timeContext=${this.props.filters.timeContext}&date=${this.props.filters.date}&name=${nameString}&buckets=${this.props.filters.numBuckets}&PQS=1`}>{rowData.PQS.toFixed(2)}</a>
+
+    }
+
     getHref(props, rowData, column, nameString) {
     }
     
@@ -126,8 +153,8 @@ export default class PrimeDataTable extends React.Component<any,any> {
                 <Column style={{ width: "100px", 'textAlign': 'center' }} field="Device" header="Device" sortable={true}></Column>
                 {this.state.dynamicColumns}
                 <Column style={{ width: "75px", 'textAlign': 'center' }} field="Total" header="Total" sortable={true}></Column>
-                <Column style={{ width: "75px", 'textAlign': 'center' }} field="LTE" header="LTE" sortable={true} body={(data) => { if (data.LTE == null) return null; return data.LTE.toFixed(0)}}></Column>
-                <Column style={{ width: "75px", 'textAlign': 'center' }} field="PQS" header="PQS" sortable={true} body={(data) => { if (data.PQS == null) return null; return data.PQS.toFixed(2)}}></Column>
+                <Column style={{ width: "75px", 'textAlign': 'center' }} field="LTE" header="LTE" sortable={true} body={this.lteTemplate.bind(this)}></Column>
+                <Column style={{ width: "75px", 'textAlign': 'center' }} field="PQS" header="PQS" sortable={true} body={this.pqsTemplate.bind(this)}></Column>
                 <Column style={{ width: "85px", 'textAlign': 'center' }} field="CT Files" header="CT Files" sortable={true}></Column>
                 <Column style={{ width: "75px", 'textAlign': 'center' }} field="SOE" header="SOE" sortable={true}></Column>
             </DataTable>

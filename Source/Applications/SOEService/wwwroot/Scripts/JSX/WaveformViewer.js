@@ -74,7 +74,7 @@ var WaveformViewer = (function (_super) {
             _this.meterList = orderedData.map(function (x) {
                 return React.createElement("a", { key: '#' + x.MeterName, onClick: function (e) { return _this.goToDiv(x.MeterName); } }, x.MeterName);
             });
-            _this.timeList = dates.map(function (date, i) { return React.createElement("button", { key: i, onClick: function (e) { return _this.goToTime(date, interval / 2); }, title: date.toString(), className: "btn" }, i + 1); });
+            _this.timeList = dates.map(function (date, i) { return React.createElement(TimeSpanButton, { key: i, meterIds: meterIds, index: i, onClick: function (e) { return _this.goToTime(date, interval / 2); }, date: date, interval: interval }); });
             _this.dynamicRows = orderedData.map(function (d, i) {
                 return React.createElement(IncidentGroup_1.default, { key: d["MeterID"], lineName: d["LineName"], incidentId: d["ID"], orientation: d["Orientation"], circuitId: d["CircuitID"], meterId: d["MeterID"], meterName: d["MeterName"], startDate: _this.state.StartDate, endDate: _this.state.EndDate, pixels: window.innerWidth, stateSetter: _this.stateSetter.bind(_this) });
             });
@@ -119,10 +119,24 @@ var WaveformViewer = (function (_super) {
         return (React.createElement("div", { className: "screen", style: { height: window.innerHeight - 60 } },
             React.createElement("div", { className: "vertical-menu" }, this.meterList),
             React.createElement("div", { className: "waveform-viewer", style: { width: window.innerWidth - 150 } },
-                React.createElement("div", { className: "horizontal-row" },
-                    React.createElement("button", { className: "btn", onClick: this.resetZoom.bind(this) }, "Reset"),
-                    React.createElement("span", { style: { marginLeft: '3px', marginRight: '3px' } }, " Quick Jump(Tmax/20):"),
-                    this.timeList),
+                React.createElement("div", { className: "horizontal-row", style: { width: '100%' } },
+                    React.createElement("table", { className: 'table', style: { width: '100%' } },
+                        React.createElement("tbody", null,
+                            React.createElement("tr", null,
+                                React.createElement("td", null,
+                                    React.createElement("button", { className: "btn", onClick: this.resetZoom.bind(this) }, "Reset")),
+                                React.createElement("td", null,
+                                    React.createElement("span", { style: { marginLeft: '3px', marginRight: '3px' } }, " Quick Jump(Tmax/20):"),
+                                    this.timeList),
+                                React.createElement("td", null,
+                                    React.createElement("span", { style: { marginLeft: '3px', marginRight: '3px' } },
+                                        "Start: ",
+                                        this.state.StartDate)),
+                                React.createElement("td", null,
+                                    React.createElement("span", { style: { marginLeft: '3px', marginRight: '3px' } },
+                                        "Duration: ",
+                                        moment.duration(moment(this.state.EndDate).diff(moment(this.state.StartDate))).asSeconds(),
+                                        "s")))))),
                 React.createElement("div", { className: "list-group", style: { maxHeight: window.innerHeight - 100, overflowY: 'auto' } }, this.dynamicRows))));
     };
     WaveformViewer.prototype.stateSetter = function (obj) {
@@ -148,6 +162,28 @@ var WaveformViewer = (function (_super) {
         return date + millisecondFraction.toString();
     };
     return WaveformViewer;
+}(React.Component));
+var TimeSpanButton = (function (_super) {
+    __extends(TimeSpanButton, _super);
+    function TimeSpanButton(props) {
+        var _this = _super.call(this, props) || this;
+        _this.soeservice = new SOEService_1.default();
+        _this.state = {
+            color: 'lightgrey'
+        };
+        return _this;
+    }
+    TimeSpanButton.prototype.componentDidMount = function () {
+        var _this = this;
+        this.soeservice.getButtonColor(this.props.date, moment(this.props.date).add('milliseconds', this.props.interval).format('YYYY-MM-DDTHH:mm:ss.SSSSSSS'), this.props.meterIds).then(function (data) {
+            _this.setState({ color: (data.data ? 'yellow' : 'lightgrey') });
+        });
+    };
+    TimeSpanButton.prototype.render = function () {
+        var _this = this;
+        return React.createElement("button", { style: { backgroundColor: this.state.color }, onClick: function (e) { return _this.props.onClick(_this.props.date, _this.props.interval / 2); }, title: this.props.date.toString(), className: "btn" }, this.props.index + 1);
+    };
+    return TimeSpanButton;
 }(React.Component));
 ReactDOM.render(React.createElement(WaveformViewer, null), document.getElementById('bodyContainer'));
 //# sourceMappingURL=WaveformViewer.js.map

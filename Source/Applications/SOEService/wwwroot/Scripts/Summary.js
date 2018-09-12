@@ -35615,6 +35615,14 @@ var SOEService = (function () {
             return res.data;
         });
     };
+    SOEService.prototype.getButtonColor = function (startDate, endDate, meterIds) {
+        return axios_1.default
+            .post('/api/Main/GetButtonColor/model', {
+            startDate: startDate,
+            endDate: endDate,
+            meterIds: meterIds,
+        });
+    };
     return SOEService;
 }());
 exports.default = SOEService;
@@ -66486,7 +66494,7 @@ var Summary = (function (_super) {
             levels: (query['levels'] != undefined ? query['levels'] : 'Circuit'),
             date: (query['date'] != undefined ? query['date'] : moment().subtract(30, 'days').startOf('day').format('YYYYMMDDHH')),
             context: (query['context'] != undefined ? query['context'] : 'Days'),
-            buckets: (query['buckets'] != undefined ? query['buckets'] : 30),
+            buckets: (query['buckets'] != undefined ? query['buckets'] : numberOfBuckets),
             filter: (query['filter'] != undefined ? query['filter'] : null)
         };
         _this.history['listen'](function (location, action) {
@@ -66496,7 +66504,7 @@ var Summary = (function (_super) {
                 levels: (query['levels'] != undefined ? query['levels'] : 'Circuit'),
                 date: (query['date'] != undefined ? query['date'] : moment().subtract(30, 'days').startOf('day').format('YYYYMMDDHH')),
                 context: (query['context'] != undefined ? query['context'] : 'Days'),
-                buckets: (query['buckets'] != undefined ? query['buckets'] : 30),
+                buckets: (query['buckets'] != undefined ? query['buckets'] : numberOfBuckets),
                 filter: (query['filter'] != undefined ? query['filter'] : null)
             });
         });
@@ -69287,6 +69295,30 @@ var PrimeDataTable = (function (_super) {
             dateString = moment(column.field + "/" + moment(this.props.filters.date, 'YYYYMMDDHH').year(), "MM/DD HH/YYYY").format('YYYYMMDDHH');
         return React.createElement("a", { target: "_blank", style: { 'color': '#337ab7' }, href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + dateString + "&name=" + nameString + "&count=" + rowData[column.field] }, rowData[column.field]);
     };
+    PrimeDataTable.prototype.lteTemplate = function (rowData, column) {
+        if (rowData.LTE == null)
+            return null;
+        var nameString = "";
+        if (this.props.filters.levels == "System")
+            nameString = rowData.System;
+        else if (this.props.filters.levels == "Circuit")
+            nameString = rowData.Circuit;
+        else if (this.props.filters.levels == "Device")
+            nameString = rowData.Device;
+        return React.createElement("a", { target: "_blank", style: { 'color': '#337ab7' }, href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + this.props.filters.date + "&name=" + nameString + "&buckets=" + this.props.filters.numBuckets + "&LTE=1" }, rowData.LTE.toFixed(0));
+    };
+    PrimeDataTable.prototype.pqsTemplate = function (rowData, column) {
+        if (rowData.PQS == null)
+            return null;
+        var nameString = "";
+        if (this.props.filters.levels == "System")
+            nameString = rowData.System;
+        else if (this.props.filters.levels == "Circuit")
+            nameString = rowData.Circuit;
+        else if (this.props.filters.levels == "Device")
+            nameString = rowData.Device;
+        return React.createElement("a", { target: "_blank", style: { 'color': '#337ab7' }, href: "/IncidentEventCycleDataView.cshtml?levels=" + this.props.filters.levels + "&limits=" + this.props.filters.limits + "&timeContext=" + this.props.filters.timeContext + "&date=" + this.props.filters.date + "&name=" + nameString + "&buckets=" + this.props.filters.numBuckets + "&PQS=1" }, rowData.PQS.toFixed(2));
+    };
     PrimeDataTable.prototype.getHref = function (props, rowData, column, nameString) {
     };
     PrimeDataTable.prototype.render = function () {
@@ -69296,10 +69328,8 @@ var PrimeDataTable = (function (_super) {
             React.createElement(Column_1.Column, { style: { width: "100px", 'textAlign': 'center' }, field: "Device", header: "Device", sortable: true }),
             this.state.dynamicColumns,
             React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "Total", header: "Total", sortable: true }),
-            React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "LTE", header: "LTE", sortable: true, body: function (data) { if (data.LTE == null)
-                    return null; return data.LTE.toFixed(0); } }),
-            React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "PQS", header: "PQS", sortable: true, body: function (data) { if (data.PQS == null)
-                    return null; return data.PQS.toFixed(2); } }),
+            React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "LTE", header: "LTE", sortable: true, body: this.lteTemplate.bind(this) }),
+            React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "PQS", header: "PQS", sortable: true, body: this.pqsTemplate.bind(this) }),
             React.createElement(Column_1.Column, { style: { width: "85px", 'textAlign': 'center' }, field: "CT Files", header: "CT Files", sortable: true }),
             React.createElement(Column_1.Column, { style: { width: "75px", 'textAlign': 'center' }, field: "SOE", header: "SOE", sortable: true })));
     };

@@ -636,6 +636,45 @@ namespace SOEService
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IHttpActionResult GetButtonColor(string modelName, [FromBody]JObject record)
+        {
+            int[] meterIds;
+            DateTime startTime;
+            DateTime endTime;
+
+            // Proxy all other requests
+            SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
+
+            if ((object)securityPrincipal == null || (object)securityPrincipal.Identity == null || !securityPrincipal.IsInRole("Viewer,Administrator"))
+                return BadRequest($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
+            try
+            {
+                meterIds = record["meterIds"].Select(x => (int)x).ToArray();
+                startTime = record["startDate"].Value<DateTime>();
+                endTime = record["endDate"].Value<DateTime>();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.ToString()}");
+            }
+
+            using (AdoDataConnection conn = new AdoDataConnection("systemSettings"))
+            {
+                try
+                {
+                    DataTable table = conn.RetrieveData("select ID from Event WHERE StartTime <= {0} AND EndTime >= {1} and MeterID IN (" + string.Join(",", meterIds) + ")", ToDateTime2(conn, endTime), ToDateTime2(conn, startTime));
+                    return Ok(table.Rows.Count > 0);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.ToString());
+                }
+
+            }
+        }
+
         #endregion
 
         #region [ DELETE Operations ]
@@ -818,6 +857,18 @@ namespace SOEService
             return data;
 
         }
+
+        private IDbDataParameter ToDateTime2(AdoDataConnection connection, DateTime dateTime)
+        {
+            using (IDbCommand command = connection.Connection.CreateCommand())
+            {
+                IDbDataParameter parameter = command.CreateParameter();
+                parameter.DbType = DbType.DateTime2;
+                parameter.Value = dateTime;
+                return parameter;
+            }
+        }
+
         #endregion
 
     }

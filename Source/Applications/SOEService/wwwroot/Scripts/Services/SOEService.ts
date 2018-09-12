@@ -76,5 +76,15 @@ export default class SOEService{
             });
 
     }
+
+    getButtonColor(startDate: string, endDate: string, meterIds: Array<number>) {
+        return axios
+            .post('/api/Main/GetButtonColor/model', {
+                startDate: startDate,
+                endDate: endDate,
+                meterIds: meterIds,
+            });
+    }
+
 }
 

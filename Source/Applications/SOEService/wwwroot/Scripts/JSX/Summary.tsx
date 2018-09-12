@@ -39,6 +39,8 @@ import * as moment from 'moment';
 import createHistory from "history/createBrowserHistory"
 import * as queryString from "query-string";
 
+declare var numberOfBuckets: number;
+
 class Summary extends React.Component<any, any> {
     values: object;
     history: object;
@@ -52,7 +54,7 @@ class Summary extends React.Component<any, any> {
         levels: (query['levels'] != undefined ? query['levels'] : 'Circuit'),
         date: (query['date'] != undefined ? query['date'] : moment().subtract(30, 'days').startOf('day').format('YYYYMMDDHH')),
         context: (query['context'] != undefined ? query['context'] : 'Days'),
-        buckets: (query['buckets'] != undefined ? query['buckets'] : 30),
+        buckets: (query['buckets'] != undefined ? query['buckets'] : numberOfBuckets),
         filter: (query['filter'] != undefined ? query['filter'] : null)
       }
 
@@ -63,7 +65,7 @@ class Summary extends React.Component<any, any> {
               levels: (query['levels'] != undefined ? query['levels'] : 'Circuit'),
               date: (query['date'] != undefined ? query['date'] : moment().subtract(30, 'days').startOf('day').format('YYYYMMDDHH')),
               context: (query['context'] != undefined ? query['context'] : 'Days'),
-              buckets: (query['buckets'] != undefined ? query['buckets'] : 30),
+              buckets: (query['buckets'] != undefined ? query['buckets'] : numberOfBuckets),
               filter: (query['filter'] != undefined ? query['filter'] : null)
           })
       });

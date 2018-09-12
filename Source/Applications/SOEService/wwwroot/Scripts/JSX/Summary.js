@@ -33,7 +33,7 @@ var Summary = (function (_super) {
             levels: (query['levels'] != undefined ? query['levels'] : 'Circuit'),
             date: (query['date'] != undefined ? query['date'] : moment().subtract(30, 'days').startOf('day').format('YYYYMMDDHH')),
             context: (query['context'] != undefined ? query['context'] : 'Days'),
-            buckets: (query['buckets'] != undefined ? query['buckets'] : 30),
+            buckets: (query['buckets'] != undefined ? query['buckets'] : numberOfBuckets),
             filter: (query['filter'] != undefined ? query['filter'] : null)
         };
         _this.history['listen'](function (location, action) {
@@ -43,7 +43,7 @@ var Summary = (function (_super) {
                 levels: (query['levels'] != undefined ? query['levels'] : 'Circuit'),
                 date: (query['date'] != undefined ? query['date'] : moment().subtract(30, 'days').startOf('day').format('YYYYMMDDHH')),
                 context: (query['context'] != undefined ? query['context'] : 'Days'),
-                buckets: (query['buckets'] != undefined ? query['buckets'] : 30),
+                buckets: (query['buckets'] != undefined ? query['buckets'] : numberOfBuckets),
                 filter: (query['filter'] != undefined ? query['filter'] : null)
             });
         });
@@ -95,7 +95,7 @@ var Summary = (function (_super) {
                             React.createElement("div", { className: "col-md-4" },
                                 React.createElement(Select_1.default, { value: ctrl.state['limits'], options: ["All", "Top 100", "Top 50", "Top 25", "Top 10"], formLabel: "Record Limits:", onChange: function (value) { ctrl.setState({ 'limits': value }, function () { return ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)); }); } }),
                                 React.createElement(Select_1.default, { value: ctrl.state['levels'], options: ["System", "Circuit", "Device"], formLabel: "Search Levels:", onChange: function (value) { ctrl.setState({ 'levels': value }, function () { return ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)); }); } }),
-                                React.createElement(Input_1.default, { value: ctrl.state['filter'], clearable: true, formLabel: "Filter Text:", onChange: function (value) { ctrl.setState({ 'filter': value }, function () { return ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)); }); } })),
+                                (this.state.levels != "System" ? React.createElement(Input_1.default, { value: ctrl.state.filter, clearable: true, formLabel: (this.state.levels == "Circuit" ? "System" : "Circuit") + " Filter:", onChange: function (value) { ctrl.setState({ 'filter': value }, function () { return ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)); }); } }) : null)),
                             React.createElement("div", { className: "col-md-4" },
                                 React.createElement(BootstrapDateRangePicker_1.default, { formLabel: "Start Date:", startDate: moment(ctrl.state.date, 'YYYYMMDDHH'), singleDatePicker: true, showDropdowns: true, applyDateRangePicker: function (msg) {
                                         _this.setState({ 'date': msg.date.format('YYYYMMDDHH') }, function () { return ctrl.history['push']('Summary.cshtml?' + queryString.stringify(ctrl.state)); });

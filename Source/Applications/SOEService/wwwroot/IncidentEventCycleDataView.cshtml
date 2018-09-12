@@ -36,12 +36,20 @@
     ViewBag.Title = "Incidents";
     HttpRequestMessage request = ViewBag.Request;
     Dictionary<string, string> parameters = request.QueryParameters();
-    string levels = parameters["levels"] ?? "";
+    List<string> notSqlInjection = new List<string>() { "System", "Circuit", "Device"};
+    string levels = "System";
+    if (notSqlInjection.Contains(parameters["levels"]))
+    {
+        levels = parameters["levels"];
+    }
     string limits = parameters["limits"] ?? "";
     string timeContext = parameters["timeContext"] ?? "";
     string date = parameters["date"] ?? "";
     string name = parameters["name"] ?? "";
-    int count = int.Parse(parameters["count"] ?? "0");
+    int count = int.Parse(parameters.ContainsKey("count") ? parameters["count"] : "0");
+    int LTE = int.Parse(parameters.ContainsKey("LTE") ? parameters["LTE"] : "0");
+    int PQS = int.Parse(parameters.ContainsKey("PQS") ? parameters["PQS"] : "0");
+    int buckets = int.Parse(parameters.ContainsKey("buckets") ? parameters["buckets"] : "0");
     int id = 0;
     if (count == 1)
     {
@@ -51,6 +59,23 @@
 
         id = dataContext.Connection.ExecuteScalar<int>("SELECT ID FROM IncidentEventCycleDataView WHERE StartTime BETWEEN {0} AND {1} AND " + levels + " = {2}", startDate, endDate, name);
     }
+    else if (LTE == 1)
+    {
+
+        DateTime startDate = DateTime.ParseExact(date, "yyyyMMddHH", CultureInfo.InvariantCulture);
+        DateTime endDate = (DateTime)typeof(DateTime).GetMethod("Add" + timeContext).Invoke(startDate, new object[] { buckets });
+
+        id = dataContext.Connection.ExecuteScalar<int>("SELECT TOP 1 ID FROM IncidentEventCycleDataView WHERE StartTime BETWEEN {0} AND {1} AND " + levels + " = {2} ORDER BY LTE DESC", startDate, endDate, name);
+    }
+    else if (PQS == 1)
+    {
+
+        DateTime startDate = DateTime.ParseExact(date, "yyyyMMddHH", CultureInfo.InvariantCulture);
+        DateTime endDate = (DateTime)typeof(DateTime).GetMethod("Add" + timeContext).Invoke(startDate, new object[] { buckets });
+
+        id = dataContext.Connection.ExecuteScalar<int>("SELECT TOP 1 ID FROM IncidentEventCycleDataView WHERE StartTime BETWEEN {0} AND {1} AND " + levels + " = {2} ORDER BY PQS DESC", startDate, endDate, name);
+    }
+
 
     ViewBag.AddNewEditTitle = "";
     ViewBag.HeaderColumns = new[]
