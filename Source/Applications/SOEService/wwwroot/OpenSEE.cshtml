@@ -220,8 +220,8 @@
                     @NextBackButton(nextBackLookup[NextBackForMeter].Item1, "meter-back-ss", "&navigation=meter&slideshow=back", "<<", true)
                     @NextBackButton(nextBackLookup[NextBackForMeter].Item1, "meter-back", "&navigation=meter", "<", false)
                     <select id="next-back-selection">
-                        <option value="circuit" @(navigation == "circuit" ? "selected" : "")>Circuit</option>
                         <option value="meter" @(navigation == "meter" ? "selected" : "")>Meter</option>
+                        <option value="circuit" @(navigation == "circuit" ? "selected" : "")>Circuit</option>
                     </select>
                     @NextBackButton(nextBackLookup[NextBackForCircuit].Item2, "circuit-next", "&navigation=circuit", ">", false)
                     @NextBackButton(nextBackLookup[NextBackForCircuit].Item2, "circuit-next-ss", "&navigation=circuit&slideshow=forward", ">>", true)

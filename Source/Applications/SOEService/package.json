@@ -1,13 +1,28 @@
 {
   "dependencies": {
     "@types/flot": "0.0.31",
+    "@types/react": "^16.3.0",
     "append-react-dom": "^1.0.1",
+    "axios": "^0.18.0",
+    "bootstrap-daterangepicker": "^2.1.30",
+    "classnames": "^2.2.5",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.10",
     "flot": "^0.8.0-alpha",
     "flot-charts": "^0.8.3",
+    "font-awesome": "^4.7.0",
+    "history": "^4.7.2",
     "jquery": "^3.3.1",
-    "react": "16.2.0",
+    "primereact": "^1.6.2",
+    "query-string": "^6.2.0",
+    "react": "^16.3.0",
     "react-datetime-range-picker": "1.0.4",
-    "react-dom": "16.2.0"
+    "react-dom": "^16.3.0",
+    "source-map-loader": "^0.2.4",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^3.5.0",
+    "typescript": "^2.8.1",
+    "url-loader": "^1.1.2"
   },
   "devDependencies": {
     "babel-core": "6.26.0",
@@ -20,7 +35,8 @@
     "grunt-cli": "1.2.0",
     "grunt-contrib-watch": "1.0.0",
     "load-grunt-tasks": "3.5.2",
-    "requirejs-react-jsx": "1.0.2"
+    "requirejs-react-jsx": "1.0.2",
+    "webpack": "3.10.0"
   },
   "name": "SOEEngine",
   "private": true,
