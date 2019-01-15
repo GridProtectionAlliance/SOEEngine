@@ -45,6 +45,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <TypeScriptCompileBlocked>True</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>2.6</TypeScriptToolsVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -996,19 +997,19 @@
     <Content Include="wwwroot\Images\SOETools.png" />
     <Content Include="wwwroot\Scripts\bundle.js" />
     <Content Include="wwwroot\Scripts\dateFormat.js" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\BootstrapDateRangePicker.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\IncidentGroup.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\Input.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\Legend.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\Select.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\PrimeDataTableWrapper.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\Summary.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\Table.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\PrimeMultiselectWrapper.tsx" />
+    <None Include="wwwroot\Scripts\JSX\BootstrapDateRangePicker.tsx" />
+    <None Include="wwwroot\Scripts\JSX\IncidentGroup.tsx" />
+    <None Include="wwwroot\Scripts\JSX\Input.tsx" />
+    <None Include="wwwroot\Scripts\JSX\Legend.tsx" />
+    <None Include="wwwroot\Scripts\JSX\Select.tsx" />
+    <None Include="wwwroot\Scripts\JSX\PrimeDataTableWrapper.tsx" />
+    <None Include="wwwroot\Scripts\JSX\Summary.tsx" />
+    <None Include="wwwroot\Scripts\JSX\Table.tsx" />
+    <None Include="wwwroot\Scripts\JSX\PrimeMultiselectWrapper.tsx" />
     <Content Include="wwwroot\Scripts\Site.js" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\WaveformViewer.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\JSX\WaveformViewGraph.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\Services\SOEService.ts" />
+    <None Include="wwwroot\Scripts\JSX\WaveformViewer.tsx" />
+    <None Include="wwwroot\Scripts\JSX\WaveformViewGraph.tsx" />
+    <None Include="wwwroot\Scripts\Services\SOEService.ts" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

@@ -153,10 +153,13 @@ namespace SOEService
             string query = @"
                 SELECT TOP 1 
                 	Event.ID, 
-                	dbo.GetJSONValueForProperty(Meter.ExtraData, 'pngLink' ) AS Link
+                	dbo.GetJSONValueForProperty(Meter.ExtraData, 'pngLink' ) AS Link,
+                    MeterLocation.Latitude,
+					MeterLocation.Longitude
                 FROM 
                 	Event JOIN
-                	Meter ON Event.MeterID = Meter.ID
+                	Meter ON Event.MeterID = Meter.ID JOIN
+                    MeterLocation on Meter.MeterLocationID = MeterLocation.ID
                 WHERE IncidentID = {0}
                 ORDER BY Event.StartTime
             ";

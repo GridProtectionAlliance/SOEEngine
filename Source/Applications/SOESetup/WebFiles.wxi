@@ -2060,113 +2060,41 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_JSX_Components" Directory="wwwroot_SCRIPTSJSXFOLDER">
-  <Component Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker_js">
-    <File Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker.js" Name="BootstrapDateRangePicker.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\BootstrapDateRangePicker.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker_js_map">
-    <File Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker.js.map" Name="BootstrapDateRangePicker.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\BootstrapDateRangePicker.js.map" />
-  </Component>
   <Component Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker_tsx">
     <File Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker.tsx" Name="BootstrapDateRangePicker.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\BootstrapDateRangePicker.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_IncidentGroup_js">
-    <File Id="wwwroot_Scripts_JSX_IncidentGroup.js" Name="IncidentGroup.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\IncidentGroup.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_IncidentGroup_js_map">
-    <File Id="wwwroot_Scripts_JSX_IncidentGroup.js.map" Name="IncidentGroup.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\IncidentGroup.js.map" />
   </Component>
   <Component Id="wwwroot_Scripts_JSX_IncidentGroup_tsx">
     <File Id="wwwroot_Scripts_JSX_IncidentGroup.tsx" Name="IncidentGroup.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\IncidentGroup.tsx" />
   </Component>
-  <Component Id="wwwroot_Scripts_JSX_Input_js">
-    <File Id="wwwroot_Scripts_JSX_Input.js" Name="Input.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Input.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Input_js_map">
-    <File Id="wwwroot_Scripts_JSX_Input.js.map" Name="Input.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Input.js.map" />
-  </Component>
   <Component Id="wwwroot_Scripts_JSX_Input_tsx">
     <File Id="wwwroot_Scripts_JSX_Input.tsx" Name="Input.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Input.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Legend_js">
-    <File Id="wwwroot_Scripts_JSX_Legend.js" Name="Legend.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Legend.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Legend_js_map">
-    <File Id="wwwroot_Scripts_JSX_Legend.js.map" Name="Legend.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Legend.js.map" />
   </Component>
   <Component Id="wwwroot_Scripts_JSX_Legend_tsx">
     <File Id="wwwroot_Scripts_JSX_Legend.tsx" Name="Legend.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Legend.tsx" />
   </Component>
-  <Component Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper_js">
-    <File Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper.js" Name="PrimeDataTableWrapper.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeDataTableWrapper.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper_js_map">
-    <File Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper.js.map" Name="PrimeDataTableWrapper.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeDataTableWrapper.js.map" />
-  </Component>
   <Component Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper_tsx">
     <File Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper.tsx" Name="PrimeDataTableWrapper.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeDataTableWrapper.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper_js">
-    <File Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper.js" Name="PrimeMultiselectWrapper.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeMultiselectWrapper.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper_js_map">
-    <File Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper.js.map" Name="PrimeMultiselectWrapper.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeMultiselectWrapper.js.map" />
   </Component>
   <Component Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper_tsx">
     <File Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper.tsx" Name="PrimeMultiselectWrapper.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeMultiselectWrapper.tsx" />
   </Component>
-  <Component Id="wwwroot_Scripts_JSX_Select_js">
-    <File Id="wwwroot_Scripts_JSX_Select.js" Name="Select.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Select.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Select_js_map">
-    <File Id="wwwroot_Scripts_JSX_Select.js.map" Name="Select.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Select.js.map" />
-  </Component>
   <Component Id="wwwroot_Scripts_JSX_Select_tsx">
     <File Id="wwwroot_Scripts_JSX_Select.tsx" Name="Select.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Select.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Summary_js">
-    <File Id="wwwroot_Scripts_JSX_Summary.js" Name="Summary.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Summary.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Summary_js_map">
-    <File Id="wwwroot_Scripts_JSX_Summary.js.map" Name="Summary.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Summary.js.map" />
   </Component>
   <Component Id="wwwroot_Scripts_JSX_Summary_tsx">
     <File Id="wwwroot_Scripts_JSX_Summary.tsx" Name="Summary.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Summary.tsx" />
   </Component>
-  <Component Id="wwwroot_Scripts_JSX_Table_js">
-    <File Id="wwwroot_Scripts_JSX_Table.js" Name="Table.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Table.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Table_js_map">
-    <File Id="wwwroot_Scripts_JSX_Table.js.map" Name="Table.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Table.js.map" />
-  </Component>
   <Component Id="wwwroot_Scripts_JSX_Table_tsx">
     <File Id="wwwroot_Scripts_JSX_Table.tsx" Name="Table.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Table.tsx" />
   </Component>
-  <Component Id="wwwroot_Scripts_JSX_WaveformViewer_js">
-    <File Id="wwwroot_Scripts_JSX_WaveformViewer.js" Name="WaveformViewer.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\WaveformViewer.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_WaveformViewer_js_map">
-    <File Id="wwwroot_Scripts_JSX_WaveformViewer.js.map" Name="WaveformViewer.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\WaveformViewer.js.map" />
-  </Component>
   <Component Id="wwwroot_Scripts_JSX_WaveformViewer_tsx">
     <File Id="wwwroot_Scripts_JSX_WaveformViewer.tsx" Name="WaveformViewer.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\WaveformViewer.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_WaveformViewGraph_js">
-    <File Id="wwwroot_Scripts_JSX_WaveformViewGraph.js" Name="WaveformViewGraph.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\WaveformViewGraph.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_WaveformViewGraph_js_map">
-    <File Id="wwwroot_Scripts_JSX_WaveformViewGraph.js.map" Name="WaveformViewGraph.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\WaveformViewGraph.js.map" />
   </Component>
   <Component Id="wwwroot_Scripts_JSX_WaveformViewGraph_tsx">
     <File Id="wwwroot_Scripts_JSX_WaveformViewGraph.tsx" Name="WaveformViewGraph.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\WaveformViewGraph.tsx" />
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_Services_Components" Directory="wwwroot_SCRIPTSSERVICESFOLDER">
-  <Component Id="wwwroot_Scripts_Services_SOEService_js">
-    <File Id="wwwroot_Scripts_Services_SOEService.js" Name="SOEService.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Services\SOEService.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_Services_SOEService_js_map">
-    <File Id="wwwroot_Scripts_Services_SOEService.js.map" Name="SOEService.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Services\SOEService.js.map" />
-  </Component>
   <Component Id="wwwroot_Scripts_Services_SOEService_ts">
     <File Id="wwwroot_Scripts_Services_SOEService.ts" Name="SOEService.ts" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Services\SOEService.ts" />
   </Component>

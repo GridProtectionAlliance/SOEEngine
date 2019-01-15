@@ -169,7 +169,7 @@ new[] { null, "SOE Data", "text-center valign-middle" },
 
         function openMatlab(record) {
             dataHub.getMeterData(record.ID).done(function (d) {
-                window.open(d[0].Link + record.Device + '-EAS-' + d[0].ID + '-1');
+                window.open('http://app-uncc-01.test.epb.net:3002/?lat=' + d.Latitiude + '&long=' + d.Longitude + '&zoom=4&IncidentID='+record.ID);
             });
         }
 
