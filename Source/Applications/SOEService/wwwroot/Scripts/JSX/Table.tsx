@@ -22,73 +22,71 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import * as _ from 'lodash';
 
+declare var getBool: Function;
+
 export default class Table extends React.Component<any, any> {
-    static propTypes = {
-        cols: PropTypes.array,
-        data: PropTypes.array
-    }
-    static defaultProps = {
-        cols: [],
-        data: []
-
-    }
-
+    props: { cols: Array<any>, data: Array<any>, onClick: Function, sortField: string, ascending: boolean, onSort: Function, tableClass?: string, theadStyle?: object, tbodyStyle?: object };
     constructor(props) {
         super(props);
-        this.state = {
-            cols: props.cols,
-            data: props.data
-        };  
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(!(_.isEqual(prevProps, this.props)))
-            this.setState({cols: this.props.cols, data: this.props.data})
+    componentDidUpdate(prevProps, prevState) {
     }
 
     render() {
-        var headerComponents = this.generateHeaders(),
-            rowComponents = this.generateRows();
-
+        var rowComponents = this.generateRows();
+        var headerComponents = this.generateHeaders();
         return (
-            <table className="table table-condensed table-hover">
-                <thead>{headerComponents}</thead>
-                <tbody>{rowComponents}</tbody>
+            <table className={(this.props.tableClass != undefined ? this.props.tableClass : '')} >
+                <thead style={this.props.theadStyle}>{headerComponents}</thead>
+                <tbody style={this.props.tbodyStyle}>{rowComponents}</tbody>
             </table>
         );
     }
 
-    generateHeaders(){
-        var cols = this.state.cols;  // [{key, label}]
+    generateHeaders() {
+        if (this.props.cols.length == 0) return null;
+        var ascending = getBool(this.props.ascending);
+        var cells = this.props.cols.map(colData => {
+            var style = colData.headerStyle;
+            if (style.cursor == undefined)
+                style.cursor = 'pointer';
 
-        // generate our header (th) cell components
-        return (<tr>{cols.map(function(colData) {
-            return <th key={colData.key}>{colData.label}</th>;
-        })}</tr>
-        );
+            return <th key={colData.key} style={style} onClick={this.handleSort.bind(this, { col: colData.key, ascending: ascending })}>{colData.label}{(this.props.sortField == colData.key ? <span className={"glyphicon " + (ascending ? "glyphicon-triangle-top" : "glyphicon-triangle-bottom")}></span> : null)}</th>
+        });
+
+        return <tr>{cells}</tr>;
     }
 
     generateRows() {
-        var ctrl = this;
-        var cols = ctrl.state.cols,  // [{key, label}]
-            data = ctrl.state.data;
+        if (this.props.data.length == 0) return null;
 
-        return data.map(function(item) {
-            // build each cell
-            var cells = cols.map(function(colData) {
-                // colData.key might be "firstName"
-                return <td key={item[colData.key] + colData.key} onClick={ctrl.handleClick.bind({col: colData.key, row: item, data: item[colData.key]}) }>{item[colData.key]}</td>;
+        return this.props.data.map((item, index) => {
+            var cells = this.props.cols.map(colData => {
+                var style = _.clone(colData.rowStyle);
+                return <td
+                    key={index.toString() + item[colData.key] + colData.key}
+                    style={style}
+                    /*onClick={this.handleClick.bind(this, { col: colData.key, row: item, data: item[colData.key] })}*/
+                >
+                    {colData.content != undefined ? colData.content(item, colData.key, style) : item[colData.key]}
+                </td>
             });
 
-            return <tr key={item.id}>{cells}</tr>;
+            var style = { cursor: 'auto' };
+
+            return <tr style={style} key={index.toString()}>{cells}</tr>;
         });
     }
 
-    handleClick(event){
-        console.log(this);
+    handleClick(data, event) {
+        this.props.onClick(data);
+    }
+
+    handleSort(data, event) {
+        this.props.onSort(data);
     }
 };
 

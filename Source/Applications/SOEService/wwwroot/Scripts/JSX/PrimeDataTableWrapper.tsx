@@ -44,6 +44,8 @@ import * as PropTypes from 'prop-types';
 import SOEService from './../Services/SOEService';
 
 export default class PrimeDataTable extends React.Component<any,any> {
+    state: { data: any[]; dynamicColumns: JSX.Element[]; };
+    props: any;
     soeservice: SOEService;
     callback: any;
     constructor(props) {
@@ -147,7 +149,7 @@ export default class PrimeDataTable extends React.Component<any,any> {
     render() {
 
         return (
-            <DataTable value={this.state.data} paginator={true} rows={10} first={0}>
+            <DataTable value={this.state.data}>
                 <Column style={{ width: "100px", 'textAlign': 'center' }} body={this.systemTemplate.bind(this)} field="System" header="Volt Class" sortable={true}></Column>
                 <Column style={{ width: "100px", 'textAlign': 'center' }} body={this.circuitTemplate.bind(this)} field="Circuit" header="Circuit" sortable={true}></Column>
                 <Column style={{ width: "100px", 'textAlign': 'center' }} field="Device" header="Device" sortable={true}></Column>

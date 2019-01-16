@@ -25,6 +25,9 @@ import * as PropTypes from 'prop-types';
 import * as _ from "lodash";
 
 export default class Select extends React.Component<any,any>{
+    state: { value: any; };
+    props: { class?: string, formLabel?: string, type?: string, value?: any; onChange?: Function, clearable?: boolean };
+
     static propTypes = {
         class: PropTypes.string,
         formLabel: PropTypes.string,

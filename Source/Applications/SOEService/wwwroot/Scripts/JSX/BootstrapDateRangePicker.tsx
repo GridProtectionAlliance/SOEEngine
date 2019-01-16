@@ -51,6 +51,8 @@ import * as PropTypes from 'prop-types';
 import * as _ from "lodash";
 
 export default class BootstrapDateRangePickerWrapper extends React.Component<any, any> {
+    state: { date: moment.Moment; };
+    props: any; 
     picker: any;
     static propTypes = {
         startDate: PropTypes.oneOfType([PropTypes.string.isRequired,PropTypes.object.isRequired]),

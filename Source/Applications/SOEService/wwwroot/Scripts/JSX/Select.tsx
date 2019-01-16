@@ -25,6 +25,8 @@ import * as React from 'react';
 import * as _ from "lodash";
 
 export default class Select extends React.Component<any,any>{
+    state: { options: any; dynamicColumns: any; value: any; };
+    props: any;
     constructor(props) {
         super(props);
         this.state = {

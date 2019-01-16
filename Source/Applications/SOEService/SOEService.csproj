@@ -961,6 +961,8 @@
     <Content Include="wwwroot\Images\UpDownState\Word Set\48\333.png" />
     <Content Include="wwwroot\Scripts\jquery.blockUI.js" />
     <Content Include="wwwroot\Scripts\OpenSEE.js" />
+    <Content Include="wwwroot\Scripts\Summary.js" />
+    <Content Include="wwwroot\Scripts\WaveformViewer.js" />
     <Content Include="wwwroot\Summary.cshtml" />
     <Content Include="wwwroot\IncidentEventCycleDataView.cshtml" />
     <Content Include="wwwroot\Images\PointCode\pointCode.psd" />
@@ -995,8 +997,6 @@
     <Content Include="wwwroot\Content\Site.css" />
     <Content Include="wwwroot\Images\gpa-smalllock.png" />
     <Content Include="wwwroot\Images\SOETools.png" />
-    <Content Include="wwwroot\Scripts\bundle.js" />
-    <Content Include="wwwroot\Scripts\dateFormat.js" />
     <None Include="wwwroot\Scripts\JSX\BootstrapDateRangePicker.tsx" />
     <None Include="wwwroot\Scripts\JSX\IncidentGroup.tsx" />
     <None Include="wwwroot\Scripts\JSX\Input.tsx" />
@@ -1014,7 +1014,6 @@
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <PropertyGroup>
