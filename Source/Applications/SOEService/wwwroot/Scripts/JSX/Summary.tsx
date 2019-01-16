@@ -95,7 +95,7 @@ class Summary extends React.Component<any, any, any> {
                 { key: 'CT Files', label: 'CT Files', headerStyle: { width: "75px", 'textAlign': 'center' } },
                 { key: 'SOE', label: 'SOE', headerStyle: { width: "75px", 'textAlign': 'center' } }];
 
-            if (data.length == 0) return this.setState({ col: [...headerLeft, ...headerRight], data: data });
+            if (data.length == 0) return this.setState({ cols: [...headerLeft, ...headerRight], data: data });
 
             if (Object.keys(data[0]).indexOf(props.sortField) < 0) props.sortField = "System";
             data = _.orderBy(data, [props.sortField], [(getBool(props.ascending) ? 'asc' : 'desc')])

@@ -34723,7 +34723,7 @@ var Summary = (function (_super) {
                 { key: 'SOE', label: 'SOE', headerStyle: { width: "75px", 'textAlign': 'center' } }
             ];
             if (data.length == 0)
-                return _this.setState({ col: headerLeft.concat(headerRight), data: data });
+                return _this.setState({ cols: headerLeft.concat(headerRight), data: data });
             if (Object.keys(data[0]).indexOf(props.sortField) < 0)
                 props.sortField = "System";
             data = _.orderBy(data, [props.sortField], [(getBool(props.ascending) ? 'asc' : 'desc')]);
