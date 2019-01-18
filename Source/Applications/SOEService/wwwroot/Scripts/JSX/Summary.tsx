@@ -53,7 +53,7 @@ class Summary extends React.Component<any, any, any> {
         this.state = {
             limits: (query['limits'] != undefined ? query['limits'] : 'All'),
             levels: (query['levels'] != undefined ? query['levels'] : 'Circuit'),
-            date: (query['date'] != undefined ? query['date'] : moment().subtract(30, 'days').startOf('day').format('YYYYMMDDHH')),
+            date: (query['date'] != undefined ? query['date'] : moment().subtract(numberOfBuckets, 'days').startOf('day').format('YYYYMMDDHH')),
             context: (query['context'] != undefined ? query['context'] : 'Days'),
             buckets: (query['buckets'] != undefined ? query['buckets'] : numberOfBuckets),
             filter: (query['filter'] != undefined ? query['filter'] : null),
