@@ -36,21 +36,20 @@
     ViewBag.Title = "Incidents";
     HttpRequestMessage request = ViewBag.Request;
     Dictionary<string, string> parameters = request.QueryParameters();
+
     List<string> notSqlInjection = new List<string>() { "System", "Circuit", "Device"};
-    string levels = "System";
-    if (notSqlInjection.Contains(parameters["levels"]))
-    {
-        levels = parameters["levels"];
-    }
-    string limits = parameters["limits"] ?? "";
-    string timeContext = parameters["timeContext"] ?? "";
-    string date = parameters["date"] ?? "";
-    string name = parameters["name"] ?? "";
+
+    string levels = (notSqlInjection.Contains(parameters["levels"]) ?  parameters["levels"] : "System");
+    string limits = (parameters.ContainsKey("limits" ) ? parameters["limits"] : "");
+    string timeContext = (parameters.ContainsKey("timeContext" ) ? parameters["timeContext"] : "");
+    string date = (parameters.ContainsKey("date" ) ? parameters["date"] : "");
+    string name = (parameters.ContainsKey("name" ) ? parameters["name"] : "");
     int count = int.Parse(parameters.ContainsKey("count") ? parameters["count"] : "0");
     int LTE = int.Parse(parameters.ContainsKey("LTE") ? parameters["LTE"] : "0");
     int PQS = int.Parse(parameters.ContainsKey("PQS") ? parameters["PQS"] : "0");
     int buckets = int.Parse(parameters.ContainsKey("buckets") ? parameters["buckets"] : "0");
     int id = 0;
+
     if (count == 1)
     {
 
@@ -79,21 +78,21 @@
 
     ViewBag.AddNewEditTitle = "";
     ViewBag.HeaderColumns = new[]
-{   //    { "Field", "Label", "Classes" }
-new[] { "StartTime", "Date/Time", "text-center" },
-new[] { "System", "System", "text-center" },
-new[] { "Circuit", "Circuit", "text-center" },
-new[] { "Device", "Device", "text-center" },
-new[] { null, "Type", "text-center valign-middle"},
-new[] { null, "A", "text-center valign-middle" },
-new[] { null, "C", "text-center valign-middle" },
-new[] { null, "B", "text-center valign-middle" },
-new[] { null, "G", "text-center valign-middle" },
-new[] { "LTE", "LTE", "text-center"},
-new[] { "PQS", "PQS", "text-center"},
-new[] { null, "Duration", "text-center valign-middle" },
-new[] { null, "SOE Data", "text-center valign-middle" },
-};
+    {   //    { "Field", "Label", "Classes" }
+        new[] { "StartTime", "Date/Time", "text-center" },
+        new[] { "System", "System", "text-center" },
+        new[] { "Circuit", "Circuit", "text-center" },
+        new[] { "Device", "Device", "text-center" },
+        new[] { null, "Type", "text-center valign-middle"},
+        new[] { null, "A", "text-center valign-middle" },
+        new[] { null, "C", "text-center valign-middle" },
+        new[] { null, "B", "text-center valign-middle" },
+        new[] { null, "G", "text-center valign-middle" },
+        new[] { "LTE", "LTE", "text-center"},
+        new[] { "PQS", "PQS", "text-center"},
+        new[] { null, "Duration", "text-center valign-middle" },
+        new[] { null, "SOE Data", "text-center valign-middle" },
+    };
     ViewBag.ShowSearchFilter = true;
 
     ViewBag.BodyRows = BodyRows().ToString();
