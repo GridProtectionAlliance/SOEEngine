@@ -98,7 +98,10 @@ class Summary extends React.Component<any, any, any> {
             if (data.length == 0) return this.setState({ cols: [...headerLeft, ...headerRight], data: data });
 
             if (Object.keys(data[0]).indexOf(props.sortField) < 0) props.sortField = "System";
-            data = _.orderBy(data, [props.sortField], [(getBool(props.ascending) ? 'asc' : 'desc')])
+
+            var nulls = data.filter(x => x[props.sortField] == null);
+            var nonNulls = data.filter(x => x[props.sortField] != null)
+            data = [..._.orderBy(nonNulls, [props.sortField], [(getBool(props.ascending) ? 'asc' : 'desc')]), ...nulls];
 
             var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE", "LTE", "PQS"]
             var dynamicalCols = Object.keys(data[0]).filter(x => nonDynamicColumns.indexOf(x) < 0).map(x => Object.create({ key: x, label: x, headerStyle: { 'textAlign': 'center' }, content: this.dateTemplate.bind(this) }));

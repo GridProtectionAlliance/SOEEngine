@@ -71792,7 +71792,9 @@ var Summary = (function (_super) {
                 return _this.setState({ cols: headerLeft.concat(headerRight), data: data });
             if (Object.keys(data[0]).indexOf(props.sortField) < 0)
                 props.sortField = "System";
-            data = _.orderBy(data, [props.sortField], [(getBool(props.ascending) ? 'asc' : 'desc')]);
+            var nulls = data.filter(function (x) { return x[props.sortField] == null; });
+            var nonNulls = data.filter(function (x) { return x[props.sortField] != null; });
+            data = _.orderBy(nonNulls, [props.sortField], [(getBool(props.ascending) ? 'asc' : 'desc')]).concat(nulls);
             var nonDynamicColumns = ["System", "Circuit", "Device", "Total", "CT Files", "SOE", "LTE", "PQS"];
             var dynamicalCols = Object.keys(data[0]).filter(function (x) { return nonDynamicColumns.indexOf(x) < 0; }).map(function (x) { return Object.create({ key: x, label: x, headerStyle: { 'textAlign': 'center' }, content: _this.dateTemplate.bind(_this) }); });
             _this.setState({ cols: headerLeft.concat(dynamicalCols, headerRight), data: data });
