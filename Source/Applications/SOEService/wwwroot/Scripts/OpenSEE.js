@@ -1509,7 +1509,8 @@ function updatePhasorChart() {
 
 function updateTooltip() {
     var floatingtooltip = $('#unifiedtooltipcontent');
-    var format = $.plot.formatDate($.plot.dateGenerator(xaxisHover, { timezone: "utc" }), "%Y-%m-%d %H:%M:%S") + "." + (xaxisHover * 10000 % 10000000);
+
+    var format = dateTimeFormatter(xaxisHover);
     var tooltiphtml = '<div align="center"><b>' + format + '</b><br /><table align="center">';
 
     $.each(plotDataList, function (key, plotData) {
@@ -1534,4 +1535,24 @@ function updateTooltip() {
 
     tooltiphtml += '</table>';
     floatingtooltip.html(tooltiphtml);
+}
+
+function dateTimeFormatter(value) {
+    var format = $.plot.formatDate($.plot.dateGenerator(xaxisHover, { timezone: "utc" }), "%Y-%m-%d %H:%M:%S");
+    var ticks = Math.floor(value * 10000);
+
+    var subsecond = (ticks % 10000000).toString();
+
+    while (subsecond.length < 7)
+        subsecond = "0" + subsecond;
+
+    while (subsecond.length > 1 && subsecond.slice(-1) == "0")
+        subsecond = subsecond.slice(0, -1);
+
+    if (subsecond != 0)
+        return format + "." + subsecond;
+
+    return format;
+
+
 }
