@@ -12,7 +12,7 @@
     "flot-charts": "^0.8.3",
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.0",
     "lodash": "^4.17.13",
     "primereact": "^1.6.2",
     "query-string": "^6.2.0",
