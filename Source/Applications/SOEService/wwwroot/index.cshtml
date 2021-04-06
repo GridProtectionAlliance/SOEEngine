@@ -35,225 +35,27 @@
 @{
     Layout = "Layout.cshtml";
     ViewBag.Title = "Home";
-    //Layout = "Layout.cshtml";
-    //ViewBag.Title = "Home";
-
-    Version assemblyVersionInfo = AssemblyInfo.EntryAssembly.Version;
-    string applicationVersion = assemblyVersionInfo.Major + "." + assemblyVersionInfo.Minor + "." + assemblyVersionInfo.Build;
-    string databaseType;
-    string databaseName;
 
     try
     {
         using (AdoDataConnection database = new AdoDataConnection("systemSettings"))
         {
-            databaseType = database.DatabaseType.ToString();
-
-            try
-            {
-                if (database.IsSqlite || database.IsJetEngine)
-                {
-                    // Extract database file name from connection string for file centric databases
-                    databaseName = FilePath.GetFileName(database.Connection.ConnectionString.ParseKeyValuePairs()["Data Source"]);
-                }
-                else if (database.IsOracle)
-                {
-                    // Extract user name from connection string for Oracle databases
-                    databaseName = database.Connection.ConnectionString.ParseKeyValuePairs()["User Id"];
-                }
-                else
-                {
-                    databaseName = database.Connection.Database;
-                }
-            }
-            catch
-            {
-                // Fall back on database name if file anything fails
-                databaseName = database.Connection.Database;
-            }
         }
     }
     catch
     {
-        databaseType = "Not Available";
-        databaseName = "Not Available";
     }
 
 }
 @section StyleSheets {
-<style>
-    /* Auto font resize CSS for system health window - targeting fixed 80 char width without wrap and
-       allowing for responsive screen rearrangement when window is col-**-8 and on the right */
-    @@media screen {
-        .performance-statistics {
-            font-size: 5.25px;
-        }
-    }
-
-    @@media screen and (min-width: 430px) {
-        .performance-statistics {
-            font-size: 7px;
-        }
-    }
-
-    @@media screen and (min-width: 470px) {
-        .performance-statistics {
-            font-size: 8px;
-        }
-    }
-
-    @@media screen and (min-width: 515px) {
-        .performance-statistics {
-            font-size: 9px;
-        }
-    }
-
-    @@media screen and (min-width: 550px) {
-        .performance-statistics {
-            font-size: 10px;
-        }
-    }
-
-    @@media screen and (min-width: 600px) {
-        .performance-statistics {
-            font-size: 11px;
-        }
-    }
-
-    @@media screen and (min-width: 635px) {
-        .performance-statistics {
-            font-size: 12px;
-        }
-    }
-
-    @@media screen and (min-width: 685px) {
-        .performance-statistics {
-            font-size: 13px;
-        }
-    }
-
-    @@media screen and (min-width: 725px) {
-        .performance-statistics {
-            font-size: 14px;
-        }
-    }
-
-    @@media screen and (min-width: 768px) {
-        .performance-statistics {
-            font-size: 8px;
-        }
-    }
-
-    @@media screen and (min-width: 992px) {
-        .performance-statistics {
-            font-size: 12px;
-        }
-    }
-
-    @@media screen and (min-width: 1200px) {
-        .performance-statistics {
-            font-size: 14px;
-        }
-    }
-
-    .badge-fixed {
-        display: inline-block;
-        width: 150px;
-    }
-
-    .ui-terminal {
-        background: black;
-        color: white;
-    }
-
-    .ui-terminal-content div {
-        font-family: monospace;
-        white-space: pre;
-    }
-</style>
-}
-@functions {
-    public string GetCurrentUserID()
-    {
-        //if (Thread.CurrentPrincipal.Identity == null)
-        //    return UserInfo.CurrentUserID;
-
-        return Thread.CurrentPrincipal.Identity.Name;
-    }
+    <style></style>
 }
 
 <div class="row">
-    <div class="col-lg-4 col-md-4 col-sm-5">
-
-        <ul class="list-group">
-            <li class="list-group-item">
-                <span class="badge badge-fixed" id="serverTime">@DateTime.UtcNow.ToString(Model.Global.DateTimeFormat)</span>Server&nbsp;Time
-                <hr class="quarter-break" />
-                <span class="badge badge-fixed" id="localTime">@DateTime.UtcNow.ToString(Model.Global.DateTimeFormat)</span>Local&nbsp;Time
-                <hr class="quarter-break" />
-                <span class="badge badge-fixed" id="currentUser">@GetCurrentUserID()</span> Current User
-            </li>
-            <li class="list-group-item">
-                <span class="badge badge-fixed" id="applicationVersion">@applicationVersion</span>App&nbsp;Version
-                <hr class="quarter-break" />
-                <span class="badge badge-fixed" id="databaseType">DB: @databaseType</span>Config&nbsp;Type
-                <hr class="quarter-break" />
-                <span class="badge badge-fixed" id="databaseName">@databaseName</span>Config&nbsp;Name
-            </li>
-        </ul>
-        <p class="text-info text-center small">@ViewBag.Request.RequestUri.ToString()</p>
-        <!-- label class="small" id="fontSizeLabel"></label -->
-    </div>
-    <div class="col-lg-8 col-md-8 col-sm-7">
-        <div class="panel panel-default">
-            <div class="panel-heading">System Health</div>
-            <div class="panel-body">
-                <pre class="performance-statistics" id="performanceStatistics">Loading&nbsp;&nbsp;<span class="glyphicon glyphicon-refresh glyphicon-spin"></span></pre>
-            </div>
-        </div>
-    </div>
+    <h4>Future page for Bob's table!</h4>
 </div>
 
 @section Scripts {
     <script>
-        function updateTimestamps() {
-            $('#localTime').html(new Date().formatDate());
-
-            if (hubIsConnected) {
-                serviceHub.getServerTime().done(function (serverTime) {
-                    $('#serverTime').html(serverTime.formatDate());
-                });
-            }
-        }
-
-        function updatePerformanceStatistics() {
-            if (hubIsConnected)
-                serviceHub.getPerformanceStatistics().done(function (statistics) {
-                    $("#performanceStatistics").html(statistics);
-                });
-        }
-
-        $(window).on("hubConnected", function (event) {
-            updatePerformanceStatistics();
-            setInterval(updatePerformanceStatistics, 5000);
-            serviceHub.sendCommand('filter -remove 0')
-        });
-
-        $("#restartButton").click(function () {
-            if (hubIsConnected && confirm("Are you sure you want to restart service?"))
-                serviceHub.sendCommand("restart");
-        });
-
-        $(function () {
-            updateTimestamps();
-            setInterval(updateTimestamps, 1000);
-        });
-
-        function reloadSystemSettings() {
-            if (hubIsConnected)
-            {
-                dataHub.reloadSystemSetting();
-            }
-        }
     </script>
 }

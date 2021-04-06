@@ -46,7 +46,7 @@
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <TypeScriptCompileBlocked>True</TypeScriptCompileBlocked>
-    <TypeScriptToolsVersion>2.6</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <WebGreaseLibPath>..\..\Dependencies\NuGet\WebGrease.1.5.2\lib</WebGreaseLibPath>
@@ -970,6 +970,7 @@
     <Content Include="wwwroot\Images\UpDownState\psd\Glyphs.psd" />
     <Content Include="wwwroot\Images\UpDownState\psd\UpDownMaster.psd" />
     <Content Include="wwwroot\Images\UpDownState\psd\UpDownWORDS.psd" />
+    <Content Include="wwwroot\Health.cshtml" />
     <None Include="wwwroot\index.cshtml" />
     <None Include="wwwroot\Layout.cshtml" />
     <Content Include="wwwroot\OpenSEE.cshtml" />
@@ -997,22 +998,25 @@
     <Content Include="wwwroot\Content\Site.css" />
     <Content Include="wwwroot\Images\gpa-smalllock.png" />
     <Content Include="wwwroot\Images\SOETools.png" />
-    <None Include="wwwroot\Scripts\JSX\BootstrapDateRangePicker.tsx" />
-    <None Include="wwwroot\Scripts\JSX\IncidentGroup.tsx" />
-    <None Include="wwwroot\Scripts\JSX\Input.tsx" />
-    <None Include="wwwroot\Scripts\JSX\Legend.tsx" />
-    <None Include="wwwroot\Scripts\JSX\Select.tsx" />
-    <None Include="wwwroot\Scripts\JSX\PrimeDataTableWrapper.tsx" />
-    <None Include="wwwroot\Scripts\JSX\Summary.tsx" />
-    <None Include="wwwroot\Scripts\JSX\Table.tsx" />
-    <None Include="wwwroot\Scripts\JSX\PrimeMultiselectWrapper.tsx" />
+    <None Include="wwwroot\Scripts\TSX\BootstrapDateRangePicker.tsx" />
+    <None Include="wwwroot\Scripts\TSX\IncidentGroup.tsx" />
+    <None Include="wwwroot\Scripts\TSX\Input.tsx" />
+    <None Include="wwwroot\Scripts\TSX\Legend.tsx" />
+    <None Include="wwwroot\Scripts\TSX\Select.tsx" />
+    <None Include="wwwroot\Scripts\TSX\PrimeDataTableWrapper.tsx" />
+    <None Include="wwwroot\Scripts\TSX\Summary.tsx" />
+    <None Include="wwwroot\Scripts\TSX\Table.tsx" />
+    <None Include="wwwroot\Scripts\TSX\PrimeMultiselectWrapper.tsx" />
     <Content Include="wwwroot\Scripts\Site.js" />
-    <None Include="wwwroot\Scripts\JSX\WaveformViewer.tsx" />
-    <None Include="wwwroot\Scripts\JSX\WaveformViewGraph.tsx" />
+    <None Include="wwwroot\Scripts\TSX\WaveformViewer.tsx" />
+    <None Include="wwwroot\Scripts\TSX\WaveformViewGraph.tsx" />
     <None Include="wwwroot\Scripts\Services\SOEService.ts" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />

@@ -228,6 +228,7 @@ const string min = "";
                                 <li><a href="Settings.cshtml">Settings</a></li>
                             </ul>
                         </li>
+                        <li @Raw(pageTitle == "Health" ? "class=\"active\"" : "")><a href="Health.cshtml">Health</a></li>
                         <li @Raw(pageTitle == "Remote Service Console" ? "class=\"active\"" : "")><a href="RemoteConsole.cshtml">Console</a></li>
                         <li @Raw(pageTitle == "Help" ? "class=\"active\"" : "")><a href="Help.cshtml">Help</a></li>
                     </ul>

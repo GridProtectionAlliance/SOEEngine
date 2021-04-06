@@ -116,7 +116,7 @@ namespace SOEService
             DateTime startDate = DateTime.ParseExact(date, "yyyyMMddHH", CultureInfo.InvariantCulture);
             DateTime endDate = (DateTime)typeof(DateTime).GetMethod("Add" + timeContext).Invoke(startDate, new object[] { 1 });
 
-            return table.QueryRecords(sortField, ascending, page, pageSize, filterRestriction + new RecordRestriction("StartTime BETWEEN {0} AND {1}", startDate, endDate) + new RecordRestriction(levels + " = {0}", name));
+            return table.QueryRecords($"{sortField} {(ascending ? "ASC" : "DESC")}", filterRestriction + new RecordRestriction("StartTime BETWEEN {0} AND {1}", startDate, endDate) + new RecordRestriction(levels + " = {0}", name));
         }
 
         [AuthorizeHubRole("Administrator")]
@@ -180,7 +180,7 @@ namespace SOEService
         [RecordOperation(typeof(CycleDataSOEPointView), RecordOperation.QueryRecords)]
         public IEnumerable<CycleDataSOEPointView> QueryCycleDataSOEPointViewItems(int parentID, string sortField, bool ascending, int page, int pageSize, string filterText)
         {
-            return DataContext.Table<CycleDataSOEPointView>().QueryRecords(sortField, ascending, page, pageSize, new RecordRestriction("IncidentID = {0}", parentID));
+            return DataContext.Table<CycleDataSOEPointView>().QueryRecords($"{sortField} {(ascending ? "ASC" : "DESC")}", new RecordRestriction("IncidentID = {0}", parentID));
         }
 
         [AuthorizeHubRole("Administrator")]

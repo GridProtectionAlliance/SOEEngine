@@ -31,6 +31,8 @@
 
 @inherits ExtendedTemplateBase<AppModel>
 @{
+    ViewBag.HidePaginationButtons = true;
+
     DataContext dataContext = ViewBag.DataContext;
     ViewBag.Title = "SOE Points";
     ViewBag.ShowMenu = false;
