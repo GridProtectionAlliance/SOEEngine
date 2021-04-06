@@ -100,6 +100,8 @@ using SOEDataProcessing.DataOperations;
 using SOEDataProcessing.DataReaders;
 using SOE.Model;
 using System.Threading.Tasks;
+using DataTable = System.Data.DataTable;
+using DataRow = System.Data.DataRow;
 
 namespace SOEService
 {
@@ -1238,12 +1240,25 @@ namespace SOEService
                         TableOperations<FileGroup> to = new TableOperations<FileGroup>(connection);
                         int fileGroupCount = to.QueryRecordCountWhere("FileHash = {0}", crc);
 
-                        if (fileGroupCount != 0)
+                        if (fileGroupCount < 15)
                         {
                             TableOperations<FileBlob> to2 = new TableOperations<FileBlob>(connection);
-                            int fileBlobCount = to2.QueryRecordCountWhere("DataFileID IN (SELECT ID FROM DataFile WHERE FileGroupID IN (SELECT ID FROM FileGroup WHERE FileHash = {0})) AND Blob = {1}", crc, buffer);
+                            DataTable fileBlobs = connection.RetrieveData(90, @"
+                                SELECT * 
+                                FROM
+	                                FileBlob 
+                                WHERE
+                                 DataFileID IN (SELECT ID FROM DataFile WHERE FileGroupID IN (SELECT ID FROM FileGroup WHERE FileHash = {0}))
 
-                            if (fileBlobCount != 0)
+                            ", crc);
+
+                            bool flag = false;
+                            foreach(DataRow row in fileBlobs.Rows)
+                            {
+                                flag |= ((byte[])row["Blob"]).Equals(buffer);
+                            }
+
+                            if (flag)
                             {
                                 // Explicitly use Log.Debug() so that the message does not appear on the remote console,
                                 // but include a FileSkippedException so that the message gets routed to the skipped files log
@@ -1252,6 +1267,14 @@ namespace SOEService
                                 return;
                             }
                         }
+                        else
+                        {
+                            // Explicitly use Log.Debug() so that the message does not appear on the remote console,
+                            // but include a FileSkippedException so that the message gets routed to the skipped files log
+                            Exception ex = new Exception($"Skipped filehash compare for \"{filePath}\" because it has more than 15 hash matches. Hash: ${crc}, Matches: ${fileGroupCount}");
+                            Log.Error(ex.Message, ex);
+                        }
+
                     }
                 }
 

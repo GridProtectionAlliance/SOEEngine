@@ -34,6 +34,7 @@
     DataContext dataContext = ViewBag.DataContext;
     Layout = "Layout.cshtml";
     ViewBag.Title = "Incidents";
+    ViewBag.HidePaginationButtons = true;
     HttpRequestMessage request = ViewBag.Request;
     Dictionary<string, string> parameters = request.QueryParameters();
 
