@@ -17,7 +17,7 @@
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
     "jquery": "^3.4.0",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.19",
     "primereact": "^1.6.2",
     "query-string": "^6.2.0",
     "react": "17.0.2",
