@@ -448,6 +448,9 @@ GO
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.PQSeverityCalculationOperation', 8)
 GO
 
+INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.SOEOperation', 9)
+GO
+
 
 -- ------ --
 -- Events --
@@ -481,6 +484,17 @@ CREATE NONCLUSTERED INDEX IX_EventData_MarkedForDeletion
 ON EventData(MarkedForDeletion ASC)
 GO
 
+CREATE TABLE SOE
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    Name varchar(max) NULL,
+    StartTime DATETIME2 NOT NULL,
+    EndTime DATETIME2 NOT NULL,
+    Status varchar(max) NOT NULL,
+    TimeWindows INT NULL
+)
+GO
+
 CREATE TABLE Incident
 (
     ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
@@ -489,6 +503,15 @@ CREATE TABLE Incident
     EndTime DATETIME2 NOT NULL,
 	LTE FLOAT NULL,
 	PQS FLOAT NULL
+)
+GO
+
+CREATE TABLE SOEIncident
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    SOEID INT NOT NULL REFERENCES SOE(ID),
+    IncidentID INT NOT NULL REFERENCES Incident(ID),
+    [Order] INT NOT NULL DEFAULT 0
 )
 GO
 

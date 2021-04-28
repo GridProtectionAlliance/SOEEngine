@@ -35,6 +35,7 @@ using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
 using Owin;
 using SOE.Model;
+using SOEService.Controllers;
 
 namespace SOEService
 {
@@ -109,14 +110,61 @@ namespace SOEService
             try
             {
                 httpConfig.Routes.MapHttpRoute(
-                    name: "Controllers",
-                    routeTemplate: "api/{controller}/{action}/{modelName}/{id}",
+                    name: "WebPageControllers",
+                    routeTemplate: "api/WebPage/{action}/{modelName}/{id}",
                     defaults: new {
+                        controller = "WebPage",
                         action = "Index",
                         id = RouteParameter.Optional,
                         modelName = RouteParameter.Optional
                     }
                 );
+
+                httpConfig.Routes.MapHttpRoute(
+                    name: "MainControllers",
+                    routeTemplate: "api/Main/{action}/{modelName}/{id}",
+                    defaults: new
+                    {
+                        controller = "Main",
+                        action = "Index",
+                        id = RouteParameter.Optional,
+                        modelName = RouteParameter.Optional
+                    }
+                );
+
+
+                httpConfig.Routes.MapHttpRoute(
+                    name: "ReplayControllers",
+                    routeTemplate: "api/Replay/{date}/{stepSize}/{units}",
+                    defaults: new
+                    {
+                        controller = "Replay",
+                        action = "GetReplay",
+                    }
+                );
+
+                SOEController.SetRoutes(httpConfig.Routes);
+
+                httpConfig.Routes.MapHttpRoute(
+                    name: "MetersForSOEController",
+                    routeTemplate: "api/Meter/SOE/{id}",
+                    defaults: new
+                    {
+                        controller = "MetersForSOE",
+                        action = "GetMetersForSOE",
+                    }
+                );
+
+                httpConfig.Routes.MapHttpRoute(
+                    name: "IncidentGroupController",
+                    routeTemplate: "api/IncidentGroups/SOE/{id}",
+                    defaults: new
+                    {
+                        controller = "IncidentGroup",
+                        action = "GetIncidentGroups",
+                    }
+                );
+
 
                 httpConfig.Routes.MapHttpRoute(
                     name: "Summary",

@@ -122,6 +122,7 @@
     <Compile Include="DataOperations\IncidentOperation.cs" />
     <Compile Include="DataOperations\LTECalculationOperation.cs" />
     <Compile Include="DataOperations\PQSeverityCalculationOperation.cs" />
+    <Compile Include="DataOperations\SOEOperation.cs" />
     <Compile Include="DataOperations\SOEPointOperation.cs" />
     <Compile Include="DataResources\CycleDataResource.cs" />
     <Compile Include="DataResources\DataGroupsResource.cs" />

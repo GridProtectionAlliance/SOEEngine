@@ -21,13 +21,14 @@
 //
 //******************************************************************************************************
 
-import axios from 'axios';
+import axios from '../../../node_modules/axios/index';
+import * as $ from 'jquery';
 import * as moment from 'moment'; 
 
 export default class SOEService{
     getView(filters){
         return axios
-            .post('/api/Main/GetView/model',{
+            .post('/api/Main/GetView',{
                 date: moment(filters.date, 'YYYYMMDDHH').format('YYYY-MM-DDTHH:mm:ssZ'),
                 timeContext: filters.timeContext,
                 numBuckets: filters.numBuckets,
@@ -41,18 +42,11 @@ export default class SOEService{
             });
     };
 
-    getIncidentGroups(filters) {
-        return axios
-            .post('/api/Main/GetIncidentGroups/model', {
-                IncidentID: filters.IncidentID
-            })
-            .then(res => {
-                return res.data;
-            });
-
+    getIncidentGroups(incidentID) {
+        return $.get(`/api/Main/GetIncidentGroups/model/${incidentID}`).done(res => res);
     }
 
-    getIncidentData(filters) {
+    getIncidentData(filters: {meterId: number, type: string, circuitId: number, startDate: string, endDate: string, pixels: number}) {
         return axios
             .post('/api/Main/GetIncidentData/' + filters.meterId + '-' +filters.type, {
                 circuitId: filters.circuitId,
