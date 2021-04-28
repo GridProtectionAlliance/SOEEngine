@@ -68,6 +68,8 @@
     <Compile Include="Events\EventInfo.cs" />
     <Compile Include="Events\Incident.cs" />
     <Compile Include="Events\IncidentEventCycleDataView.cs" />
+    <Compile Include="Events\SOE.cs" />
+    <Compile Include="Events\SOEIncident.cs" />
     <Compile Include="Events\SOEPoint.cs" />
     <Compile Include="ExceptionHandler.cs" />
     <Compile Include="Files\DataFile.cs" />

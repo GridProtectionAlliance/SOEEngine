@@ -10,14 +10,18 @@ module.exports = env => {
         context: path.resolve(__dirname, 'wwwroot'),
         cache: true,
         entry: {
-            Summary: "./wwwroot/Scripts/JSX/Summary.tsx",
-            WaveformViewer: "./wwwroot/Scripts/JSX/WaveformViewer.tsx"
+            Replay: "./Scripts/TSX/Replay/Replay.tsx",
+            Summary: "./Scripts/TSX/Summary.tsx",
+            WaveformViewer: "./Scripts/TSX/WaveformViewer.tsx",
+            AggregateWaveformViewerBySOE: "./Scripts/TSX/AggregateWaveformViewerBySOE/AggregateWaveformViewerBySOE.tsx"
+
+
         },
         output: {
             path: path.resolve(__dirname, 'wwwroot', 'Scripts'),
             publicPath: '../js/',
             filename: "[name].js",
-            clean: true
+            clean: false
         },
         // Enable sourcemaps for debugging webpack's output.
         devtool: "inline-source-map",

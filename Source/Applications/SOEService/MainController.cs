@@ -316,7 +316,7 @@ namespace SOEService
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IHttpActionResult GetView(string modelName, [FromBody]JObject record)
+        public IHttpActionResult GetView([FromBody]JObject record)
         {
             int numBuckets;
             string timeContext;
@@ -439,9 +439,9 @@ namespace SOEService
 
         }
 
-        [HttpPost]
+        [HttpGet]
         [ValidateAntiForgeryToken]
-        public IHttpActionResult GetIncidentGroups(string modelName, [FromBody]JObject record)
+        public IHttpActionResult GetIncidentGroups(string modelName,string id)
         {
             int incidentID;
 
@@ -452,7 +452,7 @@ namespace SOEService
                 return BadRequest($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
             try
             {
-                incidentID = record["IncidentID"]?.Value<int>() ?? 0;
+                incidentID = int.Parse(id);
             }
             catch (Exception ex)
             {
@@ -503,7 +503,7 @@ namespace SOEService
         public IHttpActionResult GetIncidentData(string modelName, [FromBody]JObject record)
         {
             int meterId;
-            int circuitId;
+            //int circuitId;
             DateTime startTime;
             DateTime endTime;
             int pixels;
@@ -518,9 +518,9 @@ namespace SOEService
             try
             {
                 meterId = record["meterId"]?.Value<int>() ?? 0;
-                circuitId = record["circuitId"]?.Value<int>() ?? 0;
-                startTime = record["startDate"].Value<DateTime>();
-                endTime = record["endDate"].Value<DateTime>();
+                //circuitId = record["circuitId"]?.Value<int>() ?? 0;
+                startTime = record["startDate"]?.Value<DateTime>() ?? DateTime.Now;
+                endTime = record["endDate"]?.Value<DateTime>() ?? DateTime.Now;
                 pixels = record["pixels"]?.Value<int>() ?? 0;
                 type = record["type"].Value<string>();
             }
