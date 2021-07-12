@@ -46,13 +46,13 @@ interface ReplayTable {
 
 const Replay = (props: {}) => {
     let query = queryString.parse(window.location.search);
-    const [stepSize, setStepSize] = React.useState<number>(query['stepSize'] != undefined ? query['stepSize'] : 7);
-    const [units, setUnits] = React.useState<moment.unitOfTime.Base>(query['units'] != undefined ? query['units'] : 'days');
-    const [date, setDate] = React.useState<moment.Moment>(query['date'] != undefined ? moment(query['date']) : moment().subtract(7, 'days'));
+    const [stepSize, setStepSize] = React.useState<number>(query['stepSize'] != undefined ? parseInt(query['stepSize'] as string) : 7);
+    const [units, setUnits] = React.useState<moment.unitOfTime.Base>(query['units'] != undefined ? query['units'] as moment.unitOfTime.Base: 'days');
+    const [date, setDate] = React.useState<moment.Moment>(query['date'] != undefined ? moment(query['date'] as string) : moment().subtract(7, 'days'));
     const [data, setData] = React.useState<ReplayTable[]>([]);
-    const [ascending, setAscending] = React.useState<boolean>(query['ascending'] != undefined ? query['ascending'] == 'true' : true);
-    const [sortField, setSortField] = React.useState<keyof ReplayTable>(query['sortField'] != undefined ? query['sortField'] :'StartTime');
-    const [showDeleted, setShowDeleted] = React.useState<boolean>(query['showDeleted'] != undefined ? query['showDeleted'] == 'true' : false);
+    const [ascending, setAscending] = React.useState<boolean>(query['ascending'] != undefined ? (query['ascending'] as string) == 'true' : true);
+    const [sortField, setSortField] = React.useState<keyof ReplayTable>(query['sortField'] != undefined ? query['sortField'] as keyof ReplayTable :'StartTime');
+    const [showDeleted, setShowDeleted] = React.useState<boolean>(query['showDeleted'] != undefined ? (query['showDeleted'] as string) == 'true' : false);
 
     React.useEffect(() => {
         GetData().done(d => {

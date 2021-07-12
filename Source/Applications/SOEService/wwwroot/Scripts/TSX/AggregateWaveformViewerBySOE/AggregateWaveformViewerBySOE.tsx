@@ -32,6 +32,7 @@ import { SOETools } from '@gpa-gemstone/application-typings';
 import { Input, Select } from '@gpa-gemstone/react-forms';
 import Table from '@gpa-gemstone/react-table';
 import { DownArrow, LeftArrow, RightArrow, UpArrow } from '@gpa-gemstone/gpa-symbols';
+
 interface IncidentReturn {
     CicuitID: number,
     EndTime: string,
@@ -43,12 +44,11 @@ interface IncidentReturn {
     StartTime: string
 }
 
-const MomentFormat = 'YYYY-MM-DDTHH:mm:ss.SSSSSSS';
 
 const AggregateWaveformViewerBySOE = (props: {}) => {
 
     let query = queryString.parse(window.location.search);
-    const [soeID, setSOEID] = React.useState<number>(query.soeID != undefined ? query.soeID : 0);
+    const [soeID, setSOEID] = React.useState<number>(query.soeID != undefined ? parseInt(query.soeID as string) : 0);
     const [soe, setSOE] = React.useState<SOETools.Types.SOE>({} as SOETools.Types.SOE);
     const [dateRange, setDateRange] = React.useState<moment.Moment[]>([query.startDate != undefined ? moment(query.startDate, MomentFormat) : undefined, query.endDate != undefined ? moment(query.endDate, MomentFormat) : undefined]);
     const [times, setTimes] = React.useState<JSX.Element[]>([]);

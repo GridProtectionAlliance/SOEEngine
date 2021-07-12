@@ -203,7 +203,7 @@ export default class WaveformViewerGraph extends React.Component<Props, { legend
 
         newVessel.push({ data: [[this.getMillisecondTime(this.props.startDate), null], [this.getMillisecondTime(this.props.endDate), null]]});
         //this.plot = $.plot($(`#${this.props.meterId}-${this.props.type}`), newVessel, this.options);
-        this.plot = $.plot($(this.refs.chart), newVessel, this.options);
+        this.plot = $.plot($(this.refs.chart as HTMLElement), newVessel, this.options);
 
         this.plotSelected();
         //this.plotZoom();

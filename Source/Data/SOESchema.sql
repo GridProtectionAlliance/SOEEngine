@@ -650,6 +650,126 @@ CREATE NONCLUSTERED INDEX IX_SOEPoint_CycleDataID
 ON SOEPoint(CycleDataID ASC)
 GO
 
+CREATE TABLE ColorIndex (
+	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	Color VARCHAR(20) NOT NULL,
+	Red INT NOT NULL,
+	Green INT NOT NULL,
+	Blue INT NOT NULL
+)
+GO
+
+SET IDENTITY_INSERT ColorIndex ON
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (0,'grayNoFirstWF', 150,150,150)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (1,'redCurrent', 255,0,0)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (2,'blueFault', 0,0,255)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (3,'greenTrip', 0,120,0)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (4,'greenOpen', 0,255,0)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (5,'redSource', 200,0,0)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (6,'tanPQ', 255,170,100)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (7,'yellowPQ', 255,200,0)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (8,'blackLOS', 0,0,0)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (9,'orangeTBD', 250,130,0)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (10,'aquaTBD', 5,250,250)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (11,'dkGrayTBD', 96,96,96)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (12,'whiteTBD', 255, 255, 255)
+GO
+SET IDENTITY_INSERT ColorIndex OFF
+GO
+
+CREATE TABLE NLTDataType (
+	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	Name VARCHAR(20) NOT NULL,
+	[Type] VARCHAR(20) NOT NULL
+)
+GO
+SET IDENTITY_INSERT NLTDataType ON
+GO
+INSERT INTO NLTDataType (ID, Name, [Type]) VALUES (1,'SOE_replay', 'replay')
+GO
+INSERT INTO NLTDataType (ID, Name, [Type]) VALUES (2,'SCADA_points', 'replay')
+GO
+INSERT INTO NLTDataType (ID, Name, [Type]) VALUES (20,'faults', 'trend')
+GO
+INSERT INTO NLTDataType (ID, Name, [Type]) VALUES (30,'PQ', 'trend')
+GO
+INSERT INTO NLTDataType (ID, Name, [Type]) VALUES (40,'general', 'history')
+GO
+SET IDENTITY_INSERT NLTDataType OFF
+GO
+
+
+CREATE TABLE SensorType (
+	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	Name VARCHAR(20) NOT NULL,
+	[Description] VARCHAR(MAX) NULL
+)
+GO
+
+SET IDENTITY_INSERT SensorType ON
+GO
+INSERT INTO SensorType (ID, Name, [Description]) VALUES (1,'sensorVoltage', 'equipment voltage')
+GO
+INSERT INTO SensorType (ID, Name, [Description]) VALUES (2,'sensorCurrent', 'equipment current')
+GO
+INSERT INTO SensorType (ID, Name, [Description]) VALUES (3,'eqDigitalState', 'equipment logical')
+GO
+INSERT INTO SensorType (ID, Name, [Description]) VALUES (20,'scadaVoltage', 'SCADA data set')
+GO
+INSERT INTO SensorType (ID, Name, [Description]) VALUES (21,'scadaCurrent', 'SCADA data set')
+GO
+INSERT INTO SensorType (ID, Name, [Description]) VALUES (22,'scadaDigital', 'SCADA locical')
+GO
+INSERT INTO SensorType (ID, Name, [Description]) VALUES (30,'lightning', 'weather')
+GO
+INSERT INTO SensorType (ID, Name, [Description]) VALUES (31,'windSpeed', 'weather')
+GO
+INSERT INTO SensorType (ID, Name, [Description]) VALUES (32,'windGust', 'weather')
+GO
+INSERT INTO SensorType (ID, Name, [Description]) VALUES (33,'temperature', 'weather')
+GO
+INSERT INTO SensorType (ID, Name, [Description]) VALUES (34,'precip', 'rain')
+GO
+SET IDENTITY_INSERT SensorType OFF
+GO
+
+
+CREATE TABLE SOEDataPoint(
+	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	SOE_ID INT NOT NULL,
+	TSx INT NOT NULL,
+	TSxUnits VARCHAR(10) NOT NULL,
+	EventID INT NULL,
+	NLTDataTypeID INT NOT NULL FOREIGN KEY REFERENCES NLTDataType(ID),
+	SensorTypeID INT NOT NULL REFERENCES SensorType(ID),
+	SensorName VARCHAR(MAX) NOT NULL,
+	SensorOrder INT NOT NULL,
+	TimeSlot INT NOT NULL,
+	[Time] INT NOT NULL,
+	Value INT NOT NULL,
+	ElapsMS INT NOT NULL,
+	ElapsSEC INT NOT NULL,
+	CycleNum INT NOT NULL,
+	TimeGap INT NOT NULL,
+	MapDisplay BIT NOT NULL
+)
+GO
+
+CREATE INDEX IX_SOEDataPoint_SOEID_TSx ON SOEDataPoint(SOE_ID, TSx)
+GO
 ----- FUNCTIONS -----
 
 CREATE FUNCTION AdjustDateTime2

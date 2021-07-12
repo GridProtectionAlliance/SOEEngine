@@ -1,5 +1,8 @@
 ﻿"use strict";
 const path = require("path");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = env => {
     if (process.env.NODE_ENV == undefined) process.env.NODE_ENV = 'development';
@@ -7,15 +10,14 @@ module.exports = env => {
 
     return {
         mode: process.env.NODE_ENV,
-        context: path.resolve(__dirname, 'wwwroot'),
+        context: path.resolve(__dirname),
         cache: true,
         entry: {
-            Replay: "./Scripts/TSX/Replay/Replay.tsx",
-            Summary: "./Scripts/TSX/Summary.tsx",
-            WaveformViewer: "./Scripts/TSX/WaveformViewer.tsx",
-            AggregateWaveformViewerBySOE: "./Scripts/TSX/AggregateWaveformViewerBySOE/AggregateWaveformViewerBySOE.tsx"
-
-
+            Replay: "./wwwroot/Scripts/TSX/Replay/Replay.tsx",
+            Summary: "./wwwroot/Scripts/TSX/Summary.tsx",
+            WaveformViewer: "./wwwroot/Scripts/TSX/WaveformViewer.tsx",
+            AggregateWaveformViewerBySOE: "./wwwroot/Scripts/TSX/AggregateWaveformViewerBySOE/AggregateWaveformViewerBySOE.tsx",
+            NonLinearTimeline: "./wwwroot/Scripts/TSX/NonLinearTimeline/NonLinearTimeline.tsx"
         },
         output: {
             path: path.resolve(__dirname, 'wwwroot', 'Scripts'),
@@ -63,15 +65,13 @@ module.exports = env => {
         externals: {
         },
         optimization: {
-            minimize: false
-            //splitChunks: {
-            //    chunks: 'all',
-            //}
-            //minimizer: [new UglifyJsPlugin({
-            //    test: /\.js(\?.*)?$/i,
-            //    sourceMap: true
-            //})],
-        }
-
+            minimizer: [
+                new TerserPlugin({ extractComments: false })
+            ],
+        },
+        plugins: [
+            new NodePolyfillPlugin(),
+            new ForkTsCheckerWebpackPlugin()
+        ]
     }
 }

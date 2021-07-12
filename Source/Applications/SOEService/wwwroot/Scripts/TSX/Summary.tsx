@@ -34,6 +34,7 @@ import createHistory from "history/createBrowserHistory"
 import * as queryString from "query-string";
 import * as _ from "lodash";
 import SOEService from './../Services/SOEService';
+import { isBoolean } from 'lodash';
 
 declare var numberOfBuckets: number;
 declare var getBool: Function;
@@ -51,14 +52,14 @@ class Summary extends React.Component<any, any, any> {
         this.soeservice = new SOEService();
 
         this.state = {
-            limits: (query['limits'] != undefined ? query['limits'] : 'All'),
-            levels: (query['levels'] != undefined ? query['levels'] : 'Circuit'),
-            date: (query['date'] != undefined ? query['date'] : moment().subtract(numberOfBuckets, 'days').startOf('day').format('YYYYMMDDHH')),
-            context: (query['context'] != undefined ? query['context'] : 'Days'),
-            buckets: (query['buckets'] != undefined ? query['buckets'] : numberOfBuckets),
-            filter: (query['filter'] != undefined ? query['filter'] : null),
-            sortField: (query['sortField'] != undefined ? query['sortField'] : null),
-            ascending: (query['ascending'] != undefined ? query['ascending'] : false),
+            limits: (query['limits'] != undefined ? query['limits'] as string: 'All'),
+            levels: (query['levels'] != undefined ? query['levels'] as string : 'Circuit'),
+            date: (query['date'] != undefined ? query['date'] as string : moment().subtract(numberOfBuckets, 'days').startOf('day').format('YYYYMMDDHH')),
+            context: (query['context'] != undefined ? query['context'] as string: 'Days'),
+            buckets: (query['buckets'] != undefined ? parseInt(query['buckets'] as string) : numberOfBuckets),
+            filter: (query['filter'] != undefined ? query['filter'] as string: null),
+            sortField: (query['sortField'] != undefined ? query['sortField'] as string : null),
+            ascending: (query['ascending'] != undefined ? (query['ascending'] as string) == "true": false),
             cols: [],
             data: []
         }
@@ -66,14 +67,14 @@ class Summary extends React.Component<any, any, any> {
         this.history['listen']((location, action) => {
             var query = queryString.parse(this.history['location'].search);
             this.setState({
-                limits: (query['limits'] != undefined ? query['limits'] : 'All'),
-                levels: (query['levels'] != undefined ? query['levels'] : 'Circuit'),
-                date: (query['date'] != undefined ? query['date'] : moment().subtract(30, 'days').startOf('day').format('YYYYMMDDHH')),
-                context: (query['context'] != undefined ? query['context'] : 'Days'),
-                buckets: (query['buckets'] != undefined ? query['buckets'] : numberOfBuckets),
-                filter: (query['filter'] != undefined ? query['filter'] : null),
-                sortField: (query['sortField'] != undefined ? query['sortField'] : null),
-                ascending: (query['ascending'] != undefined ? query['ascending'] : false)
+                limits: (query['limits'] != undefined ? query['limits'] as string: 'All'),
+                levels: (query['levels'] != undefined ? query['levels'] as string: 'Circuit'),
+                date: (query['date'] != undefined ? query['date'] as string: moment().subtract(30, 'days').startOf('day').format('YYYYMMDDHH')),
+                context: (query['context'] != undefined ? query['context'] as string: 'Days'),
+                buckets: (query['buckets'] != undefined ? parseInt(query['buckets'] as string)  : numberOfBuckets),
+                filter: (query['filter'] != undefined ? query['filter'] as string: null),
+                sortField: (query['sortField'] != undefined ? query['sortField'] as string : null),
+                ascending: (query['ascending'] != undefined ? (query['ascending'] as string) == "true" : false)
             }, () => this.getData(this.state));
         });
     }

@@ -45,8 +45,6 @@ interface IncidentReturn {
     StartTime: string
 }
 
-const MomentFormat = 'YYYY-MM-DDTHH:mm:ss.SSSSSSS';
-
 class WaveformViewer extends React.Component<{}, {IncidentID: number, StartDate: string, EndDate: string, Incidents: IncidentReturn[]}>{
     soeservice: SOEService;
     history: object;
@@ -62,9 +60,9 @@ class WaveformViewer extends React.Component<{}, {IncidentID: number, StartDate:
         var query = queryString.parse(this.history['location'].search);
 
         this.state = {
-            IncidentID: (query['IncidentID'] != undefined ? query['IncidentID'] : 0),
-            StartDate: query['StartDate'],
-            EndDate: query['EndDate'],
+            IncidentID: (query['IncidentID'] != undefined ? parseInt(query['IncidentID'] as string) : 0),
+            StartDate: query['StartDate'] as string,
+            EndDate: query['EndDate'] as string,
             Incidents: []
         }
 
@@ -73,9 +71,9 @@ class WaveformViewer extends React.Component<{}, {IncidentID: number, StartDate:
 
             var query = queryString.parse(this.history['location'].search);
             this.setState({
-                IncidentID: (query['IncidentID'] != undefined ? query['IncidentID'] : 0),
-                StartDate: query['StartDate'],
-                EndDate: query['EndDate']
+                IncidentID: (query['IncidentID'] != undefined ? parseInt(query['IncidentID'] as string) : 0),
+                StartDate: query['StartDate'] as string,
+                EndDate: query['EndDate'] as string
             }, () => {
                 this.getData(this.state);
             });
