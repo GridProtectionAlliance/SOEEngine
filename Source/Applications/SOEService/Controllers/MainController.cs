@@ -47,6 +47,7 @@ using ValidateAntiForgeryToken = System.Web.Mvc.ValidateAntiForgeryTokenAttribut
 
 namespace SOEService
 {
+    [RoutePrefix("api/Main")]
     public class MainController: ApiController
     {
         #region [ GET Operations ]
@@ -57,7 +58,7 @@ namespace SOEService
         /// <param name="pageName">Page name to render.</param>
         /// <param name="cancellationToken">Propagates notification from client that operations should be canceled.</param>
         /// <returns>Rendered page result for given page.</returns>
-        [HttpGet]
+        [HttpGet, Route("GetPage")]
         public Task<HttpResponseMessage> GetPage(CancellationToken cancellationToken)
         {
             return WebServer.Default.RenderResponse(Request, "Summary.cshtml", false, cancellationToken, Program.Host.Model, typeof(AppModel));
@@ -67,7 +68,7 @@ namespace SOEService
         /// Return record count
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, Route("GetRecordCount/{modelName}")]
         public IHttpActionResult GetRecordCount(string modelName)
         {
 
@@ -100,7 +101,7 @@ namespace SOEService
         /// Return single Record
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, Route("GetRecord/{modelName}/{id:int}")]
         public IHttpActionResult GetRecord(int id, string modelName)
         {
             // Proxy all other requests
@@ -132,7 +133,7 @@ namespace SOEService
         /// Return single Record
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, Route("GetRecordsWhere/{modelName}/{id:int}")]
         public IHttpActionResult GetRecordsWhere(string id, string modelName)
         {
 
@@ -166,7 +167,7 @@ namespace SOEService
         /// </summary>
         /// <returns></returns>
 
-        [HttpGet]
+        [HttpGet, Route("GetRecords/{modelName}/{id:int}")]
         public IHttpActionResult GetRecords(string id, string modelName)
         {
 
@@ -220,7 +221,7 @@ namespace SOEService
         /// Return single Record
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, Route("GetEventID/{modelName}/{id:int}")]
         public IHttpActionResult GetEventID(int id, string modelName)
         {
             // Proxy all other requests
@@ -247,12 +248,60 @@ namespace SOEService
             return Ok(record);
         }
 
+        [HttpGet, Route("GetEventID/{modelName}/{incidentID:int}")]
+        [ValidateAntiForgeryToken]
+        public IHttpActionResult GetIncidentGroups(string modelName, int incidentID)
+        {
+
+            // Proxy all other requests
+            SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
+
+            if ((object)securityPrincipal == null || (object)securityPrincipal.Identity == null || !securityPrincipal.IsInRole("Viewer,Administrator"))
+                return BadRequest($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
+            using (AdoDataConnection conn = new AdoDataConnection("systemSettings"))
+            {
+                try
+                {
+                    int circuitID = conn.ExecuteScalar<int>("SELECT CircuitID FROM Meter JOIN Event ON Meter.ID = Event.MeterID WHERE Event.IncidentID = {0}", incidentID);
+
+                    IEnumerable<Meter> devicesForCircuit = (new TableOperations<Meter>(conn)).QueryRecordsWhere("CircuitID = {0}", circuitID);
+                    Dictionary<int, Meter> deviceForCircuitDict = devicesForCircuit.ToDictionary(x => x.ID);
+                    Meter nullMeter = new Meter() { AssetKey = "null" };
+                    Dictionary<string, IEnumerable<Meter>> childGrouping = devicesForCircuit.GroupBy(x =>
+                    {
+                        if (deviceForCircuitDict.ContainsKey(x.ParentNormalID ?? 0))
+                            return deviceForCircuitDict[x.ParentNormalID ?? 0];
+                        else
+                            return nullMeter;
+                    }).ToDictionary(x => x.Key.AssetKey, x => x.AsEnumerable());
+                    List<Meter> devices = new List<Meter>();
+                    IEnumerable<Meter> childDevices = childGrouping[nullMeter.AssetKey];
+                    selfFunction(devices, childDevices, childGrouping);
+
+                    DateTime startTime = conn.ExecuteScalar<DateTime>("SELECT StartTime FROM Incident WHERE ID = {0}", incidentID);
+                    DateTime endTime = conn.ExecuteScalar<DateTime>("SELECT EndTime FROM Incident WHERE ID = {0}", incidentID);
+                    int timeTolerance = conn.ExecuteScalar<int?>("SELECT Value FROM Setting WHERE Name = 'TimeTolerance'") ?? 22;
+                    string s = $"select * from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', {timeTolerance})";
+                    //string s2 = $"select distinct Timestamp from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', {timeTolerance}) as tbl join CycleDataSOEPointView ON CycleDataSOEPointView.IncidentID = tbl.ID Order By Timestamp";
+
+                    DataTable table = conn.RetrieveData(s);
+                    //DataTable table2 = conn.RetrieveData(s2);
+                    return Ok(new List<dynamic>() { table, devices });
+
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.ToString());
+                }
+
+            }
+        }
 
         #endregion
 
         #region [ PUT Operations ]
 
-        [HttpPut]
+        [HttpPut, Route("UpdateRecord/{modelName}")]
         [ValidateAntiForgeryToken]
         public IHttpActionResult UpdateRecord(string modelName, [FromBody]JObject record)
         {
@@ -284,7 +333,7 @@ namespace SOEService
 
         #region [ POST Operations ]
 
-        [HttpPost]
+        [HttpPost, Route("CreateRecord/{modelName}")]
         [ValidateAntiForgeryToken]
         public IHttpActionResult CreateRecord(string modelName, [FromBody]JObject record)
         {
@@ -314,7 +363,7 @@ namespace SOEService
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPost, Route("GetView")]
         [ValidateAntiForgeryToken]
         public IHttpActionResult GetView([FromBody]JObject record)
         {
@@ -439,66 +488,8 @@ namespace SOEService
 
         }
 
-        [HttpGet]
-        [ValidateAntiForgeryToken]
-        public IHttpActionResult GetIncidentGroups(string modelName,string id)
-        {
-            int incidentID;
 
-            // Proxy all other requests
-            SecurityPrincipal securityPrincipal = RequestContext.Principal as SecurityPrincipal;
-
-            if ((object)securityPrincipal == null || (object)securityPrincipal.Identity == null || !securityPrincipal.IsInRole("Viewer,Administrator"))
-                return BadRequest($"User \"{RequestContext.Principal?.Identity.Name}\" is unauthorized.");
-            try
-            {
-                incidentID = int.Parse(id);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"{ex.ToString()}");
-            }
-
-            using (AdoDataConnection conn = new AdoDataConnection("systemSettings"))
-            {
-                try
-                {
-                    int circuitID = conn.ExecuteScalar<int>("SELECT CircuitID FROM Meter JOIN Event ON Meter.ID = Event.MeterID WHERE Event.IncidentID = {0}", incidentID);
-
-                    IEnumerable<Meter> devicesForCircuit = (new TableOperations<Meter>(conn)).QueryRecordsWhere("CircuitID = {0}", circuitID);
-                    Dictionary<int, Meter> deviceForCircuitDict = devicesForCircuit.ToDictionary(x => x.ID);
-                    Meter nullMeter = new Meter() { AssetKey= "null"};
-                    Dictionary<string, IEnumerable<Meter>> childGrouping = devicesForCircuit.GroupBy(x =>
-                    {
-                        if (deviceForCircuitDict.ContainsKey(x.ParentNormalID ?? 0))
-                            return deviceForCircuitDict[x.ParentNormalID ?? 0];
-                        else
-                            return nullMeter;
-                    }).ToDictionary(x => x.Key.AssetKey, x => x.AsEnumerable());
-                    List<Meter> devices = new List<Meter>();
-                    IEnumerable<Meter> childDevices = childGrouping[nullMeter.AssetKey];
-                    selfFunction(devices, childDevices, childGrouping);
-
-                    DateTime startTime = conn.ExecuteScalar<DateTime>("SELECT StartTime FROM Incident WHERE ID = {0}", incidentID);
-                    DateTime endTime = conn.ExecuteScalar<DateTime>("SELECT EndTime FROM Incident WHERE ID = {0}", incidentID);
-                    int timeTolerance = conn.ExecuteScalar<int?>("SELECT Value FROM Setting WHERE Name = 'TimeTolerance'") ?? 22;
-                    string s = $"select * from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', {timeTolerance})";
-                    //string s2 = $"select distinct Timestamp from GetNearbyIncidentsByCircuit({circuitID},'{startTime.ToString()}', '{endTime.ToString()}', {timeTolerance}) as tbl join CycleDataSOEPointView ON CycleDataSOEPointView.IncidentID = tbl.ID Order By Timestamp";
-
-                    DataTable table = conn.RetrieveData(s);
-                    //DataTable table2 = conn.RetrieveData(s2);
-                    return Ok(new List<dynamic>() { table, devices });
-
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.ToString());
-                }
-
-            }
-        }
-
-        [HttpPost]
+        [HttpPost, Route("GetIncidentData/{modelName}")]
         [ValidateAntiForgeryToken]
         public IHttpActionResult GetIncidentData(string modelName, [FromBody]JObject record)
         {
@@ -566,7 +557,7 @@ namespace SOEService
             }
         }
 
-        [HttpPost]
+        [HttpPost, Route("GetDeviceOrder/{modelName}")]
         [ValidateAntiForgeryToken]
         public IHttpActionResult GetDeviceOrder(string modelName, [FromBody]JObject record)
         {
@@ -636,7 +627,7 @@ namespace SOEService
             }
         }
 
-        [HttpPost]
+        [HttpPost, Route("GetButtonColor/{modelName}")]
         [ValidateAntiForgeryToken]
         public IHttpActionResult GetButtonColor(string modelName, [FromBody]JObject record)
         {
@@ -679,7 +670,7 @@ namespace SOEService
 
         #region [ DELETE Operations ]
 
-        [HttpDelete]
+        [HttpDelete, Route("DeleteRecord/{modelName}/{id:int}")]
         [ValidateAntiForgeryToken]
         public IHttpActionResult DeleteRecord(int id, string modelName)
         {
