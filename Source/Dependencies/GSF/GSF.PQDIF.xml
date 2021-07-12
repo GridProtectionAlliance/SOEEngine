@@ -450,6 +450,13 @@
             Tag that identifies a single series definition within the collection.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Logical.ChannelDefinition.CreateChannelDefinition(GSF.PQDIF.Logical.DataSourceRecord)">
+            <summary>
+            Creates a new channel definition belonging to the given data source record.
+            </summary>
+            <param name="dataSourceRecord">The data source record that the new channel definition belongs to.</param>
+            <returns>The new channel definition.</returns>
+        </member>
         <member name="T:GSF.PQDIF.Logical.ChannelInstance">
             <summary>
             Represents a channel instance in a PQDIF file. A channel instance
@@ -2088,6 +2095,200 @@
             <param name="seriesValueTypeID">The GUID tag which identifies the series value type.</param>
             <returns>The name of the given series value type.</returns>
         </member>
+        <member name="T:GSF.PQDIF.Logical.DisturbanceCategory">
+            <summary>
+            Disturbance Categories (as defined in IEEE 1159).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.None">
+            <summary>
+            The ID for no distrubance or undefined.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.Transient">
+            <summary>
+            The ID for a IEEE 1159 Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.ImpulsiveTransient">
+            <summary>
+            The ID for a IEEE 1159 Impulsive Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.ImpulsiveTransient_nano">
+            <summary>
+            The ID for a IEEE 1159 Impulsive Transient with nanosecond duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.ImpulsiveTransient_micro">
+            <summary>
+            The ID for a IEEE 1159 Impulsive Transient with microsecond duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.ImpulsiveTransient_mili">
+            <summary>
+            The ID for a IEEE 1159 Impulsive Transient with milisecond duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.OscillatoryTransient">
+            <summary>
+            The ID for a IEEE 1159 Oscillatory Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.OscillatoryTransient_low">
+            <summary>
+            The ID for a IEEE 1159 Low Frequency Oscillatory Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.OscillatoryTransient_medium">
+            <summary>
+            The ID for a IEEE 1159 Medium Frequency Oscillatory Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.OscillatoryTransient_high">
+            <summary>
+            The ID for a IEEE 1159 High Frequency Oscillatory Transient.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation
+            </summary>n
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_Instantaneous">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Instantaneous duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_InstantaneousSag">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Instantaneous Sag.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_InstantaneousSwell">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Instantaneous Swell.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_Momentary">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Momentary Duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_MomentaryInterruption">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Momentary Interruption.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_MomentarySag">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Momentary Sag.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_MomentarySwell">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Momentary Swell.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_Temporary">
+            <summary>
+            The ID for a IEEE 1159Short Duration RMS Variation - Temporary Duration.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_TemporaryInterruption">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Temporary Interruption.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_TemporarySag">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Temporary Sag.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationShortDuration_TemporarySwell">
+            <summary>
+            The ID for a IEEE 1159 Short Duration RMS Variation - Temporary Swell.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationLongDuration">
+            <summary>
+            The ID for a IEEE 1159  Long Duration RMS Variation.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationLongDuration_Interrruption">
+            <summary>
+            The ID for a IEEE 1159 Long Duration RMS Variation - Interruption.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationLongDuration_UnderVoltage">
+            <summary>
+            The ID for a IEEE 1159 Long Duration RMS Variation - Undervoltage.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.RMSVariationLongDuration_OverVoltage">
+            <summary>
+            The ID for a IEEE 1159 Long Duration RMS Variation - Overvoltage.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.Imbalance">
+            <summary>
+            The ID for a IEEE 1159 Imbalance.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.PowerFrequencyVariation">
+            <summary>
+            The ID for a IEEE 1159 Power Frequency Variation.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.VoltageFuctuation">
+            <summary>
+            The ID for a IEEE 1159 Voltage Fluctuation.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.WaveformDistortion">
+            <summary>
+            The ID for a IEEE 1159 Waveform Distortion.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.DCoffset">
+            <summary>
+            The ID for a IEEE 1159 DC offset of voltage or current waveform.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.WaveformHarmonics">
+            <summary>
+            The ID for a IEEE 1159 Waveform Harmonics Present.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.WaveformInterHarmonics">
+            <summary>
+            The ID for a IEEE 1159 Waveform Interharmonics Present.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.WaveformNotching">
+            <summary>
+            The ID for a IEEE 1159 Waveform Notching Present.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DisturbanceCategory.WaveformNoise">
+            <summary>
+            The ID for a IEEE 1159 Waveform Noise Present.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.DisturbanceCategory.GetInfo(System.Guid)">
+            <summary>
+            Gets information about the Disturbance identified by the given ID.
+            </summary>
+            <param name="disturbanceCategoryID">Globally unique identifier for the Disturbance Category.</param>
+            <returns>The information about the vendor.</returns>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.DisturbanceCategory.ToString(System.Guid)">
+            <summary>
+            Converts the given Disturbance ID to a string containing the name of the Disturbance.
+            </summary>
+            <param name="disturbanceCategoryID">The ID of the Disturbance to be converted to a string.</param>
+            <returns>A string containing the name of the Disturbance Category with the given ID.</returns>
+        </member>
         <member name="T:GSF.PQDIF.Logical.Vendor">
             <summary>
             Vendors for power quality hardware.
@@ -2315,6 +2516,16 @@
             Gets the date and time of file creation.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Logical.ContainerRecord.Title">
+            <summary>
+            Gets the title applied to the file.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.ContainerRecord.Subject">
+            <summary>
+            Gets the subject applied to the file.
+            </summary>
+        </member>
         <member name="P:GSF.PQDIF.Logical.ContainerRecord.Notes">
             <summary>
             Gets the notes stored in the file.
@@ -2351,6 +2562,16 @@
             Tag that identifies the date and time of creation.
             </summary>
         </member>
+        <member name="F:GSF.PQDIF.Logical.ContainerRecord.TitleTag">
+            <summary>
+            Tag that identifies the title applied to the PQDIF file.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.ContainerRecord.SubjectTag">
+            <summary>
+            Tag that identifies the subject applied to the PQDIF file.
+            </summary>
+        </member>
         <member name="F:GSF.PQDIF.Logical.ContainerRecord.NotesTag">
             <summary>
             Tag that identifies the notes stored in the PQDIF file.
@@ -2366,6 +2587,12 @@
             Tag that identifies the compression algorithm used when writing the PQDIF file.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Logical.ContainerRecord.CreateContainerRecord">
+            <summary>
+            Creates a new container record from scratch.
+            </summary>
+            <returns>The new container record.</returns>
+        </member>
         <member name="M:GSF.PQDIF.Logical.ContainerRecord.CreateContainerRecord(GSF.PQDIF.Physical.Record)">
             <summary>
             Creates a new container record from the given physical record
@@ -2374,6 +2601,50 @@
             </summary>
             <param name="physicalRecord">The physical record used to create the container record.</param>
             <returns>The new container record, or null if the physical record does not define a container record.</returns>
+        </member>
+        <member name="T:GSF.PQDIF.Logical.DataSourceType">
+            <summary>
+            Types of data sources.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceType.Measure">
+            <summary>
+            The ID for data source type Measure.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceType.Manual">
+            <summary>
+            The ID for data source type Manual.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceType.Simulate">
+            <summary>
+            The ID for data source type Simulate.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceType.Benchmark">
+            <summary>
+            The ID for data source type Benchmark.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceType.Debug">
+            <summary>
+            The ID for data source type Debug.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.DataSourceType.GetInfo(System.Guid)">
+            <summary>
+            Gets information about the data source type identified by the given ID.
+            </summary>
+            <param name="dataSourceTypeID">Globally unique identifier for the data source type.</param>
+            <returns>The information about the data source type.</returns>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.DataSourceType.ToString(System.Guid)">
+            <summary>
+            Converts the given data source type ID to a string containing the name of the data source type.
+            </summary>
+            <param name="dataSourceTypeID">The ID of the data source type to be converted to a string.</param>
+            <returns>A string containing the name of the data source type with the given ID.</returns>
         </member>
         <member name="T:GSF.PQDIF.Logical.DataSourceRecord">
             <summary>
@@ -2393,34 +2664,54 @@
             Gets the physical structure of the data source record.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Logical.DataSourceRecord.DataSourceTypeID">
+            <summary>
+            Gets or sets the ID of the type of the data source.
+            </summary>
+        </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.VendorID">
             <summary>
-            Gets the ID of the vendor of the data source.
+            Gets or sets the ID of the vendor of the data source.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.EquipmentID">
             <summary>
-            Gets the ID of the equipment.
+            Gets or sets the ID of the equipment.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.DataSourceName">
             <summary>
-            Gets the name of the data source.
+            Gets or sets the name of the data source.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.DataSourceRecord.DataSourceOwner">
+            <summary>
+            Gets or sets the name of the data source Owner.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.DataSourceRecord.DataSourceLocation">
+            <summary>
+            Gets or sets the name of the data source Location.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.Longitude">
             <summary>
-            Gets the longitude at which the data source is located.
+            Gets or sets the longitude at which the data source is located.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.Latitude">
             <summary>
-            Gets the latitude at which the device is located.
+            Gets or sets the latitude at which the device is located.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.DataSourceRecord.ChannelDefinitions">
             <summary>
             Gets the definitions for the channels defined in the data source.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.DataSourceRecord.Effective">
+            <summary>
+            Gets or sets the time that this data source record became effective.
             </summary>
         </member>
         <member name="M:GSF.PQDIF.Logical.DataSourceRecord.AddNewChannelDefinition">
@@ -2441,7 +2732,7 @@
             </summary>
             <param name="tag">The tag of the element to be removed.</param>
         </member>
-        <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceTypeTag">
+        <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceTypeIDTag">
             <summary>
             Tag that identifies the data source type.
             </summary>
@@ -2459,6 +2750,16 @@
         <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceNameTag">
             <summary>
             Tag that identifies the data source name.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceOwnerTag">
+            <summary>
+            Tag that identifies the data source owner.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceLocationTag">
+            <summary>
+            Tag that identifies the data source owner.
             </summary>
         </member>
         <member name="F:GSF.PQDIF.Logical.DataSourceRecord.DataSourceCoordinatesTag">
@@ -2481,6 +2782,13 @@
             Tag that identifies the time that the data source record becomes effective.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Logical.DataSourceRecord.CreateDataSourceRecord(System.String)">
+            <summary>
+            Creates a new data source record from scratch.
+            </summary>
+            <param name="dataSourceName">The name of the data source to be created.</param>
+            <returns>The new data source record.</returns>
+        </member>
         <member name="M:GSF.PQDIF.Logical.DataSourceRecord.CreateDataSourceRecord(GSF.PQDIF.Physical.Record)">
             <summary>
             Creates a new data source record from the given physical record
@@ -2501,16 +2809,48 @@
             </summary>
             <param name="fileName">Name of the PQDIF file to be parsed.</param>
         </member>
+        <member name="M:GSF.PQDIF.Logical.LogicalParser.#ctor(System.IO.Stream,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Logical.LogicalParser"/> class.
+            </summary>
+            <param name="stream">The stream containing the PQDIF file data.</param>
+            <param name="leaveOpen">True if the stream should be closed when the parser is closed; false otherwise.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is null.</exception>
+            <exception cref="T:System.InvalidOperationException"><paramref name="stream"/> is not both readable and seekable.</exception>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.LogicalParser.FileName">
+            <summary>
+            Gets or sets the file name of the PQDIF file to be parsed.
+            </summary>
+        </member>
         <member name="P:GSF.PQDIF.Logical.LogicalParser.ContainerRecord">
             <summary>
             Gets the container record from the PQDIF file. This is
             parsed as soon as the parser is <see cref="M:GSF.PQDIF.Logical.LogicalParser.Open"/>ed.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Logical.LogicalParser.DataSourceRecords">
+            <summary>
+            Gets a list of all DataSource records from the PQDIF file. This is
+            parsed when passing throug the observation records <see cref="M:GSF.PQDIF.Logical.LogicalParser.NextObservationRecord"/>ed.
+            </summary>
+        </member>
         <member name="M:GSF.PQDIF.Logical.LogicalParser.Open">
             <summary>
             Opens the parser and parses the <see cref="P:GSF.PQDIF.Logical.LogicalParser.ContainerRecord"/>.
             </summary>
+            <exception cref="T:System.InvalidOperationException"><see cref="P:GSF.PQDIF.Logical.LogicalParser.FileName"/> has not been defined.</exception>
+            <exception cref="T:System.NotSupportedException">An unsupported compression mode was defined in the PQDIF file.</exception>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.LogicalParser.Open(System.IO.Stream,System.Boolean)">
+            <summary>
+            Opens the parser and parses the <see cref="P:GSF.PQDIF.Logical.LogicalParser.ContainerRecord"/>.
+            </summary>
+            <param name="stream">The stream containing the PQDIF file data.</param>
+            <param name="leaveOpen">True if the stream should be closed when the parser is closed; false otherwise.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is null.</exception>
+            <exception cref="T:System.InvalidOperationException"><paramref name="stream"/> is not both readable and seekable.</exception>
+            <exception cref="T:System.NotSupportedException">An unsupported compression mode was defined in the PQDIF file.</exception>
         </member>
         <member name="M:GSF.PQDIF.Logical.LogicalParser.HasNextObservationRecord">
             <summary>
@@ -2591,7 +2931,7 @@
             Gets or sets nominal frequency.
             </summary>
         </member>
-        <member name="M:GSF.PQDIF.Logical.MonitorSettingsRecord.AddNewChannelSetting">
+        <member name="M:GSF.PQDIF.Logical.MonitorSettingsRecord.AddNewChannelSetting(GSF.PQDIF.Logical.ChannelDefinition)">
             <summary>
             Adds a new channel setting to the collection
             of channel settings in this monitor settings record.
@@ -2644,6 +2984,12 @@
             property when the value is not defined in the PQDIF file.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Logical.MonitorSettingsRecord.CreateMonitorSettingsRecord">
+            <summary>
+            Creates a new monitor settings record from scratch.
+            </summary>
+            <returns>The new monitor settings record.</returns>
+        </member>
         <member name="M:GSF.PQDIF.Logical.MonitorSettingsRecord.CreateMonitorSettingsRecord(GSF.PQDIF.Physical.Record)">
             <summary>
             Creates a new monitor settings record from the given physical record
@@ -2652,6 +2998,37 @@
             </summary>
             <param name="physicalRecord">The physical record used to create the monitor settings record.</param>
             <returns>The new monitor settings record, or null if the physical record does not define a monitor settings record.</returns>
+        </member>
+        <member name="T:GSF.PQDIF.Logical.TriggerMethod">
+            <summary>
+            Type of trigger which caused the observation.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.TriggerMethod.None">
+            <summary>
+            No trigger.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.TriggerMethod.Channel">
+            <summary>
+            A specific channel (or channels) caused the trigger; should be
+            used with tagChannelTriggerIdx to specify which channels.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.TriggerMethod.Periodic">
+            <summary>
+            Periodic data trigger.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.TriggerMethod.External">
+            <summary>
+            External system trigger.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.TriggerMethod.PeriodicStats">
+            <summary>
+            Periodic statistical data.
+            </summary>
         </member>
         <member name="T:GSF.PQDIF.Logical.ObservationRecord">
             <summary>
@@ -2688,9 +3065,34 @@
             Gets the name of the observation record.
             </summary>
         </member>
+        <member name="P:GSF.PQDIF.Logical.ObservationRecord.CreateTime">
+            <summary>
+            Gets the creation time of the observation record.
+            </summary>
+        </member>
         <member name="P:GSF.PQDIF.Logical.ObservationRecord.StartTime">
             <summary>
             Gets the starting time of the data in the observation record.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.ObservationRecord.TriggerMethod">
+            <summary>
+            Gets or sets the type of trigger which caused the observation.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.ObservationRecord.TimeTriggered">
+            <summary>
+            Gets the time the observation was triggered.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.ObservationRecord.DisturbanceCategoryID">
+            <summary>
+            Gets or sets the Disturbance Category ID
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.ObservationRecord.ChannelTriggerIndex">
+            <summary>
+            Gets or sets the index into <see cref="F:GSF.PQDIF.Logical.ObservationRecord.ChannelInstancesTag"/> collection within this record which initiated the observation.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.ObservationRecord.ChannelInstances">
@@ -2698,7 +3100,7 @@
             Gets the channel instances in this observation record.
             </summary>
         </member>
-        <member name="M:GSF.PQDIF.Logical.ObservationRecord.AddNewChannelInstance">
+        <member name="M:GSF.PQDIF.Logical.ObservationRecord.AddNewChannelInstance(GSF.PQDIF.Logical.ChannelDefinition)">
             <summary>
             Adds a new channel instance to the collection
             of channel instances in this observation record.
@@ -2730,6 +3132,16 @@
             Tag that identifies the type of trigger that caused the observation.
             </summary>
         </member>
+        <member name="F:GSF.PQDIF.Logical.ObservationRecord.TimeTriggeredTag">
+            <summary>
+            Tag that identifies the time the observation was triggered.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.ObservationRecord.ChannelTriggerIndexTag">
+            <summary>
+            Tag that identifies the index into <see cref="F:GSF.PQDIF.Logical.ObservationRecord.ChannelInstancesTag"/> collection within this record. This specifies which channel(s) initiated the observation.
+            </summary>
+        </member>
         <member name="F:GSF.PQDIF.Logical.ObservationRecord.ChannelInstancesTag">
             <summary>
             Tag that identifies the channel instances collection.
@@ -2739,6 +3151,19 @@
             <summary>
             Tag that identifies a single channel instance in the collection.
             </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.ObservationRecord.DisturbanceCategoryTag">
+            <summary>
+            Tag that identifies the Disturbance Category.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.ObservationRecord.CreateObservationRecord(GSF.PQDIF.Logical.DataSourceRecord,GSF.PQDIF.Logical.MonitorSettingsRecord)">
+            <summary>
+            Creates a new observation record from scratch with the given data source and settings.
+            </summary>
+            <param name="dataSource">The data source record that defines the channels in this observation record.</param>
+            <param name="settings">The monitor settings to be applied to this observation record.</param>
+            <returns>The new observation record.</returns>
         </member>
         <member name="M:GSF.PQDIF.Logical.ObservationRecord.CreateObservationRecord(GSF.PQDIF.Physical.Record,GSF.PQDIF.Logical.DataSourceRecord,GSF.PQDIF.Logical.MonitorSettingsRecord)">
             <summary>
@@ -3592,6 +4017,15 @@
             </summary>
             <param name="fileName">Name of the PQDIF file to be parsed.</param>
         </member>
+        <member name="M:GSF.PQDIF.Physical.PhysicalParser.#ctor(System.IO.Stream,System.Boolean)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.PhysicalParser"/> class.
+            </summary>
+            <param name="stream">The stream containing the PQDIF file data.</param>
+            <param name="leaveOpen">True to leave the stream open when closing the parser; otherwise false.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is null.</exception>
+            <exception cref="T:System.InvalidOperationException"><paramref name="stream"/> is not both readable and seekable.</exception>
+        </member>
         <member name="P:GSF.PQDIF.Physical.PhysicalParser.FileName">
             <summary>
             Gets or sets the file name of the PQDIF file to be parsed.
@@ -3606,11 +4040,13 @@
             <summary>
             Gets or sets the compression style used by the PQDIF file.
             </summary>
+            <exception cref="T:System.NotSupportedException"><see cref="F:GSF.PQDIF.Physical.CompressionStyle.TotalFile"/> compression has been deprecated by the standard and is not supported by this parser.</exception>
         </member>
         <member name="P:GSF.PQDIF.Physical.PhysicalParser.CompressionAlgorithm">
             <summary>
             Gets or sets the compression algorithm used by the PQDIF file.
             </summary>
+            <exception cref="T:System.NotSupportedException"><see cref="F:GSF.PQDIF.Physical.CompressionAlgorithm.PKZIP"/> compression has been deprecated by the standard and is not supported by this parser.</exception>
         </member>
         <member name="P:GSF.PQDIF.Physical.PhysicalParser.MaximumExceptionsAllowed">
             <summary>
@@ -3628,6 +4064,16 @@
             <summary>
             Opens the PQDIF file.
             </summary>
+            <exception cref="T:System.InvalidOperationException"><see cref="P:GSF.PQDIF.Physical.PhysicalParser.FileName"/> has not been defined.</exception>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.PhysicalParser.Open(System.IO.Stream,System.Boolean)">
+            <summary>
+            Opens a PQDIF file from a stream of data.
+            </summary>
+            <param name="stream">The stream from which to read the PQDIF file.</param>
+            <param name="leaveOpen">True to leave the stream open when closing the parser; false otherwise.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is null.</exception>
+            <exception cref="T:System.InvalidOperationException"><paramref name="stream"/> is not both readable and seekable.</exception>
         </member>
         <member name="M:GSF.PQDIF.Physical.PhysicalParser.HasNextRecord">
             <summary>
@@ -3838,6 +4284,17 @@
             the next record.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Physical.RecordHeader.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.RecordHeader"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.RecordHeader.#ctor(System.Guid)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.RecordHeader"/> class.
+            </summary>
+            <param name="recordTypeTag">The tag which identifies the type of the record.</param>
+        </member>
         <member name="P:GSF.PQDIF.Physical.RecordHeader.Position">
             <summary>
             Gets or sets the position of this record.
@@ -3937,9 +4394,20 @@
             exposes the physical structure of the record.
             </summary>
         </member>
+        <member name="M:GSF.PQDIF.Physical.Record.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.Record"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.Record.#ctor(System.Guid)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.Record"/> class.
+            </summary>
+            <param name="recordTypeTag">The tag which identifies the type of the record.</param>
+        </member>
         <member name="M:GSF.PQDIF.Physical.Record.#ctor(GSF.PQDIF.Physical.RecordHeader,GSF.PQDIF.Physical.RecordBody)">
             <summary>
-            Creates an instance of <see cref="T:GSF.PQDIF.Physical.Record"/>.
+            Creates an instance of the <see cref="T:GSF.PQDIF.Physical.Record"/> class.
             </summary>
             <param name="header">The record header.</param>
             <param name="body">The record body.</param>
@@ -3959,6 +4427,11 @@
             Returns a string representation of the record.
             </summary>
             <returns>A string representation of the record.</returns>
+        </member>
+        <member name="P:GSF.PQDIF.Physical.Record.Signature">
+            <summary>
+            The standard signature used for all PQDIF records.
+            </summary>
         </member>
         <member name="M:GSF.PQDIF.Physical.Record.GetRecordType(System.Guid)">
             <summary>
@@ -3981,6 +4454,17 @@
             <see cref="T:GSF.PQDIF.Physical.Element"/>s, starting with a
             <see cref="T:GSF.PQDIF.Physical.CollectionElement"/> that contains other elements.
             </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.RecordBody.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.RecordBody"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Physical.RecordBody.#ctor(System.Guid)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PQDIF.Physical.RecordBody"/> class.
+            </summary>
+            <param name="rootTag">Tag of the collection root element of the record.</param>
         </member>
         <member name="P:GSF.PQDIF.Physical.RecordBody.Collection">
             <summary>

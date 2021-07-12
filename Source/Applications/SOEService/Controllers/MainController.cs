@@ -61,7 +61,7 @@ namespace SOEService
         [HttpGet, Route("GetPage")]
         public Task<HttpResponseMessage> GetPage(CancellationToken cancellationToken)
         {
-            return WebServer.Default.RenderResponse(Request, "Summary.cshtml", false, cancellationToken, Program.Host.Model, typeof(AppModel));
+            return WebServer.Default.RenderResponse(Request, "Summary.cshtml", cancellationToken, Program.Host.Model, typeof(AppModel));
         }
 
         /// <summary>

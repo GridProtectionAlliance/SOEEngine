@@ -22,10 +22,13 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.Security;
 using System.Web.Http;
+using System.Web.Http.Controllers;
 using System.Web.Http.Cors;
 using System.Web.Http.ExceptionHandling;
+using System.Web.Http.Routing;
 using GSF.Web;
 using GSF.Web.Hosting;
 using GSF.Web.Security;
@@ -75,8 +78,8 @@ namespace SOEService
             HubConfiguration hubConfig = new HubConfiguration();
             HttpConfiguration httpConfig = new HttpConfiguration();
 
-            // Setup resolver for web page controller instances
-            httpConfig.DependencyResolver = WebPageController.GetDependencyResolver(WebServer.Default, Program.Host.DefaultWebPage, new AppModel(), typeof(AppModel));
+            //// Setup resolver for web page controller instances
+            //httpConfig.DependencyResolver = WebPageController.GetDependencyResolver(WebServer.Default, Program.Host.DefaultWebPage, new AppModel(), typeof(AppModel));
 
             // Make sure any hosted exceptions get propagated to service error handling
             httpConfig.Services.Replace(typeof(IExceptionHandler), new HostedExceptionHandler());
@@ -106,89 +109,12 @@ namespace SOEService
             // Load ServiceHub SignalR class
             app.MapSignalR(hubConfig);
 
-            // Map custom API controllers
-            try
-            {
-                httpConfig.Routes.MapHttpRoute(
-                    name: "WebPageControllers",
-                    routeTemplate: "api/WebPage/{action}/{modelName}/{id}",
-                    defaults: new {
-                        controller = "WebPage",
-                        action = "Index",
-                        id = RouteParameter.Optional,
-                        modelName = RouteParameter.Optional
-                    }
-                );
-
-                httpConfig.Routes.MapHttpRoute(
-                    name: "MainControllers",
-                    routeTemplate: "api/Main/{action}/{modelName}/{id}",
-                    defaults: new
-                    {
-                        controller = "Main",
-                        action = "Index",
-                        id = RouteParameter.Optional,
-                        modelName = RouteParameter.Optional
-                    }
-                );
-
-
-                httpConfig.Routes.MapHttpRoute(
-                    name: "ReplayControllers",
-                    routeTemplate: "api/Replay/{date}/{stepSize}/{units}",
-                    defaults: new
-                    {
-                        controller = "Replay",
-                        action = "GetReplay",
-                    }
-                );
-
-                SOEController.SetRoutes(httpConfig.Routes);
-
-                httpConfig.Routes.MapHttpRoute(
-                    name: "MetersForSOEController",
-                    routeTemplate: "api/Meter/SOE/{id}",
-                    defaults: new
-                    {
-                        controller = "MetersForSOE",
-                        action = "GetMetersForSOE",
-                    }
-                );
-
-                httpConfig.Routes.MapHttpRoute(
-                    name: "IncidentGroupController",
-                    routeTemplate: "api/IncidentGroups/SOE/{id}",
-                    defaults: new
-                    {
-                        controller = "IncidentGroup",
-                        action = "GetIncidentGroups",
-                    }
-                );
-
-
-                httpConfig.Routes.MapHttpRoute(
-                    name: "Summary",
-                    routeTemplate: "Summary/{*stuff}",
-                    defaults: new
-                    {
-                        action = "GetPage",
-                        controller = "Main"
-                    }
-                );
-
-
-            }
-            catch (Exception ex)
-            {
-                Program.Host.LogException(new InvalidOperationException($"Failed to initialize custom API controllers: {ex.Message}", ex));
-            }
-
-
-            // Set configuration to use reflection to setup routes
-            httpConfig.MapHttpAttributeRoutes();
+            httpConfig.MapHttpAttributeRoutes(new CustomDirectRouteProvider());
 
             // Load the WebPageController class and assign its routes
             app.UseWebApi(httpConfig);
+
+            app.UseWebPageController(WebServer.Default, Program.Host.DefaultWebPage, Program.Host.Model, typeof(AppModel), AuthenticationOptions);
 
             // Check for configuration issues before first request
             httpConfig.EnsureInitialized();
@@ -201,4 +127,14 @@ namespace SOEService
         /// </summary>
         public static AuthenticationOptions AuthenticationOptions { get; } = new AuthenticationOptions();
     }
+
+    public class CustomDirectRouteProvider : DefaultDirectRouteProvider
+    {
+        protected override IReadOnlyList<IDirectRouteFactory>
+        GetActionRouteFactories(HttpActionDescriptor actionDescriptor)
+        {
+            return actionDescriptor.GetCustomAttributes<IDirectRouteFactory>(inherit: true);
+        }
+    }
+
 }

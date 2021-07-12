@@ -132,6 +132,11 @@
             Default error message displayed when databases users fail regular expression test.
             </summary>
         </member>
+        <member name="F:GSF.Security.AdoSecurityProvider.DefaultUseDatabaseLogging">
+            <summary>
+            Default value for <see cref="P:GSF.Security.AdoSecurityProvider.UseDatabaseLogging"/>.
+            </summary>
+        </member>
         <member name="F:GSF.Security.AdoSecurityProvider.ProviderID">
             <summary>
             Defines the provider ID for the <see cref="T:GSF.Security.AdoSecurityProvider"/>.
@@ -156,6 +161,16 @@
             <summary>
             Gets last exception reported by the <see cref="T:GSF.Security.AdoSecurityProvider"/>.
             </summary>
+        </member>
+        <member name="P:GSF.Security.AdoSecurityProvider.UseDatabaseLogging">
+            <summary>
+            Gets or sets flag that determines if <see cref="M:GSF.Security.AdoSecurityProvider.LogAuthenticationAttempt(System.Boolean)"/> and <see cref="M:GSF.Security.AdoSecurityProvider.LogError(System.String,System.String)"/> should
+            write to the database. Defaults to <c>true</c>.
+            </summary>
+            <remarks>
+            Setting this flag to <c>false</c> may be necessary in cases where a database has been setup to use authentication
+            but does not include an "AccessLog" or "ErrorLog" table.
+            </remarks>
         </member>
         <member name="M:GSF.Security.AdoSecurityProvider.LoadSettings">
             <summary>
@@ -189,7 +204,6 @@
             Logs user authentication attempt.
             </summary>
             <param name="loginSuccess">true if user authentication was successful, otherwise false.</param>
-            <returns>true if logging was successful, otherwise false.</returns>
         </member>
         <member name="M:GSF.Security.AdoSecurityProvider.LogError(System.String,System.String)">
             <summary>
@@ -443,9 +457,54 @@
             Name field.
             </summary>
         </member>
+        <member name="P:GSF.Security.Model.Node.CompanyID">
+            <summary>
+            Company ID field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.Longitude">
+            <summary>
+            Longitude field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.Latitude">
+            <summary>
+            Latitude field.
+            </summary>
+        </member>
         <member name="P:GSF.Security.Model.Node.Description">
             <summary>
             Description field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.ImagePath">
+            <summary>
+            Image path field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.Settings">
+            <summary>
+            Settings field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.MenuType">
+            <summary>
+            Menu type field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.MenuData">
+            <summary>
+            Description field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.Master">
+            <summary>
+            Master field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.Node.LoadOrder">
+            <summary>
+            Load order field.
             </summary>
         </member>
         <member name="P:GSF.Security.Model.Node.Enabled">
@@ -515,6 +574,11 @@
         <member name="P:GSF.Security.Model.SecurityGroup.UpdatedBy">
             <summary>
             Updated by field.
+            </summary>
+        </member>
+        <member name="P:GSF.Security.Model.SecurityGroup.AccountName">
+            <summary>
+            Group account name, converted from security ID as needed.
             </summary>
         </member>
         <member name="T:GSF.Security.Model.UserAccount">
@@ -603,7 +667,7 @@
         </member>
         <member name="P:GSF.Security.Model.UserAccount.AccountName">
             <summary>
-            Determined when loading into memory.
+            User account name, converted from security ID as needed.
             </summary>
         </member>
         <member name="T:GSF.Security.UserRoleCache">
@@ -1405,11 +1469,18 @@
             Number of minutes up to which <see cref="T:GSF.Security.ISecurityProvider"/>s are to be cached.
             </summary>
         </member>
-        <member name="M:GSF.Security.SecurityProviderCache.CreateProvider(System.String)">
+        <member name="F:GSF.Security.SecurityProviderCache.CacheMonitorTimerInterval">
+            <summary>
+            Number of milliseconds between calls to monitor the cache.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.SecurityProviderCache.CreateProvider(System.String,System.Security.Principal.IPrincipal,System.Boolean)">
             <summary>
             Creates a new provider from data cached by the <see cref="T:GSF.Security.SecurityProviderCache"/>.
             </summary>
             <param name="username">The username of the user for which to create a new provider.</param>
+            <param name="passthroughPrincipal"><see cref="T:System.Security.Principal.IPrincipal"/> obtained through alternative authentication mechanisms to provide authentication for the <see cref="T:GSF.Security.ISecurityProvider"/>.</param>
+            <param name="autoRefresh">Indicates whether the provider should be automatically refreshed on a timer.</param>
             <returns>A new provider initialized from cached data.</returns>
         </member>
         <member name="M:GSF.Security.SecurityProviderCache.Flush(System.String)">
@@ -1445,6 +1516,14 @@
             Creates a new <see cref="T:GSF.Security.ISecurityProvider"/> based on the settings in the config file.
             </summary>
             <param name="username">Username of the user for whom the <see cref="T:GSF.Security.ISecurityProvider"/> is to be created.</param>
+            <returns>An object that implements <see cref="T:GSF.Security.ISecurityProvider"/>.</returns>
+        </member>
+        <member name="M:GSF.Security.SecurityProviderUtility.CreateProvider(System.String,System.Security.Principal.IPrincipal)">
+            <summary>
+            Creates a new <see cref="T:GSF.Security.ISecurityProvider"/> based on the settings in the config file.
+            </summary>
+            <param name="username">Username of the user for whom the <see cref="T:GSF.Security.ISecurityProvider"/> is to be created.</param>
+            <param name="passthroughPrincipal"><see cref="T:System.Security.Principal.IPrincipal"/> obtained through alternative authentication mechanisms to provide authentication for the <see cref="T:GSF.Security.ISecurityProvider"/>.</param>
             <returns>An object that implements <see cref="T:GSF.Security.ISecurityProvider"/>.</returns>
         </member>
         <member name="M:GSF.Security.SecurityProviderUtility.CreateProvider(GSF.Security.UserData)">

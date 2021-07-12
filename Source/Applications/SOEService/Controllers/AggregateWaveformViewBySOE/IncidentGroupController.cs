@@ -31,8 +31,10 @@ using System.Data;
 using System.Web.Http;
 namespace SOEService.Controllers
 {
+    [RoutePrefix("api/IncidentGroups/SOE")]
     public class IncidentGroupController: ApiController
     {
+        [HttpGet, Route("{id}")]
         public IHttpActionResult GetIncidentGroups(int id)
         {
             try

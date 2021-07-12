@@ -518,24 +518,6 @@ namespace SOEService.Configuration
         }
 
         /// <summary>
-        /// Gets or sets the maximum amount of fragmentation allowed before
-        /// compacting the list of processed files in the file watcher.
-        /// </summary>
-        [Setting]
-        [DefaultValue(FileProcessor.DefaultMaxFragmentation)]
-        public int FileWatcherMaxFragmentation
-        {
-            get
-            {
-                return m_fileWatcherMaxFragmentation;
-            }
-            set
-            {
-                m_fileWatcherMaxFragmentation = value;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the number of threads used
         /// internally to the file processor.
         /// </summary>

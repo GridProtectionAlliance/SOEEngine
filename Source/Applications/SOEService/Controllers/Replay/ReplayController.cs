@@ -32,10 +32,10 @@ using System.Web.Http;
 
 namespace SOEService.Controllers
 {
-    //[RoutePrefix("api/Replay")]
+    [RoutePrefix("api/Replay")]
     public class ReplayController: ApiController
     {
-        //[HttpGet, Route("{date}/{stepSize:int}/{units}")]
+        [HttpGet, Route("{date}/{stepSize:int}/{units}")]
         public IHttpActionResult GetReplay(string date, int stepSize, string units)
         {
             DateTime start = DateTime.ParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture);

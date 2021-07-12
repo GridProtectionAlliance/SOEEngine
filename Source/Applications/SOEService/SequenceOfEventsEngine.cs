@@ -342,14 +342,10 @@ namespace SOEService
                 statusBuilder.AppendLine($"                 Filter: {m_fileProcessor.Filter}");
                 statusBuilder.AppendLine($"   Internal buffer size: {m_fileProcessor.InternalBufferSize}");
                 statusBuilder.AppendLine($"   Max thread pool size: {m_fileProcessor.MaxThreadCount}");
-                statusBuilder.AppendLine($"      Max fragmentation: {m_fileProcessor.MaxFragmentation}");
                 statusBuilder.AppendLine($"   Enumeration strategy: {m_fileProcessor.EnumerationStrategy}");
-                statusBuilder.AppendLine($"    Enumeration threads: {m_fileProcessor.EnumerationThreads}");
                 statusBuilder.AppendLine($"        Processed files: {m_fileProcessor.ProcessedFileCount}");
                 statusBuilder.AppendLine($"          Skipped files: {m_fileProcessor.SkippedFileCount}");
                 statusBuilder.AppendLine($"         Requeued files: {m_fileProcessor.RequeuedFileCount}");
-                statusBuilder.AppendLine($"      Last Compact Time: {m_fileProcessor.LastCompactTime}");
-                statusBuilder.AppendLine($"  Last Compact Duration: {m_fileProcessor.LastCompactDuration}");
                 statusBuilder.AppendLine();
 
                 statusBuilder.AppendLine("  Watch directories:");
@@ -418,12 +414,10 @@ namespace SOEService
             // Setup new file processor to monitor the watch directories
             if ((object)m_fileProcessor == null)
             {
-                m_fileProcessor = new FileProcessor(m_systemSettings.FileProcessorID);
+                m_fileProcessor = new FileProcessor();
                 m_fileProcessor.InternalBufferSize = m_systemSettings.FileWatcherBufferSize;
                 m_fileProcessor.EnumerationStrategy = m_systemSettings.FileWatcherEnumerationStrategy;
                 m_fileProcessor.MaxThreadCount = m_systemSettings.FileWatcherInternalThreadCount;
-                m_fileProcessor.MaxFragmentation = m_systemSettings.FileWatcherMaxFragmentation;
-                m_fileProcessor.FilterMethod = PrevalidateFile;
                 m_fileProcessor.Processing += FileProcessor_Processing;
                 m_fileProcessor.Error += FileProcessor_Error;
 
@@ -528,7 +522,6 @@ namespace SOEService
                 m_fileProcessor.InternalBufferSize = m_systemSettings.FileWatcherBufferSize;
                 m_fileProcessor.EnumerationStrategy = m_systemSettings.FileWatcherEnumerationStrategy;
                 m_fileProcessor.MaxThreadCount = m_systemSettings.FileWatcherInternalThreadCount;
-                m_fileProcessor.MaxFragmentation = m_systemSettings.FileWatcherMaxFragmentation;
 
                 UpdateFileProcessorFilter(m_systemSettings);
 
@@ -641,7 +634,6 @@ namespace SOEService
                 propertyListBuilder.AppendLine("  Filter");
                 propertyListBuilder.AppendLine("  InternalBufferSize");
                 propertyListBuilder.AppendLine("  MaxThreadCount");
-                propertyListBuilder.AppendLine("  MaxFragmentation");
                 propertyListBuilder.AppendLine("  EnumerationStrategy");
 
                 return propertyListBuilder.ToString().TrimEnd();
@@ -679,16 +671,6 @@ namespace SOEService
                     oldValue = m_fileProcessor.MaxThreadCount.ToString();
                     m_fileProcessor.MaxThreadCount = maxThreadCount;
                 }
-                else if (args[1].Equals("MaxFragmentation", StringComparison.OrdinalIgnoreCase))
-                {
-                    int maxFragmentation;
-
-                    if (!int.TryParse(args[2], out maxFragmentation))
-                        throw new FormatException($"Malformed expression - Value for property 'MaxFragmentation' must be an integer. Type 'TweakFileProcessor -?' to get help with this command.");
-
-                    oldValue = m_fileProcessor.MaxFragmentation.ToString();
-                    m_fileProcessor.MaxFragmentation = maxFragmentation;
-                }
                 else if (args[1].Equals("EnumerationStrategy", StringComparison.OrdinalIgnoreCase))
                 {
                     FileEnumerationStrategy enumerationStrategy;
@@ -715,9 +697,6 @@ namespace SOEService
         /// </summary>
         public void EnumerateWatchDirectories()
         {
-            if (m_fileProcessor.EnumerationThreads > 0)
-                throw new InvalidOperationException("Enumeration of watch directories already in progress.");
-
             m_fileProcessor.EnumerateWatchDirectories();
         }
 
@@ -1184,33 +1163,30 @@ namespace SOEService
                     ? FileWatcherPriority
                     : FileEnumerationPriority;
 
-                // Determine whether the file has already been
-                // processed or needs to be processed again
-                if (fileProcessorEventArgs.AlreadyProcessed)
+                if (!PrevalidateFile(filePath)) return;
+
+                using (AdoDataConnection connection = CreateDbConnection(m_systemSettings))
                 {
-                    using (AdoDataConnection connection = CreateDbConnection(m_systemSettings))
+                    TableOperations<DataFile> dataFileTable = new TableOperations<DataFile>(connection);
+                    TableOperations<FileGroup> fileGroupTable = new TableOperations<FileGroup>(connection);
+
+                    DataFile dataFile = dataFileTable
+                        .QueryRecordsWhere("FilePathHash = {0} AND FilePath = {1}", filePath.GetHashCode(), filePath)
+                        .MaxBy(file => file.ID);
+
+                    if ((object)dataFile != null)
                     {
-                        TableOperations<DataFile> dataFileTable = new TableOperations<DataFile>(connection);
-                        TableOperations<FileGroup> fileGroupTable = new TableOperations<FileGroup>(connection);
+                        FileGroup fileGroup = fileGroupTable.QueryRecordWhere("ID = {0}", dataFile.FileGroupID);
 
-                        DataFile dataFile = dataFileTable
-                            .QueryRecordsWhere("FilePathHash = {0} AND FilePath = {1}", filePath.GetHashCode(), filePath)
-                            .MaxBy(file => file.ID);
-
-                        if ((object)dataFile != null)
+                        // This will tell us whether the service was stopped in the middle
+                        // of processing the last time it attempted to process the file
+                        if (fileGroup.ProcessingEndTime > DateTime.MinValue)
                         {
-                            FileGroup fileGroup = fileGroupTable.QueryRecordWhere("ID = {0}", dataFile.FileGroupID);
-
-                            // This will tell us whether the service was stopped in the middle
-                            // of processing the last time it attempted to process the file
-                            if (fileGroup.ProcessingEndTime > DateTime.MinValue)
-                            {
-                                // Explicitly use Log.Debug() so that the message does not appear on the remote console,
-                                // but include a FileSkippedException so that the message gets routed to the skipped files log
-                                FileSkippedException ex = new FileSkippedException($"Skipped file \"{filePath}\" because it has already been processed.");
-                                Log.Debug(ex.Message, ex);
-                                return;
-                            }
+                            // Explicitly use Log.Debug() so that the message does not appear on the remote console,
+                            // but include a FileSkippedException so that the message gets routed to the skipped files log
+                            FileSkippedException ex = new FileSkippedException($"Skipped file \"{filePath}\" because it has already been processed.");
+                            Log.Debug(ex.Message, ex);
+                            return;
                         }
                     }
                 }

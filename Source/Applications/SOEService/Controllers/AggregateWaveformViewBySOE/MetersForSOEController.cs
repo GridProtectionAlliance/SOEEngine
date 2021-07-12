@@ -33,8 +33,10 @@ using System.Web.Http;
 using SOE.Model;
 namespace SOEService.Controllers
 {
+    [RoutePrefix("api/Meter/SOE")]
     public class MetersForSOEController : ApiController
     {
+        [HttpGet, Route("{id}")]
         public IHttpActionResult GetMetersForSOE(int id)
         {
             try

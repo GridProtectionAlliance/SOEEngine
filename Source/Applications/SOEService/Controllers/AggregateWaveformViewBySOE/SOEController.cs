@@ -34,106 +34,11 @@ using System.Web.Http;
 using DbSOE = SOE.Model.SOE;
 namespace SOEService.Controllers
 {
+    [RoutePrefix("api/SOE")]
     public class SOEController: ApiController
     {
 
-        public static void SetRoutes(HttpRouteCollection routes) {
-            routes.MapHttpRoute(
-                name: "SOEControllerUpdateSOE",
-                routeTemplate: "api/SOE",
-                defaults: new
-                {
-                    controller = "SOE",
-                    action = "UpdateSOE",
-                }
-            );
-
-            routes.MapHttpRoute(
-                name: "SOEControllerPostNewSOE",
-                routeTemplate: "api/SOE/New",
-                defaults: new
-                {
-                    controller = "SOE",
-                    action = "PostNewSOE",
-                }
-            );
-
-            routes.MapHttpRoute(
-                name: "SOEControllerGetSOE",
-                routeTemplate: "api/SOE/{id}",
-                defaults: new
-                {
-                    controller = "SOE",
-                    action = "GetSOE",
-                }
-            );
-
-
-
-            routes.MapHttpRoute(
-                name: "SOEControllerUpdateSOEIncidents",
-                routeTemplate: "api/SOE/Incidents/{id}",
-                defaults: new
-                {
-                    controller = "SOE",
-                    action = "PostSOEIncidents",
-                }
-            );
-
-
-            routes.MapHttpRoute(
-                name: "SOEControllerGetSOECounts",
-                routeTemplate: "api/SOE/Counts/{id}",
-                defaults: new
-                {
-                    controller = "SOE",
-                    action = "GetSOECounts",
-                }
-            );
-            routes.MapHttpRoute(
-                name: "SOEControllerGetOtherSOECounts",
-                routeTemplate: "api/SOE/Other/Counts/{id}/{startTime}/{endtime}",
-                defaults: new
-                {
-                    controller = "SOE",
-                    action = "GetOtherSOECounts",
-                }
-            );
-
-            routes.MapHttpRoute(
-                name: "SOEControllerGetSOEDevices",
-                routeTemplate: "api/SOE/Devices/{id}",
-                defaults: new
-                {
-                    controller = "SOE",
-                    action = "GetSOEDevices",
-                }
-            );
-
-            routes.MapHttpRoute(
-                name: "SOEControllerGetOtherDevices",
-                routeTemplate: "api/SOE/Other/Devices/{id}/{startTime}/{endtime}",
-                defaults: new
-                {
-                    controller = "SOE",
-                    action = "GetOtherDevices",
-                }
-            );
-
-            routes.MapHttpRoute(             
-                name: "SOEControllerChangeStatus",
-                routeTemplate: "api/SOE/ChangeStatus/{id}/{status}",
-                defaults: new
-                {
-                    controller = "SOE",
-                    action = "ChangeStatus",
-                }
-            );
-
-
-        }
-
-        [HttpGet]
+        [HttpGet, Route("{id:int}/{status}")]
         public IHttpActionResult ChangeStatus(int id, string status)
         {
             try
@@ -150,7 +55,7 @@ namespace SOEService.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost, Route("")]
         public IHttpActionResult UpdateSOE([FromBody] DbSOE soe)
         {
             try
@@ -167,7 +72,7 @@ namespace SOEService.Controllers
             }
         }
 
-
+        [HttpGet, Route("{id:int}")]
         public IHttpActionResult GetSOE(int id)
         {
             try
@@ -184,6 +89,7 @@ namespace SOEService.Controllers
             }
         }
 
+        [HttpGet, Route("Counts/{id:int}")]
         public IHttpActionResult GetSOECounts(int id)
         {
             try
@@ -212,6 +118,7 @@ namespace SOEService.Controllers
             }
         }
 
+        [HttpGet, Route("Other/Counts/{id:int}/{startTime}/{endtime}")]
         public IHttpActionResult GetOtherSOECounts(int id, string startTime, string endTime)
         {
             try
@@ -250,6 +157,7 @@ namespace SOEService.Controllers
             }
         }
 
+        [HttpGet, Route("Devices/{id:int}")]
         public IHttpActionResult GetSOEDevices(int id)
         {
             try
@@ -299,6 +207,7 @@ namespace SOEService.Controllers
             }
         }
 
+        [HttpGet, Route("Other/Devices/{id:int}/{startTime}/{endtime}")]
         public IHttpActionResult GetOtherDevices(int id, string startTime, string endTime)
         {
             try
@@ -354,7 +263,7 @@ namespace SOEService.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost, Route("Incidents/{id:int}")]
         public IHttpActionResult PostSOEIncidents(int id, [FromBody] IEnumerable<SOEIncident> incidents)
         {
             try
@@ -380,7 +289,7 @@ namespace SOEService.Controllers
             public IEnumerable<SOEIncident> Incidents { get; set; }
             public DbSOE SOE { get; set; }
         }
-        [HttpPost]
+        [HttpPost, Route("New")]
         public IHttpActionResult PostNewSOE( [FromBody] PostData postData)
         {
             try
