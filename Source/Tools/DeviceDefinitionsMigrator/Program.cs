@@ -272,18 +272,18 @@ namespace DeviceDefinitionsMigrator
                         // Get a lookup table for the channels monitoring this line
                         channelLookup = lookupTables.GetChannelLookup(meter, line, connection);
 
-                        foreach (string channelName in new[] { "VX1", "VX2", "VX3", "VY1", "VY2", "VY3", "I1", "I2", "I3", "VA", "VB", "VC", "IA", "IB", "IC", "IN" })
+                        foreach (XElement channelElement in lineElement.Elements("channels"))
                         {
-                            if (channelLookup.ContainsKey(channelName))
+                            if (channelLookup.ContainsKey(channelElement.Name.LocalName))
                                 continue;
 
                             channel = new Channel();
                             series = new Series();
-                            channelLookup.Add(channelName, channel);
+                            channelLookup.Add(channelElement.Name.LocalName, channel);
 
                             // Load updates to channel configuration into the database
-                            LoadChannelAttributes(meter, line, channel, channelName, lookupTables, connection);
-                            LoadSeriesAttributes(channel, series, lookupTables, connection);
+                            LoadChannelAttributes(meter, line, channel, channelElement.Name.LocalName, lookupTables, connection);
+                            LoadSeriesAttributes(channel, channelElement, series, lookupTables, connection);
                         }
                     }
 
@@ -503,11 +503,11 @@ namespace DeviceDefinitionsMigrator
 
         }
 
-        private static void LoadSeriesAttributes(Channel channel, Series series, LookupTables lookupTables, AdoDataConnection connection)
+        private static void LoadSeriesAttributes(Channel channel, XElement channelElement, Series series, LookupTables lookupTables, AdoDataConnection connection)
         {
             series.SeriesTypeID = GetOrAddSeriesType(lookupTables, connection);
             series.ChannelID = channel.ID;
-            series.SourceIndexes = string.Empty;
+            series.SourceIndexes = channelElement.Value;
 
             (new TableOperations<Series>(connection)).AddNewRecord(series);
 
