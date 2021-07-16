@@ -32,7 +32,7 @@
 @using GSF.Web.Security
 @using GSF.Web.Shared
 
-@inherits TemplateBase<AppModel>
+@inherits ExtendedTemplateBase<AppModel>
 @{
 #if DEBUG
 const string min = "";
@@ -195,6 +195,8 @@ const string min = "";
         const DateFormat = "@Model.Global.DateFormat";
         const TimeFormat = "@Model.Global.TimeFormat";
         const DateTimeFormat = "@Model.Global.DateTimeFormat";
+        const homePath = '@Html.Raw(Url.Content("~/"))';
+
     </script>
 </head>
 <body role="document">

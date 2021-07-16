@@ -1064,6 +1064,7 @@
   <ItemGroup>
     <Content Include="wwwroot\Scripts\TSX\AggregateWaveformViewerBySOE\AggregateWaveformViewerBySOE.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\global.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Map.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\NonLinearTimeline.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\Replay\Replay.tsx" />
   </ItemGroup>

@@ -650,6 +650,28 @@ CREATE NONCLUSTERED INDEX IX_SOEPoint_CycleDataID
 ON SOEPoint(CycleDataID ASC)
 GO
 
+CREATE TABLE SOE(
+	[ID] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	[Name] [varchar](max) NULL,
+	[StartTime] [datetime2](7) NOT NULL,
+	[EndTime] [datetime2](7) NOT NULL,
+	[Status] [varchar](max) NOT NULL,
+	[TimeWindows] [int] NULL,
+)
+
+GO
+
+CREATE TABLE [dbo].[SOEIncident](
+	[ID] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	[SOEID] [int] NOT NULL REFERENCES SOE(ID),
+	[IncidentID] [int] NOT NULL REFERENCES Incident(ID),
+	[Order] [int] NOT NULL DEFAULT(0),
+)
+
+GO
+
+
+
 CREATE TABLE ColorIndex (
 	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	Color VARCHAR(20) NOT NULL,
@@ -1559,6 +1581,26 @@ SELECT
 FROM IncidentEventCycleDataView0
 GO
 
+CREATE VIEW EventList AS
+SELECT 
+	SOE.ID as SOE_UID, Event.ID as EventID
+FROM
+	SOE JOIN
+	SOEIncident ON SOE.ID = SOEIncident.SOEID JOIN
+	Incident ON Incident.ID = SOEIncident.IncidentID JOIN
+	Event ON Event.IncidentID = Incident.ID
+GO
+
+CREATE VIEW DeviceList AS
+SELECT 
+	SOE.ID as SOE_UID, Meter.AssetKey, SOEIncident.[Order] as SortOrder
+FROM
+	SOE JOIN
+	SOEIncident ON SOE.ID = SOEIncident.SOEID JOIN
+	Incident ON Incident.ID = SOEIncident.IncidentID JOIN
+	Meter ON Meter.ID = Incident.MeterID
+GO
+
 ----- PROCEDURES -----
 
 CREATE PROCEDURE GetSystemEvent
@@ -1738,6 +1780,9 @@ CREATE Function [dbo].GetJSONValueForProperty(@data varchar(max), @columnName va
 Returns VarChar(max)
 AS
 Begin
+	IF CHARINDEX(@columnName, @data) = 0 
+		Return 'None'
+
 
 	   Return Substring(@Data, 
 				   CHARINDEX('"'+@columnName+'":"', @data) + LEN('"'+@columnName+'":"'),

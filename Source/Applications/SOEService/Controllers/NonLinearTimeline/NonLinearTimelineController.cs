@@ -36,44 +36,133 @@ namespace SOEService.Controllers
     [RoutePrefix("api/NonLinearTimeline")]
     public class NonLinearTimelineController : ApiController
     {
-        [HttpGet, Route("{date}/{stepSize:int}/{units}")]
-        public IHttpActionResult GetReplay(string date, int stepSize, string units)
+        [HttpGet, Route("Colors")]
+        public IHttpActionResult GetColors()
         {
-            DateTime start = DateTime.ParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-            DateTime end;
-
-            if (units == "days")
-                end = start.AddDays(stepSize);
-            else if (units == "weeks")
-                end = start.AddDays(stepSize * 7);
-            else if (units == "months")
-                end = start.AddMonths(stepSize);
-            else
-                end = start.AddYears(stepSize);
-
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings")) {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
                 DataTable table = connection.RetrieveData($@"
-                    SELECT 
-	                    SOE.ID, SOE.Name, SOE.StartTime,SOE.EndTime, System.Name as System, 
-	                    COUNT(DISTINCT Circuit.ID) as Circuits, COUNT(DISTINCT Meter.ID) as Devices, COUNT(DISTINCT Event.ID) as Waveforms,
-	                    CAST(DATEDIFF(MILLISECOND, SOE.StartTime, SOE.EndTime) as FLOAT)/1000 as Duration,SOE.Status, SOE.TimeWindows
-                    FROM 
-	                    SOE join 
-	                    soeincident on soe.id = soeincident.soeid JOIN
-	                    Incident ON SOEIncident.IncidentID = Incident.ID JOIN
-	                    Event ON Incident.ID = Event.IncidentID JOIN
-	                    Meter on Meter.ID = Incident.MeterID JOIn
-	                    Circuit ON Circuit.ID = Meter.CircuitID JOIN
-	                    System ON System.ID = Circuit.SystemID
-                    WHERE
-                        SOE.StartTime BETWEEN {{0}} AND {{1}} AND 
-                        SOE.EndTime BETWEEN {{0}} AND {{1}}
-                    GROUP BY
-                     SOE.ID, SOE.Name, SOE.StartTime,  SOE.EndTime, System.Name, CAST(DATEDIFF(MILLISECOND, SOE.StartTime, SOE.EndTime) as FLOAT)/1000,SOE.Status, SOE.TimeWindows
-                ", start, end);
+                Select 
+	                ID, 'rgb('+CAST(Red as VARCHAR(3))+','+CAST(Green as VARCHAR(3))+','+CAST(Blue as VARCHAR(3))+')' as Color, Color as Name
+                from 
+	                ColorIndex
+                ");
+                return Ok(table);
+            }
+
+        }
+
+        [HttpGet, Route("Meters/{soeID:int}/{tsx:int}/{timeSlot:int}")]
+        public IHttpActionResult GetMeters(int soeID, int tsx, int timeSlot)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                DataTable table = connection.RetrieveData($@"
+                SELECT
+	                Meter.AssetKey,
+	                MeterLocation.Latitude,
+	                MeterLocation.Longitude,
+	                dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourceAlternate') as SoureAlternate,
+	                dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourcePreferred') as SourcePreferred,
+	                0 as Voltage,
+	                SOEDataPoint.Value,
+	                SOEDataPoint.SensorName,
+	                'rgb('+CAST(Red as VARCHAR(3))+','+CAST(Green as VARCHAR(3))+','+CAST(Blue as VARCHAR(3))+')' as Color
+
+                FROM (
+	                SELECT
+		                DISTINCT SUBSTRING(SensorName,0,CHARINDEX('.', SensorName, 0)) as Name
+	                FROM
+		                SOEDataPoint
+	                WHERE 
+	                    SOE_ID = {{0}} AND TSx = {{1}}
+                ) as Sensor JOIN
+                Meter ON Sensor.Name = Meter.AssetKey JOIN
+                MeterLocation ON MeterLocation.ID = Meter.MeterLocationID LEFT JOIN
+                SOEDataPoint ON SOE_ID = {{0}} AND TSx = {{1}} AND TimeSlot = {{2}} AND SensorName LIKE Meter.AssetKey + '.I%' LEFT JOIN
+                ColorIndex ON ColorIndex.ID = SOEDataPoint.Value
+                ", soeID, tsx, timeSlot);
+                return Ok(table);
+            }
+
+        }
+
+        [HttpGet, Route("Times/{soeID:int}/{tsx:int}")]
+        public IHttpActionResult GetTimes(int soeID, int tsx)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                DataTable table = connection.RetrieveData($@"
+                SELECT 
+	                Distinct TimeSlot, [Time], ElapsMS, ElapsSEC, CycleNum
+                FROM
+	                SOEDataPoint
+                WHERE 
+                    SOE_ID = {{0}} AND TSx = {{1}} 
+                ORDER BY TimeSlot
+                ", soeID, tsx);
+                return Ok(table);
+            }
+
+        }
+
+
+
+        [HttpGet, Route("TSx/{soeID:int}")]
+        public IHttpActionResult GetTSValues(int soeID)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings")) {
+                List<string> table = connection.RetrieveData($@"
+                SELECT 
+	                DISTINCT TSx
+                FROM
+	                SOEDataPoint
+                WHERE 
+	                SOE_ID = {{0}}
+                ", soeID).Select().Select(row => row["TSx"].ToString()).ToList();
                 return Ok(table);
             }
             
         }
+
+        [HttpGet, Route("Sensors/{soeID:int}/{tsx:int}")]
+        public IHttpActionResult GetSensors(int soeID, int tsx)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                List<string> table = connection.RetrieveData($@"
+                SELECT
+	                DISTINCT SensorName, SensorOrder
+                FROM
+	                SOEDataPoint
+                WHERE
+	                SOE_ID = {{0}} AND TSx = {{1}}
+                ORDER BY SensorOrder
+                ", soeID, tsx).Select().Select(row => row["SensorName"].ToString()).ToList();
+                return Ok(table);
+            }
+
+        }
+
+
+        [HttpGet, Route("Data/{soeID:int}/{tsx:int}/{sensorName}")]
+        public IHttpActionResult GetData(int soeID, int tsx, string sensorName)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                DataTable table = connection.RetrieveData($@"
+                    SELECT
+	                    SensorName, EventID, TimeSlot, Value, ElapsMS, ElapsSEC, CycleNum, TimeGap
+                    FROM
+	                    SOEDataPoint
+                    WHERE
+	                    SOE_ID = {{0}} AND TSx = {{1}} And SensorName = {{2}}
+                    ORDER BY TimeSlot
+                ", soeID, tsx, sensorName);
+                return Ok(table);
+            }
+
+        }
+
     }
 }
