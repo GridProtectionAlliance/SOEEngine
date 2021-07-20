@@ -41,7 +41,8 @@ interface IncidentReturn {
     MeterName: string,
     Orientation: string,
     ParentID: number,
-    StartTime: string
+    StartTime: string,
+    IncidentID: number
 }
 
 
@@ -150,9 +151,9 @@ const AggregateWaveformViewerBySOE = (props: {}) => {
                 <div className="list-group" style={{ maxHeight: window.innerHeight - 100, overflowY: 'auto' }}>
                     {rows.map((d, i) => {
                         return <IncidentGroup
-                            key={d.MeterID}
+                            key={d.MeterID + d.LineName}
                             lineName={d.LineName}
-                            incidentId={0}
+                            incidentId={d.IncidentID}
                             orientation={d.Orientation}
                             circuitId={d.CicuitID}
                             meterId={d.MeterID}

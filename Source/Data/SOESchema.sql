@@ -792,6 +792,31 @@ GO
 
 CREATE INDEX IX_SOEDataPoint_SOEID_TSx ON SOEDataPoint(SOE_ID, TSx)
 GO
+
+CREATE TABLE MeasuredValues (
+	ID INT IDENTITY(1,1) NOT NULL Primary Key,
+	EventID INT NOT NULL,
+	TaskID INT NOT NULL,
+	FirstSampleTimeLocal DateTime NOT NULL,
+	ValueDatetimeLocal DateTime NOT NULL,
+	GBBid VARCHAR(max) NOT NULL,
+	Bucket VARCHAR (max) NOT NULL,
+	Bin VARCHAR(max) NOT NULL,
+	GisName VARCHAR(200) NOT NULL,
+	Sensor VARCHAR(10) NOT NULL,
+	MeasurementNumber INT NOT NULL,
+	ValueSamplePoint INT NOT NULL,
+	Value FLOAT NOT NULL,
+	Units VARCHAR(20) NOT NULL,
+	Duration FLOAT NOT NULL,
+	DurationUnits VARCHAR(20) NOT NULL,
+	PlotFilePath VARCHAR(MAX) NOT NULL,
+	PlotFileName VARCHAR(MAX) NOT NULL
+)
+GO
+
+CREATE INDEX IX_MeasuredValues_EventID ON MeasuredValues(EventID)
+GO
 ----- FUNCTIONS -----
 
 CREATE FUNCTION AdjustDateTime2

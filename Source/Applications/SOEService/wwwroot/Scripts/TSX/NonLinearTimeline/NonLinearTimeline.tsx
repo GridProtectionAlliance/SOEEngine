@@ -31,24 +31,24 @@ import { PlayButton, PauseButton, RewindButton, FastForwardButton } from '@gpa-g
 import { SOETools } from '@gpa-gemstone/application-typings';
 import LeafletMap from './Map';
 import * as d3 from 'd3';
-
-interface Color { ID: number, Color: string, Name: string }
-interface MapMeter { AssetKey: string, Latitude: number, Longitude: number, SourceAlternate: string, SourcePrefered: string, Voltage: number, Color: string }
-
+import { SOEDataPoint, Color, MapMeter } from './nlt';
 type TimeField = 'TimeSlot'|'Time' | 'ElapsMS' | 'ElapsSEC' | 'CycleNum' ;
 const NonLinearTimeline = (props: {}) => {
     const axis = React.useRef(null);
     let { soeID } = parse(window.location.search);
-    let [tsx, setTsx] = React.useState<string>('');
-    let [tsxes, setTsxes] = React.useState<string[]>([]);
-    let [sensors, setSensors] = React.useState<string[]>([]);
-    let [colors, setColors] = React.useState<Color[]>([]);
-    let [showVolts, setShowVolts] = React.useState<boolean>(false);
-    let [timeField, setTimeField] = React.useState<TimeField>('Time');
-    let [meters, setMeters] = React.useState<MapMeter[]>([]);
-    let [replayIndex, setReplayIndex] = React.useState<number>(1);
-    let [times, setTimes] = React.useState<SOEDataPoint[]>([]);
-    let [timeOutHandle, setTimeOutHandle] = React.useState<any>(null);
+    const [tsx, setTsx] = React.useState<string>('');
+    const [tsxes, setTsxes] = React.useState<string[]>([]);
+    const [sensors, setSensors] = React.useState<string[]>([]);
+    const [colors, setColors] = React.useState<Color[]>([]);
+    const [showVolts, setShowVolts] = React.useState<boolean>(false);
+    const [timeField, setTimeField] = React.useState<TimeField>('Time');
+    const [meters, setMeters] = React.useState<MapMeter[]>([]);
+    const [replayIndex, setReplayIndex] = React.useState<number>(1);
+    const [times, setTimes] = React.useState<SOEDataPoint[]>([]);
+    const [timeOutHandle, setTimeOutHandle] = React.useState<any>(null);
+    const [selectedPoint, setSelectedPoint] = React.useState<SOEDataPoint>(null);
+    const [timeout, setTimeout] = React.useState<number>(1000);
+
     React.useEffect(() => {
         let handle = $.ajax({
             type: "GET",
@@ -86,6 +86,8 @@ const NonLinearTimeline = (props: {}) => {
     }, [soeID]);
 
     React.useEffect(() => {
+        if (tsx == '') return;
+
         let handle = $.ajax({
             type: "GET",
             url: `${homePath}api/NonLinearTimeline/Times/${soeID}/${tsx}`,
@@ -103,6 +105,8 @@ const NonLinearTimeline = (props: {}) => {
     }, [soeID, tsx]);
 
     React.useEffect(() => {
+        if (tsx == '') return;
+
         let handle = $.ajax({
             type: "GET",
             url: `${homePath}api/NonLinearTimeline/Sensors/${soeID}/${tsx}`,
@@ -147,10 +151,12 @@ const NonLinearTimeline = (props: {}) => {
         let svg = d3.select(axis.current).append("svg");
         svg.attr('width', width).attr('height', height);
 
-        let timesExtent = d3.extent(times, (d, i, a) => d.TimeSlot)
+        let timesExtent = d3.extent(times, (d, i, a) => d.TimeSlot);
+        let boxWidth = (width - 220) / times.length;
+
         let xscale = d3.scaleLinear()
             .domain(timesExtent)
-            .range([0, width-220]);
+            .range([0, width-220 - boxWidth]);
 
 
         let steps = 12;
@@ -159,15 +165,15 @@ const NonLinearTimeline = (props: {}) => {
         let stepValue = (max - min) / (steps - 1);
         let tickValues = d3.range(min, max + stepValue, stepValue);
         tickValues = tickValues.map(t => Math.round(t));
-        let x_axis = d3.axisTop(xscale).tickValues(tickValues).tickFormat(t => times.find(time => time.TimeSlot == t)[timeField]);
+        let x_axis = d3.axisTop(xscale).tickValues(tickValues).tickFormat(t => times.find(time => time.TimeSlot == t)[timeField].toString());
 
         svg.on('click', evt => setReplayIndex(Math.round(xscale.invert(evt.clientX - 150))));
 
         svg.append("g")
-            .attr("transform", "translate(150,45)")
+            .attr("transform", `translate(${150 + boxWidth/2},45)`)
             .call(x_axis);
 
-        svg.append("g").attr("transform", `translate(${150 + xscale(replayIndex)},5) rotate(180)`)
+        svg.append("g").attr("transform", `translate(${150 + boxWidth / 2+ xscale(replayIndex)},5) rotate(180)`)
             .selectAll('path')
             .data([1])
             .enter()
@@ -188,12 +194,21 @@ const NonLinearTimeline = (props: {}) => {
 
     return (
         <div className='container theme-showcase' style={{ overflow: 'hidden', position: 'absolute', left: 0, top: 60, width: window.innerWidth, height: window.innerHeight - 60 }}>
-            <LeafletMap Colors={colors} Meters={meters} Height={500} Width={window.innerWidth} />
+            <LeafletMap SOEID={soeID as string} Colors={colors} Meters={meters} Height={500} Width={window.innerWidth} SelectedPoint={selectedPoint } />
 
             <div style={{ height: window.innerHeight - 500 - 60, width: window.innerWidth, position: 'relative' }}>
                 <div style={{ height: 50, width: window.innerWidth }}>
                     <div style={{ height: 50, width: 100, position: 'absolute', left: 5 }}>
                         <span>{[...new Set(sensors.map(s => s.split('-')[0]))].join('/') }</span>
+                    </div>
+
+                    <div style={{ height: 50, width: 200, position: 'absolute', right: 700 }} >
+                        <div style={{ position: 'absolute', padding: 7 }}>Speed:</div>
+                        <div style={{ height: 50, width: 100, position: 'absolute', right: 5 }}>
+                            <select className='form-control' value={(timeout/1000).toString()} onChange={(evt) => setTimeout(parseFloat(evt.target.value)*1000 )}>
+                                {['0.25', '0.5', '0.75', '1', '2'].map(t => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                        </div>
                     </div>
 
                     <div style={{ height: 50, width: 200, position: 'absolute', right: 500, userSelect: 'none' }} >
@@ -213,7 +228,7 @@ const NonLinearTimeline = (props: {}) => {
                                             return prev;
                                         }
                                     });
-                            }, 1000)
+                            }, timeout)
 
                             setTimeOutHandle(handle);
                         }}>{PlayButton}</span>
@@ -262,7 +277,7 @@ const NonLinearTimeline = (props: {}) => {
                         {filteredSensors.map(s => <div key={s} style={{ width: 150, height: 20 }}>{s}</div>)}
                     </div>
                     <svg id='data' style={{ width: window.innerWidth - 150 - 20, position: 'absolute', left: 150, height: filteredSensors.length * 20 }}>
-                        {filteredSensors.map((s, i) => <NTLRow key={s + soeID + tsx + showVolts.toString()} SOEID={soeID as string} TSx={tsx} Sensor={s} Colors={colors} Height={20} Width={window.innerWidth - 200 - 20} NumSensors={filteredSensors.length} Row={i} />)}
+                        {filteredSensors.map((s, i) => <NTLRow key={s + soeID + tsx + showVolts.toString()} SOEID={soeID as string} TSx={tsx} Sensor={s} Colors={colors} Height={20} Width={window.innerWidth - 200 - 20} NumSensors={filteredSensors.length} Row={i} ReplayIndex={replayIndex} SelectedPoint={selectedPoint} SelectPoint={setSelectedPoint }/>)}
 
                     </svg>
                 </div>
@@ -271,9 +286,8 @@ const NonLinearTimeline = (props: {}) => {
     );
 }
 
-interface SOEDataPoint { SensorName: string,EventID: number, TimeSlot: number, Value: number, ElapsMS: number, ElapsSEC: number, CycleNum: number, TimeGap: number }
 
-const NTLRow = (props: { SOEID: string, TSx: string, Sensor: string, Colors: Color[], Height: number, Width: number, NumSensors: number, Row: number }) => {
+const NTLRow = (props: { SOEID: string, TSx: string, Sensor: string, Colors: Color[], Height: number, Width: number, NumSensors: number, Row: number, ReplayIndex: number, SelectedPoint: SOEDataPoint, SelectPoint: (sp: SOEDataPoint) => void  }) => {
     const [data, setData] = React.useState<SOEDataPoint[]>([]);
     React.useEffect(() => {
         let handle = $.ajax({
@@ -294,13 +308,23 @@ const NTLRow = (props: { SOEID: string, TSx: string, Sensor: string, Colors: Col
 
     return (
         <g transform={`translate(0,${props.Row*props.Height})`}>
-            {data.map((d, i) => <Box key={props.SOEID + props.TSx + props.Sensor + d.TimeSlot} Width={props.Width / data.length} Height={props.Height} Color={props.Colors.find(c => c.ID == d.Value)?.Color ?? 'white'} Point={d} X={i * props.Width / data.length} />)}
+            {data.map((d, i) => <g transform={`translate(${i * props.Width / data.length},0)`}  key={props.SOEID + props.TSx + props.Sensor + d.TimeSlot}><Box Width={props.Width / data.length} Height={props.Height} Color={props.Colors.find(c => c.ID == d.Value)?.Color ?? 'white'} Point={d} SelectedPoint={props.SelectedPoint} SelectPoint={(sp) => props.SelectPoint(sp) }/></g>)}
         </g>
     );
 }
 
-const Box = (props: { Width: number, Height: number, Color: string, Point: SOEDataPoint, X: number }) => {
-    return <rect x={props.X} width={props.Width} height={props.Height} fill={props.Color} onClick={(evt) => console.log(props.Point) }/>;
+const Box = (props: { Width: number, Height: number, Color: string, Point: SOEDataPoint,  SelectedPoint: SOEDataPoint, SelectPoint: (sp: SOEDataPoint) => void }) => {
+    return (
+            <g>
+            <rect width={props.Width} height={props.Height} fill={props.Color} stroke={props.SelectedPoint == props.Point ? 'white' : null} strokeWidth={props.SelectedPoint == props.Point ? 5 : null} style={{cursor:'pointer'}} onClick={(evt) => props.SelectPoint(props.Point)} />
+            {(props.Point.EventID == null || props.Point.EventID == 0) ?
+                <g>
+                    <line stroke='white' strokeWidth={2} x1={0} x2={props.Width} y1={0} y2={props.Height} />
+                    <line stroke='white' strokeWidth={2} x1={0} x2={props.Width} y1={props.Height} y2={0} />
+                </g>: null
+            }
+            </g>
+    );
 }
 
 render(<NonLinearTimeline />, document.getElementById('bodyContainer'));

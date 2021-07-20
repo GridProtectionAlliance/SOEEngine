@@ -248,7 +248,7 @@ namespace SOEService
             return Ok(record);
         }
 
-        [HttpGet, Route("GetEventID/{modelName}/{incidentID:int}")]
+        [HttpGet, Route("GetIncidentGroups/{modelName}/{incidentID:int}")]
         [ValidateAntiForgeryToken]
         public IHttpActionResult GetIncidentGroups(string modelName, int incidentID)
         {

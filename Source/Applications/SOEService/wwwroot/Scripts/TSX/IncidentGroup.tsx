@@ -71,7 +71,7 @@ export default class IncidentGroup extends React.Component<{ lineName: string, i
         );
     }
 
-    goToOpenSEE(incidentId) {
+    goToOpenSEE(incidentId: number) {
         this.soeservice.getEventID(incidentId).then(res => {
             window.open('/OpenSEE.cshtml?EventID=' + res.toString());
         })

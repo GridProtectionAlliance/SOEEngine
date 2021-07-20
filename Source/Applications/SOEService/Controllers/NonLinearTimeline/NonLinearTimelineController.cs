@@ -23,10 +23,12 @@
 
 
 using GSF.Data;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -62,7 +64,7 @@ namespace SOEService.Controllers
 	                Meter.AssetKey,
 	                MeterLocation.Latitude,
 	                MeterLocation.Longitude,
-	                dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourceAlternate') as SoureAlternate,
+	                dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourceAlternate') as SourceAlternate,
 	                dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourcePreferred') as SourcePreferred,
 	                0 as Voltage,
 	                SOEDataPoint.Value,
@@ -106,6 +108,46 @@ namespace SOEService.Controllers
 
         }
 
+        [HttpGet, Route("MeasuredValues/{eventID:int}")]
+        public IHttpActionResult GetMeasuredValues(int eventID)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                DataTable table = connection.RetrieveData($@"
+                SELECT 
+	                pvt.Name, pvt.[1] as M1, pvt.[2] as M2, pvt.[3] as M3, pvt.Units, pvt.SortOrder
+                FROM 
+	                (SELECT 'V1' AS Name, 1 as SortOrder UNION SELECT 'V2' AS Name, 2 as SortOrder UNION SELECT 'V3' AS Name, 3 as SortOrder UNION 
+	                 SELECT 'I1' AS Name, 4 as SortOrder UNION SELECT 'I2' AS Name, 5 as SortOrder UNION SELECT 'I3' AS Name, 6 as SortOrder UNION 
+	                 SELECT 'V4' AS Name, 7 as SortOrder UNION SELECT 'V5' AS Name, 8 as SortOrder UNION SELECT 'V6' AS Name, 9 as SortOrder UNION 
+	                 SELECT 'I4' AS Name, 10 as SortOrder UNION SELECT 'I5' AS Name, 11 as SortOrder UNION SELECT 'I6' AS Name, 12 as SortOrder ) as Sensors Left JOIN
+                (
+                SELECT Sensor,
+	                   MeasurementNumber,
+	                   Value,
+	                   Units
+                  FROM MeasuredValues
+                  WHERE EventID = {{0}}
+                ) t ON Sensors.Name = t.Sensor
+                PIVOT(
+	                MAX(Value) FOR MeasurementNumber in ([1],[2],[3])
+                ) as pvt
+
+                UNION
+                SELECT 
+	                'Sample Number' as Name, 
+	                (SELECT TOP 1 ValueSamplePoint FROM MeasuredValues WHERE EventID = {{0}} AND MeasurementNumber = 1) as M1, 
+	                (SELECT TOP 1 ValueSamplePoint FROM MeasuredValues WHERE EventID = {{0}} AND MeasurementNumber = 2) as M2, 
+	                (SELECT TOP 1 ValueSamplePoint FROM MeasuredValues WHERE EventID = {{0}} AND MeasurementNumber = 3) as M3, 
+	                '' as Units, 
+	                13 as SortOrder
+                ORDER BY 
+	                SortOrder                
+                ", eventID);
+                return Ok(table);
+            }
+
+        }
 
 
         [HttpGet, Route("TSx/{soeID:int}")]
@@ -144,6 +186,23 @@ namespace SOEService.Controllers
 
         }
 
+        [HttpGet, Route("Conductors/{soeID:int}")]
+        public IHttpActionResult GetConductors(int soeID)
+        {
+            if (soeID == 7) {
+                using (StreamReader reader = new StreamReader("conductor.json"))
+                {
+                    string json = reader.ReadToEnd();
+                    return Ok(json);
+                }
+            }
+            else {
+
+                return Ok("{\"type\": \"FeatureCollection\", \"name\": \"Conductor\", \"features\": []}");
+            }
+
+        }
+
 
         [HttpGet, Route("Data/{soeID:int}/{tsx:int}/{sensorName}")]
         public IHttpActionResult GetData(int soeID, int tsx, string sensorName)
@@ -152,7 +211,7 @@ namespace SOEService.Controllers
             {
                 DataTable table = connection.RetrieveData($@"
                     SELECT
-	                    SensorName, EventID, TimeSlot, Value, ElapsMS, ElapsSEC, CycleNum, TimeGap
+	                    SensorName, EventID, TimeSlot, Value, ElapsMS, ElapsSEC, CycleNum, TimeGap, [Time]
                     FROM
 	                    SOEDataPoint
                     WHERE

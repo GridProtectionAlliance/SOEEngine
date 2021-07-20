@@ -324,6 +324,9 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="package.json" />
+    <Content Include="conductor.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <Content Include="gruntfile.js" />
     <Content Include="tsconfig.json" />
@@ -1063,8 +1066,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="wwwroot\Scripts\TSX\AggregateWaveformViewerBySOE\AggregateWaveformViewerBySOE.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\TSX\global.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\global.d.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Map.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\nlt.d.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\NonLinearTimeline.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\Replay\Replay.tsx" />
   </ItemGroup>

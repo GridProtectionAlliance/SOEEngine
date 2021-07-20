@@ -55,7 +55,8 @@ namespace SOEService.Controllers
 	                        Meter.Orientation,
 	                        Line.AssetKey as LineName,
                             SOEIncident.[Order],
-                            SOEIncident.ID as SOEIncidentID
+                            SOEIncident.ID as SOEIncidentID,
+	                        Incident.ID as IncidentID
                         FROM
 	                        Incident JOIN
 	                        SOEIncident ON Incident.ID = SOEIncident.IncidentID JOIN

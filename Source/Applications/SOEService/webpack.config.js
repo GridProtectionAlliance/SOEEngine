@@ -3,6 +3,7 @@ const path = require("path");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const webpack = require("webpack");
 
 module.exports = env => {
     if (process.env.NODE_ENV == undefined) process.env.NODE_ENV = 'development';
@@ -71,7 +72,11 @@ module.exports = env => {
         },
         plugins: [
             new NodePolyfillPlugin(),
-            new ForkTsCheckerWebpackPlugin()
+            new ForkTsCheckerWebpackPlugin(),
+            new webpack.DefinePlugin({
+                MomentFormat: "'YYYY-MM-DDTHH:mm:ss.SSSSSSS'",
+                homePath: "'/'"
+            })
         ]
     }
 }
