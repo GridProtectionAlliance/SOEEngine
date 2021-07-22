@@ -127,7 +127,7 @@ const AggregateWaveformViewerBySOE = (props: {}) => {
     return (
         <div className="screen" style={{ height: window.innerHeight - 60 }}>
             <div className="vertical-menu">
-                {rows.map(x => <a key={'#' + x.MeterName} onClick={(e) => goToDiv(x.MeterName)}>{x.MeterName}</a>)}
+                {rows.map(x => <a key={'nav' + x.IncidentID + x.MeterName + x.LineName } onClick={(e) => goToDiv(x.MeterName)}>{x.MeterName}</a>)}
             </div>
             <div className="waveform-viewer" style={{ width: window.innerWidth - 150 }}>
                 <div className="horizontal-row" style={{ width: '100%' }}>
@@ -151,7 +151,7 @@ const AggregateWaveformViewerBySOE = (props: {}) => {
                 <div className="list-group" style={{ maxHeight: window.innerHeight - 100, overflowY: 'auto' }}>
                     {rows.map((d, i) => {
                         return <IncidentGroup
-                            key={d.MeterID + d.LineName}
+                            key={'ig' + d.IncidentID + d.MeterName + d.LineName}
                             lineName={d.LineName}
                             incidentId={d.IncidentID}
                             orientation={d.Orientation}

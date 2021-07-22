@@ -23,4 +23,5 @@
 
 export interface SOEDataPoint { SensorName: string, EventID: number, TimeSlot: number, Value: number, ElapsMS: number, ElapsSEC: number, CycleNum: number, TimeGap: number,Time: string }
 export interface Color { ID: number, Color: string, Name: string }
-export interface MapMeter { AssetKey: string, Latitude: number, Longitude: number, SourceAlternate: string, SourcePreferred: string, Voltage: number, Color: string }
+export interface MapMeter { AssetKey: string, Latitude: number, Longitude: number, SourceAlternate: string, SourcePreferred: string, Voltage: number, Color: string, ColorText: string }
+export interface Image { ID: number, EventID: number, Url: string, DisplayText: string }

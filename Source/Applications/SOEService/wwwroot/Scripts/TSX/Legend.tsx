@@ -22,44 +22,23 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as _ from "lodash";
 
-export default class Legend extends React.Component<any, any>{
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            data: props.data,
-            callback: props.callback
-        }
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (!(_.isEqual(this.props, nextProps))) {
-            this.setState(nextProps);
-        }
-
-    }
-    render() {
-        if (this.state.data == null) return null;
-
-        let rows = this.state.data.map(row => {
-            return <Row key={row.label} label={row.label} color={row.color} enabled={row.enabled} callback={() => {
-                row.enabled = !row.enabled;
-                this.setState({ data: this.state.data });
-                this.state.callback();
-            }} />
-        });
-
-        return (
-            <table>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
-        );
-    }
+export default function Legend(props: { data: {label: string, color: string, enabled: boolean}[], callback: (label: string) => void}){
+    if (props.data == null) return null;
+    return (
+        <table>
+            <tbody>
+                {
+                    props.data.map(row => {
+                        return <Row key={row.label+row.enabled} label={row.label} color={row.color} enabled={row.enabled} callback={() => {
+                            props.callback(row.label);
+                        }} />
+                    })
+                }
+            </tbody>
+        </table>
+    );
+    
 }
 
 const Row = (props) => {

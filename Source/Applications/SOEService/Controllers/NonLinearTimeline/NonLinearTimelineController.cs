@@ -23,13 +23,20 @@
 
 
 using GSF.Data;
+using GSF.Data.Model;
 using Newtonsoft.Json;
+using SOE.Model.NonLinearTimeLine;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 
@@ -69,7 +76,8 @@ namespace SOEService.Controllers
 	                0 as Voltage,
 	                SOEDataPoint.Value,
 	                SOEDataPoint.SensorName,
-	                'rgb('+CAST(Red as VARCHAR(3))+','+CAST(Green as VARCHAR(3))+','+CAST(Blue as VARCHAR(3))+')' as Color
+	                'rgb('+CAST(Red as VARCHAR(3))+','+CAST(Green as VARCHAR(3))+','+CAST(Blue as VARCHAR(3))+')' as Color,
+                    ColorIndex.Color as ColorText
 
                 FROM (
 	                SELECT
@@ -222,6 +230,43 @@ namespace SOEService.Controllers
             }
 
         }
+
+        [HttpGet, Route("Images/{eventID:int}")]
+        public IHttpActionResult GetImages(int eventID)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                IEnumerable<NLTImages> table = new TableOperations<NLTImages>(connection).QueryRecordsWhere("EventID = {0}", eventID);
+                return Ok(table.ToList());
+            }
+
+        }
+
+
+        [HttpGet, Route("Image/{id:int}")]
+        public HttpResponseMessage GetImage(int id)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                NLTImages record = new TableOperations<NLTImages>(connection).QueryRecordWhere("ID = {0}", id);
+                using (FileStream fileStream = new FileStream(Path.Combine(record.Url), FileMode.Open))
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        fileStream.CopyTo(memoryStream);
+                        Bitmap image = new Bitmap(1, 1);
+                        image.Save(memoryStream, ImageFormat.Jpeg);
+                        HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+                        result.Content = new ByteArrayContent(memoryStream.ToArray());
+                        result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+                        return result;
+
+                    }
+                }
+            }
+
+        }
+
 
     }
 }

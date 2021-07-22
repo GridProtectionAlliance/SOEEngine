@@ -80,6 +80,7 @@
     <Compile Include="Links\MeterLocationLine.cs" />
     <Compile Include="Meters\Meter.cs" />
     <Compile Include="Meters\MeterLocation.cs" />
+    <Compile Include="NonLinearTimeLine\NLTImages.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\ConfigurationLoader.cs" />
     <Compile Include="System\DataOperation.cs" />

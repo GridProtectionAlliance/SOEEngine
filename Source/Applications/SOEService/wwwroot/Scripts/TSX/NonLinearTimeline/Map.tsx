@@ -27,7 +27,7 @@ import * as leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css'
 import {MapContainer, TileLayer, GeoJSON, Marker, useMap, useMapEvents, Popup } from 'react-leaflet';
 import { symbolCircle, symbolWye, symbolDiamond, symbolSquare, symbolTriangle, symbolStar, symbolCross, symbol } from 'd3';
-import { Color, MapMeter, SOEDataPoint } from './nlt';
+import { Color, MapMeter, SOEDataPoint,Image } from './nlt';
 import { abort } from 'process';
 
 const LeafletMap = (props: { SOEID: string, Colors: Color[], Meters: MapMeter[], Width: number, Height: number, SelectedPoint: SOEDataPoint }) => {
@@ -151,6 +151,8 @@ interface MeasuredValue {
 const ViewWindow = (props: { SelectedPoint: SOEDataPoint }) => {
     const [show, setShow] = React.useState<boolean>(false);
     const [measuredValues, setMeasuredValues] = React.useState<MeasuredValue[]>([]);
+    const [images, setImages] = React.useState<Image[]>([]);
+
     React.useEffect(() => {
         if (props.SelectedPoint == null || props.SelectedPoint.EventID <= 0) return;
 
@@ -169,9 +171,25 @@ const ViewWindow = (props: { SelectedPoint: SOEDataPoint }) => {
             setMeasuredValues(d);
         })
 
+        let handle2 = $.ajax({
+            type: "GET",
+            url: `${homePath}api/NonLinearTimeline/Images/${props.SelectedPoint.EventID}`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            cache: true,
+            async: true
+        }) as JQuery.jqXHR<Image[]>;
+
+        handle2.done(d => {
+            setImages(d);
+        })
+
+
 
         return () => {
             if (handle.abort != undefined) handle.abort();
+            if (handle2.abort != undefined) handle2.abort();
+
         }
 
 
@@ -231,12 +249,7 @@ const ViewWindow = (props: { SelectedPoint: SOEDataPoint }) => {
                     <table className='table'>
                         <thead><tr><th style={{ padding: 5 }}>Analysis Plots</th></tr></thead>
                         <tbody>
-                            <tr><td style={{padding: 5}}><a>PQ</a></td></tr>
-                            <tr><td style={{padding: 5}}><a>Faults</a></td></tr>
-                            <tr><td style={{padding: 5}}><a>Fuse TCC</a></td></tr>
-                            <tr><td style={{padding: 5}}><a>Link 4</a></td></tr>
-                            <tr><td style={{padding: 5}}><a>Link 5</a></td></tr>
-                            <tr><td style={{padding: 5}}><a>Link 6</a></td></tr>
+                            {images.map(image => <tr key={image.ID}><td style={{ padding: 5 }}><a href={`${homePath}Image.html?imageID=${image.ID}` } target='_blank'>{image.DisplayText }</a></td></tr>)}
                         </tbody>
                     </table>
                 </div>
@@ -274,7 +287,7 @@ const MeterMarker = (props: { Meter: MapMeter, SelectedPoint: SOEDataPoint }) =>
             iconUrl: iconUrl,
             iconSize: [20, 20],
         });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup>{props.Meter.AssetKey}</Popup></Marker>
+        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{ props.Meter.ColorText}</div></Popup></Marker>
     }
     else if (props.Meter.SourceAlternate === "none") {
         let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolSquare, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
@@ -284,7 +297,7 @@ const MeterMarker = (props: { Meter: MapMeter, SelectedPoint: SOEDataPoint }) =>
             iconUrl: iconUrl,
             iconSize: [20, 20],
         });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup>{props.Meter.AssetKey}</Popup></Marker>
+        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
     }
     else if (props.Meter.SourceAlternate === props.Meter.SourcePreferred) {
         let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolCircle, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
@@ -294,7 +307,7 @@ const MeterMarker = (props: { Meter: MapMeter, SelectedPoint: SOEDataPoint }) =>
             iconUrl: iconUrl,
             iconSize: [20, 20],
         });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup>{props.Meter.AssetKey}</Popup></Marker>
+        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
     }
     else if (props.Meter.SourceAlternate !== props.Meter.SourcePreferred) {
         let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolDiamond, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
@@ -304,7 +317,7 @@ const MeterMarker = (props: { Meter: MapMeter, SelectedPoint: SOEDataPoint }) =>
             iconUrl: iconUrl,
             iconSize: [20, 20],
         });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup>{props.Meter.AssetKey}</Popup></Marker>
+        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
     }
     else if (props.Meter.Voltage == 4.6) {
         let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolStar, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
@@ -314,7 +327,7 @@ const MeterMarker = (props: { Meter: MapMeter, SelectedPoint: SOEDataPoint }) =>
             iconUrl: iconUrl,
             iconSize: [20, 20],
         });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup>{props.Meter.AssetKey}</Popup></Marker>
+        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
     }
     else {
         let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolTriangle, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
@@ -324,7 +337,7 @@ const MeterMarker = (props: { Meter: MapMeter, SelectedPoint: SOEDataPoint }) =>
             iconUrl: iconUrl,
             iconSize: [20, 20],
         });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup>{props.Meter.AssetKey}</Popup></Marker>
+        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
     }
 };
 

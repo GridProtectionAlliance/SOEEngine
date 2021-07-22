@@ -152,7 +152,11 @@ export default class WaveformViewerGraph extends React.Component<Props, { legend
                         return val.toFixed(axis.tickDecimals);
                 }
             }
+
         }
+
+        this.handleSeriesLegendClick = this.handleSeriesLegendClick.bind(this);
+
     }
 
     getData(state: Props) {
@@ -166,9 +170,9 @@ export default class WaveformViewerGraph extends React.Component<Props, { legend
         });
     }
 
-    componentWillReceiveProps(nextProps: Props) {
-        if (!(_.isEqual(this.props, nextProps))) {
-            this.getData(nextProps);
+    componentDidUpdate(prevProps: Props) {
+        if (!(_.isEqual(this.props, prevProps))) {
+            this.getData(this.props);
         }
     }
 
@@ -312,8 +316,13 @@ export default class WaveformViewerGraph extends React.Component<Props, { legend
         return base * Math.floor(n / base);
     }
 
-    handleSeriesLegendClick() {
-        this.createDataRows(this.state.dataSet, this.state.legendRows);
+    handleSeriesLegendClick(label: string) {
+        let rows = [...this.state.legendRows];
+        let index = rows.findIndex(r => r.label == label);
+        rows[index].enabled = !rows[index].enabled;
+
+        this.createDataRows(this.state.dataSet, rows);
+        this.setState({ legendRows: rows });
     }
 
     getMillisecondTime(date) {
@@ -335,7 +344,7 @@ export default class WaveformViewerGraph extends React.Component<Props, { legend
             <div>
                 <div ref="chart" style={{ height: (this.props.showXAxis ? '95px' : '75px'), float: 'left', width: this.props.pixels - 100 - 180 , margin: '0x', padding: '0px'}}></div>
                 <div id={`${this.props.meterId}-${ this.props.type}-legend`} style={{ float: 'right', width: '75px'}}>
-                    <Legend data={this.state.legendRows} callback={this.handleSeriesLegendClick.bind(this)} />
+                    <Legend data={this.state.legendRows} callback={(label) => this.handleSeriesLegendClick(label)} />
                 </div>
             </div>
         );

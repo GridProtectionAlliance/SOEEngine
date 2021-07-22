@@ -375,6 +375,7 @@
     <Content Include="wwwroot\Content\Fonts\glyphicons-halflings-regular.woff" />
     <Content Include="wwwroot\Content\Fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="wwwroot\AggregateWaveformViewerBySOE.cshtml" />
+    <Content Include="wwwroot\Image.html" />
     <Content Include="wwwroot\NonLinearTimeline.cshtml" />
     <None Include="wwwroot\Groups.cshtml" />
     <Content Include="webpack.config.js" />
@@ -1067,6 +1068,7 @@
   <ItemGroup>
     <Content Include="wwwroot\Scripts\TSX\AggregateWaveformViewerBySOE\AggregateWaveformViewerBySOE.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\global.d.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Image.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Map.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\nlt.d.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\NonLinearTimeline.tsx" />

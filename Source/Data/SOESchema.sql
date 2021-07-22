@@ -817,6 +817,19 @@ GO
 
 CREATE INDEX IX_MeasuredValues_EventID ON MeasuredValues(EventID)
 GO
+
+CREATE TABLE NLTImages (
+    ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    EventID INT NOT NULL FOREIGN KEY REFERENCES [Event](ID),
+    Url VARCHAR(MAX) NOT NULL,
+    DisplayText VARCHAR(300) NOT NULL ,
+    RetentionPolicy VARCHAR(25) NOT NULL, 
+    Deleted bit NOT NULL DEFAULT 0
+)
+
+CREATE INDEX IX_NLTImages_EventID ON NLTImages(EventID)
+GO
+
 ----- FUNCTIONS -----
 
 CREATE FUNCTION AdjustDateTime2
