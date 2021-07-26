@@ -154,8 +154,8 @@ const Replay = (props: {}) => {
             <div className='row'>
                 <Table<ReplayTable>
                     cols={[
-                        { key: 'Name', label: 'Name', content: (item, key, style) => <><span>{item[key]}</span>{item.Status != 'MakeReplay' && item.Status != 'Hide' ? <button className='pull-right btn btn-link'>{PlayButton}</button>:null}</>  },
-                        { key: 'ID', label: 'SOE_UID', headerStyle: { width: 100 }, rowStyle: { width: 100 }, content: (item, key, style) => <><span>{item[key]}</span><button onClick={() => window.open(`${homePath}AggregateWaveformViewerBySOE.cshtml?soeID=${item.ID}`) } className='pull-right btn btn-link'>{Scroll}</button></>  },
+                        { key: 'Name', label: 'Name', content: (item, key, field,  style) => <><span>{item[field]}</span>{item.Status != 'MakeReplay' && item.Status != 'Hide' ? <button className='pull-right btn btn-link'>{PlayButton}</button>:null}</>  },
+                        { key: 'ID', label: 'SOE_UID', headerStyle: { width: 100 }, rowStyle: { width: 100 }, content: (item, key, field, style) => <><span>{item[field]}</span><button onClick={() => window.open(`${homePath}AggregateWaveformViewerBySOE.cshtml?soeID=${item.ID}`) } className='pull-right btn btn-link'>{Scroll}</button></>  },
                         { key: 'StartTime', label: 'Start Time' },
                         { key: 'EndTime', label: 'End Time' },
                         { key: 'System', label: 'System', headerStyle: { width: 100 }, rowStyle: { width: 100 }},
@@ -172,14 +172,14 @@ const Replay = (props: {}) => {
                     theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 50 }}
                     tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 180, height: window.innerHeight - 180, width: '100%' }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    sortField={sortField}
+                    sortKey={sortField}
                     onClick={(d) => { }}
                     onSort={d => {
-                        if (d.col == sortField) {
+                        if (d.colField == sortField) {
                             setAscending(!ascending);
                         }
                         else {
-                            setSortField(d.col);
+                            setSortField(d.colField);
                         }
                     }}
                     data={data}

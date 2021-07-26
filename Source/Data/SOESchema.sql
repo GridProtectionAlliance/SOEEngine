@@ -818,13 +818,40 @@ GO
 CREATE INDEX IX_MeasuredValues_EventID ON MeasuredValues(EventID)
 GO
 
+CREATE TABLE MatlabGroup (
+    ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL
+)
+
+GO
+
+INSERT INTO MatlabGroup (Name) VALUES ('G1 Research')
+GO
+INSERT INTO MatlabGroup (Name) VALUES ('G2 Switching')
+GO
+INSERT INTO MatlabGroup (Name) VALUES ('G3 Faults')
+GO
+INSERT INTO MatlabGroup (Name) VALUES ('G4 Power Quality')
+GO
+INSERT INTO MatlabGroup (Name) VALUES ('G5 Artifacts/Harmonics')
+GO
+INSERT INTO MatlabGroup (Name) VALUES ('G6 MinMaxAvg/History')
+GO
+INSERT INTO MatlabGroup (Name) VALUES ('G7 Reports')
+GO
+INSERT INTO MatlabGroup (Name) VALUES ('G8 Predictive')
+GO
+INSERT INTO MatlabGroup (Name) VALUES ('G9 Other')
+GO
+
 CREATE TABLE NLTImages (
     ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
     EventID INT NOT NULL FOREIGN KEY REFERENCES [Event](ID),
     Url VARCHAR(MAX) NOT NULL,
     DisplayText VARCHAR(300) NOT NULL ,
     RetentionPolicy VARCHAR(25) NOT NULL, 
-    Deleted bit NOT NULL DEFAULT 0
+    Deleted bit NOT NULL DEFAULT 0,
+    GroupID INT NOT NULL FOREIGN KEY REFERENCES MatlabGroup(ID)
 )
 
 CREATE INDEX IX_NLTImages_EventID ON NLTImages(EventID)

@@ -416,7 +416,7 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                                             { key: 'PrefCkt', label: 'PrefCkt', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
                                             { key: 'AltCkt', label: 'AltCkt', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
                                             {
-                                                key: 'Order', label: 'Order', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, style,index) => <><input value={item.Order} type='number' style={{ width: 30 }} onChange={(evt) => {
+                                                key: 'Order', label: 'Order', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, field, style,index) => <><input value={item.Order} type='number' style={{ width: 30 }} onChange={(evt) => {
                                                     //item.Order = parseInt(evt.target.value);
                                                     let d = [...devices];
                                                     d.find(dd => dd.Device == item.Device).Order = parseInt(evt.target.value);
@@ -429,18 +429,18 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                                             { key: 'Device', label: 'Devices', headerStyle: { width: '20%' }, rowStyle: { width: '20%' } },
                                             { key: 'FaultType', label: 'FaultType', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
                                             { key: 'Waveforms', label: 'Waveforms', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
-                                            { key: null, label: '', headerStyle: { width: '86px' }, rowStyle: { width: '65px' } , content: (item, key, style, index) => <button className='btn btn-link' onClick={() => MoveDeviceRight(item, index)}>{RightArrow}</button> },
+                                            { key: null, label: '', headerStyle: { width: '86px' }, rowStyle: { width: '65px' } , content: (item, key, field, style, index) => <button className='btn btn-link' onClick={() => MoveDeviceRight(item, index)}>{RightArrow}</button> },
 
 
                                         ]}
-                                        sortField={deviceSortField}
+                                        sortKey={deviceSortField}
                                         ascending={deviceAscending}
                                         data={devices}
                                         onClick={() => { }}
                                         onSort={(data) => {
-                                            if (data.col == deviceSortField) setDeviceAscending(!deviceAscending);
+                                            if (data.colField == deviceSortField) setDeviceAscending(!deviceAscending);
                                             else {
-                                                setDeviceSortField(data.col);
+                                                setDeviceSortField(data.colField);
                                                 setDeviceAscending(true);
                                             }
                                         }}
@@ -454,7 +454,7 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 50 }}
                                         tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 670, height: window.innerHeight - 670, width: '100%' }}
                                         cols={[
-                                            { key: null, label: '', headerStyle: { width: 60 }, rowStyle: { width: 60 }, content: (item, key, style, index) => <button className='btn btn-link' onClick={() => MoveDeviceLeft(item, index)}>{LeftArrow}</button> },
+                                            { key: null, label: '', headerStyle: { width: 60 }, rowStyle: { width: 60 }, content: (item, key, field,  style, index) => <button className='btn btn-link' onClick={() => MoveDeviceLeft(item, index)}>{LeftArrow}</button> },
                                             { key: 'System', label: 'System', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
                                             { key: 'PrefCkt', label: 'PrefCkt', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
                                             { key: 'AltCkt', label: 'AltCkt', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
@@ -462,14 +462,14 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                                             { key: 'FaultType', label: 'FaultType', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
                                             { key: 'Waveforms', label: 'Waveforms', headerStyle: { width: 120 }, rowStyle: { width: 100 } },
                                         ]}
-                                        sortField={othersSortField}
+                                        sortKey={othersSortField}
                                         ascending={othersAscending}
                                         data={otherDevices}
                                         onClick={() => { }}
                                         onSort={(data) => {
-                                            if (data.col == othersSortField) setOthersAscending(!othersAscending);
+                                            if (data.colField == othersSortField) setOthersAscending(!othersAscending);
                                             else {
-                                                setOthersSortField(data.col);
+                                                setOthersSortField(data.colField);
                                                 setOthersAscending(true);
                                             }
                                         }}

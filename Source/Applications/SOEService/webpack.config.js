@@ -20,6 +20,8 @@ module.exports = env => {
             AggregateWaveformViewerBySOE: "./wwwroot/Scripts/TSX/AggregateWaveformViewerBySOE/AggregateWaveformViewerBySOE.tsx",
             NonLinearTimeline: "./wwwroot/Scripts/TSX/NonLinearTimeline/NonLinearTimeline.tsx",
             Image: "./wwwroot/Scripts/TSX/NonLinearTimeline/Image.tsx",
+            Home: "./wwwroot/Scripts/TSX/Home/Home.tsx",
+
         },
         output: {
             path: path.resolve(__dirname, 'wwwroot', 'Scripts'),

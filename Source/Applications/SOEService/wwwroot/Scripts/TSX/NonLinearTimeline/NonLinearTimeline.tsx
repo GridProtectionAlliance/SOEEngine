@@ -194,12 +194,17 @@ const NonLinearTimeline = (props: {}) => {
 
     return (
         <div className='container theme-showcase' style={{ overflow: 'hidden', position: 'absolute', left: 0, top: 60, width: window.innerWidth, height: window.innerHeight - 60 }}>
-            <LeafletMap SOEID={soeID as string} Colors={colors} Meters={meters} Height={500} Width={window.innerWidth} SelectedPoint={selectedPoint } />
+            <LeafletMap SOEID={soeID as string} Colors={colors} Meters={meters} Height={(window.innerHeight - 60) / 2} Width={window.innerWidth} SelectedPoint={selectedPoint } />
 
-            <div style={{ height: window.innerHeight - 500 - 60, width: window.innerWidth, position: 'relative' }}>
+            <div style={{ height: (window.innerHeight - 60)/2, width: window.innerWidth, position: 'relative' }}>
                 <div style={{ height: 50, width: window.innerWidth }}>
                     <div style={{ height: 50, width: 100, position: 'absolute', left: 5 }}>
                         <span>{[...new Set(sensors.map(s => s.split('-')[0]))].join('/') }</span>
+                    </div>
+
+                    <div style={{ height: 50, width: 400, position: 'absolute', right: 900, padding: 7 }}>
+                        Replay Time: {moment(times[replayIndex - 1]?.Time).format('HH:mm:ss.SSS') + '   '}
+                        Elapsed: {times[replayIndex - 1] != undefined ? times[replayIndex - 1][(timeField == 'Time' ? 'ElapsMS' : timeField)] : ''} {(timeField == 'Time' ? 'ElapsMS' : timeField)}
                     </div>
 
                     <div style={{ height: 50, width: 200, position: 'absolute', right: 700 }} >

@@ -250,6 +250,7 @@
     <Compile Include="Controllers\AggregateWaveformViewBySOE\MetersForSOEController.cs" />
     <Compile Include="Controllers\AggregateWaveformViewBySOE\IncidentGroupController.cs" />
     <Compile Include="Controllers\AggregateWaveformViewBySOE\SOEController.cs" />
+    <Compile Include="Controllers\Home\HomeController.cs" />
     <Compile Include="Controllers\NonLinearTimeline\NonLinearTimelineController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\Replay\ReplayController.cs" />
@@ -1068,6 +1069,7 @@
   <ItemGroup>
     <Content Include="wwwroot\Scripts\TSX\AggregateWaveformViewerBySOE\AggregateWaveformViewerBySOE.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\global.d.ts" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\Home\Home.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Image.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Map.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\nlt.d.ts" />
