@@ -97,26 +97,33 @@ namespace SOEService
 
         #region [ IncidentEventCycleDataView Table Operations ]
         [RecordOperation(typeof(IncidentEventCycleDataView), RecordOperation.QueryRecordCount)]
-        public int QueryIncidentEventCycleDataViewCount(string date, string name, string levels, string limits, string timeContext, string filterString)
+        public int QueryIncidentEventCycleDataViewCount(string date, string name, string levels, string limits, string timeContext, bool faults, string filterString)
         {
             TableOperations<IncidentEventCycleDataView> table = DataContext.Table<IncidentEventCycleDataView>();
             RecordRestriction filterRestriction = table.GetSearchRestriction(filterString);
             DateTime startDate = DateTime.ParseExact(date, "yyyyMMddHH", CultureInfo.InvariantCulture);
             DateTime endDate = (DateTime)typeof(DateTime).GetMethod("Add" + timeContext).Invoke(startDate, new object[] { 1 });
 
-            return table.QueryRecordCount(filterRestriction + new RecordRestriction("StartTime BETWEEN {0} AND {1}", startDate,endDate) + new RecordRestriction(levels + " = {0}", name));
+            RecordRestriction recordRestriction = filterRestriction + new RecordRestriction("StartTime BETWEEN {0} AND {1}", startDate, endDate) + new RecordRestriction(levels + " = {0}", name);
+            if (faults)
+                recordRestriction = recordRestriction + new RecordRestriction("FaultType IS NOT NULL");
+            return table.QueryRecordCount(recordRestriction);
         }
 
         [RecordOperation(typeof(IncidentEventCycleDataView), RecordOperation.QueryRecords)]
-        public IEnumerable<IncidentEventCycleDataView> QueryIncidentEventCycleDataViewItems(string date, string name, string levels, string limits, string timeContext, string sortField, bool ascending, int page, int pageSize, string filterString)
+        public IEnumerable<IncidentEventCycleDataView> QueryIncidentEventCycleDataViewItems(string date, string name, string levels, string limits, string timeContext, bool faults,  string sortField, bool ascending, int page, int pageSize, string filterString)
         {
             TableOperations<IncidentEventCycleDataView> table = DataContext.Table<IncidentEventCycleDataView>();
             RecordRestriction filterRestriction = table.GetSearchRestriction(filterString);
 
             DateTime startDate = DateTime.ParseExact(date, "yyyyMMddHH", CultureInfo.InvariantCulture);
             DateTime endDate = (DateTime)typeof(DateTime).GetMethod("Add" + timeContext).Invoke(startDate, new object[] { 1 });
+            
+            RecordRestriction recordRestriction = filterRestriction + new RecordRestriction("StartTime BETWEEN {0} AND {1}", startDate, endDate) + new RecordRestriction(levels + " = {0}", name);
+            if (faults)
+                recordRestriction = recordRestriction + new RecordRestriction("FaultType IS NOT NULL");
 
-            return table.QueryRecords($"{sortField} {(ascending ? "ASC" : "DESC")}", filterRestriction + new RecordRestriction("StartTime BETWEEN {0} AND {1}", startDate, endDate) + new RecordRestriction(levels + " = {0}", name));
+            return table.QueryRecords($"{sortField} {(ascending ? "ASC" : "DESC")}", recordRestriction);
         }
 
         [AuthorizeHubRole("Administrator")]

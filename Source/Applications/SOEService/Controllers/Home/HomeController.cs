@@ -50,46 +50,188 @@ namespace SOEService.Controllers
         {
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
-                DataTable table = connection.RetrieveData($@"
-					DECLARE @date DATE = {{0}}
-					DECLARE @pivotColumns NVARCHAR(MAX);
-					SELECT @pivotColumns = COALESCE(@pivotColumns + ',', '') + '['+ Name + ']' FROM MatlabGroup
-					DECLARE @sql NVARCHAR(MAX) = N'
-					SELECT * FROM (
-					SELECT
-						COUNT(Incident.ID) as Incidents,
-						System.Name as System,
-						Circuit.Name as Circuit,
-						Meter.AssetKey as Meter,
-						MAX(Incident.LTE) as LTE,
-						MAX(Incident.PQS) as PQS,
-						COUNT(IncidentAttribute.FaultType) as Faults,
-						COUNT(distinct Event.FileGroupID) as Files,
-						COUNT(distinct SOE.ID) as SOEs,
-						MatlabGroup.Name as MatlabGroup
-					FROM
-						Incident JOIN
-						Meter ON Incident.MeterID = Meter.ID JOIN
-						Circuit ON Meter.CircuitID = Circuit.ID JOIN
-						System on Circuit.SystemID = System.ID JOIN
-						IncidentAttribute on IncidentAttribute.IncidentID = Incident.ID  JOIN
-						Event on Event.IncidentID = Incident.ID LEFT JOIN
-						SOEIncident on SOEIncident.IncidentID = Incident.ID LEFT JOIN
-						SOE ON SOE.ID = SOEIncident.SOEID LEFT JOIN
-						NLTImages ON NLTImages.EventID = Event.ID LEFT JOIN
-						MatlabGroup ON NLTImages.GroupID = MatlabGroup.ID
-					WHERE
-						CAST(Incident.StartTime as DATE) =  @date
-					GROUP BY
-						System.Name, Circuit.Name, Meter.AssetKey, MatlabGroup.Name
-						) as tbl
-					PIVOT(
-						COUNT(tbl.MatlabGroup)
-						For tbl.MatlabGroup IN ('+ @pivotColumns+')
-					) as pvt
-					'
-					EXECUTE sp_executesql @sql, N'@date DATE', @date = @date
-                ", date, level);
+				string sql;
+
+				if (level == "System")
+				{
+					sql = $@"
+						DECLARE @date DATE = {{0}}
+						SELECT 
+							System,
+							COUNT(DISTINCT Circuit) as Circuit,
+							COUNT(DISTINCT Meter) as Meter,
+							COUNT(SOEs) as SOEs,
+							COUNT(DISTINCT Incidents) as Incidents,
+							CAST(MAX(LTE) as INT) as LTE,
+							CONVERT(Decimal(10,3),MAX(PQS)) as PQS,
+							COUNT(DISTINCT Faults) as Faults,
+							COUNT(DISTINCT Files) as Files,
+							SUM(COALESCE([G1 Research],0)) as [G1 Research],
+							SUM(COALESCE([G2 Switching],0)) as[G2 Switching],
+							SUM(COALESCE([G3 Faults],0)) as[G3 Faults],
+							SUM(COALESCE([G4 Power Quality],0)) as[G4 Power Quality],
+							SUM(COALESCE([G5 Artifacts/Harmonics],0)) as [G5 Artifacts/Harmonics],
+							SUM(COALESCE([G6 MinMaxAvg/History],0)) as [G6 MinMaxAvg/History],
+							SUM(COALESCE([G7 Reports],0)) as [G7 Reports],
+							SUM(COALESCE([G8 Predictive],0)) as [G8 Predictive],
+							SUM(COALESCE([G9 Other],0)) as [G9 Other],
+							SUM(COALESCE([G1 Research],0) + COALESCE([G2 Switching],0) +COALESCE([G3 Faults],0) +COALESCE([G4 Power Quality],0) +COALESCE([G5 Artifacts/Harmonics],0) +COALESCE([G6 MinMaxAvg/History],0) +COALESCE([G7 Reports],0) +COALESCE([G8 Predictive],0) +COALESCE([G9 Other],0)) as AllPlots
+
+						FROM (
+						SELECT
+							System.Name as System,
+							Circuit.Name as Circuit,
+							Meter.AssetKey as Meter,
+							Incident.ID as Incidents,
+							Incident.LTE,
+							Incident.PQS,
+							IncidentAttribute.ID as Faults,
+							Event.FileGroupID as Files,
+							SOE.ID as SOEs,
+							MatlabGroup.Name as MatlabGroup
+						FROM
+							Incident JOIN
+							Meter ON Incident.MeterID = Meter.ID JOIN
+							Circuit ON Meter.CircuitID = Circuit.ID JOIN
+							System on Circuit.SystemID = System.ID LEFT JOIN
+							IncidentAttribute on IncidentAttribute.IncidentID = Incident.ID  AND IncidentAttribute.FaultType IS NOT NULL LEFT JOIN
+							Event on Event.IncidentID = Incident.ID LEFT JOIN
+							SOEIncident on SOEIncident.IncidentID = Incident.ID LEFT JOIN
+							SOE ON SOE.ID = SOEIncident.SOEID LEFT JOIN
+							NLTImages ON NLTImages.EventID = Event.ID LEFT JOIN
+							MatlabGroup ON NLTImages.GroupID = MatlabGroup.ID
+						WHERE
+							CAST(Incident.StartTime as DATE) =  @date
+							) as tbl
+						PIVOT(
+							COUNT(tbl.MatlabGroup)
+							For tbl.MatlabGroup IN ([G1 Research],[G2 Switching],[G3 Faults],[G4 Power Quality],[G5 Artifacts/Harmonics],[G6 MinMaxAvg/History],[G7 Reports],[G8 Predictive],[G9 Other])
+						) as pvt
+						GROUP BY
+							System                ";
+
+				}
+				else if (level == "Circuit")
+				{
+					sql = $@"
+						DECLARE @date DATE = {{0}}
+						SELECT 
+							System,
+							Circuit,
+							COUNT(DISTINCT Meter) as Meter,
+							COUNT(SOEs) as SOEs,
+							COUNT(DISTINCT Incidents) as Incidents,
+							CAST(MAX(LTE) as INT) as LTE,
+							CONVERT(Decimal(10,3),MAX(PQS)) as PQS,
+							COUNT(DISTINCT Faults) as Faults,
+							COUNT(DISTINCT Files) as Files,
+							SUM(COALESCE([G1 Research],0)) as [G1 Research],
+							SUM(COALESCE([G2 Switching],0)) as[G2 Switching],
+							SUM(COALESCE([G3 Faults],0)) as[G3 Faults],
+							SUM(COALESCE([G4 Power Quality],0)) as[G4 Power Quality],
+							SUM(COALESCE([G5 Artifacts/Harmonics],0)) as [G5 Artifacts/Harmonics],
+							SUM(COALESCE([G6 MinMaxAvg/History],0)) as [G6 MinMaxAvg/History],
+							SUM(COALESCE([G7 Reports],0)) as [G7 Reports],
+							SUM(COALESCE([G8 Predictive],0)) as [G8 Predictive],
+							SUM(COALESCE([G9 Other],0)) as [G9 Other],
+							SUM(COALESCE([G1 Research],0) + COALESCE([G2 Switching],0) +COALESCE([G3 Faults],0) +COALESCE([G4 Power Quality],0) +COALESCE([G5 Artifacts/Harmonics],0) +COALESCE([G6 MinMaxAvg/History],0) +COALESCE([G7 Reports],0) +COALESCE([G8 Predictive],0) +COALESCE([G9 Other],0)) as AllPlots
+
+						FROM (
+						SELECT
+							System.Name as System,
+							Circuit.Name as Circuit,
+							Meter.AssetKey as Meter,
+							Incident.ID as Incidents,
+							Incident.LTE,
+							Incident.PQS,
+							IncidentAttribute.ID as Faults,
+							Event.FileGroupID as Files,
+							SOE.ID as SOEs,
+							MatlabGroup.Name as MatlabGroup
+						FROM
+							Incident JOIN
+							Meter ON Incident.MeterID = Meter.ID JOIN
+							Circuit ON Meter.CircuitID = Circuit.ID JOIN
+							System on Circuit.SystemID = System.ID LEFT JOIN
+							IncidentAttribute on IncidentAttribute.IncidentID = Incident.ID  AND IncidentAttribute.FaultType IS NOT NULL LEFT JOIN
+							Event on Event.IncidentID = Incident.ID LEFT JOIN
+							SOEIncident on SOEIncident.IncidentID = Incident.ID LEFT JOIN
+							SOE ON SOE.ID = SOEIncident.SOEID LEFT JOIN
+							NLTImages ON NLTImages.EventID = Event.ID LEFT JOIN
+							MatlabGroup ON NLTImages.GroupID = MatlabGroup.ID
+						WHERE
+							CAST(Incident.StartTime as DATE) =  @date
+							) as tbl
+						PIVOT(
+							COUNT(tbl.MatlabGroup)
+							For tbl.MatlabGroup IN ([G1 Research],[G2 Switching],[G3 Faults],[G4 Power Quality],[G5 Artifacts/Harmonics],[G6 MinMaxAvg/History],[G7 Reports],[G8 Predictive],[G9 Other])
+						) as pvt
+						GROUP BY
+							System, Circuit
+                ";
+
+				}
+				else
+				{
+					sql = $@"
+						DECLARE @date DATE = {{0}}
+						SELECT 
+							System,
+							Circuit,
+							Meter,
+							COUNT(SOEs) as SOEs,
+							COUNT(DISTINCT Incidents) as Incidents,
+							CAST(MAX(LTE) as INT) as LTE,
+							CONVERT(Decimal(10,3),MAX(PQS)) as PQS,
+							COUNT(DISTINCT Faults) as Faults,
+							COUNT(DISTINCT Files) as Files,
+							SUM(COALESCE([G1 Research],0)) as [G1 Research],
+							SUM(COALESCE([G2 Switching],0)) as[G2 Switching],
+							SUM(COALESCE([G3 Faults],0)) as[G3 Faults],
+							SUM(COALESCE([G4 Power Quality],0)) as[G4 Power Quality],
+							SUM(COALESCE([G5 Artifacts/Harmonics],0)) as [G5 Artifacts/Harmonics],
+							SUM(COALESCE([G6 MinMaxAvg/History],0)) as [G6 MinMaxAvg/History],
+							SUM(COALESCE([G7 Reports],0)) as [G7 Reports],
+							SUM(COALESCE([G8 Predictive],0)) as [G8 Predictive],
+							SUM(COALESCE([G9 Other],0)) as [G9 Other],
+							SUM(COALESCE([G1 Research],0) + COALESCE([G2 Switching],0) +COALESCE([G3 Faults],0) +COALESCE([G4 Power Quality],0) +COALESCE([G5 Artifacts/Harmonics],0) +COALESCE([G6 MinMaxAvg/History],0) +COALESCE([G7 Reports],0) +COALESCE([G8 Predictive],0) +COALESCE([G9 Other],0)) as AllPlots
+
+						FROM (
+						SELECT
+							System.Name as System,
+							Circuit.Name as Circuit,
+							Meter.AssetKey as Meter,
+							Incident.ID as Incidents,
+							Incident.LTE,
+							Incident.PQS,
+							IncidentAttribute.ID as Faults,
+							Event.FileGroupID as Files,
+							SOE.ID as SOEs,
+							MatlabGroup.Name as MatlabGroup
+						FROM
+							Incident JOIN
+							Meter ON Incident.MeterID = Meter.ID JOIN
+							Circuit ON Meter.CircuitID = Circuit.ID JOIN
+							System on Circuit.SystemID = System.ID LEFT JOIN
+							IncidentAttribute on IncidentAttribute.IncidentID = Incident.ID  AND IncidentAttribute.FaultType IS NOT NULL LEFT JOIN
+							Event on Event.IncidentID = Incident.ID LEFT JOIN
+							SOEIncident on SOEIncident.IncidentID = Incident.ID LEFT JOIN
+							SOE ON SOE.ID = SOEIncident.SOEID LEFT JOIN
+							NLTImages ON NLTImages.EventID = Event.ID LEFT JOIN
+							MatlabGroup ON NLTImages.GroupID = MatlabGroup.ID
+						WHERE
+							CAST(Incident.StartTime as DATE) =  @date
+							) as tbl
+						PIVOT(
+							COUNT(tbl.MatlabGroup)
+							For tbl.MatlabGroup IN ([G1 Research],[G2 Switching],[G3 Faults],[G4 Power Quality],[G5 Artifacts/Harmonics],[G6 MinMaxAvg/History],[G7 Reports],[G8 Predictive],[G9 Other])
+						) as pvt
+						GROUP BY
+							System, Circuit, Meter
+
+                ";
+				}
+				DataTable table = connection.RetrieveData(sql, date);
                 return Ok(table);
             }
 

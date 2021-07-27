@@ -154,17 +154,17 @@ const Replay = (props: {}) => {
             <div className='row'>
                 <Table<ReplayTable>
                     cols={[
-                        { key: 'Name', label: 'Name', content: (item, key, field,  style) => <><span>{item[field]}</span>{item.Status != 'MakeReplay' && item.Status != 'Hide' ? <button className='pull-right btn btn-link'>{PlayButton}</button>:null}</>  },
-                        { key: 'ID', label: 'SOE_UID', headerStyle: { width: 100 }, rowStyle: { width: 100 }, content: (item, key, field, style) => <><span>{item[field]}</span><button onClick={() => window.open(`${homePath}AggregateWaveformViewerBySOE.cshtml?soeID=${item.ID}`) } className='pull-right btn btn-link'>{Scroll}</button></>  },
-                        { key: 'StartTime', label: 'Start Time' },
-                        { key: 'EndTime', label: 'End Time' },
-                        { key: 'System', label: 'System', headerStyle: { width: 100 }, rowStyle: { width: 100 }},
-                        { key: 'Circuits', label: 'Circuits', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
-                        { key: 'Devices', label: 'Devices', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
-                        { key: 'Waveforms', label: 'Waveforms', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
-                        { key: 'Duration', label: 'Duration', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
-                        { key: 'TimeWindows', label: 'TimeSlots', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
-                        { key: 'Status', label: 'Status', headerStyle: { width: 200 }, rowStyle: { width: 200 } },
+                        { key: 'Name', label: 'Name', field: 'Name', content: (item, key, field,  style) => <><span>{item[field]}</span>{item.Status != 'MakeReplay' && item.Status != 'Hide' ? <button className='pull-right btn btn-link'>{PlayButton}</button>:null}</>  },
+                        { key: 'ID', label: 'SOE_UID', field: 'ID', headerStyle: { width: 100 }, rowStyle: { width: 100 }, content: (item, key, field, style) => <><span>{item[field]}</span><button onClick={() => window.open(`${homePath}AggregateWaveformViewerBySOE.cshtml?soeID=${item.ID}`) } className='pull-right btn btn-link'>{Scroll}</button></>  },
+                        { key: 'StartTime', label: 'Start Time', field: 'StartTime' },
+                        { key: 'EndTime', label: 'End Time', field: 'EndTime' },
+                        { key: 'System', label: 'System', field: 'System', headerStyle: { width: 100 }, rowStyle: { width: 100 }},
+                        { key: 'Circuits', label: 'Circuits', field: 'Circuits', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
+                        { key: 'Devices', label: 'Devices', field: 'Devices', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
+                        { key: 'Waveforms', label: 'Waveforms', field: 'Waveforms', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
+                        { key: 'Duration', label: 'Duration', field: 'Duration', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
+                        { key: 'TimeWindows', label: 'TimeSlots', field: 'TimeWindows', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
+                        { key: 'Status', label: 'Status', field: 'Status', headerStyle: { width: 200 }, rowStyle: { width: 200 } },
                         { key: null, label: '', headerStyle: { width: 20 }, rowStyle: { width: 0 }  }
 
                     ]}

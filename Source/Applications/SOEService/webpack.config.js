@@ -20,6 +20,8 @@ module.exports = env => {
             AggregateWaveformViewerBySOE: "./wwwroot/Scripts/TSX/AggregateWaveformViewerBySOE/AggregateWaveformViewerBySOE.tsx",
             NonLinearTimeline: "./wwwroot/Scripts/TSX/NonLinearTimeline/NonLinearTimeline.tsx",
             Image: "./wwwroot/Scripts/TSX/NonLinearTimeline/Image.tsx",
+            ImageTable: "./wwwroot/Scripts/TSX/NonLinearTimeline/ImageTable.tsx",
+
             Home: "./wwwroot/Scripts/TSX/Home/Home.tsx",
 
         },

@@ -23,11 +23,12 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import Table from '@gpa-gemstone/react-table';
+import { TableProps,Rows } from '@gpa-gemstone/react-table';
 import * as moment from 'moment';
 import { ajax } from 'jquery';
 import * as queryString from "query-string";
 import * as _ from "lodash";
+import { Column } from '@gpa-gemstone/react-table/lib/Table';
 
 interface HomeTable {
     System: number | string,
@@ -48,13 +49,14 @@ interface HomeTable {
     'G7 Reports': number,
     'G8 Predictive': number,
     'G9 Other': number,
+    AllPlots: number
 
 }
 
-type Level = 'System' | 'Circuit' | 'Meter';
+type Level = 'System' | 'Circuit' | 'Device';
 const Home = (props: {}) => {
     let query = queryString.parse(window.location.search);
-    const [level, setLevel] = React.useState<Level>(query['level'] != undefined ? query['level'] as Level : 'Meter');
+    const [level, setLevel] = React.useState<Level>(query['level'] != undefined ? query['level'] as Level : 'Device');
     const [date, setDate] = React.useState<moment.Moment>(query['date'] != undefined ? moment(query['date'] as string) : moment().subtract(7, 'days'));
     const [data, setData] = React.useState<HomeTable[]>([]);
     const [ascending, setAscending] = React.useState<boolean>(query['ascending'] != undefined ? (query['ascending'] as string) == 'true' : true);
@@ -89,6 +91,223 @@ const Home = (props: {}) => {
         return _.orderBy(data, [sortField], [ascending ? "asc" : "desc"]);
     }
 
+    const cols: RotatedColumn<HomeTable>[] = [
+        {
+            key: 'System', label: 'System', field: 'System', headerStyle: { width: 75 }, rowStyle: { width: 75 }, content: (item, key, field, style) => {
+                if (typeof (item[field]) == 'number')
+                    return item[field];
+                else
+                    return <a href='#' onClick={() => setLevel('System')}>{item[field]}</a>;
+            }
+        },
+        {
+            key: 'Circuit', label: 'Circuit', field: 'Circuit', headerStyle: { width: 100 }, rowStyle: { width: 100 }, content: (item, key, field, style) => {
+                if (typeof (item[field]) == 'number')
+                    return item[field];
+                else
+                    return <a href='#' onClick={() => setLevel('Circuit')}>{item[field]}</a>;
+            }
+        },
+        {
+            key: 'Meter', label: 'Device', field: 'Meter', headerStyle: { width: 150 }, rowStyle: { width: 150 }
+        },
+        {
+            key: 'SOEs', label: 'SOE Replays', field: 'SOEs', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate:true, content: (item, key, field, style, index) => {
+                if (item.SOEs == 0) return 0;
+                return <a target='_blank' href={`/Replay.cshtml?date=${date.format('YYYY-MM-DD')}&units=days&stepSize=1`}>{item[field]}</a>
+
+            }
+        },
+        {
+            key: 'Incidents', label: 'SOE(Summary Page)', field: 'Incidents', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate:true, content: (item, key, field, style, index) => {
+                if (item.Incidents == 0) return 0;
+
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+                return <a target='_blank' href={`/IncidentEventCycleDataView.cshtml?levels=${level}&limits=All&timeContext=Days&date=${moment(date).format('YYYYMMDD00')}&name=${nameString}&buckets=1`}>{item[field]}</a>
+            }
+        },
+        {
+            key: 'LTE', label: 'LTE', field: 'LTE', headerStyle: { width: 100 }, rowStyle: { width: 100 }, content: (item, key, field, style, index) => {
+                if (item.LTE == null) return null;
+
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+                return <a target='_blank' href={`/IncidentEventCycleDataView.cshtml?levels=${level}&limits=All&timeContext=Days&date=${moment(date).format('YYYYMMDD00')}&name=${nameString}&buckets=1&LTE=1`}>{item[field]}</a>
+            }
+        },
+        {
+            key: 'PQS', label: 'PQS', field: 'PQS', headerStyle: { width: 100 }, rowStyle: { width: 100 }, content: (item, key, field, style, index) => {
+                if (item.PQS == null) return null;
+
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+                return <a target='_blanks' href={`/IncidentEventCycleDataView.cshtml?levels=${level}&limits=All&timeContext=Days&date=${moment(date).format('YYYYMMDD00')}&name=${nameString}&buckets=1&PQS=1`}>{item[field]}</a>
+            }
+        },
+        {
+            key: 'Faults', label: 'Faults', field: 'Faults', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+                if (item.Faults == 0) return 0;
+
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+                return <a target='_blank' href={`/IncidentEventCycleDataView.cshtml?levels=${level}&limits=All&timeContext=Days&date=${moment(date).format('YYYYMMDD00')}&name=${nameString}&buckets=1&Faults=1`}>{item[field]}</a>
+            }  },
+        { key: 'Files', label: 'Files', field: 'Files', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true },
+        {
+            key: 'AllPlots', label: 'All Plots', field: 'AllPlots', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=All&context=${level}&object=${nameString}` }>{item[field] }</a>
+            }
+        },
+
+        {
+            key: 'G1 Research', label: 'G1 Research', field: 'G1 Research', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G1 Research&context=${level}&object=${nameString}`}>{item[field]}</a>
+            }
+        },
+        {
+            key: 'G2 Switching', label: 'G2 Switching', field: 'G2 Switching', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G2 Switching&context=${level}&object=${nameString}`}>{item[field]}</a>
+            }
+          },
+        {
+            key: 'G3 Faults', label: 'G3 Faults', field: 'G3 Faults', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G3 Faults&context=${level}&object=${nameString}`}>{item[field]}</a>
+            }
+          },
+        {
+            key: 'G4 Power Quality', label: 'G4 Power Quality', field: 'G4 Power Quality', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G4 Power Quality&context=${level}&object=${nameString}`}>{item[field]}</a>
+            }
+          },
+        {
+            key: 'G5 Artifacts/Harmonics', label: 'G5 Artifacts/Harmonics', field: 'G5 Artifacts/Harmonics', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G5 Artifacts/Harmonics&context=${level}&object=${nameString}`}>{item[field]}</a>
+            }
+          },
+        {
+            key: 'G6 MinMaxAvg/History', label: 'G6 MinMaxAvg/History', field: 'G6 MinMaxAvg/History', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G6 MinMaxAvg/History&context=${level}&object=${nameString}`}>{item[field]}</a>
+            }
+         },
+        {
+            key: 'G7 Reports', label: 'G7 Reports', field: 'G7 Reports', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G7 Reports&context=${level}&object=${nameString}`}>{item[field]}</a>
+            }
+          },
+        {
+            key: 'G8 Predictive', label: 'G8 Predictive', field: 'G8 Predictive', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G8 Predictive&context=${level}&object=${nameString}`}>{item[field]}</a>
+            }
+         },
+        {
+            key: 'G9 Other', label: 'G9 Other', field: 'G9 Other', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+                let nameString = "";
+                if (level == "System")
+                    nameString = item.System as string;
+                else if (level == "Circuit")
+                    nameString = item.Circuit as string;
+                else if (level == "Device")
+                    nameString = item.Meter as string;
+
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G9 Other&context=${level}&object=${nameString}`}>{item[field]}</a>
+            }
+          },
+        { key: null, label: '', headerStyle: { width: 20 }, rowStyle: { width: 0 } }
+
+    ];
     return (
         <div className='container theme-showcase' style={{ overflow: 'hidden', position: 'absolute', left: 0, top: 60, width: window.innerWidth, height: window.innerHeight - 60 }}>
             <div className='row'>
@@ -96,7 +315,7 @@ const Home = (props: {}) => {
                     <div className='form-group'>
                         <label>&nbsp;</label>
                         <button className='btn btn-primary form-control' onClick={() => {
-                            setLevel('Meter');
+                            setLevel('Device');
                         }}>Clear Filters</button>
                     </div>
                 </div>
@@ -107,7 +326,7 @@ const Home = (props: {}) => {
                         <select className='form-control' value={level as string} onChange={(evt) => setLevel(evt.target.value as Level)}>
                             <option value='System'>System</option>
                             <option value='Circuit'>Circuit</option>
-                            <option value='Meter'>Meter</option>
+                            <option value='Device'>Device</option>
                         </select>
                     </div>
                 </div>
@@ -151,7 +370,7 @@ const Home = (props: {}) => {
 
                 <div className='col-lg-1'>
                     <div className='form-group'>
-                        <label>Mpnth Step</label>
+                        <label>Month Step</label>
                         <button className='btn btn-primary form-control' onClick={() => setDate(moment(date.add(1, 'month')))}>{'>>'}</button>
                     </div>
                 </div>
@@ -165,31 +384,10 @@ const Home = (props: {}) => {
 
             </div>
             <div className='row'>
-                <Table<HomeTable>
-                    cols={[
-                        { key: 'System', label: 'System', field: 'System',content: (item, key, field, style) => <><span>{item[field]}</span></> },
-                        { key: 'Circuit', label: 'Circuit', field: 'Circuit', headerStyle: { width: 100 }, rowStyle: { width: 100 }, content: (item, key, field, style) => <><span>{item[field]}</span></> },
-                        { key: 'Meter', label: 'Meter', field: 'Meter' },
-                        { key: 'SOEs', label: 'SOEs', field: 'SOEs' },
-                        { key: 'Incidents', label: 'Incidents', field: 'Incidents', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
-                        { key: 'LTE', label: 'LTE', field: 'LTE', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
-                        { key: 'PQS', label: 'PQS', field: 'PQS',headerStyle: { width: 100 }, rowStyle: { width: 100 } },
-                        { key: 'Faults', label: 'Faults', field: 'Faults', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
-                        { key: 'Files', label: 'Files', field: 'Files',headerStyle: { width: 100 }, rowStyle: { width: 100 } },
-                        { key: 'G1 Research', label: 'G1 Research', field: 'G1 Research', headerStyle: { width: 100 }, rowStyle: { width: 100 } },
-                        { key: 'G2 Switching', label: 'G2 Switching', field: 'G2 Switching',headerStyle: { width: 200 }, rowStyle: { width: 200 } },
-                        { key: 'G3 Faults', label: 'G3 Faults', field: 'G3 Faults',headerStyle: { width: 200 }, rowStyle: { width: 200 } },
-                        { key: 'G4 Power Quality', label: 'G4 Power Quality', field: 'G4 Power Quality', headerStyle: { width: 200 }, rowStyle: { width: 200 } },
-                        { key: 'G5 Artifacts/Harmonics', label: 'G5 Artifacts/Harmonics', field: 'G5 Artifacts/Harmonics',headerStyle: { width: 200 }, rowStyle: { width: 200 } },
-                        { key: 'G6 MinMaxAvg/History', label: 'G6 MinMaxAvg/History', field: 'G6 MinMaxAvg/History', headerStyle: { width: 200 }, rowStyle: { width: 200 } },
-                        { key: 'G7 Reports', label: 'G7 Reports', field: 'G7 Reports',headerStyle: { width: 200 }, rowStyle: { width: 200 } },
-                        { key: 'G8 Predictive', label: 'G8 Predictive', field: 'G8 Predictive',headerStyle: { width: 200 }, rowStyle: { width: 200 } },
-                        { key: 'G9 Other', label: 'G9 Other', field: 'G9 Other', headerStyle: { width: 200 }, rowStyle: { width: 200 } },
-                        { key: null, label: '', headerStyle: { width: 20 }, rowStyle: { width: 0 } }
-
-                    ]}
+                <RotatedHeaderTable<HomeTable>
+                    cols={cols}
                     tableClass="table table-hover"
-                    theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 50 }}
+                    theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: window.innerWidth, height: 100 }}
                     tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 180, height: window.innerHeight - 180, width: '100%' }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                     sortKey={sortField}
@@ -205,9 +403,116 @@ const Home = (props: {}) => {
                     data={data}
                     ascending={ascending}
                 />
+
             </div>
         </div>
     );
 }
+
+interface RotatedColumn<T> extends Column<T> { rotate?: boolean}
+interface RotatedHeaderProps<T> extends TableProps<T> {
+    cols: RotatedColumn<T>[];
+}
+
+function RotatedHeaderTable<T>(props: RotatedHeaderProps<T>){
+    return (
+        <table className={props.tableClass !== undefined ? props.tableClass : ''} style={props.tableStyle}>
+            <RotatedHeader<T> Class={props.theadClass} Style={props.theadStyle} Cols={props.cols} SortKey={props.sortKey} Ascending={props.ascending} Click={(d, e) => {
+                if(d.colKey !== null)
+                    props.onSort(d)
+            }} />
+            <Rows<T> Data={props.data} Cols={props.cols} RowStyle={props.rowStyle} BodyStyle={props.tbodyStyle} BodyClass={props.tbodyClass} Click={(data, e) => props.onClick(data, e)} Selected={props.selected} KeySelector={props.keySelector} />
+        </table>
+    );
+}
+
+interface IRotatedHeaderProps<T> {
+    Class?: string,
+    Style?: React.CSSProperties,
+    Cols: RotatedColumn<T>[],
+    SortKey: string,
+    Ascending: boolean,
+    Click: (data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
+
+}
+
+function RotatedHeader<T>(props: IRotatedHeaderProps<T>) {
+
+    return (
+        <thead className={props.Class} style={props.Style}>
+            <tr>{props.Cols.map((col) => <RotatedHeaderCell key={col.key} HeaderStyle={col.headerStyle} DataKey={col.key} Click={(e) => props.Click({ colKey: col.key, colField: col.field, ascending: props.Ascending }, e)} Label={col.label} SortKey={props.SortKey} Ascending={props.Ascending} Rotate={col.rotate } />)}
+            </tr>
+        </thead>)
+
+}
+
+interface IRotatedHeaderCellProps {
+    HeaderStyle?: React.CSSProperties,
+    DataKey: string,
+    Click: (e: any) => void,
+    Label: string,
+    SortKey: string,
+    Ascending: boolean,
+    Rotate?:boolean
+}
+function RotatedHeaderCell(props: IRotatedHeaderCellProps) {
+    const style: React.CSSProperties = (props.HeaderStyle !== undefined) ? props.HeaderStyle : {};
+
+    if (style.cursor === undefined && props.DataKey !== null) {
+        style.cursor = 'pointer';
+    }
+
+    if (style.position === undefined) {
+        style.position = 'relative';
+    }
+
+    style.whiteSpace = 'nowrap';
+    if (props.Rotate != true)
+        return (
+            <th
+                style={style}
+                onClick={(e) => props.Click(e)}
+            >
+
+                <RenderAngleIcon SortKey={props.SortKey} Key={props.DataKey} Ascending={props.Ascending} />
+                <div style={{ marginLeft: props.SortKey == props.DataKey ?  10 : 0 }}>{props.Label}</div>
+            </th>
+        );
+    else {
+        return (
+            <th
+                style={style}
+                onClick={(e) => props.Click(e)}
+            >
+
+                <RenderAngleIcon SortKey={props.SortKey} Key={props.DataKey} Ascending={props.Ascending} />
+                <div style={{ transform: 'translate(0px,-15px) rotate(315deg)' }}><span style={{borderBottom: '1px solid #ccc', padding: '5px 10px'}}>{props.Label}</span></div>
+            </th>
+        );
+
+    }
+}
+
+interface IRenderAngleProps {
+    SortKey: string,
+    Key: string,
+    Ascending: boolean
+}
+
+function RenderAngleIcon(props: IRenderAngleProps) {
+
+    const AngleIcon: React.FunctionComponent<{ ascending: boolean }> = () => (
+        <div
+            style={{ position: 'absolute', bottom: 10, transform: (props.Ascending ? 'rotate(0deg)' : 'rotate(180deg)') }}>{'^'}</div>
+    );
+
+    if (props.SortKey === null)
+        return null;
+
+    if (props.SortKey !== props.Key)
+        return null;
+
+    return <AngleIcon ascending={props.Ascending} />
+};
 
 ReactDOM.render(<Home />, document.getElementById('bodyContainer'));

@@ -200,6 +200,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers">
       <HintPath>..\..\Dependencies\GSF\System.Web.Helpers.dll</HintPath>
     </Reference>
@@ -1021,6 +1022,7 @@
     <None Include="wwwroot\index.cshtml" />
     <None Include="wwwroot\Layout.cshtml" />
     <Content Include="wwwroot\OpenSEE.cshtml" />
+    <Content Include="wwwroot\ImageTable.cshtml" />
     <None Include="wwwroot\RemoteConsole.cshtml" />
     <Content Include="wwwroot\Replay.cshtml" />
     <None Include="wwwroot\Settings.cshtml" />
@@ -1070,6 +1072,7 @@
     <Content Include="wwwroot\Scripts\TSX\AggregateWaveformViewerBySOE\AggregateWaveformViewerBySOE.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\global.d.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\Home\Home.tsx" />
+    <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\ImageTable.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Image.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Map.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\nlt.d.ts" />

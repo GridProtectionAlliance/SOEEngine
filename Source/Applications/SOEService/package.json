@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "@gpa-gemstone/application-typings": "0.0.14",
+    "@gpa-gemstone/application-typings": "0.0.20",
     "@gpa-gemstone/gpa-symbols": "0.0.13",
     "@gpa-gemstone/react-forms": "1.1.10",
-    "@gpa-gemstone/react-table": "1.0.9",
+    "@gpa-gemstone/react-table": "1.2.1",
     "@reduxjs/toolkit": "1.5.0",
     "@types/flot": "0.0.31",
     "@types/leaflet": "1.7.4",

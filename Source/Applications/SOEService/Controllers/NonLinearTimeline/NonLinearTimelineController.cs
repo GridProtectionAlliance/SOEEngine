@@ -242,6 +242,44 @@ namespace SOEService.Controllers
 
         }
 
+        [HttpGet, Route("ImageTable/{date}/{group}/{context}/{objectName}")]
+        public IHttpActionResult ImageTable(string date, string group, string context, string objectName)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+
+                string sql = $@"
+                    SELECT
+	                    System.Name as System,
+	                    Circuit.Name as Circuit,
+	                    Meter.AssetKey as Device,
+	                    MatlabGroup.Name as [Group],
+	                    NLTImages.Url as Link,
+	                    NLTImages.DisplayText,
+	                    NLTImages.EventID,
+	                    NLTImages.RetentionPolicy,
+	                    NLTImages.Deleted,
+                        NLTImages.ID
+                    FROM
+	                    NLTImages JOIN
+	                    MatlabGroup ON MatlabGroup.ID = NLTImages.GroupID JOIN
+	                    Event ON NLTImages.EventID = Event.ID JOIN
+	                    Meter ON Meter.ID = Event.MeterID JOIN
+	                    Circuit ON Circuit.ID = Meter.CircuitID JOIN
+	                    System ON System.ID = Circuit.SystemID
+                    WHERE
+	                    CAST(Event.StartTime as Date) = {{0}} 
+                    ";
+                if(group != "All") sql = $@"{sql} AND MatlabGroup.Name = {{1}}";
+                if (context == "System") sql = $@"{sql} AND System.Name = {{2}}";
+                else if (context == "Circuit") sql = $@"{sql} AND Circuit.Name = {{2}}";
+                else sql = $@"{sql} AND Meter.AssetKey = {{2}}";
+
+                DataTable table = connection.RetrieveData(sql, date, group.Replace("------","/"), objectName);
+                return Ok(table);
+            }
+
+        }
 
         [HttpGet, Route("Image/{id:int}")]
         public HttpResponseMessage GetImage(int id)
