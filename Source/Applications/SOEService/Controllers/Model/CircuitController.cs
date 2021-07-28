@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  Circuit.cs - Gbtc
+//  CircuitController.cs - Gbtc
 //
-//  Copyright © 2018, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,37 +16,36 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  02/23/2018 - Billy Ernest
+//  07/28/2021 - Billy Ernest
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
-using GSF.Data.Model;
+using GSF.Web.Model;
+using Newtonsoft.Json.Linq;
+using SOE.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Web;
+using System.Web.Http;
 
-namespace SOE.Model
+namespace SOEService.Controllers.Model
 {
-    [TableName("Circuit"), UseEscapedName]
-    public class Circuit
+    [RoutePrefix("api/Circuit")]
+    public class CircuitController : ModelController<Circuit>
     {
-        [PrimaryKey(true)]
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public int SystemID { get; set; }
-        public byte[] GeoJSON { get; set; }
+        //public override IHttpActionResult Post([FromBody] JObject record)
+        //{
+        //    record["GeoJSON"] = Encoding.UTF8.GetBytes(record["GeoJSONString"].Value<string>()); 
+        //    return base.Post(record);
+        //}
 
-        [NonRecordField]
-        public string GeoJSONString
+        public override IHttpActionResult Patch([FromBody] Circuit record)
         {
-            get
-            {
-                if (GeoJSON == null) return null;
-                else return Encoding.UTF8.GetString(GeoJSON); 
-            }
-            set { GeoJSONString = value; }
-
+            //record.GeoJSON = Encoding.UTF8.GetBytes(record.GeoJSONString);
+            return base.Patch(record);
         }
-
     }
-
 }

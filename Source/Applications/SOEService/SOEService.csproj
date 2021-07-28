@@ -252,6 +252,7 @@
     <Compile Include="Controllers\AggregateWaveformViewBySOE\IncidentGroupController.cs" />
     <Compile Include="Controllers\AggregateWaveformViewBySOE\SOEController.cs" />
     <Compile Include="Controllers\Home\HomeController.cs" />
+    <Compile Include="Controllers\Model\CircuitController.cs" />
     <Compile Include="Controllers\NonLinearTimeline\NonLinearTimelineController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\Replay\ReplayController.cs" />
@@ -1065,9 +1066,7 @@
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controllers\Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="wwwroot\Scripts\TSX\AggregateWaveformViewerBySOE\AggregateWaveformViewerBySOE.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\global.d.ts" />

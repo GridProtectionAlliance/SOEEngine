@@ -228,6 +228,7 @@ CREATE TABLE Circuit(
 	ID int IDENTITY(1,1) NOT NULL Primary key,
 	SystemID int not null foreign key references system(id),
 	Name varchar(max) NOT NULL,
+    GeoJSON VARBINARY(MAX) NULL
 )
 GO
 

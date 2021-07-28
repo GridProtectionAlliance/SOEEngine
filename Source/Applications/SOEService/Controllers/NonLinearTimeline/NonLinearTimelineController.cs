@@ -25,6 +25,7 @@
 using GSF.Data;
 using GSF.Data.Model;
 using Newtonsoft.Json;
+using SOE.Model;
 using SOE.Model.NonLinearTimeLine;
 using System;
 using System.Collections.Generic;
@@ -197,18 +198,27 @@ namespace SOEService.Controllers
         [HttpGet, Route("Conductors/{soeID:int}")]
         public IHttpActionResult GetConductors(int soeID)
         {
-            if (soeID == 7) {
-                using (StreamReader reader = new StreamReader("conductor.json"))
-                {
-                    string json = reader.ReadToEnd();
-                    return Ok(json);
-                }
-            }
-            else {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                DataTable table = connection.RetrieveData($@"
+                    ;WITH Devices AS (
+                    SELECT 
+	                    DISTINCT SUBSTRING(SensorName, 0, CHARINDEX( '.',SensorName) ) AS Device
+                    FROM SOEDataPoint WHERE SOE_ID = {{0}}
+                    )
+                    SELECT
+	                    DISTINCT Circuit.*
+                    FROM 
+	                    Meter JOIN
+	                    Devices ON MEter.AssetKey = Devices.Device JOIN
+	                    Circuit ON Meter.CircuitID = Circuit.ID
+                    WHERE 
+                        Circuit.GeoJSON IS NOT NULL
 
-                return Ok("{\"type\": \"FeatureCollection\", \"name\": \"Conductor\", \"features\": []}");
-            }
+                ", soeID);
 
+                return Ok(table.Select().Select(x => new TableOperations<Circuit>(connection).LoadRecord(x)).ToList());
+            }
         }
 
 

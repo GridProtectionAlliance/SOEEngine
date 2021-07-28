@@ -30,8 +30,11 @@ import { symbolCircle, symbolWye, symbolDiamond, symbolSquare, symbolTriangle, s
 import { Color, MapMeter, SOEDataPoint,Image } from './nlt';
 import { abort } from 'process';
 
+
+interface Circuit { ID: number, Name: string, SystemID: number, GeoJSON: string, GeoJSONString: string }
+
 const LeafletMap = (props: { SOEID: string, Colors: Color[], Meters: MapMeter[], Width: number, Height: number, SelectedPoint: SOEDataPoint }) => {
-    const [conductors, setConductors] = React.useState<string>('');
+    const [conductors, setConductors] = React.useState<any>(null);
 
     React.useEffect(() => {
         if (props.SOEID == undefined) return;
@@ -42,10 +45,22 @@ const LeafletMap = (props: { SOEID: string, Colors: Color[], Meters: MapMeter[],
             dataType: 'json',
             cache: true,
             async: true
-        }) as JQuery.jqXHR<string>;
+        }) as JQuery.jqXHR<Circuit[]>;
 
         handle.done(d => {
-            setConductors(d);
+            if (d.length == 0) return;
+            else {
+                let json = null;
+
+                for (let circuit of d) {
+                    if (json == null)
+                        json = JSON.parse(circuit.GeoJSONString)
+                    else
+                        json.features = json.features.concat(JSON.parse(circuit.GeoJSONString).features)
+                }
+
+                setConductors(json);
+            }
         })
 
 
@@ -59,7 +74,7 @@ const LeafletMap = (props: { SOEID: string, Colors: Color[], Meters: MapMeter[],
             <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
             <ColorLegend Colors={props.Colors} />
             <Meters Meters={props.Meters} SelectedPoint={props.SelectedPoint } />
-            {conductors != '' ? <GeoJSON data={JSON.parse(conductors)} /> : null}
+            {conductors !== null ? <GeoJSON data={conductors} style={(feature) => ({ color: feature.properties.COLOR, weight: feature.properties.WEIGHT, opacity: feature.properties.OPACITY  }) }/> : null}
             <ViewWindow SelectedPoint={props.SelectedPoint} />
         </MapContainer>
     );
