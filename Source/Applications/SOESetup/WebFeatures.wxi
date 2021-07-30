@@ -2,6 +2,8 @@
 <Feature Id="WebFilesFeature" Title="Web Files" Description="Web Files">
   <ComponentGroupRef Id="wwwroot_Components" />
   <ComponentGroupRef Id="wwwroot_Content_Components" />
+  <ComponentGroupRef Id="wwwroot_Content_Fonts_Components" />
+  <ComponentGroupRef Id="wwwroot_Content_Images_Components" />
   <ComponentGroupRef Id="wwwroot_Images_Components" />
   <ComponentGroupRef Id="wwwroot_Images_PointCode_Components" />
   <ComponentGroupRef Id="wwwroot_Images_PointCode_BreakerElement_Components" />
@@ -25,7 +27,11 @@
   <ComponentGroupRef Id="wwwroot_Images_UpDownState_Word_Set_Components" />
   <ComponentGroupRef Id="wwwroot_Images_UpDownState_Word_Set_48_Components" />
   <ComponentGroupRef Id="wwwroot_Scripts_Components" />
-  <ComponentGroupRef Id="wwwroot_Scripts_JSX_Components" />
   <ComponentGroupRef Id="wwwroot_Scripts_Services_Components" />
+  <ComponentGroupRef Id="wwwroot_Scripts_TSX_Components" />
+  <ComponentGroupRef Id="wwwroot_Scripts_TSX_AggregateWaveformViewerBySOE_Components" />
+  <ComponentGroupRef Id="wwwroot_Scripts_TSX_Home_Components" />
+  <ComponentGroupRef Id="wwwroot_Scripts_TSX_NonLinearTimeline_Components" />
+  <ComponentGroupRef Id="wwwroot_Scripts_TSX_Replay_Components" />
 </Feature>
 </Include>

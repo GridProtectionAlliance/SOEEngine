@@ -1006,8 +1006,16 @@
     <Content Include="wwwroot\Images\UpDownState\Word Set\48\331.png" />
     <Content Include="wwwroot\Images\UpDownState\Word Set\48\332.png" />
     <Content Include="wwwroot\Images\UpDownState\Word Set\48\333.png" />
+    <Content Include="wwwroot\Scripts\912ec66d7572ff821749319396470bde.svg" />
     <Content Include="wwwroot\Scripts\AggregateWaveformViewerBySOE.js" />
+    <Content Include="wwwroot\Scripts\bundle.js" />
+    <Content Include="wwwroot\Scripts\dateFormat.js" />
+    <Content Include="wwwroot\Scripts\Home.js" />
+    <Content Include="wwwroot\Scripts\Image.js" />
+    <Content Include="wwwroot\Scripts\ImageTable.js" />
     <Content Include="wwwroot\Scripts\jquery.blockUI.js" />
+    <Content Include="wwwroot\Scripts\main.js" />
+    <Content Include="wwwroot\Scripts\NonLinearTimeline.js" />
     <Content Include="wwwroot\Scripts\OpenSEE.js" />
     <Content Include="wwwroot\Scripts\Replay.js" />
     <Content Include="wwwroot\Scripts\Summary.js" />
@@ -1026,6 +1034,12 @@
     <Content Include="wwwroot\ImageTable.cshtml" />
     <None Include="wwwroot\RemoteConsole.cshtml" />
     <Content Include="wwwroot\Replay.cshtml" />
+    <Content Include="wwwroot\Scripts\674f50d287a8c48dc19ba404d20fe713.eot" />
+    <Content Include="wwwroot\Scripts\b06871f281fee6b241d60582ae9369b9.ttf" />
+    <Content Include="wwwroot\Scripts\bundle.js.map" />
+    <Content Include="wwwroot\Scripts\main.js.map" />
+    <Content Include="wwwroot\Scripts\Summary.js.map" />
+    <Content Include="wwwroot\Scripts\WaveformViewer.js.map" />
     <None Include="wwwroot\Settings.cshtml" />
     <None Include="wwwroot\Users.cshtml" />
   </ItemGroup>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{B3493118-9437-497D-A716-24232CE0D4F2}"
 EndProject
@@ -49,6 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugServiceMonitor", "Libr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{B554F6A4-C3DF-4D8B-B3EF-7819B44BCE09}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\Documents\EPB\SOEConfigExporter.sql = ..\..\..\..\Documents\EPB\SOEConfigExporter.sql
 		Data\SOESchema.sql = Data\SOESchema.sql
 	EndProjectSection
 EndProject
@@ -181,5 +182,8 @@ Global
 		{11AE594D-2B2B-473C-8550-6BF62914C3E2} = {0F4F3F4C-55D3-4D76-99AC-1ABD3F69CFBE}
 		{54CDFAE3-A029-4141-9A7D-5981B7CD4B64} = {0F4F3F4C-55D3-4D76-99AC-1ABD3F69CFBE}
 		{674F09A7-4477-4CED-90F6-B7512886BC74} = {B3493118-9437-497D-A716-24232CE0D4F2}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A70BF824-98E4-46CA-8F93-48DBA051DD25}
 	EndGlobalSection
 EndGlobal

@@ -1,5 +1,8 @@
 <Include>
 <ComponentGroup Id="wwwroot_Components" Directory="wwwroot_WWWROOTFOLDER">
+  <Component Id="wwwroot_AggregateWaveformViewerBySOE_cshtml">
+    <File Id="wwwroot_AggregateWaveformViewerBySOE.cshtml" Name="AggregateWaveformViewerBySOE.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\AggregateWaveformViewerBySOE.cshtml" />
+  </Component>
   <Component Id="wwwroot_CommonAggregateView_cshtml">
     <File Id="wwwroot_CommonAggregateView.cshtml" Name="CommonAggregateView.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\CommonAggregateView.cshtml" />
   </Component>
@@ -8,6 +11,15 @@
   </Component>
   <Component Id="wwwroot_Groups_cshtml">
     <File Id="wwwroot_Groups.cshtml" Name="Groups.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Groups.cshtml" />
+  </Component>
+  <Component Id="wwwroot_Health_cshtml">
+    <File Id="wwwroot_Health.cshtml" Name="Health.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Health.cshtml" />
+  </Component>
+  <Component Id="wwwroot_Image_html">
+    <File Id="wwwroot_Image.html" Name="Image.html" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Image.html" />
+  </Component>
+  <Component Id="wwwroot_ImageTable_cshtml">
+    <File Id="wwwroot_ImageTable.cshtml" Name="ImageTable.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\ImageTable.cshtml" />
   </Component>
   <Component Id="wwwroot_IncidentEventCycleDataView_cshtml">
     <File Id="wwwroot_IncidentEventCycleDataView.cshtml" Name="IncidentEventCycleDataView.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\IncidentEventCycleDataView.cshtml" />
@@ -18,11 +30,17 @@
   <Component Id="wwwroot_Layout_cshtml">
     <File Id="wwwroot_Layout.cshtml" Name="Layout.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Layout.cshtml" />
   </Component>
+  <Component Id="wwwroot_NonLinearTimeline_cshtml">
+    <File Id="wwwroot_NonLinearTimeline.cshtml" Name="NonLinearTimeline.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\NonLinearTimeline.cshtml" />
+  </Component>
   <Component Id="wwwroot_OpenSEE_cshtml">
     <File Id="wwwroot_OpenSEE.cshtml" Name="OpenSEE.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\OpenSEE.cshtml" />
   </Component>
   <Component Id="wwwroot_RemoteConsole_cshtml">
     <File Id="wwwroot_RemoteConsole.cshtml" Name="RemoteConsole.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\RemoteConsole.cshtml" />
+  </Component>
+  <Component Id="wwwroot_Replay_cshtml">
+    <File Id="wwwroot_Replay.cshtml" Name="Replay.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Replay.cshtml" />
   </Component>
   <Component Id="wwwroot_Settings_cshtml">
     <File Id="wwwroot_Settings.cshtml" Name="Settings.cshtml" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Settings.cshtml" />
@@ -74,6 +92,9 @@
   <Component Id="wwwroot_Content_ExtraMediaBootstrap_css">
     <File Id="wwwroot_Content_ExtraMediaBootstrap.css" Name="ExtraMediaBootstrap.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\ExtraMediaBootstrap.css" />
   </Component>
+  <Component Id="wwwroot_Content_font_awesome_css">
+    <File Id="wwwroot_Content_font_awesome.css" Name="font-awesome.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\font-awesome.css" />
+  </Component>
   <Component Id="wwwroot_Content_Input_css">
     <File Id="wwwroot_Content_Input.css" Name="Input.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Input.css" />
   </Component>
@@ -85,6 +106,106 @@
   </Component>
   <Component Id="wwwroot_Content_Site_css">
     <File Id="wwwroot_Content_Site.css" Name="Site.css" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Site.css" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Content_Fonts_Components" Directory="wwwroot_CONTENTFONTSFOLDER">
+  <Component Id="wwwroot_Content_Fonts_fontawesome_webfont_eot">
+    <File Id="wwwroot_Content_Fonts_fontawesome_webfont.eot" Name="fontawesome-webfont.eot" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Fonts\fontawesome-webfont.eot" />
+  </Component>
+  <Component Id="wwwroot_Content_Fonts_fontawesome_webfont_svg">
+    <File Id="wwwroot_Content_Fonts_fontawesome_webfont.svg" Name="fontawesome-webfont.svg" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Fonts\fontawesome-webfont.svg" />
+  </Component>
+  <Component Id="wwwroot_Content_Fonts_fontawesome_webfont_ttf">
+    <File Id="wwwroot_Content_Fonts_fontawesome_webfont.ttf" Name="fontawesome-webfont.ttf" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Fonts\fontawesome-webfont.ttf" />
+  </Component>
+  <Component Id="wwwroot_Content_Fonts_fontawesome_webfont_woff">
+    <File Id="wwwroot_Content_Fonts_fontawesome_webfont.woff" Name="fontawesome-webfont.woff" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Fonts\fontawesome-webfont.woff" />
+  </Component>
+  <Component Id="wwwroot_Content_Fonts_fontawesome_webfont_woff2">
+    <File Id="wwwroot_Content_Fonts_fontawesome_webfont.woff2" Name="fontawesome-webfont.woff2" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Fonts\fontawesome-webfont.woff2" />
+  </Component>
+  <Component Id="wwwroot_Content_Fonts_FontAwesome_otf">
+    <File Id="wwwroot_Content_Fonts_FontAwesome.otf" Name="FontAwesome.otf" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Fonts\FontAwesome.otf" />
+  </Component>
+  <Component Id="wwwroot_Content_Fonts_glyphicons_halflings_regular_eot">
+    <File Id="wwwroot_Content_Fonts_glyphicons_halflings_regular.eot" Name="glyphicons-halflings-regular.eot" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Fonts\glyphicons-halflings-regular.eot" />
+  </Component>
+  <Component Id="wwwroot_Content_Fonts_glyphicons_halflings_regular_svg">
+    <File Id="wwwroot_Content_Fonts_glyphicons_halflings_regular.svg" Name="glyphicons-halflings-regular.svg" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Fonts\glyphicons-halflings-regular.svg" />
+  </Component>
+  <Component Id="wwwroot_Content_Fonts_glyphicons_halflings_regular_ttf">
+    <File Id="wwwroot_Content_Fonts_glyphicons_halflings_regular.ttf" Name="glyphicons-halflings-regular.ttf" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Fonts\glyphicons-halflings-regular.ttf" />
+  </Component>
+  <Component Id="wwwroot_Content_Fonts_glyphicons_halflings_regular_woff">
+    <File Id="wwwroot_Content_Fonts_glyphicons_halflings_regular.woff" Name="glyphicons-halflings-regular.woff" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Fonts\glyphicons-halflings-regular.woff" />
+  </Component>
+  <Component Id="wwwroot_Content_Fonts_glyphicons_halflings_regular_woff2">
+    <File Id="wwwroot_Content_Fonts_glyphicons_halflings_regular.woff2" Name="glyphicons-halflings-regular.woff2" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Fonts\glyphicons-halflings-regular.woff2" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Content_Images_Components" Directory="wwwroot_CONTENTIMAGESFOLDER">
+  <Component Id="wwwroot_Content_Images_layers_2x_png">
+    <File Id="wwwroot_Content_Images_layers_2x.png" Name="layers-2x.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\layers-2x.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_layers_png">
+    <File Id="wwwroot_Content_Images_layers.png" Name="layers.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\layers.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_loading_gif">
+    <File Id="wwwroot_Content_Images_loading.gif" Name="loading.gif" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\loading.gif" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_loadingbar_gif">
+    <File Id="wwwroot_Content_Images_loadingbar.gif" Name="loadingbar.gif" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\loadingbar.gif" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_marker_icon_2x_png">
+    <File Id="wwwroot_Content_Images_marker_icon_2x.png" Name="marker-icon-2x.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\marker-icon-2x.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_marker_icon_png">
+    <File Id="wwwroot_Content_Images_marker_icon.png" Name="marker-icon.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\marker-icon.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_marker_shadow_png">
+    <File Id="wwwroot_Content_Images_marker_shadow.png" Name="marker-shadow.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\marker-shadow.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_password_meter_png">
+    <File Id="wwwroot_Content_Images_password_meter.png" Name="password-meter.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\password-meter.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_rating_png">
+    <File Id="wwwroot_Content_Images_rating.png" Name="rating.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\rating.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_222222_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_222222_256x240.png" Name="ui-icons_222222_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_222222_256x240.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_2e83ff_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_2e83ff_256x240.png" Name="ui-icons_2e83ff_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_2e83ff_256x240.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_333333_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_333333_256x240.png" Name="ui-icons_333333_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_333333_256x240.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_444444_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_444444_256x240.png" Name="ui-icons_444444_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_444444_256x240.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_454545_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_454545_256x240.png" Name="ui-icons_454545_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_454545_256x240.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_555555_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_555555_256x240.png" Name="ui-icons_555555_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_555555_256x240.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_777620_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_777620_256x240.png" Name="ui-icons_777620_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_777620_256x240.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_777777_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_777777_256x240.png" Name="ui-icons_777777_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_777777_256x240.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_888888_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_888888_256x240.png" Name="ui-icons_888888_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_888888_256x240.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_cc0000_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_cc0000_256x240.png" Name="ui-icons_cc0000_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_cc0000_256x240.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_cd0a0a_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_cd0a0a_256x240.png" Name="ui-icons_cd0a0a_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_cd0a0a_256x240.png" />
+  </Component>
+  <Component Id="wwwroot_Content_Images_ui_icons_ffffff_256x240_png">
+    <File Id="wwwroot_Content_Images_ui_icons_ffffff_256x240.png" Name="ui-icons_ffffff_256x240.png" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Content\Images\ui-icons_ffffff_256x240.png" />
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Images_Components" Directory="wwwroot_IMAGESFOLDER">
@@ -2022,6 +2143,18 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_Components" Directory="wwwroot_SCRIPTSFOLDER">
+  <Component Id="wwwroot_Scripts_674f50d287a8c48dc19ba404d20fe713_eot">
+    <File Id="wwwroot_Scripts_674f50d287a8c48dc19ba404d20fe713.eot" Name="674f50d287a8c48dc19ba404d20fe713.eot" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\674f50d287a8c48dc19ba404d20fe713.eot" />
+  </Component>
+  <Component Id="wwwroot_Scripts_912ec66d7572ff821749319396470bde_svg">
+    <File Id="wwwroot_Scripts_912ec66d7572ff821749319396470bde.svg" Name="912ec66d7572ff821749319396470bde.svg" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\912ec66d7572ff821749319396470bde.svg" />
+  </Component>
+  <Component Id="wwwroot_Scripts_AggregateWaveformViewerBySOE_js">
+    <File Id="wwwroot_Scripts_AggregateWaveformViewerBySOE.js" Name="AggregateWaveformViewerBySOE.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\AggregateWaveformViewerBySOE.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_b06871f281fee6b241d60582ae9369b9_ttf">
+    <File Id="wwwroot_Scripts_b06871f281fee6b241d60582ae9369b9.ttf" Name="b06871f281fee6b241d60582ae9369b9.ttf" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\b06871f281fee6b241d60582ae9369b9.ttf" />
+  </Component>
   <Component Id="wwwroot_Scripts_bundle_js">
     <File Id="wwwroot_Scripts_bundle.js" Name="bundle.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\bundle.js" />
   </Component>
@@ -2030,6 +2163,15 @@
   </Component>
   <Component Id="wwwroot_Scripts_dateFormat_js">
     <File Id="wwwroot_Scripts_dateFormat.js" Name="dateFormat.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\dateFormat.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_Home_js">
+    <File Id="wwwroot_Scripts_Home.js" Name="Home.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Home.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_Image_js">
+    <File Id="wwwroot_Scripts_Image.js" Name="Image.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Image.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_ImageTable_js">
+    <File Id="wwwroot_Scripts_ImageTable.js" Name="ImageTable.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\ImageTable.js" />
   </Component>
   <Component Id="wwwroot_Scripts_jquery_blockUI_js">
     <File Id="wwwroot_Scripts_jquery.blockUI.js" Name="jquery.blockUI.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\jquery.blockUI.js" />
@@ -2040,8 +2182,14 @@
   <Component Id="wwwroot_Scripts_main_js_map">
     <File Id="wwwroot_Scripts_main.js.map" Name="main.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\main.js.map" />
   </Component>
+  <Component Id="wwwroot_Scripts_NonLinearTimeline_js">
+    <File Id="wwwroot_Scripts_NonLinearTimeline.js" Name="NonLinearTimeline.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\NonLinearTimeline.js" />
+  </Component>
   <Component Id="wwwroot_Scripts_OpenSEE_js">
     <File Id="wwwroot_Scripts_OpenSEE.js" Name="OpenSEE.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\OpenSEE.js" />
+  </Component>
+  <Component Id="wwwroot_Scripts_Replay_js">
+    <File Id="wwwroot_Scripts_Replay.js" Name="Replay.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Replay.js" />
   </Component>
   <Component Id="wwwroot_Scripts_Site_js">
     <File Id="wwwroot_Scripts_Site.js" Name="Site.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Site.js" />
@@ -2059,44 +2207,79 @@
     <File Id="wwwroot_Scripts_WaveformViewer.js.map" Name="WaveformViewer.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\WaveformViewer.js.map" />
   </Component>
 </ComponentGroup>
-<ComponentGroup Id="wwwroot_Scripts_JSX_Components" Directory="wwwroot_SCRIPTSJSXFOLDER">
-  <Component Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker_tsx">
-    <File Id="wwwroot_Scripts_JSX_BootstrapDateRangePicker.tsx" Name="BootstrapDateRangePicker.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\BootstrapDateRangePicker.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_IncidentGroup_tsx">
-    <File Id="wwwroot_Scripts_JSX_IncidentGroup.tsx" Name="IncidentGroup.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\IncidentGroup.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Input_tsx">
-    <File Id="wwwroot_Scripts_JSX_Input.tsx" Name="Input.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Input.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Legend_tsx">
-    <File Id="wwwroot_Scripts_JSX_Legend.tsx" Name="Legend.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Legend.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper_tsx">
-    <File Id="wwwroot_Scripts_JSX_PrimeDataTableWrapper.tsx" Name="PrimeDataTableWrapper.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeDataTableWrapper.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper_tsx">
-    <File Id="wwwroot_Scripts_JSX_PrimeMultiselectWrapper.tsx" Name="PrimeMultiselectWrapper.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\PrimeMultiselectWrapper.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Select_tsx">
-    <File Id="wwwroot_Scripts_JSX_Select.tsx" Name="Select.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Select.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Summary_tsx">
-    <File Id="wwwroot_Scripts_JSX_Summary.tsx" Name="Summary.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Summary.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_Table_tsx">
-    <File Id="wwwroot_Scripts_JSX_Table.tsx" Name="Table.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\Table.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_WaveformViewer_tsx">
-    <File Id="wwwroot_Scripts_JSX_WaveformViewer.tsx" Name="WaveformViewer.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\WaveformViewer.tsx" />
-  </Component>
-  <Component Id="wwwroot_Scripts_JSX_WaveformViewGraph_tsx">
-    <File Id="wwwroot_Scripts_JSX_WaveformViewGraph.tsx" Name="WaveformViewGraph.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\JSX\WaveformViewGraph.tsx" />
-  </Component>
-</ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_Services_Components" Directory="wwwroot_SCRIPTSSERVICESFOLDER">
   <Component Id="wwwroot_Scripts_Services_SOEService_ts">
     <File Id="wwwroot_Scripts_Services_SOEService.ts" Name="SOEService.ts" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Services\SOEService.ts" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Scripts_TSX_Components" Directory="wwwroot_SCRIPTSTSXFOLDER">
+  <Component Id="wwwroot_Scripts_TSX_BootstrapDateRangePicker_tsx">
+    <File Id="wwwroot_Scripts_TSX_BootstrapDateRangePicker.tsx" Name="BootstrapDateRangePicker.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\BootstrapDateRangePicker.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_global_d_ts">
+    <File Id="wwwroot_Scripts_TSX_global.d.ts" Name="global.d.ts" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\global.d.ts" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_IncidentGroup_tsx">
+    <File Id="wwwroot_Scripts_TSX_IncidentGroup.tsx" Name="IncidentGroup.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\IncidentGroup.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_Input_tsx">
+    <File Id="wwwroot_Scripts_TSX_Input.tsx" Name="Input.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\Input.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_Legend_tsx">
+    <File Id="wwwroot_Scripts_TSX_Legend.tsx" Name="Legend.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\Legend.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_PrimeDataTableWrapper_tsx">
+    <File Id="wwwroot_Scripts_TSX_PrimeDataTableWrapper.tsx" Name="PrimeDataTableWrapper.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\PrimeDataTableWrapper.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_PrimeMultiselectWrapper_tsx">
+    <File Id="wwwroot_Scripts_TSX_PrimeMultiselectWrapper.tsx" Name="PrimeMultiselectWrapper.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\PrimeMultiselectWrapper.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_Select_tsx">
+    <File Id="wwwroot_Scripts_TSX_Select.tsx" Name="Select.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\Select.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_Summary_tsx">
+    <File Id="wwwroot_Scripts_TSX_Summary.tsx" Name="Summary.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\Summary.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_Table_tsx">
+    <File Id="wwwroot_Scripts_TSX_Table.tsx" Name="Table.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\Table.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_WaveformViewer_tsx">
+    <File Id="wwwroot_Scripts_TSX_WaveformViewer.tsx" Name="WaveformViewer.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\WaveformViewer.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_WaveformViewGraph_tsx">
+    <File Id="wwwroot_Scripts_TSX_WaveformViewGraph.tsx" Name="WaveformViewGraph.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\WaveformViewGraph.tsx" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Scripts_TSX_AggregateWaveformViewerBySOE_Components" Directory="wwwroot_SCRIPTSTSXAGGREGATEWAVEFORMVIEWERBYSOEFOLDER">
+  <Component Id="wwwroot_Scripts_TSX_AggregateWaveformViewerBySOE_AggregateWaveformVi30897308_tsx">
+    <File Id="wwwroot_Scripts_TSX_AggregateWaveformViewerBySOE_AggregateWaveformVi30897308.tsx" Name="AggregateWaveformViewerBySOE.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\AggregateWaveformViewerBySOE\AggregateWaveformViewerBySOE.tsx" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Scripts_TSX_Home_Components" Directory="wwwroot_SCRIPTSTSXHOMEFOLDER">
+  <Component Id="wwwroot_Scripts_TSX_Home_Home_tsx">
+    <File Id="wwwroot_Scripts_TSX_Home_Home.tsx" Name="Home.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\Home\Home.tsx" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Scripts_TSX_NonLinearTimeline_Components" Directory="wwwroot_SCRIPTSTSXNONLINEARTIMELINEFOLDER">
+  <Component Id="wwwroot_Scripts_TSX_NonLinearTimeline_Image_tsx">
+    <File Id="wwwroot_Scripts_TSX_NonLinearTimeline_Image.tsx" Name="Image.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\NonLinearTimeline\Image.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_NonLinearTimeline_ImageTable_tsx">
+    <File Id="wwwroot_Scripts_TSX_NonLinearTimeline_ImageTable.tsx" Name="ImageTable.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\NonLinearTimeline\ImageTable.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_NonLinearTimeline_Map_tsx">
+    <File Id="wwwroot_Scripts_TSX_NonLinearTimeline_Map.tsx" Name="Map.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\NonLinearTimeline\Map.tsx" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_NonLinearTimeline_nlt_d_ts">
+    <File Id="wwwroot_Scripts_TSX_NonLinearTimeline_nlt.d.ts" Name="nlt.d.ts" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\NonLinearTimeline\nlt.d.ts" />
+  </Component>
+  <Component Id="wwwroot_Scripts_TSX_NonLinearTimeline_NonLinearTimeline_tsx">
+    <File Id="wwwroot_Scripts_TSX_NonLinearTimeline_NonLinearTimeline.tsx" Name="NonLinearTimeline.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\NonLinearTimeline\NonLinearTimeline.tsx" />
+  </Component>
+</ComponentGroup>
+<ComponentGroup Id="wwwroot_Scripts_TSX_Replay_Components" Directory="wwwroot_SCRIPTSTSXREPLAYFOLDER">
+  <Component Id="wwwroot_Scripts_TSX_Replay_Replay_tsx">
+    <File Id="wwwroot_Scripts_TSX_Replay_Replay.tsx" Name="Replay.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\Replay\Replay.tsx" />
   </Component>
 </ComponentGroup>
 </Include>

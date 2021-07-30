@@ -27,6 +27,7 @@ import { parse } from 'query-string';
 import * as moment from 'moment';
 import { ajax } from 'jquery';
 import Table from '@gpa-gemstone/react-table';
+import { orderBy } from 'lodash';
 
 interface ImageTableRow {
     System: string,
@@ -68,9 +69,18 @@ export default function ImageTable() {
             async: true
         }) as JQuery.jqXHR<ImageTableRow[]>;
 
-        handle.done(d => setData(d));
+        handle.done(d => setData(SortData(d)));
 
     }, [mDate, mGroup]);
+
+    React.useEffect(() => {
+        setData(SortData(data));
+    }, [ascending, sortField]);
+
+
+    function SortData(data: ImageTableRow[]): ImageTableRow[] {
+        return orderBy(data, [sortField], [ascending ? "asc" : "desc"]);
+    }
 
     return (
         <div className='container theme-showcase' style={{ overflow: 'hidden', position: 'absolute', left: 0, top: 60, width: window.innerWidth, height: window.innerHeight - 75, padding: 20 }}>
@@ -139,7 +149,7 @@ export default function ImageTable() {
 
                     ]}
                     tableClass="table table-hover"
-                    theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 50 }}
+                    theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 40 }}
                     tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 180, height: window.innerHeight - 180, width: '100%' }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                     sortKey={sortField}

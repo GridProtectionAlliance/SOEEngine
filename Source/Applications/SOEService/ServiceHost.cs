@@ -339,7 +339,6 @@ namespace SOEService
                 systemSettings.Add("DefaultCorsSupportsCredentials", true, "Boolean flag for the default CORS policy indicating whether the resource supports user credentials in the request.");
 
 
-
                 using (AdoDataConnection connection = new AdoDataConnection("securityProvider"))
                 {
                     ValidateAccountsAndGroups(connection);
