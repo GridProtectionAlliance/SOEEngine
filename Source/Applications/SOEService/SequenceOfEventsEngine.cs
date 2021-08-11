@@ -893,7 +893,7 @@ namespace SOEService
                         ValidateFileTimestamps(state.FilePath, state.FileGroup, state.SystemSettings);
 
                         // Save the file group in the database now that the data has been successfully parsed
-                        using (AdoDataConnection connection = state.MeterDataSet.CreateDbConnection())
+                        using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                         {
                             state.FileGroup.DataFiles = state.FileWrapper.CreateDataFiles(state.SystemSettings.XDATimeZoneInfo);
                             SaveFileGroup(connection, fileGroup);
@@ -1163,7 +1163,7 @@ namespace SOEService
                     ? FileWatcherPriority
                     : FileEnumerationPriority;
 
-                if (!PrevalidateFile(filePath)) return;
+                if (FilePath.GetExtension(filePath) != ".json" && !PrevalidateFile(filePath)) return;
 
                 using (AdoDataConnection connection = CreateDbConnection(m_systemSettings))
                 {
@@ -1405,13 +1405,14 @@ namespace SOEService
                     state.MeterDataSet.FileGroup = state.FileGroup;
                     state.MeterDataSet.ConnectionString = state.ConnectionString;
                     state.MeterDataSet.Meter.AssetKey = meterKey;
+
+                    // Shift date/time values to the configured time zone and set the start and end time values on the file group
+                    MeterDataSet meterDataSet = state.MeterDataSet;
+                    ShiftTime(meterDataSet, meterDataSet.Meter.GetTimeZoneInfo(systemSettings.DefaultMeterTimeZoneInfo), systemSettings.XDATimeZoneInfo);
+                    SetDataTimeRange(meterDataSet);
                 }
             }
 
-            // Shift date/time values to the configured time zone and set the start and end time values on the file group
-            MeterDataSet meterDataSet = state.MeterDataSet;
-            ShiftTime(meterDataSet, meterDataSet.Meter.GetTimeZoneInfo(systemSettings.DefaultMeterTimeZoneInfo), systemSettings.XDATimeZoneInfo);
-            SetDataTimeRange(meterDataSet);
         }
 
         // Processes the data that was parsed from the file.
@@ -1463,6 +1464,7 @@ namespace SOEService
         // Instantiates and executes data operations and data writers to process the meter data set.
         private void ProcessMeterDataSet(MeterDataSet meterDataSet)
         {
+            if (meterDataSet == null) return;
             List<DataOperation> dataOperationDefinitions;
 
             using (AdoDataConnection connection = meterDataSet.CreateDbConnection())
