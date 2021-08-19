@@ -139,7 +139,7 @@ namespace SOEDataProcessing.DataOperations
             foreach (Incident incident in cleanup)
             {
                 string incidentIDs = string.Join(",", incident.ExistingIncidents.Select(inc => inc["ID"].ToString()));
-                database.ExecuteNonQuery($"UPDATE Event SET IncidentID = (SELECT ID FROM Incident WHERE StartTime = {{0}} AND EndTime = {{1}}) WHERE IncidentID IN ({incidentIDs})", incident.StartTime.ToString(DateTimeFormat), incident.EndTime.ToString(DateTimeFormat));
+                database.ExecuteNonQuery($"UPDATE Event SET IncidentID = (SELECT Top 1 ID FROM Incident WHERE StartTime = {{0}} AND EndTime = {{1}}) WHERE IncidentID IN ({incidentIDs})", incident.StartTime.ToString(DateTimeFormat), incident.EndTime.ToString(DateTimeFormat));
             }
 
             if (cleanup.Count > 0)
