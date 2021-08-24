@@ -425,6 +425,10 @@ GO
 INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\*.d00', 'SOEDataProcessing.dll', 'SOEDataProcessing.DataReaders.COMTRADEReader', 3)
 GO
 
+INSERT INTO DataReader(FilePattern, AssemblyName, TypeName, LoadOrder) VALUES('**\GeoJSON\*.json', 'SOEDataProcessing.dll', 'SOEDataProcessing.DataReaders.GeoJSONReader', 4)
+GO
+
+
 INSERT INTO DataOperation(AssemblyName, TypeName, LoadOrder) VALUES('SOEDataProcessing.dll', 'SOEDataProcessing.DataOperations.ConfigurationOperation', 1)
 GO
 
