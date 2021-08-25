@@ -160,6 +160,10 @@ namespace DeviceDefinitionsMigrator
             {
                 Console.Error.WriteLine("--- ERROR ---");
                 Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.InnerException.Message);
+                Console.Error.WriteLine(ex.StackTrace);
+                Console.Error.WriteLine(ex.ToString());
+
             }
         }
 
@@ -272,7 +276,7 @@ namespace DeviceDefinitionsMigrator
                         // Get a lookup table for the channels monitoring this line
                         channelLookup = lookupTables.GetChannelLookup(meter, line, connection);
 
-                        foreach (XElement channelElement in lineElement.Elements("channels"))
+                        foreach (XElement channelElement in lineElement.Elements("channels").Elements())
                         {
                             if (channelLookup.ContainsKey(channelElement.Name.LocalName))
                                 continue;
@@ -517,17 +521,21 @@ namespace DeviceDefinitionsMigrator
         {
             Circuit circuit = new Circuit {
                 Name = name,
-                SystemID = GetOrAddSystem((string)deviceElement.Element("lines").Elements("line").First().Element("voltage"), lookupTables, connection)
+                SystemID = GetOrAddSystem((string)deviceElement.Element("lines").Elements("line").First().Element("voltage"), lookupTables, connection),
+                GeoJSON = null
             };
 
             if (lookupTables.CircuitsLookup.ContainsKey(name))
             {
                 circuit.ID = lookupTables.CircuitsLookup[name].ID;
-                (new TableOperations<Circuit>(connection)).UpdateRecord(circuit);
+                //(new TableOperations<Circuit>(connection)).UpdateRecord(circuit);
+                connection.ExecuteNonQuery("UPDATE Circuit SET Name= {0} WHERE ID = {1}", circuit.Name, circuit.ID);
+                connection.ExecuteNonQuery("UPDATE Circuit SET SystemID = {0} WHERE ID = {1}", circuit.SystemID, circuit.ID);
+
             }
             else
             {
-                (new TableOperations<Circuit>(connection)).AddNewRecord(circuit);
+                connection.ExecuteNonQuery("INSERT INTO Circuit (Name, SystemID) VALUES ({0}, {1})", circuit.Name, circuit.SystemID);
                 circuit.ID = connection.ExecuteScalar<int>("SELECT @@IDENTITY");
                 lookupTables.CircuitsLookup.Add(name,circuit);
             }
