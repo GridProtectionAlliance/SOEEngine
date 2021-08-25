@@ -428,6 +428,8 @@ namespace SOEService
 
             foreach (string path in m_systemSettings.WatchDirectoryList)
                 m_fileProcessor.AddTrackedDirectory(path);
+
+            m_fileProcessor.EnumerateWatchDirectories();
         }
 
         /// <summary>
