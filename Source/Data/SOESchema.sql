@@ -766,7 +766,7 @@ CREATE TABLE SOEDataPoint(
 	SensorName VARCHAR(MAX) NOT NULL,
 	SensorOrder INT NOT NULL,
 	TimeSlot INT NOT NULL,
-	[Time] INT NOT NULL,
+	[Time] datetime NOT NULL,
 	Value INT NOT NULL,
 	ElapsMS INT NOT NULL,
 	ElapsSEC INT NOT NULL,
