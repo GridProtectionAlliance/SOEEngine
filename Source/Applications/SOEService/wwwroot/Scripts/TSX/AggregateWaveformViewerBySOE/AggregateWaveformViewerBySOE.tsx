@@ -412,9 +412,9 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 50 }}
                                         tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 670, height: window.innerHeight - 670, width: '100%' }}
                                         cols={[
-                                            { key: 'System', label: 'System', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
-                                            { key: 'PrefCkt', label: 'PrefCkt', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
-                                            { key: 'AltCkt', label: 'AltCkt', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
+                                            { key: 'System', label: 'System', field: 'System',headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
+                                            { key: 'PrefCkt', label: 'PrefCkt', field: 'PrefCkt', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
+                                            { key: 'AltCkt', label: 'AltCkt', field: 'AltCkt',  headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
                                             {
                                                 key: 'Order', label: 'Order', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item, key, field, style,index) => <><input value={item.Order} type='number' style={{ width: 30 }} onChange={(evt) => {
                                                     //item.Order = parseInt(evt.target.value);
@@ -426,9 +426,9 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                                                     <button className='btn btn-link' onClick={() => MoveDeviceDown(item,index)}>{DownArrow}</button>
                                                 </>
                                             },
-                                            { key: 'Device', label: 'Devices', headerStyle: { width: '20%' }, rowStyle: { width: '20%' } },
-                                            { key: 'FaultType', label: 'FaultType', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
-                                            { key: 'Waveforms', label: 'Waveforms', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
+                                            { key: 'Device', label: 'Devices', field: 'Device', headerStyle: { width: '20%' }, rowStyle: { width: '20%' } },
+                                            { key: 'FaultType', label: 'FaultType', field: 'FaultType', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
+                                            { key: 'Waveforms', label: 'Waveforms', field: 'Waveforms', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
                                             { key: null, label: '', headerStyle: { width: '86px' }, rowStyle: { width: '65px' } , content: (item, key, field, style, index) => <button className='btn btn-link' onClick={() => MoveDeviceRight(item, index)}>{RightArrow}</button> },
 
 
@@ -455,12 +455,12 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                                         tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 670, height: window.innerHeight - 670, width: '100%' }}
                                         cols={[
                                             { key: null, label: '', headerStyle: { width: 60 }, rowStyle: { width: 60 }, content: (item, key, field,  style, index) => <button className='btn btn-link' onClick={() => MoveDeviceLeft(item, index)}>{LeftArrow}</button> },
-                                            { key: 'System', label: 'System', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
-                                            { key: 'PrefCkt', label: 'PrefCkt', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
-                                            { key: 'AltCkt', label: 'AltCkt', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
-                                            { key: 'Device', label: 'Devices', headerStyle: { width: '20%' }, rowStyle: { width: '20%' } },
-                                            { key: 'FaultType', label: 'FaultType', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
-                                            { key: 'Waveforms', label: 'Waveforms', headerStyle: { width: 120 }, rowStyle: { width: 100 } },
+                                            { key: 'System', label: 'System', field: 'System', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
+                                            { key: 'PrefCkt', label: 'PrefCkt', field: 'PrefCkt', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
+                                            { key: 'AltCkt', label: 'AltCkt', field: 'AltCkt', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
+                                            { key: 'Device', label: 'Devices', field: 'Device', headerStyle: { width: '20%' }, rowStyle: { width: '20%' } },
+                                            { key: 'FaultType', label: 'FaultType', field: 'FaultType', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
+                                            { key: 'Waveforms', label: 'Waveforms', field: 'Waveforms', headerStyle: { width: 120 }, rowStyle: { width: 100 } },
                                         ]}
                                         sortKey={othersSortField}
                                         ascending={othersAscending}
