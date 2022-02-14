@@ -21,8 +21,8 @@
 //
 //******************************************************************************************************
 
-using GSF.Data.Model;
 using System.Text;
+using GSF.Data.Model;
 
 namespace SOE.Model
 {
@@ -43,8 +43,6 @@ namespace SOE.Model
                 if (GeoJSON == null) return null;
                 else return Encoding.UTF8.GetString(GeoJSON); 
             }
-            set { GeoJSONString = value; }
-
         }
 
     }
