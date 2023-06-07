@@ -65,7 +65,9 @@
     <Compile Include="Events\CycleDataSOEPointView.cs" />
     <Compile Include="Events\Event.cs" />
     <Compile Include="Events\EventData.cs" />
+    <Compile Include="Events\EventEventTag.cs" />
     <Compile Include="Events\EventInfo.cs" />
+    <Compile Include="Events\EventTag.cs" />
     <Compile Include="Events\Incident.cs" />
     <Compile Include="Events\IncidentEventCycleDataView.cs" />
     <Compile Include="Events\SOE.cs" />
@@ -78,6 +80,7 @@
     <Compile Include="LazyContext.cs" />
     <Compile Include="Links\MeterLine.cs" />
     <Compile Include="Links\MeterLocationLine.cs" />
+    <Compile Include="MATLAB\MATLABAnalytic.cs" />
     <Compile Include="Meters\Meter.cs" />
     <Compile Include="Meters\MeterLocation.cs" />
     <Compile Include="NonLinearTimeLine\NLTImages.cs" />

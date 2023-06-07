@@ -119,6 +119,7 @@
     <PostBuildEvent>SET SOEPATH=$(TargetDir)\..\..\Applications\SOEEngine\
 IF EXIST "%25SOEPATH%25" (
     XCOPY "$(TargetPath)" "%25SOEPATH%25" /Y
+    XCOPY "$(TargetPath).config" "%25SOEPATH%25" /Y
     XCOPY "$(TargetDir)\.\ldconfig.ps1" "%25SOEPATH%25" /Y
     XCOPY "$(TargetDir)\.\ldconfig.bat" "%25SOEPATH%25" /Y
     XCOPY "$(TargetDir)\.\DeviceDefinitionsGenerator.sql" "%25SOEPATH%25" /Y

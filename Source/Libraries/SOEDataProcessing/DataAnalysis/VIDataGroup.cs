@@ -318,6 +318,39 @@ namespace SOEDataProcessing.DataAnalysis
             }
         }
 
+        public DataSeries[] Data
+        {
+            get
+            {
+                List<DataSeries> result = new List<DataSeries>();
+
+                void AddIfDefined(DataSeries dataSeries)
+                {
+                    if (!(dataSeries is null))
+                        result.Add(dataSeries);
+                }
+
+                AddIfDefined(VX1);
+                AddIfDefined(VX2);
+                AddIfDefined(VX3);
+
+                AddIfDefined(VY1);
+                AddIfDefined(VY2);
+                AddIfDefined(VY3);
+
+                AddIfDefined(VA);
+                AddIfDefined(VB);
+                AddIfDefined(VC);
+
+                AddIfDefined(IA);
+                AddIfDefined(IB);
+                AddIfDefined(IC);
+                AddIfDefined(IR);
+
+                return result.ToArray();
+            }
+        }
+
         #endregion
 
         #region [ Methods ]
