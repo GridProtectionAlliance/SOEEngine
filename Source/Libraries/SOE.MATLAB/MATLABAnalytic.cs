@@ -175,11 +175,12 @@ namespace SOE.MATLAB
         private static MWArray ToMWArray(DataSeries[] dataSeriesList)
         {
             double GetValue(DataSeries dataSeries, int index) =>
-                (index <= dataSeries.DataPoints.Count)
+                (!(dataSeries is null) && index <= dataSeries.DataPoints.Count)
                     ? dataSeries[index].Value
                     : double.NaN;
 
             int maxCount = dataSeriesList
+                .Where(dataSeries => !(dataSeries is null))
                 .Select(dataSeries => dataSeries.DataPoints.Count)
                 .DefaultIfEmpty(0)
                 .Max();
