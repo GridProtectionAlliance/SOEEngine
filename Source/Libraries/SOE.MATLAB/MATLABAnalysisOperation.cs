@@ -56,7 +56,7 @@ namespace SOE.MATLAB
                     DataGroup dataGroup = dataGroups[i];
                     VIDataGroup viDataGroup = viDataGroups[i];
                     Event evt = eventTable.GetEvent(meterDataSet.FileGroup, dataGroup);
-                    List<AnalyticModel> analyticModelList = QueryAnalytics(connection, evt.ID);
+                    List<AnalyticModel> analyticModelList = QueryAnalytics(connection);
                     List<MATLABAnalyticTag> allTags = new List<MATLABAnalyticTag>();
 
                     foreach (AnalyticModel analyticModel in analyticModelList)
@@ -87,31 +87,13 @@ namespace SOE.MATLAB
             }
         }
 
-        private List<AnalyticModel> QueryAnalytics(AdoDataConnection connection, int eventID)
+        private List<AnalyticModel> QueryAnalytics(AdoDataConnection connection)
         {
-            const string MATLABAnalyticQueryFormat =
-                "SELECT DISTINCT MATLABAnalytic.* " +
-                "FROM " +
-                "    Event JOIN " +
-                "    Asset ON Event.AssetID = Asset.ID CROSS JOIN " +
-                "    MATLABAnalytic LEFT OUTER JOIN " +
-                "    MATLABAnalyticAssetType ON MATLABAnalyticAssetType.MATLABAnalyticID = MATLABAnalytic.ID LEFT OUTER JOIN " +
-                "    MATLABAnalyticEventType ON MATLABAnalyticEventType.MATLABAnalyticID = MATLABAnalytic.ID " +
-                "WHERE " +
-                "    Event.ID = {0} AND " +
-                "    (MATLABAnalyticAssetType.AssetTypeID IS NULL OR MATLABAnalyticAssetType.AssetTypeID = Asset.AssetTypeID) AND " +
-                "    (MATLABAnalyticEventType.EventTypeID IS NULL OR MATLABAnalyticEventType.EventTypeID = Event.EventTypeID) " +
-                "ORDER BY MATLABAnalytic.LoadOrder";
-
             TableOperations<AnalyticModel> matlabAnalyticTable = new TableOperations<AnalyticModel>(connection);
 
-            using (DataTable table = connection.RetrieveData(MATLABAnalyticQueryFormat, eventID))
-            {
-                return table
-                    .AsEnumerable()
-                    .Select(matlabAnalyticTable.LoadRecord)
-                    .ToList();
-            }
+            return matlabAnalyticTable
+                .QueryRecords("LoadOrder")
+                .ToList();
         }
 
         private MATLABAnalytic ToAnalytic(AnalyticModel model)
