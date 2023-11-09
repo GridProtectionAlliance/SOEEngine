@@ -78,6 +78,9 @@ EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SOESetup", "Applications\SOESetup\SOESetup.wixproj", "{36380070-81B6-4D71-A80A-C5AE76B0E357}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOEService", "Applications\SOEService\SOEService.csproj", "{0C461E89-2430-4E47-B5C4-97FCA86E0E21}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379} = {DB45E2DC-9B08-4549-9DB5-9C99BBEE1379}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOEDataProcessing", "Libraries\SOEDataProcessing\SOEDataProcessing.csproj", "{11AE594D-2B2B-473C-8550-6BF62914C3E2}"
 EndProject
