@@ -159,11 +159,7 @@ namespace DeviceDefinitionsMigrator
             catch (Exception ex)
             {
                 Console.Error.WriteLine("--- ERROR ---");
-                Console.Error.WriteLine(ex.Message);
-                Console.Error.WriteLine(ex.InnerException.Message);
-                Console.Error.WriteLine(ex.StackTrace);
-                Console.Error.WriteLine(ex.ToString());
-
+                Console.Error.WriteLine(ex);
             }
         }
 
