@@ -189,7 +189,7 @@ const Home = (props: {}) => {
         },
 
         {
-            key: 'G1 Research', label: 'G1) Vector Plot', field: 'G1 Research', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G1 Research', label: 'G1 Vector Plot', field: 'G1 Research', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -198,11 +198,11 @@ const Home = (props: {}) => {
                 else if (level == "Device")
                     nameString = item.Meter as string;
 
-                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G1 Research&context=${level}&object=${nameString}`}>{item[field]}</a>
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G1 Vector Plot&context=${level}&object=${nameString}`}>{item[field]}</a>
             }
         },
         {
-            key: 'G2 Switching', label: 'G2) IEEE 1668 Ridethrough Plot', field: 'G2 Switching', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G2 Switching', label: 'G2 IEEE 1668 Ridethrough Plot', field: 'G2 Switching', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -211,11 +211,11 @@ const Home = (props: {}) => {
                 else if (level == "Device")
                     nameString = item.Meter as string;
 
-                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G2 Switching&context=${level}&object=${nameString}`}>{item[field]}</a>
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G2 IEEE 1668 Ridethrough Plot&context=${level}&object=${nameString}`}>{item[field]}</a>
             }
           },
         {
-            key: 'G3 Faults', label: 'G3) Suspected Blown Fuse Plot', field: 'G3 Faults', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G3 Faults', label: 'G3 Suspected Blown Fuse Plot', field: 'G3 Faults', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -224,11 +224,11 @@ const Home = (props: {}) => {
                 else if (level == "Device")
                     nameString = item.Meter as string;
 
-                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G3 Faults&context=${level}&object=${nameString}`}>{item[field]}</a>
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G3 Suspected Blown Fuse Plot&context=${level}&object=${nameString}`}>{item[field]}</a>
             }
           },
         {
-            key: 'G4 Power Quality', label: 'G4) Reserved', field: 'G4 Power Quality', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G4 Power Quality', label: 'G4 Reserved', field: 'G4 Power Quality', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -237,11 +237,11 @@ const Home = (props: {}) => {
                 else if (level == "Device")
                     nameString = item.Meter as string;
 
-                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G4 Power Quality&context=${level}&object=${nameString}`}>{item[field]}</a>
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G4 Reserved&context=${level}&object=${nameString}`}>{item[field]}</a>
             }
           },
         {
-            key: 'G5 Artifacts/Harmonics', label: 'G5) Harmonics Plot', field: 'G5 Artifacts/Harmonics', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G5 Artifacts/Harmonics', label: 'G5 Harmonics Plot', field: 'G5 Artifacts/Harmonics', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -250,11 +250,11 @@ const Home = (props: {}) => {
                 else if (level == "Device")
                     nameString = item.Meter as string;
 
-                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G5 Artifacts/Harmonics&context=${level}&object=${nameString}`}>{item[field]}</a>
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G5 Harmonics Plot&context=${level}&object=${nameString}`}>{item[field]}</a>
             }
           },
         {
-            key: 'G6 MinMaxAvg/History', label: 'G6) MinMax Plot', field: 'G6 MinMaxAvg/History', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G6 MinMaxAvg/History', label: 'G6 MinMax Plot', field: 'G6 MinMaxAvg/History', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -263,11 +263,11 @@ const Home = (props: {}) => {
                 else if (level == "Device")
                     nameString = item.Meter as string;
 
-                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G6 MinMaxAvg/History&context=${level}&object=${nameString}`}>{item[field]}</a>
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G6 MinMax Plot&context=${level}&object=${nameString}`}>{item[field]}</a>
             }
          },
         {
-            key: 'G7 Reports', label: 'G7) State Change Plot', field: 'G7 Reports', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G7 Reports', label: 'G7 State Change Plot', field: 'G7 Reports', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -276,11 +276,11 @@ const Home = (props: {}) => {
                 else if (level == "Device")
                     nameString = item.Meter as string;
 
-                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G7 Reports&context=${level}&object=${nameString}`}>{item[field]}</a>
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G7 State Change Plot&context=${level}&object=${nameString}`}>{item[field]}</a>
             }
           },
         {
-            key: 'G8 Predictive', label: 'G8) Reserved', field: 'G8 Predictive', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G8 Predictive', label: 'G8 Reserved', field: 'G8 Predictive', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -289,11 +289,11 @@ const Home = (props: {}) => {
                 else if (level == "Device")
                     nameString = item.Meter as string;
 
-                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G8 Predictive&context=${level}&object=${nameString}`}>{item[field]}</a>
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G8 Reserved&context=${level}&object=${nameString}`}>{item[field]}</a>
             }
          },
         {
-            key: 'G9 Other', label: 'G9) Reserved', field: 'G9 Other', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G9 Other', label: 'G9 Reserved', field: 'G9 Other', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -302,12 +302,12 @@ const Home = (props: {}) => {
                 else if (level == "Device")
                     nameString = item.Meter as string;
 
-                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G9 Other&context=${level}&object=${nameString}`}>{item[field]}</a>
+                return <a href={`${homePath}ImageTable.cshtml?date=${date.format('YYYY-MM-DD')}&group=G9 Reserved&context=${level}&object=${nameString}`}>{item[field]}</a>
             }
           },
         { key: null, label: '', headerStyle: { width: 20 }, rowStyle: { width: 0 } }
-
     ];
+
     return (
         <div className='container theme-showcase' style={{ overflow: 'hidden', position: 'absolute', left: 0, top: 60, width: window.innerWidth, height: window.innerHeight - 60 }}>
             <div className='row'>
