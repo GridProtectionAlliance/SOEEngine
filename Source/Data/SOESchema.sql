@@ -821,23 +821,23 @@ CREATE TABLE MatlabGroup
 )
 GO
 
-INSERT INTO MatlabGroup (Name) VALUES ('G1 Research')
+INSERT INTO MatlabGroup (Name) VALUES ('G1 Vector Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G2 Switching')
+INSERT INTO MatlabGroup (Name) VALUES ('G2 IEEE 1668 Ridethrough Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G3 Faults')
+INSERT INTO MatlabGroup (Name) VALUES ('G3 Suspected Blown Fuse Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G4 Power Quality')
+INSERT INTO MatlabGroup (Name) VALUES ('G4 Reserved')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G5 Artifacts/Harmonics')
+INSERT INTO MatlabGroup (Name) VALUES ('G5 Harmonics Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G6 MinMaxAvg/History')
+INSERT INTO MatlabGroup (Name) VALUES ('G6 MinMax Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G7 Reports')
+INSERT INTO MatlabGroup (Name) VALUES ('G7 State Change Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G8 Predictive')
+INSERT INTO MatlabGroup (Name) VALUES ('G8 Reserved')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G9 Other')
+INSERT INTO MatlabGroup (Name) VALUES ('G9 Reserved')
 GO
 
 CREATE TABLE EventTag

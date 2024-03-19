@@ -40,15 +40,15 @@ interface HomeTable {
     PQS: number,
     Faults: number,
     Files: number,
-    'G1 Research': number,
-    'G2 Switching': number,
-    'G3 Faults': number,
-    'G4 Power Quality': number,
-    'G5 Artifacts/Harmonics': number,
-    'G6 MinMaxAvg/History': number,
-    'G7 Reports': number,
-    'G8 Predictive': number,
-    'G9 Other': number,
+    'G1 Vector Plot': number,
+    'G2 IEEE 1668 Ridethrough Plot': number,
+    'G3 Suspected Blown Fuse Plot': number,
+    'G4 Reserved': number,
+    'G5 Harmonics Plot': number,
+    'G6 MinMax Plot': number,
+    'G7 State Change Plot': number,
+    'G8 Reserved': number,
+    'G9 Reserved': number,
     AllPlots: number
 
 }
@@ -189,7 +189,7 @@ const Home = (props: {}) => {
         },
 
         {
-            key: 'G1 Research', label: 'G1 Vector Plot', field: 'G1 Research', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G1 Vector Plot', label: 'G1 Vector Plot', field: 'G1 Vector Plot', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -202,7 +202,7 @@ const Home = (props: {}) => {
             }
         },
         {
-            key: 'G2 Switching', label: 'G2 IEEE 1668 Ridethrough Plot', field: 'G2 Switching', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G2 IEEE 1668 Ridethrough Plot', label: 'G2 IEEE 1668 Ridethrough Plot', field: 'G2 IEEE 1668 Ridethrough Plot', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -215,7 +215,7 @@ const Home = (props: {}) => {
             }
           },
         {
-            key: 'G3 Faults', label: 'G3 Suspected Blown Fuse Plot', field: 'G3 Faults', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G3 Suspected Blown Fuse Plot', label: 'G3 Suspected Blown Fuse Plot', field: 'G3 Suspected Blown Fuse Plot', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -228,7 +228,7 @@ const Home = (props: {}) => {
             }
           },
         {
-            key: 'G4 Power Quality', label: 'G4 Reserved', field: 'G4 Power Quality', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G4 Reserved', label: 'G4 Reserved', field: 'G4 Reserved', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -241,7 +241,7 @@ const Home = (props: {}) => {
             }
           },
         {
-            key: 'G5 Artifacts/Harmonics', label: 'G5 Harmonics Plot', field: 'G5 Artifacts/Harmonics', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G5 Harmonics Plot', label: 'G5 Harmonics Plot', field: 'G5 Harmonics Plot', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -254,7 +254,7 @@ const Home = (props: {}) => {
             }
           },
         {
-            key: 'G6 MinMaxAvg/History', label: 'G6 MinMax Plot', field: 'G6 MinMaxAvg/History', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G6 MinMax Plot', label: 'G6 MinMax Plot', field: 'G6 MinMax Plot', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -267,7 +267,7 @@ const Home = (props: {}) => {
             }
          },
         {
-            key: 'G7 Reports', label: 'G7 State Change Plot', field: 'G7 Reports', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G7 State Change Plot', label: 'G7 State Change Plot', field: 'G7 State Change Plot', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -280,7 +280,7 @@ const Home = (props: {}) => {
             }
           },
         {
-            key: 'G8 Predictive', label: 'G8 Reserved', field: 'G8 Predictive', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G8 Reserved', label: 'G8 Reserved', field: 'G8 Reserved', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
@@ -293,7 +293,7 @@ const Home = (props: {}) => {
             }
          },
         {
-            key: 'G9 Other', label: 'G9 Reserved', field: 'G9 Other', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
+            key: 'G9 Reserved', label: 'G9 Reserved', field: 'G9 Reserved', headerStyle: { width: 50 }, rowStyle: { width: 50 }, rotate: true, content: (item, key, field, style, index) => {
                 let nameString = "";
                 if (level == "System")
                     nameString = item.System as string;
