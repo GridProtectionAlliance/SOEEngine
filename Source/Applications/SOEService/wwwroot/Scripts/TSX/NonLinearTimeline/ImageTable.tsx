@@ -28,7 +28,7 @@ import * as moment from 'moment';
 import { ajax } from 'jquery';
 import Table from '@gpa-gemstone/react-table';
 
-interface MatlabAnalytic {
+interface ImageRow {
     AssetKey: string,
     EventID: number,
     EventTagID: number,
@@ -36,7 +36,8 @@ interface MatlabAnalytic {
     ID: number,
     TagData: string,
     SystemName: string,
-    CircuitName: string
+    CircuitName: string,
+    SOE_ID: number | null
 }
 
 export default function ImageTable() {
@@ -49,7 +50,7 @@ export default function ImageTable() {
 
     const [mDate, setMDate] = React.useState<moment.Moment>(moment(date));
     const [mGroup, setMGroup] = React.useState<string>(group as string);
-    const [data, setData] = React.useState<any[]>([]);
+    const [data, setData] = React.useState<ImageRow[]>([]);
 
     React.useEffect(() => {
         let handle = ajax({
@@ -59,7 +60,7 @@ export default function ImageTable() {
             dataType: 'json',
             cache: false,
             async: true
-        }) as JQuery.jqXHR<MatlabAnalytic[]>;
+        }) as JQuery.jqXHR<ImageRow[]>;
 
         handle.done(d => {
             const parsedData = d.map(item => {
@@ -70,8 +71,6 @@ export default function ImageTable() {
         });
 
     }, [mDate, mGroup]);
-
-    console.log('data', data)
 
     return (
         <div className='container theme-showcase' style={{ overflow: 'hidden', position: 'absolute', left: 0, top: 60, width: window.innerWidth, height: window.innerHeight - 75, padding: 20 }}>
@@ -117,12 +116,13 @@ export default function ImageTable() {
             </div>
 
             <div className='row'>
-                <Table<MatlabAnalytic>
+                <Table<ImageRow>
                     cols={[
                         { key: 'AssetKey', label: 'Device', field: 'AssetKey' },
                         { key: 'SystemName', label: 'System', field: 'SystemName' },
                         { key: 'CircuitName', label: 'Circuit', field: 'CircuitName' },
                         { key: 'Image', label: 'Image', field: 'TagData', content: (item) => <img src={`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`} width={100} height={100} onClick={() => window.open(`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`)} /> },
+                        { key: 'SOE_ID', label: '', field: 'SOE_ID', content: (item) => <a href={item.SOE_ID != null ? `${homePath}NonLinearTimeLine.cshtml?soeID=${item.SOE_ID}` : `${homePath}Replay.cshtml?date=${mDate.format("YYYY-MM-DD")}`}>{item.SOE_ID != null ? 'Non Linear Timeline' : 'Replay'}</a> },
                     ]}
                     tableClass="table table-hover"
                     theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 40 }}
