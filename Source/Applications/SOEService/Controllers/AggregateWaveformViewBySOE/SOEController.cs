@@ -29,9 +29,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
-using System.Web;
 using System.Web.Http;
 using DbSOE = SOE.Model.SOE;
+using AnalyticModel = SOE.Model.MATLABAnalytic;
+using SOE.MATLAB;
+
 namespace SOEService.Controllers
 {
     [RoutePrefix("api/SOE")]
@@ -46,6 +48,18 @@ namespace SOEService.Controllers
                 using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
                 {
                     int record = connection.ExecuteNonQuery("UPDATE SOE SET Status={0} WHERE ID = {1}", status, id);
+                    AnalyticModel makeReplay = new TableOperations<AnalyticModel>(connection).QueryRecordWhere("MethodName = {0}", "MakeReplay");
+                    string soeLogPath = connection.ExecuteScalar<string>("SELECT Value FROM SETTING WHERE Name = 'SOELogPath'");
+                    string replayPath = connection.ExecuteScalar<string>("SELECT Value FROM SETTING WHERE Name = 'ReplayPath'");
+
+                    SOE.MATLAB.MATLABAnalytic analytic = ToAnalytic(makeReplay);
+                    List<MATLABAnalyticSettingField> settings = new List<MATLABAnalyticSettingField>
+                    {
+                        new MATLABAnalyticSettingField("SOELogPath", soeLogPath), 
+                        new MATLABAnalyticSettingField("SOE_ID", id), 
+                        new MATLABAnalyticSettingField("ReplayPath", replayPath) 
+                    };
+                    analytic.Execute(settings);
                     return Ok(record);
                 }
             }
@@ -313,7 +327,15 @@ namespace SOEService.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        private SOE.MATLAB.MATLABAnalytic ToAnalytic(AnalyticModel model)
+        {
+            string assemblyName = model.AssemblyName;
+            string methodName = model.MethodName;
+            MATLABAnalysisFunctionInvokerFactory invokerFactory = AnalysisFunctionFactory.GetAnalysisFunctionInvokerFactory(assemblyName, methodName);
+            return new SOE.MATLAB.MATLABAnalytic(invokerFactory);
+        }
 
+        private static MATLABAnalysisFunctionFactory AnalysisFunctionFactory { get; } = new MATLABAnalysisFunctionFactory();
 
     }
 }

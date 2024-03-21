@@ -32,7 +32,9 @@ import { SOETools } from '@gpa-gemstone/application-typings';
 import LeafletMap from './Map';
 import * as d3 from 'd3';
 import { SOEDataPoint, Color, MapMeter } from './nlt';
-type TimeField = 'TimeSlot'|'Time' | 'ElapsMS' | 'ElapsSEC' | 'CycleNum' ;
+
+type TimeField = 'TimeSlot' | 'Time' | 'ElapsMS' | 'ElapsSEC' | 'CycleNum';
+
 const NonLinearTimeline = (props: {}) => {
     const axis = React.useRef(null);
     let { soeID } = parse(window.location.search);

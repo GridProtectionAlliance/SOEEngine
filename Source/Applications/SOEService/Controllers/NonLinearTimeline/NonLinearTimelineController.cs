@@ -259,7 +259,6 @@ namespace SOEService.Controllers
             {
                 string sql = $@"
                 SELECT 
-                    Event.ID,
                     EventEventTag.EventID,
                     Event.MeterID,
                     EventEventTag.EventTagID,
@@ -267,19 +266,24 @@ namespace SOEService.Controllers
 	                Meter.AssetKey,
                     System.Name as SystemName,
 	                Circuit.Name as CircuitName,
-					EventTag.Name as EventTagName
+					EventTag.Name as EventTagName,
+					SOEIncident.SOEID as SOE_ID
                 FROM 
                     EventEventTag
-                INNER JOIN 
-                    Event ON EventEventTag.EventID = Event.ID
-                INNER JOIN
-		            Meter on Event.MeterID = Meter.ID 
-                INNER JOIN
-                        Circuit ON Circuit.ID = Meter.CircuitID
-                INNER JOIN
-                        System ON System.ID = Circuit.SystemID
 				INNER JOIN 
-						EventTag on EventEventTag.EventTagID = EventTag.ID
+					Event ON EventEventTag.EventID = Event.ID
+				LEFT JOIN
+					Incident ON Event.IncidentID = Incident.ID
+				LEFT JOIN
+					SOEIncident ON Incident.ID = SOEIncident.IncidentID
+				INNER JOIN
+					Meter on Event.MeterID = Meter.ID 
+				INNER JOIN
+					Circuit ON Circuit.ID = Meter.CircuitID
+				INNER JOIN
+					System ON System.ID = Circuit.SystemID
+				INNER JOIN 
+					EventTag on EventEventTag.EventTagID = EventTag.ID
                 WHERE
                      CONVERT(date, Event.StartTime) = {{0}}
                 ";
