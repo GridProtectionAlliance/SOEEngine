@@ -107,6 +107,22 @@ namespace SOE.MATLAB
             }
         }
 
+        public void Execute(IEnumerable<MATLABAnalyticSettingField> settings)
+        {
+            // The MATLAB runtime must be initialized before MWArray can be used.
+            // The invoker must be instantiated here as it will also instantiate the class that
+            // contains the analysis function and initialize the MATLAB runtime as a side-effect
+            using (IMATLABAnalysisFunctionInvoker invoker = AnalysisFunctionInvokerFactory())
+            using (MWArray voltage = new MWNumericArray())
+            using (MWArray current = new MWNumericArray())
+            using (MWArray analog = new MWNumericArray())
+            using (MWArray fs = new MWNumericArray())
+            using (MWArray setting = ToSettingsArray(settings))
+            {
+                MWArray[] arrays = invoker.Invoke(1, voltage, current, analog, fs, setting);
+            }
+        }
+
         #endregion
 
         #region [ Static ]
