@@ -119,7 +119,7 @@ namespace SOE.MATLAB
             using (MWArray fs = new MWNumericArray())
             using (MWArray setting = ToSettingsArray(settings))
             {
-                MWArray[] arrays = invoker.Invoke(1, voltage, current, analog, fs, setting);
+                invoker.Invoke(0, voltage, current, analog, fs, setting);
             }
         }
 
