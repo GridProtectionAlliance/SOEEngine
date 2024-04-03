@@ -482,8 +482,10 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                         <div className="modal-footer">
                             <button type="button" className="btn btn-primary" onClick={() => {
                                 setShow(false);
-                                ChangeSOEStatus('MakeReplay').done(() => props.OnClose(soe));
-                                window.open(`${homePath}NonLinearTimeLine.cshtml?soeID=${props.soeID}`)
+                                ChangeSOEStatus('MakeReplay').done(() => {
+                                    window.open(`${homePath}NonLinearTimeLine.cshtml?soeID=${props.soeID}`)
+                                    props.OnClose(soe)
+                                });
                             }}>Make SOE Replay</button>
                             <button type="button" className="btn btn-danger" onClick={() => {
                                 setShow(false);
