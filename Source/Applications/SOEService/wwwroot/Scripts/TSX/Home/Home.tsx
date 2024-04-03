@@ -388,7 +388,7 @@ const Home = (props: {}) => {
                     cols={cols}
                     tableClass="table table-hover"
                     theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: window.innerWidth, height: 135 }}
-                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 180, height: window.innerHeight - 180, width: '100%' }}
+                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 270, height: window.innerHeight - 270, width: '100%' }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                     sortKey={sortField}
                     onClick={(d) => { }}
