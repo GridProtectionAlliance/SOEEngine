@@ -27,6 +27,8 @@ import { parse } from 'query-string';
 import * as moment from 'moment';
 import { ajax } from 'jquery';
 import Table from '@gpa-gemstone/react-table';
+import { Column } from '@gpa-gemstone/react-table/lib/Table';
+import * as _ from 'lodash';
 
 interface ImageRow {
     AssetKey: string,
@@ -51,6 +53,8 @@ export default function ImageTable() {
     const [mDate, setMDate] = React.useState<moment.Moment>(moment(date));
     const [mGroup, setMGroup] = React.useState<string>(group as string);
     const [data, setData] = React.useState<ImageRow[]>([]);
+    const [ascending, setAscending] = React.useState<boolean>(true);
+    const [sortField, setSortField] = React.useState<keyof ImageRow>('AssetKey');
 
     React.useEffect(() => {
         let handle = ajax({
@@ -71,6 +75,28 @@ export default function ImageTable() {
         });
 
     }, [mDate, mGroup]);
+
+    const cols = React.useMemo(() => {
+        let baseCols: Column<ImageRow>[] = [
+            { key: 'AssetKey', label: 'Device', field: 'AssetKey' },
+            { key: 'SystemName', label: 'System', field: 'SystemName' },
+            { key: 'CircuitName', label: 'Circuit', field: 'CircuitName' },
+            { key: 'Image', label: 'Image', field: 'TagData', content: (item) => <img src={`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`} width={100} height={100} onClick={() => window.open(`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`)} /> },
+        ]
+
+        if (mGroup === "G7 State Change Plot")
+            baseCols.push({
+                key: 'SOE_ID',
+                label: '',
+                field: 'SOE_ID',
+                content: (item) => <a href={item.SOE_ID != null ? `${homePath}NonLinearTimeLine.cshtml?soeID=${item.SOE_ID}` : `${homePath}Replay.cshtml?date=${mDate.format("YYYY-MM-DD")}`}>{item.SOE_ID != null ? 'Non Linear Timeline' : 'Replay'}</a>
+            });
+        return baseCols
+    }, [mGroup])
+
+    React.useEffect(() => {
+        setData(_.orderBy(data, [sortField], [ascending ? "asc" : "desc"]));
+    }, [ascending, sortField]);
 
     return (
         <div className='container theme-showcase' style={{ overflow: 'hidden', position: 'absolute', left: 0, top: 60, width: window.innerWidth, height: window.innerHeight - 75, padding: 20 }}>
@@ -117,22 +143,23 @@ export default function ImageTable() {
 
             <div className='row'>
                 <Table<ImageRow>
-                    cols={[
-                        { key: 'AssetKey', label: 'Device', field: 'AssetKey' },
-                        { key: 'SystemName', label: 'System', field: 'SystemName' },
-                        { key: 'CircuitName', label: 'Circuit', field: 'CircuitName' },
-                        { key: 'Image', label: 'Image', field: 'TagData', content: (item) => <img src={`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`} width={100} height={100} onClick={() => window.open(`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`)} /> },
-                        { key: 'SOE_ID', label: '', field: 'SOE_ID', content: (item) => <a href={item.SOE_ID != null ? `${homePath}NonLinearTimeLine.cshtml?soeID=${item.SOE_ID}` : `${homePath}Replay.cshtml?date=${mDate.format("YYYY-MM-DD")}`}>{item.SOE_ID != null ? 'Non Linear Timeline' : 'Replay'}</a> },
-                    ]}
+                    cols={cols}
                     tableClass="table table-hover"
                     theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 40 }}
-                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 180, height: window.innerHeight - 180, width: '100%' }}
+                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 270, height: window.innerHeight - 270, width: '100%' }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                    sortKey={'AssetKey'}
+                    sortKey={sortField}
                     onClick={() => { }}
-                    onSort={() => { }}
+                    onSort={d => {
+                        if (d.colField == sortField) {
+                            setAscending(!ascending);
+                        }
+                        else {
+                            setSortField(d.colField);
+                        }
+                    }}
                     data={data}
-                    ascending={true}
+                    ascending={ascending}
                 />
             </div>
         </div>
