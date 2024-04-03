@@ -19,7 +19,7 @@ namespace SOE.Model.Events
         public int SensorOrder { get; set; }
         public int TimeSlot { get; set; }
         public DateTime Time { get; set; }
-        public int Value { get; set; } //misleading name
+        public int Value { get; set; }
         public int ElapsMS { get; set; }
         public int ElapsSEC { get; set;}
         public int CycleNum { get; set; }
