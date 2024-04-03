@@ -30,9 +30,11 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Web.Http;
+using System.IO;
 using DbSOE = SOE.Model.SOE;
 using AnalyticModel = SOE.Model.MATLABAnalytic;
 using SOE.MATLAB;
+using SOE.Model.Events;
 
 namespace SOEService.Controllers
 {
@@ -60,6 +62,7 @@ namespace SOEService.Controllers
                         new MATLABAnalyticSettingField("ReplayPath", replayPath) 
                     };
                     analytic.Execute(settings);
+                    ProcessReplayResult(replayPath);
                     return Ok(record);
                 }
             }
@@ -336,6 +339,63 @@ namespace SOEService.Controllers
         }
 
         private static MATLABAnalysisFunctionFactory AnalysisFunctionFactory { get; } = new MATLABAnalysisFunctionFactory();
+
+        private void ProcessReplayResult(string replayPath)
+        {
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                string[] soeLines = File.ReadAllLines(replayPath);
+                for (int i = 0; i < soeLines.Length; i++)
+                {
+                    string[] splitLine = soeLines[i].Split("\t".ToCharArray());
+                    int soeID = Int32.Parse(splitLine[0]);
+                    int TSx = Int32.Parse(splitLine[1]);
+                    string TSxUnits = splitLine[2];
+                    int eventID = Int32.Parse(splitLine[3]);
+                    int nltDataTypeID = Int32.Parse(splitLine[4]);
+                    int sensorTypeID = Int32.Parse(splitLine[5]);
+                    string sensorName = splitLine[6];
+                    int sensorOrder = Int32.Parse(splitLine[7]);
+                    int timeSlot = Int32.Parse(splitLine[8]);
+                    DateTime time = DateTime.Parse(splitLine[9]);
+                    int colorMapIndex = Int32.Parse(splitLine[10]);
+                    int elapsMS = Int32.Parse(splitLine[11]);
+                    int elapsSEC = Int32.Parse(splitLine[12]);
+                    int cyclesNum = Int32.Parse(splitLine[13]);
+                    int timeGap = Int32.Parse(splitLine[14]);
+                    int mapDisplay = Int32.Parse(splitLine[15]);
+
+                    SOEDataPoint soeDataPoint = new SOEDataPoint
+                    {
+                        EventID = eventID,
+                        SOE_ID = soeID,
+                        TSx = TSx,
+                        TSxUnits = TSxUnits,
+                        NLTDataTypeID = nltDataTypeID,
+                        SensorTypeID = sensorTypeID,
+                        SensorName = sensorName,
+                        SensorOrder = sensorOrder,
+                        TimeSlot = timeSlot,
+                        Time = time,
+                        Value = colorMapIndex,
+                        ElapsMS = elapsMS,
+                        ElapsSEC = elapsSEC,
+                        CycleNum = cyclesNum,
+                        TimeGap = timeGap,
+                        MapDisplay = mapDisplay,
+                    };
+
+                    if (eventID != -1)
+                    {
+                        SOEDataPoint exisitingSOEDataPoint = new TableOperations<SOEDataPoint>(connection).QueryRecordWhere("Time = {0} AND SensorName = {1} and EventID = {2} AND SOE_ID = {3} AND ElapsMS = {4} AND TimeGap = {5}", time, sensorName, eventID, soeID, elapsMS, timeGap);
+                        if (exisitingSOEDataPoint == null)
+                        {
+                            new TableOperations<SOEDataPoint>(connection).AddNewOrUpdateRecord(soeDataPoint);
+                        }
+                    }
+                }
+            }
+        }
 
     }
 }
