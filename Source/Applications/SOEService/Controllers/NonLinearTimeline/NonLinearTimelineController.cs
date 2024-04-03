@@ -78,8 +78,8 @@ namespace SOEService.Controllers
 	                SOEDataPoint.Value,
 	                SOEDataPoint.SensorName,
 	                'rgb('+CAST(Red as VARCHAR(3))+','+CAST(Green as VARCHAR(3))+','+CAST(Blue as VARCHAR(3))+')' as Color,
-                    ColorIndex.Color as ColorText
-
+                    ColorIndex.Color as ColorText,
+                    Meter.Make
                 FROM (
 	                SELECT
 		                DISTINCT SUBSTRING(SensorName,0,CHARINDEX('.', SensorName, 0)) as Name
