@@ -1090,7 +1090,6 @@
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\global.d.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\Home\Home.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\ImageTable.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Image.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Map.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\nlt.d.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\NonLinearTimeline.tsx" />
