@@ -318,6 +318,39 @@ namespace SOEDataProcessing.DataAnalysis
             }
         }
 
+        public DataSeries[] Data
+        {
+            get
+            {
+                List<DataSeries> result = new List<DataSeries>();
+
+                void AddIfDefined(DataSeries dataSeries)
+                {
+                    if (!(dataSeries is null))
+                        result.Add(dataSeries);
+                }
+
+                AddIfDefined(VX1);
+                AddIfDefined(VX2);
+                AddIfDefined(VX3);
+
+                AddIfDefined(VY1);
+                AddIfDefined(VY2);
+                AddIfDefined(VY3);
+
+                AddIfDefined(VA);
+                AddIfDefined(VB);
+                AddIfDefined(VC);
+
+                AddIfDefined(IA);
+                AddIfDefined(IB);
+                AddIfDefined(IC);
+                AddIfDefined(IR);
+
+                return result.ToArray();
+            }
+        }
+
         #endregion
 
         #region [ Methods ]
@@ -339,9 +372,10 @@ namespace SOEDataProcessing.DataAnalysis
                 return null;
 
             // Get the meter associated with the channels in this data group
-            meter = (I1 ?? I2).SeriesInfo.Channel.Meter;
+            int firstCurrentIndex = CurrentIndexes.First(i => i >= 0);
+            meter = m_dataGroup[firstCurrentIndex].SeriesInfo.Channel.Meter;
 
-            if (m_i1Index == -1 && m_i2Index >= 0 && m_i3Index >=0)
+            if (m_i1Index == -1 && m_i2Index >= 0 && m_i3Index >= 0)
             {
                 // Calculate I1 = IR - I2 - I3
                 missingSeries = IR.Add(I2.Negate()).Add(I3.Negate());
@@ -365,11 +399,11 @@ namespace SOEDataProcessing.DataAnalysis
                 m_i1Index = m_dataGroup.DataSeries.Count;
                 m_dataGroup.Add(missingSeries);
             }
-            else if(m_irIndex == -1 && m_i1Index >= 0  && m_i2Index >= 0 && m_i3Index >= 0)
+            else if (m_irIndex == -1 && m_i1Index >= 0 && m_i2Index >= 0 && m_i3Index >= 0)
             {
                 // Calculate IR = I1 + I2 + I3
                 missingSeries = I1.Add(I2).Add(I3);
-                missingSeries.SeriesInfo = GetSeriesInfo( meter, m_dataGroup, "Current", "RES");
+                missingSeries.SeriesInfo = GetSeriesInfo(meter, m_dataGroup, "Current", "RES");
                 m_i1Index = m_dataGroup.DataSeries.Count;
                 m_dataGroup.Add(missingSeries);
             }

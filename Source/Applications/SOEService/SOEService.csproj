@@ -181,8 +181,8 @@
     <Reference Include="Microsoft.Web.Infrastructure">
       <HintPath>..\..\Dependencies\GSF\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\Dependencies\GSF\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\Dependencies\NuGet\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin">
       <HintPath>..\..\Dependencies\GSF\Owin.dll</HintPath>
@@ -311,6 +311,10 @@
     <ProjectReference Include="..\..\Libraries\IntelliRupters\IntelliRupters.csproj">
       <Project>{75fa1fb7-5afc-4c54-8aba-f12738837398}</Project>
       <Name>IntelliRupters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\SOE.MATLAB\SOE.MATLAB.csproj">
+      <Project>{db45e2dc-9b08-4549-9db5-9c99bbee1379}</Project>
+      <Name>SOE.MATLAB</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\SOE.Model\SOE.Model.csproj">
       <Project>{54cdfae3-a029-4141-9a7d-5981b7cd4b64}</Project>
@@ -1086,7 +1090,6 @@
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\global.d.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\Home\Home.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\ImageTable.tsx" />
-    <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Image.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\Map.tsx" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\nlt.d.ts" />
     <TypeScriptCompile Include="wwwroot\Scripts\TSX\NonLinearTimeline\NonLinearTimeline.tsx" />

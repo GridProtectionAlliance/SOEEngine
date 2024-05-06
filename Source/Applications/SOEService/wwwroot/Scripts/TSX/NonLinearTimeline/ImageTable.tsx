@@ -27,19 +27,19 @@ import { parse } from 'query-string';
 import * as moment from 'moment';
 import { ajax } from 'jquery';
 import Table from '@gpa-gemstone/react-table';
-import { orderBy } from 'lodash';
+import { Column } from '@gpa-gemstone/react-table/lib/Table';
+import * as _ from 'lodash';
 
-interface ImageTableRow {
-    System: string,
-    Circuit: string,
-    Device: string,
-    Group: string,
-    Link: string,
-    DisplayText: string,
+interface ImageRow {
+    AssetKey: string,
     EventID: number,
-    RetentionPolicy: string,
-    Deleted: boolean,
-    ID: number
+    EventTagID: number,
+    MeterID: number,
+    ID: number,
+    TagData: string,
+    SystemName: string,
+    CircuitName: string,
+    SOE_ID: number | null
 }
 
 export default function ImageTable() {
@@ -52,35 +52,51 @@ export default function ImageTable() {
 
     const [mDate, setMDate] = React.useState<moment.Moment>(moment(date));
     const [mGroup, setMGroup] = React.useState<string>(group as string);
-    const [data, setData] = React.useState<ImageTableRow[]>([]);
-    const [showDeleted, setShowDeleted] = React.useState<boolean>(false);
-
+    const [data, setData] = React.useState<ImageRow[]>([]);
     const [ascending, setAscending] = React.useState<boolean>(true);
-    const [sortField, setSortField] = React.useState<keyof ImageTableRow>('DisplayText');
+    const [sortField, setSortField] = React.useState<keyof ImageRow>('AssetKey');
 
     React.useEffect(() => {
-
         let handle = ajax({
             type: "GET",
-            url: `${homePath}api/NonLinearTimeline/ImageTable/${mDate.format("YYYY-MM-DD")}/${mGroup.replace("/", "------")}/${context}/${object}`,
+            url: `${homePath}api/NonLinearTimeline/MatLabImages/${mDate.format("YYYY-MM-DD")}/${mGroup.replace("/", "------")}/${context}/${object}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: false,
             async: true
-        }) as JQuery.jqXHR<ImageTableRow[]>;
+        }) as JQuery.jqXHR<ImageRow[]>;
 
-        handle.done(d => setData(SortData(d)));
+        handle.done(d => {
+            const parsedData = d.map(item => {
+                const parsedTagData: {PlotFilePath: string} = JSON.parse(item.TagData);
+                return { ...item, TagData: parsedTagData.PlotFilePath };
+            });
+            setData(parsedData);
+        });
 
     }, [mDate, mGroup]);
 
+    const cols = React.useMemo(() => {
+        let baseCols: Column<ImageRow>[] = [
+            { key: 'AssetKey', label: 'Device', field: 'AssetKey' },
+            { key: 'SystemName', label: 'System', field: 'SystemName' },
+            { key: 'CircuitName', label: 'Circuit', field: 'CircuitName' },
+            { key: 'Image', label: 'Image', field: 'TagData', content: (item) => <img src={`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`} width={100} height={100} onClick={() => window.open(`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`)} /> },
+        ]
+
+        if (mGroup === "G7 State Change Plot")
+            baseCols.push({
+                key: 'SOE_ID',
+                label: '',
+                field: 'SOE_ID',
+                content: (item) => <a href={item.SOE_ID != null ? `${homePath}NonLinearTimeLine.cshtml?soeID=${item.SOE_ID}` : `${homePath}Replay.cshtml?date=${mDate.format("YYYY-MM-DD")}`}>{item.SOE_ID != null ? 'Non Linear Timeline' : 'Replay'}</a>
+            });
+        return baseCols
+    }, [mGroup])
+
     React.useEffect(() => {
-        setData(SortData(data));
+        setData(_.orderBy(data, [sortField], [ascending ? "asc" : "desc"]));
     }, [ascending, sortField]);
-
-
-    function SortData(data: ImageTableRow[]): ImageTableRow[] {
-        return orderBy(data, [sortField], [ascending ? "asc" : "desc"]);
-    }
 
     return (
         <div className='container theme-showcase' style={{ overflow: 'hidden', position: 'absolute', left: 0, top: 60, width: window.innerWidth, height: window.innerHeight - 75, padding: 20 }}>
@@ -90,16 +106,15 @@ export default function ImageTable() {
                         <label>Group:</label>
                         <select className='form-control' value={mGroup} onChange={(evt) => setMGroup(evt.target.value)}>
                             <option value='All'>All</option>
-                            <option value='G1 Research'>G1 Research</option>
-                            <option value='G2 Switching'>G2 Switching</option>
-                            <option value='G3 Faults'>G3 Faults</option>
-                            <option value='G4 Power Quality'>G4 Power Quality</option>
-                            <option value='G5 Artifacts/Harmonics'>G5 Artifacts/Harmonics</option>
-                            <option value='G6 MinMaxAvg/History'>G6 MinMaxAvg/History</option>
-                            <option value='G7 Reports'>G7 Reports</option>
-                            <option value='G8 Predictive'>G8 Predictive</option>
-                            <option value='G9 Other'>G9 Other</option>
-
+                            <option value='G1 Vector Plot'>G1) Vector Plot</option>
+                            <option value='G2 IEEE 1668 Ridethrough Plot'>G2 IEEE 1668 Ridethrough Plot</option>
+                            <option value='G3 Suspected Blown Fuse Plot'>G3 Suspected Blown Fuse Plot</option>
+                            <option value='G4 Reserved'>G4 Reserved</option>
+                            <option value='G5 Harmonics Plot'>G5 Harmonics Plot</option>
+                            <option value='G6 MinMax Plot'>G6 MinMax Plot</option>
+                            <option value='G7 State Change Plot'>G7 State Change Plot</option>
+                            <option value='G8 Reserved'>G8 Reserved</option>
+                            <option value='G9 Reserved'>G9 Reserved</option>
                         </select>
                     </div>
                 </div>
@@ -110,7 +125,6 @@ export default function ImageTable() {
                         <button className='btn btn-primary form-control' onClick={() => setMDate(moment(mDate.subtract(1, 'day')))}>{'<<'}</button>
                     </div>
                 </div>
-
 
                 <div className='col-lg-2'>
                     <div className="form-group">
@@ -125,35 +139,17 @@ export default function ImageTable() {
                         <button className='btn btn-primary form-control' onClick={() => setMDate(moment(mDate.add(1, 'days')))}>{'>>'}</button>
                     </div>
                 </div>
-
-                <div className='col-lg-1'>
-                    <div className='checkbox'>
-                        <label><input type='checkbox' value={showDeleted.toString()} checked={showDeleted} onChange={() => setShowDeleted(!showDeleted)} />Show Deleted</label>
-                    </div>
-                </div>
-
-
             </div>
-            <div className='row'>
-                <Table<ImageTableRow>
-                    cols={[
-                        { key: 'System', label: 'System', field: 'System' },
-                        { key: 'Circuit', label: 'Circuit', field: 'Circuit' },
-                        { key: 'Device', label: 'Device', field: 'Device' },
-                        { key: 'Group', label: 'Group', field: 'Group' },
-                        { key: 'DisplayText', label: 'DisplayText', field: 'DisplayText', content: (item, key, field, style, index) => <a href={`${homePath}Image.html?imageID=${item.ID}`} target='_blank'>{item.DisplayText}</a> },
-                        { key: 'EventID', label: 'EventID', field: 'EventID' },
-                        { key: 'RetentionPolicy', label: 'RetentionPolicy', field: 'RetentionPolicy' },
-                        { key: 'Deleted', label: 'Deleted', field: 'Deleted', content: (item) =>  item.Deleted ? "true" : "false"},
-                        { key: null, label: '', headerStyle: { width: 20 }, rowStyle: { width: 0 } }
 
-                    ]}
+            <div className='row'>
+                <Table<ImageRow>
+                    cols={cols}
                     tableClass="table table-hover"
                     theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 40 }}
-                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 180, height: window.innerHeight - 180, width: '100%' }}
+                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 270, height: window.innerHeight - 270, width: '100%' }}
                     rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                     sortKey={sortField}
-                    onClick={(d) => { }}
+                    onClick={() => { }}
                     onSort={d => {
                         if (d.colField == sortField) {
                             setAscending(!ascending);
@@ -162,10 +158,7 @@ export default function ImageTable() {
                             setSortField(d.colField);
                         }
                     }}
-                    data={data.filter(d => {
-                        if (showDeleted) return true;
-                        else return !d.Deleted
-                    })}
+                    data={data}
                     ascending={ascending}
                 />
             </div>

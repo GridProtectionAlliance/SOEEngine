@@ -78,8 +78,8 @@ namespace SOEService.Controllers
 	                SOEDataPoint.Value,
 	                SOEDataPoint.SensorName,
 	                'rgb('+CAST(Red as VARCHAR(3))+','+CAST(Green as VARCHAR(3))+','+CAST(Blue as VARCHAR(3))+')' as Color,
-                    ColorIndex.Color as ColorText
-
+                    ColorIndex.Color as ColorText,
+                    Meter.Make
                 FROM (
 	                SELECT
 		                DISTINCT SUBSTRING(SensorName,0,CHARINDEX('.', SensorName, 0)) as Name
@@ -252,69 +252,63 @@ namespace SOEService.Controllers
 
         }
 
-        [HttpGet, Route("ImageTable/{date}/{group}/{context}/{objectName}")]
-        public IHttpActionResult ImageTable(string date, string group, string context, string objectName)
+        [HttpGet, Route("MatLabImages/{date}/{group}/{context}/{objectName}")]
+        public IHttpActionResult GetMatLabImages(string date, string group, string context, string objectName)
         {
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
             {
-
                 string sql = $@"
-                    SELECT
-	                    System.Name as System,
-	                    Circuit.Name as Circuit,
-	                    Meter.AssetKey as Device,
-	                    MatlabGroup.Name as [Group],
-	                    NLTImages.Url as Link,
-	                    NLTImages.DisplayText,
-	                    NLTImages.EventID,
-	                    NLTImages.RetentionPolicy,
-	                    NLTImages.Deleted,
-                        NLTImages.ID
-                    FROM
-	                    NLTImages JOIN
-	                    MatlabGroup ON MatlabGroup.ID = NLTImages.GroupID JOIN
-	                    Event ON NLTImages.EventID = Event.ID JOIN
-	                    Meter ON Meter.ID = Event.MeterID JOIN
-	                    Circuit ON Circuit.ID = Meter.CircuitID JOIN
-	                    System ON System.ID = Circuit.SystemID
-                    WHERE
-	                    CAST(Event.StartTime as Date) = {{0}} 
-                    ";
-                if(group != "All") sql = $@"{sql} AND MatlabGroup.Name = {{1}}";
-                if (context == "System") sql = $@"{sql} AND System.Name = {{2}}";
-                else if (context == "Circuit") sql = $@"{sql} AND Circuit.Name = {{2}}";
-                else sql = $@"{sql} AND Meter.AssetKey = {{2}}";
+                SELECT 
+                    EventEventTag.EventID,
+                    Event.MeterID,
+                    EventEventTag.EventTagID,
+                    EventEventTag.TagData,
+	                Meter.AssetKey,
+                    System.Name as SystemName,
+	                Circuit.Name as CircuitName,
+					EventTag.Name as EventTagName,
+					SOEIncident.SOEID as SOE_ID
+                FROM 
+                    EventEventTag
+				INNER JOIN 
+					Event ON EventEventTag.EventID = Event.ID
+				LEFT JOIN
+					Incident ON Event.IncidentID = Incident.ID
+				LEFT JOIN
+					SOEIncident ON Incident.ID = SOEIncident.IncidentID
+				INNER JOIN
+					Meter on Event.MeterID = Meter.ID 
+				INNER JOIN
+					Circuit ON Circuit.ID = Meter.CircuitID
+				INNER JOIN
+					System ON System.ID = Circuit.SystemID
+				INNER JOIN 
+					EventTag on EventEventTag.EventTagID = EventTag.ID
+                WHERE
+                     CONVERT(date, Event.StartTime) = {{0}}
+                ";
 
-                DataTable table = connection.RetrieveData(sql, date, group.Replace("------","/"), objectName);
+                if (group != "All") sql = $@"{sql} AND EventTag.Name = {{2}}";
+                if (context == "System") sql = $@"{sql} AND System.Name = {{1}}";
+                else if (context == "Circuit") sql = $@"{sql} AND Circuit.Name = {{1}}";
+                else sql = $@"{sql} AND Meter.AssetKey = {{1}}";
+
+                DataTable table = connection.RetrieveData(sql, date, objectName, group);
                 return Ok(table);
             }
 
         }
 
-        [HttpGet, Route("Image/{id:int}")]
-        public HttpResponseMessage GetImage(int id)
+        [HttpGet, Route("Image/{path}")]
+        public HttpResponseMessage GetImage(string path)
         {
-            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
-            {
-                NLTImages record = new TableOperations<NLTImages>(connection).QueryRecordWhere("ID = {0}", id);
-                using (FileStream fileStream = new FileStream(Path.Combine(record.Url), FileMode.Open))
-                {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        fileStream.CopyTo(memoryStream);
-                        Bitmap image = new Bitmap(1, 1);
-                        image.Save(memoryStream, ImageFormat.Jpeg);
-                        HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
-                        result.Content = new ByteArrayContent(memoryStream.ToArray());
-                        result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-                        return result;
-
-                    }
-                }
-            }
-
+            byte[] data = Convert.FromBase64String(path);
+            string decodedString = System.Text.Encoding.UTF8.GetString(data);
+            var result = new HttpResponseMessage(HttpStatusCode.OK);
+            Byte[] b = File.ReadAllBytes(decodedString + ".png");
+            result.Content = new ByteArrayContent(b);
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+            return result;
         }
-
-
     }
 }

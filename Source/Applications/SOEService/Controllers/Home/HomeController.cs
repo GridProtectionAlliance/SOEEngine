@@ -23,21 +23,7 @@
 
 
 using GSF.Data;
-using GSF.Data.Model;
-using Newtonsoft.Json;
-using SOE.Model.NonLinearTimeLine;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Web;
 using System.Web.Http;
 
 namespace SOEService.Controllers
@@ -66,16 +52,16 @@ namespace SOEService.Controllers
 							CONVERT(Decimal(10,3),MAX(PQS)) as PQS,
 							COUNT(DISTINCT Faults) as Faults,
 							COUNT(DISTINCT Files) as Files,
-							SUM(COALESCE([G1 Research],0)) as [G1 Research],
-							SUM(COALESCE([G2 Switching],0)) as[G2 Switching],
-							SUM(COALESCE([G3 Faults],0)) as[G3 Faults],
-							SUM(COALESCE([G4 Power Quality],0)) as[G4 Power Quality],
-							SUM(COALESCE([G5 Artifacts/Harmonics],0)) as [G5 Artifacts/Harmonics],
-							SUM(COALESCE([G6 MinMaxAvg/History],0)) as [G6 MinMaxAvg/History],
-							SUM(COALESCE([G7 Reports],0)) as [G7 Reports],
-							SUM(COALESCE([G8 Predictive],0)) as [G8 Predictive],
-							SUM(COALESCE([G9 Other],0)) as [G9 Other],
-							SUM(COALESCE([G1 Research],0) + COALESCE([G2 Switching],0) +COALESCE([G3 Faults],0) +COALESCE([G4 Power Quality],0) +COALESCE([G5 Artifacts/Harmonics],0) +COALESCE([G6 MinMaxAvg/History],0) +COALESCE([G7 Reports],0) +COALESCE([G8 Predictive],0) +COALESCE([G9 Other],0)) as AllPlots
+							SUM(COALESCE([G1 Vector Plot],0)) as [G1 Vector Plot],
+							SUM(COALESCE([G2 IEEE 1668 Ridethrough Plot],0)) as[G2 IEEE 1668 Ridethrough Plot],
+							SUM(COALESCE([G3 Suspected Blown Fuse Plot],0)) as[G3 Suspected Blown Fuse Plot],
+							SUM(COALESCE([G4 Reserved],0)) as[G4 Reserved],
+							SUM(COALESCE([G5 Harmonics Plot],0)) as [G5 Harmonics Plot],
+							SUM(COALESCE([G6 MinMax Plot],0)) as [G6 MinMax Plot],
+							SUM(COALESCE([G7 State Change Plot],0)) as [G7 State Change Plot],
+							SUM(COALESCE([G8 Reserved],0)) as [G8 Reserved],
+							SUM(COALESCE([G9 Reserved],0)) as [G9 Reserved],
+							SUM(COALESCE([G1 Vector Plot],0) + COALESCE([G2 IEEE 1668 Ridethrough Plot],0) +COALESCE([G3 Suspected Blown Fuse Plot],0) +COALESCE([G4 Reserved],0) +COALESCE([G5 Harmonics Plot],0) +COALESCE([G6 MinMax Plot],0) +COALESCE([G7 State Change Plot],0) +COALESCE([G8 Reserved],0) +COALESCE([G9 Reserved],0)) as AllPlots
 
 						FROM (
 						SELECT
@@ -90,22 +76,33 @@ namespace SOEService.Controllers
 							SOE.ID as SOEs,
 							MatlabGroup.Name as MatlabGroup
 						FROM
-							Incident JOIN
-							Meter ON Incident.MeterID = Meter.ID JOIN
-							Circuit ON Meter.CircuitID = Circuit.ID JOIN
-							System on Circuit.SystemID = System.ID LEFT JOIN
-							IncidentAttribute on IncidentAttribute.IncidentID = Incident.ID  AND IncidentAttribute.FaultType IS NOT NULL LEFT JOIN
-							Event on Event.IncidentID = Incident.ID LEFT JOIN
-							SOEIncident on SOEIncident.IncidentID = Incident.ID LEFT JOIN
-							SOE ON SOE.ID = SOEIncident.SOEID LEFT JOIN
-							NLTImages ON NLTImages.EventID = Event.ID LEFT JOIN
-							MatlabGroup ON NLTImages.GroupID = MatlabGroup.ID
+							Incident
+							JOIN
+								Meter ON Incident.MeterID = Meter.ID
+							JOIN
+								Circuit ON Meter.CircuitID = Circuit.ID
+							JOIN
+								System on Circuit.SystemID = System.ID
+							LEFT JOIN
+								IncidentAttribute on IncidentAttribute.IncidentID = Incident.ID  AND IncidentAttribute.FaultType IS NOT NULL
+							LEFT JOIN
+								Event on Event.IncidentID = Incident.ID
+							LEFT JOIN
+								SOEIncident on SOEIncident.IncidentID = Incident.ID
+							LEFT JOIN
+								SOE ON SOE.ID = SOEIncident.SOEID
+							LEFT JOIN
+								EventEventTag ON EventEventTag.EventID = Event.ID
+							LEFT JOIN
+								EventTag ON EventEventTag.EventTagID = EventTag.ID
+							LEFT JOIN
+								MatLabGroup on EventTag.Name = MatLabGroup.Name
 						WHERE
 							CAST(Incident.StartTime as DATE) =  @date
 							) as tbl
 						PIVOT(
 							COUNT(tbl.MatlabGroup)
-							For tbl.MatlabGroup IN ([G1 Research],[G2 Switching],[G3 Faults],[G4 Power Quality],[G5 Artifacts/Harmonics],[G6 MinMaxAvg/History],[G7 Reports],[G8 Predictive],[G9 Other])
+							For tbl.MatlabGroup IN ([G1 Vector Plot],[G2 IEEE 1668 Ridethrough Plot],[G3 Suspected Blown Fuse Plot],[G4 Reserved],[G5 Harmonics Plot],[G6 MinMax Plot],[G7 State Change Plot],[G8 Reserved],[G9 Reserved])
 						) as pvt
 						GROUP BY
 							System                ";
@@ -125,16 +122,16 @@ namespace SOEService.Controllers
 							CONVERT(Decimal(10,3),MAX(PQS)) as PQS,
 							COUNT(DISTINCT Faults) as Faults,
 							COUNT(DISTINCT Files) as Files,
-							SUM(COALESCE([G1 Research],0)) as [G1 Research],
-							SUM(COALESCE([G2 Switching],0)) as[G2 Switching],
-							SUM(COALESCE([G3 Faults],0)) as[G3 Faults],
-							SUM(COALESCE([G4 Power Quality],0)) as[G4 Power Quality],
-							SUM(COALESCE([G5 Artifacts/Harmonics],0)) as [G5 Artifacts/Harmonics],
-							SUM(COALESCE([G6 MinMaxAvg/History],0)) as [G6 MinMaxAvg/History],
-							SUM(COALESCE([G7 Reports],0)) as [G7 Reports],
-							SUM(COALESCE([G8 Predictive],0)) as [G8 Predictive],
-							SUM(COALESCE([G9 Other],0)) as [G9 Other],
-							SUM(COALESCE([G1 Research],0) + COALESCE([G2 Switching],0) +COALESCE([G3 Faults],0) +COALESCE([G4 Power Quality],0) +COALESCE([G5 Artifacts/Harmonics],0) +COALESCE([G6 MinMaxAvg/History],0) +COALESCE([G7 Reports],0) +COALESCE([G8 Predictive],0) +COALESCE([G9 Other],0)) as AllPlots
+							SUM(COALESCE([G1 Vector Plot],0)) as [G1 Vector Plot],
+							SUM(COALESCE([G2 IEEE 1668 Ridethrough Plot],0)) as[G2 IEEE 1668 Ridethrough Plot],
+							SUM(COALESCE([G3 Suspected Blown Fuse Plot],0)) as[G3 Suspected Blown Fuse Plot],
+							SUM(COALESCE([G4 Reserved],0)) as[G4 Reserved],
+							SUM(COALESCE([G5 Harmonics Plot],0)) as [G5 Harmonics Plot],
+							SUM(COALESCE([G6 MinMax Plot],0)) as [G6 MinMax Plot],
+							SUM(COALESCE([G7 State Change Plot],0)) as [G7 State Change Plot],
+							SUM(COALESCE([G8 Reserved],0)) as [G8 Reserved],
+							SUM(COALESCE([G9 Reserved],0)) as [G9 Reserved],
+							SUM(COALESCE([G1 Vector Plot],0) + COALESCE([G2 IEEE 1668 Ridethrough Plot],0) +COALESCE([G3 Suspected Blown Fuse Plot],0) +COALESCE([G4 Reserved],0) +COALESCE([G5 Harmonics Plot],0) +COALESCE([G6 MinMax Plot],0) +COALESCE([G7 State Change Plot],0) +COALESCE([G8 Reserved],0) +COALESCE([G9 Reserved],0)) as AllPlots
 
 						FROM (
 						SELECT
@@ -149,22 +146,33 @@ namespace SOEService.Controllers
 							SOE.ID as SOEs,
 							MatlabGroup.Name as MatlabGroup
 						FROM
-							Incident JOIN
-							Meter ON Incident.MeterID = Meter.ID JOIN
-							Circuit ON Meter.CircuitID = Circuit.ID JOIN
-							System on Circuit.SystemID = System.ID LEFT JOIN
-							IncidentAttribute on IncidentAttribute.IncidentID = Incident.ID  AND IncidentAttribute.FaultType IS NOT NULL LEFT JOIN
-							Event on Event.IncidentID = Incident.ID LEFT JOIN
-							SOEIncident on SOEIncident.IncidentID = Incident.ID LEFT JOIN
-							SOE ON SOE.ID = SOEIncident.SOEID LEFT JOIN
-							NLTImages ON NLTImages.EventID = Event.ID LEFT JOIN
-							MatlabGroup ON NLTImages.GroupID = MatlabGroup.ID
+							Incident
+							JOIN
+								Meter ON Incident.MeterID = Meter.ID
+							JOIN
+								Circuit ON Meter.CircuitID = Circuit.ID
+							JOIN
+								System on Circuit.SystemID = System.ID LEFT
+							JOIN
+								IncidentAttribute on IncidentAttribute.IncidentID = Incident.ID  AND IncidentAttribute.FaultType IS NOT NULL
+							LEFT JOIN
+								Event on Event.IncidentID = Incident.ID
+							LEFT JOIN
+								SOEIncident on SOEIncident.IncidentID = Incident.ID
+							LEFT JOIN
+								SOE ON SOE.ID = SOEIncident.SOEID
+							LEFT JOIN
+								EventEventTag ON EventEventTag.EventID = Event.ID
+							LEFT JOIN
+								EventTag ON EventEventTag.EventTagID = EventTag.ID
+							LEFT JOIN
+								MatLabGroup on EventTag.Name = MatLabGroup.Name
 						WHERE
 							CAST(Incident.StartTime as DATE) =  @date
 							) as tbl
 						PIVOT(
 							COUNT(tbl.MatlabGroup)
-							For tbl.MatlabGroup IN ([G1 Research],[G2 Switching],[G3 Faults],[G4 Power Quality],[G5 Artifacts/Harmonics],[G6 MinMaxAvg/History],[G7 Reports],[G8 Predictive],[G9 Other])
+							For tbl.MatlabGroup IN ([G1 Vector Plot],[G2 IEEE 1668 Ridethrough Plot],[G3 Suspected Blown Fuse Plot],[G4 Reserved],[G5 Harmonics Plot],[G6 MinMax Plot],[G7 State Change Plot],[G8 Reserved],[G9 Reserved])
 						) as pvt
 						GROUP BY
 							System, Circuit
@@ -185,16 +193,16 @@ namespace SOEService.Controllers
 							CONVERT(Decimal(10,3),MAX(PQS)) as PQS,
 							COUNT(DISTINCT Faults) as Faults,
 							COUNT(DISTINCT Files) as Files,
-							SUM(COALESCE([G1 Research],0)) as [G1 Research],
-							SUM(COALESCE([G2 Switching],0)) as[G2 Switching],
-							SUM(COALESCE([G3 Faults],0)) as[G3 Faults],
-							SUM(COALESCE([G4 Power Quality],0)) as[G4 Power Quality],
-							SUM(COALESCE([G5 Artifacts/Harmonics],0)) as [G5 Artifacts/Harmonics],
-							SUM(COALESCE([G6 MinMaxAvg/History],0)) as [G6 MinMaxAvg/History],
-							SUM(COALESCE([G7 Reports],0)) as [G7 Reports],
-							SUM(COALESCE([G8 Predictive],0)) as [G8 Predictive],
-							SUM(COALESCE([G9 Other],0)) as [G9 Other],
-							SUM(COALESCE([G1 Research],0) + COALESCE([G2 Switching],0) +COALESCE([G3 Faults],0) +COALESCE([G4 Power Quality],0) +COALESCE([G5 Artifacts/Harmonics],0) +COALESCE([G6 MinMaxAvg/History],0) +COALESCE([G7 Reports],0) +COALESCE([G8 Predictive],0) +COALESCE([G9 Other],0)) as AllPlots
+							SUM(COALESCE([G1 Vector Plot],0)) as [G1 Vector Plot],
+							SUM(COALESCE([G2 IEEE 1668 Ridethrough Plot],0)) as[G2 IEEE 1668 Ridethrough Plot],
+							SUM(COALESCE([G3 Suspected Blown Fuse Plot],0)) as[G3 Suspected Blown Fuse Plot],
+							SUM(COALESCE([G4 Reserved],0)) as[G4 Reserved],
+							SUM(COALESCE([G5 Harmonics Plot],0)) as [G5 Harmonics Plot],
+							SUM(COALESCE([G6 MinMax Plot],0)) as [G6 MinMax Plot],
+							SUM(COALESCE([G7 State Change Plot],0)) as [G7 State Change Plot],
+							SUM(COALESCE([G8 Reserved],0)) as [G8 Reserved],
+							SUM(COALESCE([G9 Reserved],0)) as [G9 Reserved],
+							SUM(COALESCE([G1 Vector Plot],0) + COALESCE([G2 IEEE 1668 Ridethrough Plot],0) +COALESCE([G3 Suspected Blown Fuse Plot],0) +COALESCE([G4 Reserved],0) +COALESCE([G5 Harmonics Plot],0) +COALESCE([G6 MinMax Plot],0) +COALESCE([G7 State Change Plot],0) +COALESCE([G8 Reserved],0) +COALESCE([G9 Reserved],0)) as AllPlots
 
 						FROM (
 						SELECT
@@ -209,26 +217,36 @@ namespace SOEService.Controllers
 							SOE.ID as SOEs,
 							MatlabGroup.Name as MatlabGroup
 						FROM
-							Incident JOIN
-							Meter ON Incident.MeterID = Meter.ID JOIN
-							Circuit ON Meter.CircuitID = Circuit.ID JOIN
-							System on Circuit.SystemID = System.ID LEFT JOIN
-							IncidentAttribute on IncidentAttribute.IncidentID = Incident.ID  AND IncidentAttribute.FaultType IS NOT NULL LEFT JOIN
-							Event on Event.IncidentID = Incident.ID LEFT JOIN
-							SOEIncident on SOEIncident.IncidentID = Incident.ID LEFT JOIN
-							SOE ON SOE.ID = SOEIncident.SOEID LEFT JOIN
-							NLTImages ON NLTImages.EventID = Event.ID LEFT JOIN
-							MatlabGroup ON NLTImages.GroupID = MatlabGroup.ID
+							Incident
+							JOIN
+							Meter ON Incident.MeterID = Meter.ID
+							JOIN
+							Circuit ON Meter.CircuitID = Circuit.ID
+							JOIN
+							System on Circuit.SystemID = System.ID
+							LEFT JOIN
+							IncidentAttribute on IncidentAttribute.IncidentID = Incident.ID  AND IncidentAttribute.FaultType IS NOT NULL
+							LEFT JOIN
+							Event on Event.IncidentID = Incident.ID
+							LEFT JOIN
+							SOEIncident on SOEIncident.IncidentID = Incident.ID
+							LEFT JOIN
+							SOE ON SOE.ID = SOEIncident.SOEID
+							LEFT JOIN
+							EventEventTag ON EventEventTag.EventID = Event.ID
+							LEFT JOIN
+							EventTag ON EventEventTag.EventTagID = EventTag.ID
+							LEFT JOIN
+							MatLabGroup on EventTag.Name = MatLabGroup.Name
 						WHERE
 							CAST(Incident.StartTime as DATE) =  @date
 							) as tbl
 						PIVOT(
 							COUNT(tbl.MatlabGroup)
-							For tbl.MatlabGroup IN ([G1 Research],[G2 Switching],[G3 Faults],[G4 Power Quality],[G5 Artifacts/Harmonics],[G6 MinMaxAvg/History],[G7 Reports],[G8 Predictive],[G9 Other])
+							For tbl.MatlabGroup IN ([G1 Vector Plot],[G2 IEEE 1668 Ridethrough Plot],[G3 Suspected Blown Fuse Plot],[G4 Reserved],[G5 Harmonics Plot],[G6 MinMax Plot],[G7 State Change Plot],[G8 Reserved],[G9 Reserved])
 						) as pvt
 						GROUP BY
 							System, Circuit, Meter
-
                 ";
 				}
 				DataTable table = connection.RetrieveData(sql, date);

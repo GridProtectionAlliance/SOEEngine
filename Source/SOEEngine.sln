@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31005.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{B3493118-9437-497D-A716-24232CE0D4F2}"
 EndProject
@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugServiceMonitor", "Libr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{B554F6A4-C3DF-4D8B-B3EF-7819B44BCE09}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\..\Documents\EPB\SOEConfigExporter.sql = ..\..\..\..\Documents\EPB\SOEConfigExporter.sql
+		..\..\..\Documents\EPB\SOEConfigExporter.sql = ..\..\..\Documents\EPB\SOEConfigExporter.sql
 		Data\SOESchema.sql = Data\SOESchema.sql
 	EndProjectSection
 EndProject
@@ -78,12 +78,17 @@ EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SOESetup", "Applications\SOESetup\SOESetup.wixproj", "{36380070-81B6-4D71-A80A-C5AE76B0E357}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOEService", "Applications\SOEService\SOEService.csproj", "{0C461E89-2430-4E47-B5C4-97FCA86E0E21}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379} = {DB45E2DC-9B08-4549-9DB5-9C99BBEE1379}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOEDataProcessing", "Libraries\SOEDataProcessing\SOEDataProcessing.csproj", "{11AE594D-2B2B-473C-8550-6BF62914C3E2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOE.Model", "Libraries\SOE.Model\SOE.Model.csproj", "{54CDFAE3-A029-4141-9A7D-5981B7CD4B64}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixFolderGen", "Applications\WixFolderGen\WixFolderGen.csproj", "{674F09A7-4477-4CED-90F6-B7512886BC74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOE.MATLAB", "Libraries\SOE.MATLAB\SOE.MATLAB.csproj", "{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -164,6 +169,14 @@ Global
 		{674F09A7-4477-4CED-90F6-B7512886BC74}.Release|Any CPU.Build.0 = Release|Any CPU
 		{674F09A7-4477-4CED-90F6-B7512886BC74}.Release|x86.ActiveCfg = Release|Any CPU
 		{674F09A7-4477-4CED-90F6-B7512886BC74}.Release|x86.Build.0 = Release|Any CPU
+		{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379}.Debug|x86.Build.0 = Debug|Any CPU
+		{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379}.Release|x86.ActiveCfg = Release|Any CPU
+		{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -182,6 +195,7 @@ Global
 		{11AE594D-2B2B-473C-8550-6BF62914C3E2} = {0F4F3F4C-55D3-4D76-99AC-1ABD3F69CFBE}
 		{54CDFAE3-A029-4141-9A7D-5981B7CD4B64} = {0F4F3F4C-55D3-4D76-99AC-1ABD3F69CFBE}
 		{674F09A7-4477-4CED-90F6-B7512886BC74} = {B3493118-9437-497D-A716-24232CE0D4F2}
+		{DB45E2DC-9B08-4549-9DB5-9C99BBEE1379} = {0F4F3F4C-55D3-4D76-99AC-1ABD3F69CFBE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A70BF824-98E4-46CA-8F93-48DBA051DD25}

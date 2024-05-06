@@ -143,7 +143,7 @@ const AggregateWaveformViewerBySOE = (props: {}) => {
                                 <td><span style={{ marginLeft: '3px', marginRight: '3px' }}>Status: {soe.Status}</span></td>
                                 <td><span style={{ marginLeft: '3px', marginRight: '3px' }}>Start: {soe.StartTime}</span></td>
                                 <td><span style={{ marginLeft: '3px', marginRight: '3px' }}>Duration: {moment.duration(moment(soe.EndTime).diff(moment(soe.StartTime))).asSeconds()}s</span></td>
-                                <td><NameEditDialog SOE={soe} OnClose={(record) => window.location.reload()} /></td>
+                                <td><NameEditDialog SOE={soe} OnClose={(record) => window.location.reload()} soeID={soeID} /></td>
                             </tr>
                         </tbody>
                     </table>                     
@@ -201,7 +201,7 @@ interface SOEDevices {
     IncidentID: number, System: string, PrefCkt: string, AltCkt: string, Order: number, Device: string, FaultType: string, Waveforms: number
 }
 
-const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOETools.Types.SOE) => void }) => {
+const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOETools.Types.SOE) => void, soeID: number }) => {
     const [show, setShow] = React.useState<boolean>(false);
     const [soe, setSOE] = React.useState<SOETools.Types.SOE>({ ...props.SOE, Name: (props.SOE.Name == undefined ? `xdaSOE${props.SOE.ID}` : props.SOE.Name), StartTime: moment(props.SOE.StartTime).format(MomentFormat), EndTime: moment(props.SOE.EndTime).format(MomentFormat) });
     const [amendedDuration, setAmendedDuration] = React.useState<number>(1);
@@ -291,7 +291,7 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
 
 
     function ChangeSOEStatus(status: 'Hide' | 'MakeReplay') {
-        return $.get(`api/SOE/ChangeStatus/${props.SOE.ID}/${status}`);
+        return $.get(`api/SOE/${props.SOE.ID}/${status}`);
     }
 
     function UpdateSOEIncidents() {
@@ -480,10 +480,12 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
 
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-primary" onClick={() => {
+                            <a type="button" className="btn btn-primary" onClick={() => {
                                 setShow(false);
-                                ChangeSOEStatus('MakeReplay').done(() => props.OnClose(soe));
-                            }}>Make SOE Replay</button>
+                                ChangeSOEStatus('MakeReplay').done(() => {
+                                    props.OnClose(soe)
+                                }).done(() => window.location.href = `${homePath}NonLinearTimeLine.cshtml?soeID=${props.soeID}`);
+                            }}>Make SOE Replay</a>
                             <button type="button" className="btn btn-danger" onClick={() => {
                                 setShow(false);
                                 ChangeSOEStatus('Hide').done(() => props.OnClose(soe));

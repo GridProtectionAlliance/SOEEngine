@@ -673,27 +673,29 @@ INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (0,'grayNoFirstWF', 
 GO
 INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (1,'redCurrent', 255,0,0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (2,'blueFault', 0,0,255)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (2,'blueFault800', 0,0,255)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (3,'greenTrip', 0,120,0)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (3,'ltBluePickUp', 110,150,250)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (4,'greenOpen', 0,255,0)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (4,'greenTrip', 0,102,0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (5,'redSource', 200,0,0)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (5,'greenOpen', 0,255,0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (6,'tanPQ', 255,170,100)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (6,'redSource', 200,0,0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (7,'yellowPQ', 255,200,0)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (7,'tanPQ', 255,170,100)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (8,'blackLOS', 0,0,0)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (8,'pinkFltPQ', 250,5,230)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (9,'orangeTBD', 250,130,0)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (9,'blackLOS', 0,0,0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (10,'aquaTBD', 5,250,250)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (10,'orgSglPH', 255,255,0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (11,'dkGrayTBD', 96,96,96)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (11,'aquaTBD', 5,250,250)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (12,'whiteTBD', 255, 255, 255)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (12,'dkGrayTBD', 250,100,0)
+GO
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (100,'yada', 1, 1, 1)
 GO
 SET IDENTITY_INSERT ColorIndex OFF
 GO
@@ -804,30 +806,58 @@ GO
 CREATE INDEX IX_MeasuredValues_EventID ON MeasuredValues(EventID)
 GO
 
-CREATE TABLE MatlabGroup (
+CREATE TABLE MATLABAnalytic
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    AssemblyName VARCHAR(MAX) NOT NULL,
+    MethodName VARCHAR(MAX) NOT NULL,
+    SettingSQL VARCHAR(MAX) NOT NULL DEFAULT '',
+    LoadOrder INT NOT NULL DEFAULT 0
+)
+GO
+
+CREATE TABLE MatlabGroup
+(
     ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
     Name VARCHAR(50) NOT NULL
 )
-
 GO
 
-INSERT INTO MatlabGroup (Name) VALUES ('G1 Research')
+INSERT INTO MatlabGroup (Name) VALUES ('G1 Vector Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G2 Switching')
+INSERT INTO MatlabGroup (Name) VALUES ('G2 IEEE 1668 Ridethrough Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G3 Faults')
+INSERT INTO MatlabGroup (Name) VALUES ('G3 Suspected Blown Fuse Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G4 Power Quality')
+INSERT INTO MatlabGroup (Name) VALUES ('G4 Reserved')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G5 Artifacts/Harmonics')
+INSERT INTO MatlabGroup (Name) VALUES ('G5 Harmonics Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G6 MinMaxAvg/History')
+INSERT INTO MatlabGroup (Name) VALUES ('G6 MinMax Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G7 Reports')
+INSERT INTO MatlabGroup (Name) VALUES ('G7 State Change Plot')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G8 Predictive')
+INSERT INTO MatlabGroup (Name) VALUES ('G8 Reserved')
 GO
-INSERT INTO MatlabGroup (Name) VALUES ('G9 Other')
+INSERT INTO MatlabGroup (Name) VALUES ('G9 Reserved')
+GO
+
+CREATE TABLE EventTag
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    Name VARCHAR(200) NOT NULL UNIQUE,
+    Description VARCHAR(MAX) NULL,
+    ShowInFilter BIT NOT NULL Default(1),
+)
+GO
+
+CREATE TABLE EventEventTag
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    EventID INT NOT NULL REFERENCES Event(ID),
+    EventTagID INT NOT NULL REFERENCES EventTag(ID),
+    TagData VARCHAR(MAX) NULL
+)
 GO
 
 CREATE TABLE NLTImages (

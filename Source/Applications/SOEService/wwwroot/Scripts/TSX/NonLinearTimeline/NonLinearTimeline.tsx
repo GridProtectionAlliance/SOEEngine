@@ -32,7 +32,9 @@ import { SOETools } from '@gpa-gemstone/application-typings';
 import LeafletMap from './Map';
 import * as d3 from 'd3';
 import { SOEDataPoint, Color, MapMeter } from './nlt';
-type TimeField = 'TimeSlot'|'Time' | 'ElapsMS' | 'ElapsSEC' | 'CycleNum' ;
+
+type TimeField = 'TimeSlot' | 'Time' | 'ElapsMS' | 'ElapsSEC' | 'CycleNum';
+
 const NonLinearTimeline = (props: {}) => {
     const axis = React.useRef(null);
     let { soeID } = parse(window.location.search);
@@ -60,7 +62,7 @@ const NonLinearTimeline = (props: {}) => {
         }) as JQuery.jqXHR<Color[]>;
 
         handle.done(d => {
-            setColors(d.concat({ID: 0, Color:'white', Name: 'badValue'}));
+            setColors(d); 
         })
         return () => { if (handle != null && handle.abort == null) handle.abort(); }
     }, []);
@@ -264,26 +266,16 @@ const NonLinearTimeline = (props: {}) => {
                             <input type='checkbox' value={showVolts.toString()} checked={showVolts} onChange={(evt) => setShowVolts(evt.target.checked) }/>
                         </div>
                     </div>
-
-                    <div style={{ height: 50, width: 150, position: 'absolute', right: 0 }} >
-                        <div style={{position: 'absolute', padding: 7}}>TSx:</div>
-                        <div style={{ height: 50, width: 100, position: 'absolute', right: 5 }}>
-                            <select className='form-control' value={tsx } onChange={(evt) => setTsx(evt.target.value)}>
-                                {tsxes.map(t => <option key={t} value={t}>{t}</option>)}
-                            </select>
-                        </div>
-                    </div>
                 </div>
                 <div ref={axis} style={{ height: 50, width: window.innerWidth, position: 'relative' }}>
                     
                 </div>
                 <div style={{ height: window.innerHeight - 500 - 60 - 50 - 50, maxHeight: window.innerHeight - 500 - 60 - 50-50, overflowY: 'scroll', width: window.innerWidth, position: 'relative' }}>
-                    <div id='sensors' style={{ width: 150, position: 'absolute', left: 0, height: filteredSensors.length * 20 }}>
-                        {filteredSensors.map(s => <div key={s} style={{ width: 150, height: 20 }}>{s}</div>)}
+                    <div id='sensors' style={{ width: 200, position: 'absolute', left: 0, height: filteredSensors.length * 20 }}>
+                        {filteredSensors.map(s => <div key={s} style={{ width: 200, height: 20 }}>{s}</div>)}
                     </div>
-                    <svg id='data' style={{ width: window.innerWidth - 150 - 20, position: 'absolute', left: 150, height: filteredSensors.length * 20 }}>
+                    <svg id='data' style={{ width: window.innerWidth - 200 - 20, position: 'absolute', left: 200, height: filteredSensors.length * 20 }}>
                         {filteredSensors.map((s, i) => <NTLRow key={s + soeID + tsx + showVolts.toString()} SOEID={soeID as string} TSx={tsx} Sensor={s} Colors={colors} Height={20} Width={window.innerWidth - 200 - 20} NumSensors={filteredSensors.length} Row={i} ReplayIndex={replayIndex} SelectedPoint={selectedPoint} SelectPoint={setSelectedPoint }/>)}
-
                     </svg>
                 </div>
             </div>
