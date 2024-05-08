@@ -2143,26 +2143,17 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_Components" Directory="wwwroot_SCRIPTSFOLDER">
-  <Component Id="wwwroot_Scripts_674f50d287a8c48dc19ba404d20fe713_eot">
-    <File Id="wwwroot_Scripts_674f50d287a8c48dc19ba404d20fe713.eot" Name="674f50d287a8c48dc19ba404d20fe713.eot" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\674f50d287a8c48dc19ba404d20fe713.eot" />
+  <Component Id="wwwroot_Scripts_1e59d2330b4c6deb84b340635ed36249_ttf">
+    <File Id="wwwroot_Scripts_1e59d2330b4c6deb84b340635ed36249.ttf" Name="1e59d2330b4c6deb84b340635ed36249.ttf" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\1e59d2330b4c6deb84b340635ed36249.ttf" />
   </Component>
-  <Component Id="wwwroot_Scripts_912ec66d7572ff821749319396470bde_svg">
-    <File Id="wwwroot_Scripts_912ec66d7572ff821749319396470bde.svg" Name="912ec66d7572ff821749319396470bde.svg" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\912ec66d7572ff821749319396470bde.svg" />
+  <Component Id="wwwroot_Scripts_8b43027f47b20503057dfbbaa9401fef_eot">
+    <File Id="wwwroot_Scripts_8b43027f47b20503057dfbbaa9401fef.eot" Name="8b43027f47b20503057dfbbaa9401fef.eot" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\8b43027f47b20503057dfbbaa9401fef.eot" />
   </Component>
   <Component Id="wwwroot_Scripts_AggregateWaveformViewerBySOE_js">
     <File Id="wwwroot_Scripts_AggregateWaveformViewerBySOE.js" Name="AggregateWaveformViewerBySOE.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\AggregateWaveformViewerBySOE.js" />
   </Component>
-  <Component Id="wwwroot_Scripts_b06871f281fee6b241d60582ae9369b9_ttf">
-    <File Id="wwwroot_Scripts_b06871f281fee6b241d60582ae9369b9.ttf" Name="b06871f281fee6b241d60582ae9369b9.ttf" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\b06871f281fee6b241d60582ae9369b9.ttf" />
-  </Component>
-  <Component Id="wwwroot_Scripts_bundle_js">
-    <File Id="wwwroot_Scripts_bundle.js" Name="bundle.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\bundle.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_bundle_js_map">
-    <File Id="wwwroot_Scripts_bundle.js.map" Name="bundle.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\bundle.js.map" />
-  </Component>
-  <Component Id="wwwroot_Scripts_dateFormat_js">
-    <File Id="wwwroot_Scripts_dateFormat.js" Name="dateFormat.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\dateFormat.js" />
+  <Component Id="wwwroot_Scripts_c1e38fd9e0e74ba58f7a2b77ef29fdd3_svg">
+    <File Id="wwwroot_Scripts_c1e38fd9e0e74ba58f7a2b77ef29fdd3.svg" Name="c1e38fd9e0e74ba58f7a2b77ef29fdd3.svg" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\c1e38fd9e0e74ba58f7a2b77ef29fdd3.svg" />
   </Component>
   <Component Id="wwwroot_Scripts_Home_js">
     <File Id="wwwroot_Scripts_Home.js" Name="Home.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Home.js" />
@@ -2175,12 +2166,6 @@
   </Component>
   <Component Id="wwwroot_Scripts_jquery_blockUI_js">
     <File Id="wwwroot_Scripts_jquery.blockUI.js" Name="jquery.blockUI.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\jquery.blockUI.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_main_js">
-    <File Id="wwwroot_Scripts_main.js" Name="main.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\main.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_main_js_map">
-    <File Id="wwwroot_Scripts_main.js.map" Name="main.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\main.js.map" />
   </Component>
   <Component Id="wwwroot_Scripts_NonLinearTimeline_js">
     <File Id="wwwroot_Scripts_NonLinearTimeline.js" Name="NonLinearTimeline.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\NonLinearTimeline.js" />
@@ -2197,14 +2182,8 @@
   <Component Id="wwwroot_Scripts_Summary_js">
     <File Id="wwwroot_Scripts_Summary.js" Name="Summary.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Summary.js" />
   </Component>
-  <Component Id="wwwroot_Scripts_Summary_js_map">
-    <File Id="wwwroot_Scripts_Summary.js.map" Name="Summary.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\Summary.js.map" />
-  </Component>
   <Component Id="wwwroot_Scripts_WaveformViewer_js">
     <File Id="wwwroot_Scripts_WaveformViewer.js" Name="WaveformViewer.js" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\WaveformViewer.js" />
-  </Component>
-  <Component Id="wwwroot_Scripts_WaveformViewer_js_map">
-    <File Id="wwwroot_Scripts_WaveformViewer.js.map" Name="WaveformViewer.js.map" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\WaveformViewer.js.map" />
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_Services_Components" Directory="wwwroot_SCRIPTSSERVICESFOLDER">
@@ -2261,9 +2240,6 @@
   </Component>
 </ComponentGroup>
 <ComponentGroup Id="wwwroot_Scripts_TSX_NonLinearTimeline_Components" Directory="wwwroot_SCRIPTSTSXNONLINEARTIMELINEFOLDER">
-  <Component Id="wwwroot_Scripts_TSX_NonLinearTimeline_Image_tsx">
-    <File Id="wwwroot_Scripts_TSX_NonLinearTimeline_Image.tsx" Name="Image.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\NonLinearTimeline\Image.tsx" />
-  </Component>
   <Component Id="wwwroot_Scripts_TSX_NonLinearTimeline_ImageTable_tsx">
     <File Id="wwwroot_Scripts_TSX_NonLinearTimeline_ImageTable.tsx" Name="ImageTable.tsx" Source="$(var.SolutionDir)Applications\SOEService\wwwroot\Scripts\TSX\NonLinearTimeline\ImageTable.tsx" />
   </Component>
