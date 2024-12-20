@@ -85,9 +85,7 @@ namespace SOE.MATLAB
                     if (tagCount == 0)
                         return tags;
 
-                    MWStructArray tagsArray = arrays[0] as MWStructArray;
-
-                    if (tagsArray is null)
+                    if (!(arrays[0] is MWStructArray tagsArray))
                         throw new InvalidOperationException($"Invalid type for tags array: {arrays[0].ArrayType}");
 
                     // Struct arrays use a zero-based index for some reason

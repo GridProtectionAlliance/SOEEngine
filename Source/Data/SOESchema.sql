@@ -756,6 +756,24 @@ GO
 SET IDENTITY_INSERT SensorType OFF
 GO
 
+CREATE TABLE SOELog
+(
+    ID INT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    EventID INT NOT NULL REFERENCES Event(ID),
+    ColorIndexID INT NOT NULL REFERENCES ColorIndex(ID),
+    Circuit VARCHAR(200) NOT NULL,
+    DeviceName VARCHAR(200) NOT NULL,
+    ChannelName VARCHAR(200) NOT NULL,
+    SOETime DATETIME2 NOT NULL,
+    SystemVoltage VARCHAR(20) NOT NULL,
+    MeasurementNumber INT NOT NULL,
+    MeasurementSampleNumber INT NOT NULL,
+    MeasurementTime DATETIME2 NOT NULL,
+    MeasurementValue FLOAT NOT NULL,
+    MeasurementColor VARCHAR(20) NOT NULL,
+    PlotFileName VARCHAR(MAX) NOT NULL
+)
+GO
 
 CREATE TABLE SOEDataPoint(
 	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
