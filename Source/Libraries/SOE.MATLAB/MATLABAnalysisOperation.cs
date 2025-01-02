@@ -85,6 +85,10 @@ namespace SOE.MATLAB
                     DataGroup dataGroup = dataGroups[i];
                     VIDataGroup viDataGroup = viDataGroups[i];
                     Event evt = eventTable.GetEvent(meterDataSet.FileGroup, dataGroup);
+
+                    if (evt is null)
+                        continue;
+
                     List<AnalyticModel> analyticModelList = QueryAnalytics(connection);
                     List<MATLABAnalyticTag> allTags = new List<MATLABAnalyticTag>();
 
