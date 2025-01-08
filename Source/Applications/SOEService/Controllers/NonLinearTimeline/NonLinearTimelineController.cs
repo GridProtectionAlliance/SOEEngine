@@ -69,29 +69,34 @@ namespace SOEService.Controllers
             {
                 DataTable table = connection.RetrieveData($@"
                 SELECT
-	                Meter.AssetKey,
-	                MeterLocation.Latitude,
-	                MeterLocation.Longitude,
-	                dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourceAlternate') as SourceAlternate,
-	                dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourcePreferred') as SourcePreferred,
-	                0 as Voltage,
-	                SOEDataPoint.Value,
-	                SOEDataPoint.SensorName,
-	                'rgb('+CAST(Red as VARCHAR(3))+','+CAST(Green as VARCHAR(3))+','+CAST(Blue as VARCHAR(3))+')' as Color,
+                    Meter.AssetKey,
+                    CASE
+                        WHEN CHARINDEX('-', Meter.AssetKey) > 0 AND LEFT(Meter.AssetKey, CHARINDEX('-', Meter.AssetKey) - 1) = RIGHT(Meter.AssetKey, CHARINDEX('-', REVERSE(Meter.AssetKey)) - 1) THEN 'Substation CB'
+                        WHEN IsNormallyOpen = 0 THEN 'N.C. PCR'
+                        ELSE 'N.O. PCR'
+                    END Type,
+                    MeterLocation.Latitude,
+                    MeterLocation.Longitude,
+                    dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourceAlternate') as SourceAlternate,
+                    dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourcePreferred') as SourcePreferred,
+                    COALESCE(TRY_CONVERT(FLOAT, System.Name), 0) as Voltage,
+                    SOEDataPoint.Value,
+                    SOEDataPoint.SensorName,
+                    CONCAT('rgb(', Red, ',', Green, ',', Blue, ')') as Color,
                     ColorIndex.Color as ColorText,
                     Meter.Make
-                FROM (
-	                SELECT
-		                DISTINCT SUBSTRING(SensorName,0,CHARINDEX('.', SensorName, 0)) as Name
-	                FROM
-		                SOEDataPoint
-	                WHERE 
-	                    SOE_ID = {{0}} AND TSx = {{1}}
-                ) as Sensor JOIN
-                Meter ON Sensor.Name = Meter.AssetKey JOIN
-                MeterLocation ON MeterLocation.ID = Meter.MeterLocationID LEFT JOIN
-                SOEDataPoint ON SOE_ID = {{0}} AND TSx = {{1}} AND TimeSlot = {{2}} AND SensorName LIKE Meter.AssetKey + '.I%' LEFT JOIN
-                ColorIndex ON ColorIndex.ID = SOEDataPoint.Value
+                FROM
+                    (
+                        SELECT DISTINCT SUBSTRING(SensorName,0,CHARINDEX('.', SensorName, 0)) as Name
+                        FROM SOEDataPoint
+                        WHERE SOE_ID = {{0}} AND TSx = {{1}}
+                    ) as Sensor JOIN
+                    Meter ON Sensor.Name = Meter.AssetKey JOIN
+                    MeterLocation ON MeterLocation.ID = Meter.MeterLocationID JOIN
+                    Circuit ON Meter.CircuitID = Circuit.ID JOIN
+                    System ON Circuit.SystemID = System.ID LEFT JOIN
+                    SOEDataPoint ON SOE_ID = {{0}} AND TSx = {{1}} AND TimeSlot = {{2}} AND SensorName LIKE Meter.AssetKey + '.I%' LEFT JOIN
+                    ColorIndex ON ColorIndex.ID = SOEDataPoint.Value
                 ", soeID, tsx, timeSlot);
                 return Ok(table);
             }

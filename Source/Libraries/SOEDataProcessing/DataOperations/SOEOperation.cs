@@ -249,7 +249,7 @@ namespace SOEDataProcessing.DataOperations
                 newSoe.StartTime = startTime;
                 newSoe.EndTime = endTime;
                 newSoe.Name = null;
-                newSoe.Status = "MakeReplay";
+                newSoe.Status = "Pending";
                 soeTable.AddNewRecord(newSoe);
                 int soeID = connection.ExecuteScalar<int>("SELECT @@IDENTITY");
 
@@ -266,7 +266,6 @@ namespace SOEDataProcessing.DataOperations
 
                 soe.StartTime = startTime;
                 soe.EndTime = endTime;
-                soe.Status = "MakeReplay";
                 soeTable.UpdateRecord(soe);
             }
 

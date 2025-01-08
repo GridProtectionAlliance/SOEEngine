@@ -193,7 +193,7 @@ class WaveformViewer extends React.Component<{}, {IncidentID: number, StartDate:
                                         $.ajax({
                                             type: 'post',
                                             url: `api/SOE/New`,
-                                            data: JSON.stringify({ SOE: { ID: 0, TimeWindows: 0, Name: '', Status: 'Draft', StartTime: this.state.StartDate, EndTime: this.state.EndDate  } as SOETools.Types.SOE, Incidents: this.state.Incidents.map((d,i) => ({ ID: 0, SOEID: 0, IncidentID: d.ID, Order: i + 1 })) }),
+                                            data: JSON.stringify({ SOE: { ID: 0, TimeWindows: 0, Name: '', Status: 'Pending', StartTime: this.state.StartDate, EndTime: this.state.EndDate  } as SOETools.Types.SOE, Incidents: this.state.Incidents.map((d,i) => ({ ID: 0, SOEID: 0, IncidentID: d.ID, Order: i + 1 })) }),
                                             contentType: 'application/json'
                                         }).done(soeID => window.open(`${homePath}AggregateWaveformViewerBySOE.cshtml?soeID=${soeID}`));
 

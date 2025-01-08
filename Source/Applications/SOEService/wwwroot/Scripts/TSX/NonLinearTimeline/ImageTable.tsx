@@ -84,13 +84,6 @@ export default function ImageTable() {
             { key: 'Image', label: 'Image', field: 'TagData', content: (item) => <img src={`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`} width={100} height={100} onClick={() => window.open(`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`)} /> },
         ]
 
-        if (mGroup === "G7 State Change Plot")
-            baseCols.push({
-                key: 'SOE_ID',
-                label: '',
-                field: 'SOE_ID',
-                content: (item) => <a href={item.SOE_ID != null ? `${homePath}NonLinearTimeLine.cshtml?soeID=${item.SOE_ID}` : `${homePath}Replay.cshtml?date=${mDate.format("YYYY-MM-DD")}`}>{item.SOE_ID != null ? 'Non Linear Timeline' : 'Replay'}</a>
-            });
         return baseCols
     }, [mGroup])
 

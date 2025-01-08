@@ -290,7 +290,7 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
     }
 
 
-    function ChangeSOEStatus(status: 'Hide' | 'MakeReplay') {
+    function ChangeSOEStatus(status: 'Pending' | 'Complete') {
         return $.get(`api/SOE/${props.SOE.ID}/${status}`);
     }
 
@@ -482,20 +482,16 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                         <div className="modal-footer">
                             <a type="button" className="btn btn-primary" onClick={() => {
                                 setShow(false);
-                                ChangeSOEStatus('MakeReplay').done(() => {
+                                ChangeSOEStatus('Complete').done(() => {
                                     props.OnClose(soe)
                                 }).done(() => window.location.href = `${homePath}NonLinearTimeLine.cshtml?soeID=${props.soeID}`);
                             }}>Make SOE Replay</a>
-                            <button type="button" className="btn btn-danger" onClick={() => {
-                                setShow(false);
-                                ChangeSOEStatus('Hide').done(() => props.OnClose(soe));
-                            }}>Hide SOE Replay</button>
                             <button type="button" className="btn btn-primary" onClick={() => {
                                 UpdateSOE().done(() => UpdateSOEIncidents().done(() => {
                                     props.OnClose(soe);
                                     setShow(false)
                                 }));
-                            }}>Apply Changes & Show SOE AWV</button>
+                            }}>View SOE Replay</button>
                             <button type="button" className="btn btn-default" onClick={() => setShow(false)}>Close</button>
                         </div>
                     </div>

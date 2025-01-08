@@ -660,7 +660,7 @@ GO
 
 CREATE TABLE ColorIndex (
 	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	Color VARCHAR(20) NOT NULL,
+	Color VARCHAR(50) NOT NULL,
 	Red INT NOT NULL,
 	Green INT NOT NULL,
 	Blue INT NOT NULL
@@ -669,33 +669,27 @@ GO
 
 SET IDENTITY_INSERT ColorIndex ON
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (0,'grayNoFirstWF', 150,150,150)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (0, 'No Data', 150, 150, 150)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (1,'redCurrent', 255,0,0)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (1, 'Load Current', 255, 0, 0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (2,'blueFault800', 0,0,255)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (2, 'Heavy Fault Current', 0, 0, 255)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (3,'ltBluePickUp', 110,150,250)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (3, 'Light Fault Current', 110, 150, 250)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (4,'greenTrip', 0,102,0)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (4, 'Trip', 0, 102, 0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (5,'greenOpen', 0,255,0)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (5, 'Open', 0, 255, 0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (6,'redSource', 200,0,0)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (6, 'Good Voltage', 200, 0, 0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (7,'tanPQ', 255,170,100)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (7, 'Light Sag (No Fault Current)', 255, 170, 100)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (8,'pinkFltPQ', 250,5,230)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (8, 'Voltage Sag (Fault Current)', 250, 5, 230)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (9,'blackLOS', 0,0,0)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (9, 'Loss of Source', 0, 0, 0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (10,'orgSglPH', 255,255,0)
-GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (11,'aquaTBD', 5,250,250)
-GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (12,'dkGrayTBD', 250,100,0)
-GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (100,'yada', 1, 1, 1)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (10, 'Severe Sag (No Fault Current)', 255, 255, 0)
 GO
 SET IDENTITY_INSERT ColorIndex OFF
 GO

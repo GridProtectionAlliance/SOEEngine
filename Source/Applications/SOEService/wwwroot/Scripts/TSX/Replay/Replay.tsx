@@ -52,21 +52,16 @@ const Replay = (props: {}) => {
     const [data, setData] = React.useState<ReplayTable[]>([]);
     const [ascending, setAscending] = React.useState<boolean>(query['ascending'] != undefined ? (query['ascending'] as string) == 'true' : true);
     const [sortField, setSortField] = React.useState<keyof ReplayTable>(query['sortField'] != undefined ? query['sortField'] as keyof ReplayTable :'StartTime');
-    const [showDeleted, setShowDeleted] = React.useState<boolean>(query['showDeleted'] != undefined ? (query['showDeleted'] as string) == 'true' : false);
 
     React.useEffect(() => {
         GetData().done(d => {
-            if(showDeleted)
-                setData(SortData(d))
-            else
-                setData(SortData(d.filter(dp => dp.Status != 'Hide')))
-
+            setData(SortData(d.filter(dp => dp.Status != 'Hide')))
         });
-    }, [stepSize, units, date, showDeleted]);
+    }, [stepSize, units, date]);
 
     React.useEffect(() => {
-        window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?${queryString.stringify({stepSize, units, date: date.format('YYYY-MM-DD'), ascending, sortField, showDeleted})}`)
-    }, [stepSize, units, date,ascending, sortField, showDeleted]);
+        window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?${queryString.stringify({stepSize, units, date: date.format('YYYY-MM-DD'), ascending, sortField})}`)
+    }, [stepSize, units, date,ascending, sortField]);
 
     React.useEffect(() => {
        setData(SortData(data));
@@ -143,18 +138,12 @@ const Replay = (props: {}) => {
                         <button className='btn btn-primary form-control' onClick={() => setDate(moment(date.add(1, 'year'))) }>{'>>'}</button>
                     </div>
                 </div>
-                <div className='col-lg-1'>
-                    <div className='checkbox'>
-                        <label><input type='checkbox' value={showDeleted.toString()} checked={showDeleted} onChange={() => setShowDeleted(!showDeleted) }/>Show Hidden Replays</label>
-                    </div>
-                </div>
-
 
             </div>
             <div className='row'>
                 <Table<ReplayTable>
                     cols={[
-                        { key: 'Name', label: 'Name', field: 'Name', content: (item, key, field,  style) => <><span>{item[field]}</span>{item.Status != 'MakeReplay' && item.Status != 'Hide' ? <button className='pull-right btn btn-link'>{PlayButton}</button>:null}</>  },
+                        { key: 'Name', label: 'Name', field: 'Name', content: (item, key, field,  style) => <><span>{item[field]}</span>{item.Status === "MakeReplay" ? <button onClick={() => window.open(`${homePath}NonLinearTimeline.cshtml?soeID=${item.ID}`) } className='pull-right btn btn-link'>{PlayButton}</button> : <></>}</>  },
                         { key: 'ID', label: 'SOE_UID', field: 'ID', headerStyle: { width: 100 }, rowStyle: { width: 100 }, content: (item, key, field, style) => <><span>{item[field]}</span><button onClick={() => window.open(`${homePath}AggregateWaveformViewerBySOE.cshtml?soeID=${item.ID}`) } className='pull-right btn btn-link'>{Scroll}</button></>  },
                         { key: 'StartTime', label: 'Start Time', field: 'StartTime' },
                         { key: 'EndTime', label: 'End Time', field: 'EndTime' },

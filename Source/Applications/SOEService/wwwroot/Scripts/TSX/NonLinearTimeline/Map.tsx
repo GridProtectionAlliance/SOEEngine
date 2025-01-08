@@ -87,7 +87,7 @@ const ColorLegend = (props: { Colors: Color[] }) =>  {
         <div className="leaflet-bottom leaflet-left">
             <div className='info color-legend leaflet-control' style={{
                 textAlign: 'left', lineHeight: 18, color: '#555', padding: '6px 8px', font: '14px/16px Arial, Helvetica, sans-serif',
-                background: 'rgb(255,255,255,0.8)', boxShadow: '0 0 15px rgb(0 0 0 / 20%)', borderRadius: 5, width: 130
+                background: 'rgb(255,255,255,0.8)', boxShadow: '0 0 15px rgb(0 0 0 / 20%)', borderRadius: 5, width: 220
             }}>
                 <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', width: 15, height: 15 }}>
@@ -95,15 +95,7 @@ const ColorLegend = (props: { Colors: Color[] }) =>  {
                             <path fill='black' d={symbol().type(symbolCross).size(100)()} transform={`translate(10,10)`} />
                         </svg>
                     </div>
-                    <span style={{ position: 'relative', left: 20 }}>Source</span>
-                </div>
-                <div style={{ position: 'relative' }}>
-                    <div style={{ position: 'absolute', width: 15, height: 15 }}>
-                        <svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>
-                            <path fill='black' d={symbol().type(symbolDiamond).size(100)()} transform={`translate(10,10)`} />
-                        </svg>
-                    </div>
-                    <span style={{ position: 'relative', left: 20 }}>Tie</span>
+                    <span style={{ position: 'relative', left: 20 }}>Substation CB</span>
                 </div>
                 <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', width: 15, height: 15 }}>
@@ -111,15 +103,7 @@ const ColorLegend = (props: { Colors: Color[] }) =>  {
                             <path fill='black' d={symbol().type(symbolSquare).size(100)()} transform={`translate(10,10)`} />
                         </svg>
                     </div>
-                    <span style={{ position: 'relative', left: 20 }}>Line PCR</span>
-                </div>
-                <div style={{ position: 'relative' }}>
-                    <div style={{ position: 'absolute', width: 15, height: 15 }}>
-                        <svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>
-                            <path fill='black' d={symbol().type(symbolStar).size(100)()} transform={`translate(10,10)`} />
-                        </svg>
-                    </div>
-                    <span style={{ position: 'relative', left: 20 }}>46 kV</span>
+                    <span style={{ position: 'relative', left: 20 }}>N.C. PCR</span>
                 </div>
                 <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', width: 15, height: 15 }}>
@@ -127,23 +111,7 @@ const ColorLegend = (props: { Colors: Color[] }) =>  {
                             <path fill='black' d={symbol().type(symbolCircle).size(100)()} transform={`translate(10,10)`} />
                         </svg>
                     </div>
-                    <span style={{ position: 'relative', left: 20 }}>Self Tie</span>
-                </div>
-                <div style={{ position: 'relative' }}>
-                    <div style={{ position: 'absolute', width: 15, height: 15 }}>
-                        <svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>
-                            <path fill='black' d={symbol().type(symbolWye).size(100)()} transform={`translate(10,10)`} />
-                        </svg>
-                    </div>
-                    <span style={{ position: 'relative', left: 20 }}>MOS</span>
-                </div>
-                <div style={{ position: 'relative' }}>
-                    <div style={{ position: 'absolute', width: 15, height: 15 }}>
-                        <svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>
-                            <path fill='black' d={symbol().type(symbolTriangle).size(100)()} transform={`translate(10,10)`} />
-                        </svg>
-                    </div>
-                    <span style={{ position: 'relative', left: 20 }}>Other</span>
+                    <span style={{ position: 'relative', left: 20 }}>N.O. PCR</span>
                 </div>
                 {
                     props.Colors.map(color => (
@@ -292,66 +260,39 @@ const Meters = (props: { Meters: MapMeter[], SelectedPoint: SOEDataPoint }) => {
 }
 
 const MeterMarker = (props: { Meter: MapMeter, SelectedPoint: SOEDataPoint }) => {
-    if (props.Meter.AssetKey.split('-')[0] === props.Meter.AssetKey.split('-')[1]) {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolCross, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
+    // Only display 12 kV meters on the nonlinear timeline
+    if (!(props.Meter.Voltage >= 12 && props.Meter.Voltage < 13))
+        return <></>;
 
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
-    else if (props.Meter.SourceAlternate === "none") {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolSquare, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
+    const symbol = (function(type) {
+        switch (type) {
+            case 'Substation CB': return symbolCross;
+            case 'N.C. PCR': return symbolSquare;
+            case 'N.O. PCR': return symbolCircle;
+            default: return null;
+        }
+    })(props.Meter.Type);
 
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
-    else if (props.Meter.SourceAlternate === props.Meter.SourcePreferred) {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolCircle, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
+    if (symbol === null)
+        return <></>;
 
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
-    else if (props.Meter.SourceAlternate !== props.Meter.SourcePreferred) {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolDiamond, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
+    const shape = Shape(symbol, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey);
+    const svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${shape}</svg>`;
+    const iconUrl = 'data:image/svg+xml;utf8,' + svg;
 
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
-    else if (props.Meter.Voltage == 4.6) {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolStar, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
+    const icon = leaflet.icon({
+        iconUrl: iconUrl,
+        iconSize: [20, 20],
+    });
 
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
-    else {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolTriangle, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
-
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
+    return (
+        <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}>
+            <Popup>
+                <div>{props.Meter.AssetKey}</div>
+                <div>{props.Meter.ColorText}</div>
+            </Popup>
+        </Marker>
+    );
 };
 
 const Shape = (shape: d3.SymbolType, fill: string, selectedPoint: SOEDataPoint, meterName: string) => `<path fill='${fill}' ${selectedPoint?.SensorName.indexOf(meterName) >= 0 ? 'stroke="black" stroke-width="3"' : ''} transform = 'translate(10,10)' d = '${symbol().type(shape).size(150)()}' />`
