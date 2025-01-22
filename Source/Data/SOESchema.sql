@@ -644,7 +644,6 @@ CREATE TABLE SOE(
 	[Status] [varchar](max) NOT NULL,
 	[TimeWindows] [int] NULL,
 )
-
 GO
 
 CREATE TABLE [dbo].[SOEIncident](
@@ -653,10 +652,15 @@ CREATE TABLE [dbo].[SOEIncident](
 	[IncidentID] [int] NOT NULL REFERENCES Incident(ID),
 	[Order] [int] NOT NULL DEFAULT(0),
 )
-
 GO
 
+CREATE NONCLUSTERED INDEX IX_SOEIncident_SOEID
+ON SOEIncident(SOEID ASC)
+GO
 
+CREATE NONCLUSTERED INDEX IX_SOEIncident_IncidentID
+ON SOEIncident(IncidentID ASC)
+GO
 
 CREATE TABLE ColorIndex (
 	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
@@ -767,6 +771,10 @@ CREATE TABLE SOELog
     MeasurementColor VARCHAR(20) NOT NULL,
     PlotFileName VARCHAR(MAX) NOT NULL
 )
+GO
+
+CREATE NONCLUSTERED INDEX IX_SOELog_EventID
+ON SOELog(EventID ASC)
 GO
 
 CREATE TABLE SOEDataPoint(

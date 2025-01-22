@@ -136,9 +136,7 @@ namespace SOE.MATLAB
         private List<AnalyticModel> QueryAnalytics(AdoDataConnection connection)
         {
             TableOperations<AnalyticModel> matlabAnalyticTable = new TableOperations<AnalyticModel>(connection);
-
-            //MakeReplay should only be invoked via the WebUI
-            return matlabAnalyticTable.QueryRecordsWhere("MethodName != {0}", "MakeReplay").OrderBy(model => model.LoadOrder).ToList();
+            return matlabAnalyticTable.QueryRecords("LoadOrder").ToList();
         }
 
         private MATLABAnalytic ToAnalytic(AnalyticModel model)

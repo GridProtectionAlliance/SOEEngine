@@ -143,7 +143,7 @@ const Replay = (props: {}) => {
             <div className='row'>
                 <Table<ReplayTable>
                     cols={[
-                        { key: 'Name', label: 'Name', field: 'Name', content: (item, key, field,  style) => <><span>{item[field]}</span>{item.Status === "MakeReplay" ? <button onClick={() => window.open(`${homePath}NonLinearTimeline.cshtml?soeID=${item.ID}`) } className='pull-right btn btn-link'>{PlayButton}</button> : <></>}</>  },
+                        { key: 'Name', label: 'Name', field: 'Name', content: (item, key, field,  style) => <><span>{item[field]}</span>{item.Status === "Complete" ? <button onClick={() => window.open(`${homePath}NonLinearTimeline.cshtml?soeID=${item.ID}`) } className='pull-right btn btn-link'>{PlayButton}</button> : <></>}</>  },
                         { key: 'ID', label: 'SOE_UID', field: 'ID', headerStyle: { width: 100 }, rowStyle: { width: 100 }, content: (item, key, field, style) => <><span>{item[field]}</span><button onClick={() => window.open(`${homePath}AggregateWaveformViewerBySOE.cshtml?soeID=${item.ID}`) } className='pull-right btn btn-link'>{Scroll}</button></>  },
                         { key: 'StartTime', label: 'Start Time', field: 'StartTime' },
                         { key: 'EndTime', label: 'End Time', field: 'EndTime' },
