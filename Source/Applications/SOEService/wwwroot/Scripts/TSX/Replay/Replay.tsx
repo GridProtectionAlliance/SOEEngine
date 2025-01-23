@@ -36,6 +36,7 @@ interface ReplayTable {
     StartTime: string,
     EndTime: string, 
     System: string,
+    CircuitList: string,
     Circuits: number,
     Devices: number,
     Waveforms: number,
@@ -145,6 +146,7 @@ const Replay = (props: {}) => {
                     cols={[
                         { key: 'Name', label: 'Name', field: 'Name', content: (item, key, field,  style) => <><span>{item[field]}</span>{item.Status === "Complete" ? <button onClick={() => window.open(`${homePath}NonLinearTimeline.cshtml?soeID=${item.ID}`) } className='pull-right btn btn-link'>{PlayButton}</button> : <></>}</>  },
                         { key: 'ID', label: 'SOE_UID', field: 'ID', headerStyle: { width: 100 }, rowStyle: { width: 100 }, content: (item, key, field, style) => <><span>{item[field]}</span><button onClick={() => window.open(`${homePath}AggregateWaveformViewerBySOE.cshtml?soeID=${item.ID}`) } className='pull-right btn btn-link'>{Scroll}</button></>  },
+                        { key: 'CircuitList', label: 'Circuits', field: 'CircuitList', rowStyle: { overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' } },
                         { key: 'StartTime', label: 'Start Time', field: 'StartTime' },
                         { key: 'EndTime', label: 'End Time', field: 'EndTime' },
                         { key: 'System', label: 'System', field: 'System', headerStyle: { width: 100 }, rowStyle: { width: 100 }},
