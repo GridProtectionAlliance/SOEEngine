@@ -126,56 +126,18 @@ const ColorLegend = (props: { Colors: Color[] }) =>  {
     );
 };
 
-interface MeasuredValue {
-    Name: string, M1: number, M2:number, M3: number, Units: string
-}
 const ViewWindow = (props: { SelectedPoint: SOEDataPoint }) => {
     const [show, setShow] = React.useState<boolean>(false);
-    const [measuredValues, setMeasuredValues] = React.useState<MeasuredValue[]>([]);
-    const [images, setImages] = React.useState<Image[]>([]);
 
     React.useEffect(() => {
-        if (props.SelectedPoint == null || props.SelectedPoint.EventID <= 0) return;
-
-        setShow(true);
-
-        let handle = $.ajax({
-            type: "GET",
-            url: `${homePath}api/NonLinearTimeline/MeasuredValues/${props.SelectedPoint.EventID}`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: true,
-            async: true
-        }) as JQuery.jqXHR<MeasuredValue[]>;
-
-        handle.done(d => {
-            setMeasuredValues(d);
-        })
-
-        let handle2 = $.ajax({
-            type: "GET",
-            url: `${homePath}api/NonLinearTimeline/Images/${props.SelectedPoint.EventID}`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: true,
-            async: true
-        }) as JQuery.jqXHR<Image[]>;
-
-        handle2.done(d => {
-            setImages(d);
-        })
-
-
-
-        return () => {
-            if (handle.abort != undefined) handle.abort();
-            if (handle2.abort != undefined) handle2.abort();
-
-        }
-
-
+        setShow(props.SelectedPoint != null && props.SelectedPoint.EventID > 0);
     }, [props.SelectedPoint]);
-    if (!show || props.SelectedPoint.EventID <= 0) return null;
+
+    if (!show)
+        return null;
+
+    const getPlotURL = () => `${homePath}api/NonLinearTimeline/Image/G7 State Change Plot/${props.SelectedPoint.EventID}`;
+
     return (
         <div className="leaflet-bottom leaflet-right">
             <div className='info color-legend leaflet-control' style={{
@@ -189,50 +151,28 @@ const ViewWindow = (props: { SelectedPoint: SOEDataPoint }) => {
                 </button>
                 <div>{props.SelectedPoint?.SensorName.split('.')[0]} / <a target='_blank' href={`${homePath}OpenSEE.cshtml?EventID=${props.SelectedPoint?.EventID}`}>{props.SelectedPoint?.EventID}</a> / {props.SelectedPoint?.Time}</div>
 
-                <div style={{width: 300, position: 'absolute'}}>
-                <table className='table' style={{ fontSize: 'smaller',marginBottom: 0 }}>
-                    <thead>
-                            <tr>
-                                <th style={{padding: 5}}>Time Slot</th>
-                                <th style={{padding: 5}}>mSec</th>
-                                <th style={{padding: 5}}>Cycles</th>
-                                <th style={{padding: 5}}>Seconds</th>
-                            </tr>
-                    </thead>
-                    <tbody>
-                            <tr>
-                                <td style={{padding: 5}}>{props.SelectedPoint?.TimeSlot}</td>
-                                <td style={{padding: 5}}>{props.SelectedPoint?.ElapsMS}</td>
-                                <td style={{padding: 5}}>{props.SelectedPoint?.CycleNum}</td>
-                                <td style={{padding: 5}}>{props.SelectedPoint?.ElapsSEC}</td>
-                            </tr>
-                    </tbody>
-                </table>
-                <table className='table' style={{fontSize: 'smaller'}}>
-                    <thead>
-                        <tr><th style={{padding: 5}}>Sensor</th><th style={{padding: 5}}>M1</th><th style={{padding: 5}}>M2</th><th style={{padding: 5}}>M3</th><th style={{padding: 5}}>Units</th></tr>
-                    </thead>
-                    <tbody>{
-                        measuredValues.map((mv, i) => (
-                            <tr key={props.SelectedPoint.EventID.toString() + i.toString() }>
-                                <td style={{padding: 5}}>{mv?.Name}</td>
-                                <td style={{padding: 5}}>{mv?.M1}</td>
-                                <td style={{padding: 5}}>{mv?.M2}</td>
-                                <td style={{padding: 5}}>{mv?.M3}</td>
-                                <td style={{padding: 5}}>{mv?.Units}</td>
-                            </tr>))
-                    }
-                        
-                    </tbody>
-                </table>
-                </div>
-                <div style={{ width: 150, position: 'absolute', left: 350 }}>
-                    <table className='table'>
-                        <thead><tr><th style={{ padding: 5 }}>Analysis Plots</th></tr></thead>
+                <div style={{width: 300}}>
+                    <table className='table' style={{ fontSize: 'smaller',marginBottom: 0 }}>
+                        <thead>
+                                <tr>
+                                    <th style={{padding: 5}}>Time Slot</th>
+                                    <th style={{padding: 5}}>mSec</th>
+                                    <th style={{padding: 5}}>Cycles</th>
+                                    <th style={{padding: 5}}>Seconds</th>
+                                </tr>
+                        </thead>
                         <tbody>
-                            {images.map(image => <tr key={image.ID}><td style={{ padding: 5 }}><a href={`${homePath}Image.html?imageID=${image.ID}` } target='_blank'>{image.DisplayText }</a></td></tr>)}
+                                <tr>
+                                    <td style={{padding: 5}}>{props.SelectedPoint?.TimeSlot}</td>
+                                    <td style={{padding: 5}}>{props.SelectedPoint?.ElapsMS}</td>
+                                    <td style={{padding: 5}}>{props.SelectedPoint?.CycleNum}</td>
+                                    <td style={{padding: 5}}>{props.SelectedPoint?.ElapsSEC}</td>
+                                </tr>
                         </tbody>
                     </table>
+                </div>
+                <div>
+                    <img style={{width: 480, cursor: 'pointer'}} src={getPlotURL()} onClick={() => window.open(getPlotURL())} />
                 </div>
             </div>
         </div>

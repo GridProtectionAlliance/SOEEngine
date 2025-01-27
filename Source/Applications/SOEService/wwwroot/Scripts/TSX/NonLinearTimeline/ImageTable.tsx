@@ -67,11 +67,7 @@ export default function ImageTable() {
         }) as JQuery.jqXHR<ImageRow[]>;
 
         handle.done(d => {
-            const parsedData = d.map(item => {
-                const parsedTagData: {PlotFilePath: string} = JSON.parse(item.TagData);
-                return { ...item, TagData: parsedTagData.PlotFilePath };
-            });
-            setData(parsedData);
+            setData(d);
         });
 
     }, [mDate, mGroup]);
@@ -81,7 +77,7 @@ export default function ImageTable() {
             { key: 'AssetKey', label: 'Device', field: 'AssetKey' },
             { key: 'SystemName', label: 'System', field: 'SystemName' },
             { key: 'CircuitName', label: 'Circuit', field: 'CircuitName' },
-            { key: 'Image', label: 'Image', field: 'TagData', content: (item) => <img src={`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`} width={100} height={100} onClick={() => window.open(`${homePath}api/NonLinearTimeline/Image/${btoa(item.TagData)}`)} /> },
+            { key: 'Image', label: 'Image', field: 'TagData', content: (item) => <img src={`${homePath}api/NonLinearTimeline/Image/${mGroup}/${item.EventID}`} width={100} height={100} onClick={() => window.open(`${homePath}api/NonLinearTimeline/Image/${mGroup}/${item.EventID}`)} /> },
         ]
 
         return baseCols
