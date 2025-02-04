@@ -62,8 +62,13 @@ namespace SOEService.Controllers
                         SOEIncident ON SOE.id = SOEIncident.SOEID JOIN
                         Incident ON SOEIncident.IncidentID = Incident.ID JOIN
                         Event ON Incident.ID = Event.IncidentID JOIN
-                        Meter ON Meter.ID = Incident.MeterID JOIN
-                        Circuit ON Circuit.ID = Meter.CircuitID LEFT OUTER JOIN
+                        Meter ON Meter.ID = Incident.MeterID LEFT OUTER JOIN
+                        Meter NormalParent ON Meter.ParentNormalID = NormalParent.ID LEFT OUTER JOIN
+                        Meter AlternateParent ON Meter.ParentAlternateID = AlternateParent.ID JOIN
+                        Circuit ON
+                            Meter.CircuitID = Circuit.ID OR
+                            NormalParent.CircuitID = Circuit.ID OR
+                            AlternateParent.CircuitID = Circuit.ID LEFT OUTER JOIN
                         SOELog ON SOELog.EventID = Event.ID
                     GROUP BY
                         SOE.ID,
