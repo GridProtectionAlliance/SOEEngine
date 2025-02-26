@@ -60,13 +60,13 @@ namespace SOEService.Configuration
         private double m_systemFrequency;
         private double m_maxVoltage;
         private double m_maxCurrent;
+        private string m_soeSystemName;
 
         private string m_lengthUnits;
         private double m_comtradeMinWaitTime;
         private int m_processingThreadCount;
         private Guid m_fileProcessorID;
         private FileEnumerationStrategy m_fileWatcherEnumerationStrategy;
-        private int m_fileWatcherMaxFragmentation;
         private int m_fileWatcherInternalThreadCount;
         private int m_fileWatcherBufferSize;
         private string m_fileShares;
@@ -411,6 +411,24 @@ namespace SOEService.Configuration
             set
             {
                 m_lengthUnits = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the system to which
+        /// SOE logic will be applied.
+        /// </summary>
+        [Setting]
+        [DefaultValue("12.5")]
+        public string SOESystemName
+        {
+            get
+            {
+                return m_soeSystemName;
+            }
+            set
+            {
+                m_soeSystemName = value;
             }
         }
 

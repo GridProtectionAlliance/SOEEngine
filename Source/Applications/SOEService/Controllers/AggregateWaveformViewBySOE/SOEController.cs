@@ -237,40 +237,36 @@ namespace SOEService.Controllers
                     DataTable record = connection.RetrieveData(@"
                         SELECT
                             Incident.ID as IncidentID,
-	                        System.Name as System,
-	                        Circuit.Name as PrefCkt,
-	                        AltCircuit.Name as AltCkt,
-	                        Meter.Name as Device,
-	                        IncidentAttribute.FaultType,
-	                        COUNT(DISTINCT Event.ID) as Waveforms
+                            Circuit.Name as PrefCkt,
+                            AltCircuit.Name as AltCkt,
+                            Meter.Name as Device,
+                            IncidentAttribute.FaultType,
+                            COUNT(DISTINCT Event.ID) as Waveforms
                         FROM
-	                        Incident JOIN
-	                        Event ON Event.IncidentID = Incident.ID JOIN
-	                        IncidentAttribute ON Incident.ID = IncidentAttribute.IncidentID JOIN
-	                        Meter ON Incident.MeterID = Meter.ID JOIN
-	                        Circuit ON Meter.CircuitID = Circuit.ID JOIN
-	                        System ON Circuit.SystemID = System.ID LEFT JOIN
-	                        Meter AS AltParent ON AltParent.ID = Meter.ParentAlternateID LEFT JOIN
-	                        Circuit AS AltCircuit ON AltCircuit.ID = AltParent.CircuitID
+                            Incident JOIN
+                            Event ON Event.IncidentID = Incident.ID JOIN
+                            IncidentAttribute ON Incident.ID = IncidentAttribute.IncidentID JOIN
+                            Meter ON Incident.MeterID = Meter.ID JOIN
+                            Circuit ON Meter.CircuitID = Circuit.ID JOIN
+                            System ON Circuit.SystemID = System.ID LEFT OUTER JOIN
+                            Meter AS AltParent ON AltParent.ID = Meter.ParentAlternateID LEFT OUTER JOIN
+                            Circuit AS AltCircuit ON AltCircuit.ID = AltParent.CircuitID LEFT OUTER JOIN
+                            Setting SOESystemNameSetting ON SOESystemNameSetting.Name = 'SOESystemName'
                         WHERE
-	                        Incident.ID NOT IN (
-		                        SELECT
-			                        SOEIncident.IncidentID
-		                        FROM
-			                        SOEIncident 
-		                        WHERE
-			                        SOEIncident.SOEID = {0}
-
-	                        ) AND 
-	                        Incident.StartTime >= {1} AND 
-	                        Incident.EndTime <= {2}         
+                            System.Name = SOESystemNameSetting.Value AND
+                            Incident.ID NOT IN (
+                                SELECT SOEIncident.IncidentID
+                                FROM SOEIncident
+                                WHERE SOEIncident.SOEID = {0}
+                            ) AND
+                            Incident.StartTime >= {1} AND
+                            Incident.EndTime <= {2}
                         GROUP BY
-	                        Incident.ID,
-	                        System.Name,
-	                        Circuit.Name,
-	                        AltCircuit.Name,
-	                        Meter.Name,
-	                        IncidentAttribute.FaultType
+                            Incident.ID,
+                            Circuit.Name,
+                            AltCircuit.Name,
+                            Meter.Name,
+                            IncidentAttribute.FaultType
                         ", id, startTime, endTime);
                     return Ok(record);
                 }

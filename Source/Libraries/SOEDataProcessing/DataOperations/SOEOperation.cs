@@ -43,6 +43,7 @@ namespace SOEDataProcessing.DataOperations
         #region [ Members ]
 
         // Fields
+        private string m_soeSystemName;
         private double m_timeTolerance;
         private static Mutex s_mutex = new Mutex();
 
@@ -55,6 +56,19 @@ namespace SOEDataProcessing.DataOperations
         #endregion
 
         #region [ Properties ]
+
+        [Setting]
+        public string SOESystemName
+        {
+            get
+            {
+                return m_soeSystemName;
+            }
+            set
+            {
+                m_soeSystemName = value;
+            }
+        }
 
         [Setting]
         public double TimeTolerance
@@ -83,6 +97,16 @@ namespace SOEDataProcessing.DataOperations
                     Event evt = eventTable.QueryRecordWhere("MeterID = {0} AND StartTime = {1} AND Endtime = {2}", meterDataSet.Meter.ID, meterDataSet.FileGroup.DataStartTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff"), meterDataSet.FileGroup.DataEndTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff"));
 
                     if (evt == null) return;
+
+                    string systemName = connection.ExecuteScalar<string>(
+                        "SELECT System.Name " +
+                        "FROM " +
+                        "    System JOIN " +
+                        "    Circuit ON Circuit.SystemID = System.ID " +
+                        "WHERE Circuit.ID = {0}", meterDataSet.Meter.CircuitID);
+
+                    if (!systemName.Equals(m_soeSystemName, StringComparison.OrdinalIgnoreCase))
+                        return;
 
                     TableOperations<Incident> incidentTable = new TableOperations<Incident>(connection);
                     Incident incident1 = incidentTable.QueryRecordWhere("ID = {0}", evt.IncidentID);

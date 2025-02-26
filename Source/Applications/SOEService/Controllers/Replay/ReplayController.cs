@@ -74,40 +74,34 @@ namespace SOEService.Controllers
                         SOE.ID,
                         Circuit.ID
                 ),
-                SystemGrouping AS
+                SOEGrouping AS
                 (
                     SELECT
                         CircuitGrouping.SOEID,
-                        System.ID SystemID,
                         STRING_AGG(Circuit.Name, ', ') WITHIN GROUP(ORDER BY CircuitGrouping.StateChanges DESC) CircuitList,
                         COUNT(*) Circuits,
                         SUM(CircuitGrouping.Devices) Devices,
                         SUM(CircuitGrouping.Waveforms) Waveforms
                     FROM
                         CircuitGrouping JOIN
-                        Circuit ON CircuitGrouping.CircuitID = Circuit.ID JOIN
-                        System ON Circuit.SystemID = System.ID
-                    GROUP BY
-                        CircuitGrouping.SOEID,
-                        System.ID
+                        Circuit ON CircuitGrouping.CircuitID = Circuit.ID
+                    GROUP BY CircuitGrouping.SOEID
                 )
                 SELECT
                     SOE.ID,
                     SOE.Name,
                     SOE.StartTime,
                     SOE.EndTime,
-                    System.Name System,
-                    SystemGrouping.CircuitList,
-                    SystemGrouping.Circuits,
-                    SystemGrouping.Devices,
-                    SystemGrouping.Waveforms,
+                    SOEGrouping.CircuitList,
+                    SOEGrouping.Circuits,
+                    SOEGrouping.Devices,
+                    SOEGrouping.Waveforms,
                     DATEDIFF(MILLISECOND, SOE.StartTime, SOE.EndTime) / 1000.0 Duration,
                     SOE.Status,
                     SOE.TimeWindows
                 FROM
-                    SystemGrouping JOIN
-                    SOE ON SystemGrouping.SOEID = SOE.ID JOIN
-                    System ON SystemGrouping.SystemID = System.ID
+                    SOEGrouping JOIN
+                    SOE ON SOEGrouping.SOEID = SOE.ID
                 WHERE
                     SOE.StartTime BETWEEN {0} AND {1} AND
                     SOE.EndTime BETWEEN {0} AND {1}
