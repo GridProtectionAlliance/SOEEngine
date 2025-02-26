@@ -689,11 +689,7 @@ INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (6, 'Good Voltage', 
 GO
 INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (7, 'Light Sag (No Fault Current)', 255, 170, 100)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (8, 'Voltage Sag (Fault Current)', 250, 5, 230)
-GO
 INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (9, 'Loss of Source', 0, 0, 0)
-GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (10, 'Severe Sag (No Fault Current)', 255, 255, 0)
 GO
 SET IDENTITY_INSERT ColorIndex OFF
 GO
