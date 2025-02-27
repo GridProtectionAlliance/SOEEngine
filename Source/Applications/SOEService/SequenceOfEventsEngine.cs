@@ -418,6 +418,7 @@ namespace SOEService
                 m_fileProcessor.InternalBufferSize = m_systemSettings.FileWatcherBufferSize;
                 m_fileProcessor.EnumerationStrategy = m_systemSettings.FileWatcherEnumerationStrategy;
                 m_fileProcessor.MaxThreadCount = m_systemSettings.FileWatcherInternalThreadCount;
+                m_fileProcessor.TrackChanges = true;
                 m_fileProcessor.Processing += FileProcessor_Processing;
                 m_fileProcessor.Error += FileProcessor_Error;
 
@@ -1121,6 +1122,10 @@ namespace SOEService
         {
             try
             {
+                // Pre-validation automatically succeeds for json files
+                if (filePath.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                    return true;
+
                 string connectionString = LoadSystemSettings();
                 SystemSettings systemSettings = new SystemSettings(connectionString);
                 ValidateFileCreationTime(filePath, systemSettings);
@@ -1156,18 +1161,19 @@ namespace SOEService
 
             try
             {
-                string filePath;
-                int priority;
+                string connectionString = LoadSystemSettings();
+                SystemSettings systemSettings = new SystemSettings(connectionString);
 
-                filePath = fileProcessorEventArgs.FullPath;
+                string filePath = fileProcessorEventArgs.FullPath;
 
-                priority = fileProcessorEventArgs.RaisedByFileWatcher
+                int priority = fileProcessorEventArgs.RaisedByFileWatcher
                     ? FileWatcherPriority
                     : FileEnumerationPriority;
 
-                if (FilePath.GetExtension(filePath) != ".json" && !PrevalidateFile(filePath)) return;
+                if (!PrevalidateFile(filePath))
+                    return;
 
-                using (AdoDataConnection connection = CreateDbConnection(m_systemSettings))
+                using (AdoDataConnection connection = CreateDbConnection(systemSettings))
                 {
                     TableOperations<DataFile> dataFileTable = new TableOperations<DataFile>(connection);
                     TableOperations<FileGroup> fileGroupTable = new TableOperations<FileGroup>(connection);
@@ -1182,7 +1188,24 @@ namespace SOEService
 
                         // This will tell us whether the service was stopped in the middle
                         // of processing the last time it attempted to process the file
-                        if (fileGroup.ProcessingEndTime > DateTime.MinValue)
+                        bool finishedProcessing = fileGroup.ProcessingEndTime > DateTime.MinValue;
+
+                        // This will tell us whether a json file has been updated since having been processed
+                        Func<bool> updatesJSON = () =>
+                        {
+                            if (!filePath.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                                return false;
+
+                            TimeZoneInfo xdaTimeZoneInfo = systemSettings.XDATimeZoneInfo;
+                            DateTime utcWriteTime = File.GetLastWriteTimeUtc(filePath);
+                            DateTime xdaWriteTime = TimeZoneInfo.ConvertTimeFromUtc(utcWriteTime, xdaTimeZoneInfo);
+
+                            // Need to convert to SQL DATETIME to avoid false positives due to rounding errors
+                            const string QueryFormat = "SELECT CASE WHEN LastWriteTime < {0} THEN 1 ELSE 0 END FROM DataFile WHERE ID = {1}";
+                            return connection.ExecuteScalar<bool>(QueryFormat, xdaWriteTime, dataFile.ID);
+                        };
+
+                        if (finishedProcessing && !updatesJSON())
                         {
                             // Explicitly use Log.Debug() so that the message does not appear on the remote console,
                             // but include a FileSkippedException so that the message gets routed to the skipped files log
@@ -1211,9 +1234,9 @@ namespace SOEService
                 crc32.Update(buffer);
                 int crc = (int)crc32.Value;
 
-                if (m_systemSettings.SkipOnCRCHashMatch)
+                if (systemSettings.SkipOnCRCHashMatch)
                 {
-                    using (AdoDataConnection connection = CreateDbConnection(m_systemSettings))
+                    using (AdoDataConnection connection = CreateDbConnection(systemSettings))
                     {
                         TableOperations<FileGroup> to = new TableOperations<FileGroup>(connection);
                         int fileGroupCount = to.QueryRecordCountWhere("FileHash = {0}", crc);
