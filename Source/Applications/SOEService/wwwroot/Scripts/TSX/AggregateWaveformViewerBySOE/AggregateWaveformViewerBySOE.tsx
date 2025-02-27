@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  waveform.tsx - Gbtc
+//  AggregateWaveformViewerBySOE.tsx - Gbtc
 //
 //  Copyright © 2018, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -478,16 +478,15 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                         <div className="modal-footer">
                             <a type="button" className="btn btn-primary" onClick={() => {
                                 setShow(false);
-                                ChangeSOEStatus('Complete').done(() => {
-                                    props.OnClose(soe)
-                                }).done(() => window.location.href = `${homePath}NonLinearTimeLine.cshtml?soeID=${props.soeID}`);
-                            }}>Make SOE Replay</a>
-                            <button type="button" className="btn btn-primary" onClick={() => {
-                                UpdateSOE().done(() => UpdateSOEIncidents().done(() => {
+                                var soeHandle = UpdateSOE();
+                                var incidentsHandle = UpdateSOEIncidents();
+                                var statusHandle = ChangeSOEStatus('Complete');
+                                $.when(soeHandle, incidentsHandle, statusHandle).done(() => {
                                     props.OnClose(soe);
-                                    setShow(false)
-                                }));
-                            }}>View SOE Replay</button>
+                                    window.location.href = `${homePath}NonLinearTimeLine.cshtml?soeID=${props.soeID}`;
+                                });
+                            }}>Make SOE Replay</a>
+                            <button type="button" className="btn btn-primary" disabled={props.SOE.Status !== 'Complete'} onClick={() => window.open(`${homePath}NonLinearTimeLine.cshtml?soeID=${props.soeID}`)}>View SOE Replay</button>
                             <button type="button" className="btn btn-default" onClick={() => setShow(false)}>Close</button>
                         </div>
                     </div>
