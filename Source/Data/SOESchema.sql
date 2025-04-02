@@ -687,7 +687,7 @@ INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (5, 'Open', 0, 255, 
 GO
 INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (6, 'Good Voltage', 200, 0, 0)
 GO
-INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (7, 'Light Sag (No Fault Current)', 255, 170, 100)
+INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (7, 'Voltage Sag', 255, 170, 100)
 GO
 INSERT INTO ColorIndex (ID, Color, Red, Green, Blue) VALUES (9, 'Loss of Source', 0, 0, 0)
 GO
