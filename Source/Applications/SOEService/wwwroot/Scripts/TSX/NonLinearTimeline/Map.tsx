@@ -108,7 +108,7 @@ const ColorLegend = (props: { Colors: Color[] }) =>  {
                 <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', width: 15, height: 15 }}>
                         <svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>
-                            <path fill='black' d={symbol().type(symbolCircle).size(100)()} transform={`translate(10,10)`} />
+                            <path fill='black' d={symbol().type(symbolSquare).size(100)()} transform={`translate(10,10)`} />
                         </svg>
                     </div>
                     <span style={{ position: 'relative', left: 20 }}>N.O. PCR</span>
@@ -208,7 +208,7 @@ const MeterMarker = (props: { Meter: MapMeter, SelectedPoint: SOEDataPoint }) =>
         switch (type) {
             case 'Substation CB': return symbolCross;
             case 'N.C. PCR': return symbolSquare;
-            case 'N.O. PCR': return symbolCircle;
+            case 'N.O. PCR': return symbolSquare;
             default: return null;
         }
     })(props.Meter.Type);
