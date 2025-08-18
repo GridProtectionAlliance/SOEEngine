@@ -57,7 +57,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build": "set NODE_OPTIONS=--openssl-legacy-provider && npm prune && npm install && webpack --mode=development",
+    "build": "set NODE_OPTIONS=--openssl-legacy-provider && npm prune && npm ci --legacy-peer-deps && webpack --mode=development",
     "watch": "webpack --watch --color --mode=development",
     "update": "npx npm-check-updates"
   }
