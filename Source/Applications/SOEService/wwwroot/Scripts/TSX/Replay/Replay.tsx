@@ -46,9 +46,9 @@ interface ReplayTable {
 
 const Replay = (props: {}) => {
     let query = queryString.parse(window.location.search);
-    const [stepSize, setStepSize] = React.useState<number>(query['stepSize'] != undefined ? parseInt(query['stepSize'] as string) : 7);
+    const [stepSize, setStepSize] = React.useState<number>(query['stepSize'] != undefined ? parseInt(query['stepSize'] as string) : 1);
     const [units, setUnits] = React.useState<moment.unitOfTime.Base>(query['units'] != undefined ? query['units'] as moment.unitOfTime.Base: 'days');
-    const [date, setDate] = React.useState<moment.Moment>(query['date'] != undefined ? moment(query['date'] as string) : moment().subtract(7, 'days'));
+    const [date, setDate] = React.useState<moment.Moment>(query['date'] != undefined ? moment(query['date'] as string) : moment().subtract(1, 'days'));
     const [data, setData] = React.useState<ReplayTable[]>([]);
     const [ascending, setAscending] = React.useState<boolean>(query['ascending'] != undefined ? (query['ascending'] as string) == 'true' : true);
     const [sortField, setSortField] = React.useState<keyof ReplayTable>(query['sortField'] != undefined ? query['sortField'] as keyof ReplayTable :'StartTime');
