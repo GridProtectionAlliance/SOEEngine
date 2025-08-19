@@ -69,7 +69,7 @@ const LeafletMap = (props: { SOEID: string, Colors: Color[], Meters: MapMeter[],
     }, [props.SOEID]);
 
     return (
-        <MapContainer style={{ height: props.Height, width: props.Width, padding: 5, border: 'solid 1px gray' }} center={[35.0456,-85.3097] } zoom={13}>
+        <MapContainer style={{ height: props.Height, width: props.Width, padding: 5, border: 'solid 1px gray' }} center={[35.0456, -85.3097]} zoom={13}>
             <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
             <ColorLegend Colors={props.Colors} />
             <Meters Meters={props.Meters} SelectedPoint={props.SelectedPoint } />
@@ -182,18 +182,23 @@ const ViewWindow = (props: { SelectedPoint: SOEDataPoint }) => {
 const Meters = (props: { Meters: MapMeter[], SelectedPoint: SOEDataPoint }) => {
     const map = useMap();
     const [meters, setMeters] = React.useState<JSX.Element[]>([]);
+
     React.useEffect(() => {
         if (props.Meters.length == 0) return;
 
         let m = props.Meters.map(meter => {
-            return <MeterMarker key={meter.AssetKey+props.SelectedPoint?.SensorName} Meter={meter} SelectedPoint={props.SelectedPoint }/>
+            return <MeterMarker key={meter.AssetKey + props.SelectedPoint?.SensorName} Meter={meter} SelectedPoint={props.SelectedPoint} />
         })
 
         setMeters(m);
+    }, [props.Meters, props.SelectedPoint]);
+
+    React.useEffect(() => {
+        if (props.Meters.length == 0) return;
         let markers = props.Meters.map(meter => leaflet.marker([meter.Latitude, meter.Longitude]));
         let group = leaflet.featureGroup(markers);
-        map.setMaxBounds(group.getBounds());
-    }, [props.Meters, props.SelectedPoint])
+        map.panTo(group.getBounds().getCenter());
+    }, [props.Meters]);
 
     return <>{meters}</>;
 
