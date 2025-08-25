@@ -22,24 +22,19 @@
 //******************************************************************************************************
 
 
-using GSF.Data;
-using GSF.Data.Model;
-using Newtonsoft.Json;
-using SOE.Model;
-using SOE.Model.NonLinearTimeLine;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Web;
 using System.Web.Http;
+using GSF.Data;
+using GSF.Data.Model;
+using Newtonsoft.Json.Linq;
+using SOE.Model;
+using SOE.Model.NonLinearTimeLine;
 
 namespace SOEService.Controllers
 {
@@ -69,29 +64,34 @@ namespace SOEService.Controllers
             {
                 DataTable table = connection.RetrieveData($@"
                 SELECT
-	                Meter.AssetKey,
-	                MeterLocation.Latitude,
-	                MeterLocation.Longitude,
-	                dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourceAlternate') as SourceAlternate,
-	                dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourcePreferred') as SourcePreferred,
-	                0 as Voltage,
-	                SOEDataPoint.Value,
-	                SOEDataPoint.SensorName,
-	                'rgb('+CAST(Red as VARCHAR(3))+','+CAST(Green as VARCHAR(3))+','+CAST(Blue as VARCHAR(3))+')' as Color,
+                    Meter.AssetKey,
+                    CASE
+                        WHEN CHARINDEX('-', Meter.AssetKey) > 0 AND LEFT(Meter.AssetKey, CHARINDEX('-', Meter.AssetKey) - 1) = RIGHT(Meter.AssetKey, CHARINDEX('-', REVERSE(Meter.AssetKey)) - 1) THEN 'Substation CB'
+                        WHEN IsNormallyOpen = 0 THEN 'N.C. PCR'
+                        ELSE 'N.O. PCR'
+                    END Type,
+                    MeterLocation.Latitude,
+                    MeterLocation.Longitude,
+                    dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourceAlternate') as SourceAlternate,
+                    dbo.GetJSONValueForProperty(Meter.ExtraData, 'sourcePreferred') as SourcePreferred,
+                    COALESCE(TRY_CONVERT(FLOAT, System.Name), 0) as Voltage,
+                    SOEDataPoint.Value,
+                    SOEDataPoint.SensorName,
+                    CONCAT('rgb(', Red, ',', Green, ',', Blue, ')') as Color,
                     ColorIndex.Color as ColorText,
                     Meter.Make
-                FROM (
-	                SELECT
-		                DISTINCT SUBSTRING(SensorName,0,CHARINDEX('.', SensorName, 0)) as Name
-	                FROM
-		                SOEDataPoint
-	                WHERE 
-	                    SOE_ID = {{0}} AND TSx = {{1}}
-                ) as Sensor JOIN
-                Meter ON Sensor.Name = Meter.AssetKey JOIN
-                MeterLocation ON MeterLocation.ID = Meter.MeterLocationID LEFT JOIN
-                SOEDataPoint ON SOE_ID = {{0}} AND TSx = {{1}} AND TimeSlot = {{2}} AND SensorName LIKE Meter.AssetKey + '.I%' LEFT JOIN
-                ColorIndex ON ColorIndex.ID = SOEDataPoint.Value
+                FROM
+                    (
+                        SELECT DISTINCT SUBSTRING(SensorName,0,CHARINDEX('.', SensorName, 0)) as Name
+                        FROM SOEDataPoint
+                        WHERE SOE_ID = {{0}} AND TSx = {{1}}
+                    ) as Sensor JOIN
+                    Meter ON Sensor.Name = Meter.AssetKey JOIN
+                    MeterLocation ON MeterLocation.ID = Meter.MeterLocationID JOIN
+                    Circuit ON Meter.CircuitID = Circuit.ID JOIN
+                    System ON Circuit.SystemID = System.ID LEFT JOIN
+                    SOEDataPoint ON SOE_ID = {{0}} AND TSx = {{1}} AND TimeSlot = {{2}} AND SensorName LIKE Meter.AssetKey + '.I%' LEFT JOIN
+                    ColorIndex ON ColorIndex.ID = SOEDataPoint.Value
                 ", soeID, tsx, timeSlot);
                 return Ok(table);
             }
@@ -261,8 +261,6 @@ namespace SOEService.Controllers
                 SELECT 
                     EventEventTag.EventID,
                     Event.MeterID,
-                    EventEventTag.EventTagID,
-                    EventEventTag.TagData,
 	                Meter.AssetKey,
                     System.Name as SystemName,
 	                Circuit.Name as CircuitName,
@@ -272,7 +270,7 @@ namespace SOEService.Controllers
                     EventEventTag
 				INNER JOIN 
 					Event ON EventEventTag.EventID = Event.ID
-				LEFT JOIN
+				INNER JOIN
 					Incident ON Event.IncidentID = Incident.ID
 				LEFT JOIN
 					SOEIncident ON Incident.ID = SOEIncident.IncidentID
@@ -296,19 +294,45 @@ namespace SOEService.Controllers
                 DataTable table = connection.RetrieveData(sql, date, objectName, group);
                 return Ok(table);
             }
-
         }
 
-        [HttpGet, Route("Image/{path}")]
-        public HttpResponseMessage GetImage(string path)
+        [HttpGet, Route("Image/{group}/{eventID}")]
+        public HttpResponseMessage GetImage(string group, int eventID)
         {
-            byte[] data = Convert.FromBase64String(path);
-            string decodedString = System.Text.Encoding.UTF8.GetString(data);
-            var result = new HttpResponseMessage(HttpStatusCode.OK);
-            Byte[] b = File.ReadAllBytes(decodedString + ".png");
-            result.Content = new ByteArrayContent(b);
-            result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
-            return result;
+            using (AdoDataConnection connection = new AdoDataConnection("systemSettings"))
+            {
+                const string Query =
+                    "SELECT EventEventTag.TagData " +
+                    "FROM " +
+                    "    Event JOIN " +
+                    "    EventEventTag ON EventEventTag.EventID = Event.ID JOIN " +
+                    "    EventTag ON EventEventTag.EventTagID = EventTag.ID " +
+                    "WHERE " +
+                    "    EventTag.Name = {0} AND " +
+                    "    Event.ID = {1}";
+
+                string json = connection.ExecuteScalar((string)null, Query, group, eventID);
+                JObject tagData = JObject.Parse(json);
+                string plotFilePath = tagData.Value<string>("PlotFilePath");
+
+                Stream imageStream = null;
+                HttpResponseMessage response = null;
+
+                try
+                {
+                    imageStream = File.OpenRead($"{plotFilePath}.png");
+                    response = new HttpResponseMessage(HttpStatusCode.OK);
+                    response.Content = new StreamContent(imageStream);
+                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+                    return response;
+                }
+                catch
+                {
+                    response?.Dispose();
+                    imageStream?.Dispose();
+                    throw;
+                }
+            }
         }
     }
 }

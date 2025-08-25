@@ -85,9 +85,7 @@ namespace SOE.MATLAB
                     if (tagCount == 0)
                         return tags;
 
-                    MWStructArray tagsArray = arrays[0] as MWStructArray;
-
-                    if (tagsArray is null)
+                    if (!(arrays[0] is MWStructArray tagsArray))
                         throw new InvalidOperationException($"Invalid type for tags array: {arrays[0].ArrayType}");
 
                     // Struct arrays use a zero-based index for some reason
@@ -104,22 +102,6 @@ namespace SOE.MATLAB
                     foreach (MWArray array in arrays)
                         array.Dispose();
                 }
-            }
-        }
-
-        public void Execute(IEnumerable<MATLABAnalyticSettingField> settings)
-        {
-            // The MATLAB runtime must be initialized before MWArray can be used.
-            // The invoker must be instantiated here as it will also instantiate the class that
-            // contains the analysis function and initialize the MATLAB runtime as a side-effect
-            using (IMATLABAnalysisFunctionInvoker invoker = AnalysisFunctionInvokerFactory())
-            using (MWArray voltage = new MWNumericArray())
-            using (MWArray current = new MWNumericArray())
-            using (MWArray analog = new MWNumericArray())
-            using (MWArray fs = new MWNumericArray())
-            using (MWArray setting = ToSettingsArray(settings))
-            {
-                invoker.Invoke(0, voltage, current, analog, fs, setting);
             }
         }
 

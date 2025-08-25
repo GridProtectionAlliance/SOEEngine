@@ -330,6 +330,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <EmbeddedResource Include="Controllers\AggregateWaveformViewBySOE\MakeReplay.sql" />
     <Content Include="package.json" />
     <Content Include="conductor.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -69,7 +69,7 @@ const LeafletMap = (props: { SOEID: string, Colors: Color[], Meters: MapMeter[],
     }, [props.SOEID]);
 
     return (
-        <MapContainer style={{ height: props.Height, width: props.Width, padding: 5, border: 'solid 1px gray' }} center={[35.0456,-85.3097] } zoom={13}>
+        <MapContainer style={{ height: props.Height, width: props.Width, padding: 5, border: 'solid 1px gray' }} center={[35.0456, -85.3097]} zoom={13}>
             <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
             <ColorLegend Colors={props.Colors} />
             <Meters Meters={props.Meters} SelectedPoint={props.SelectedPoint } />
@@ -87,7 +87,7 @@ const ColorLegend = (props: { Colors: Color[] }) =>  {
         <div className="leaflet-bottom leaflet-left">
             <div className='info color-legend leaflet-control' style={{
                 textAlign: 'left', lineHeight: 18, color: '#555', padding: '6px 8px', font: '14px/16px Arial, Helvetica, sans-serif',
-                background: 'rgb(255,255,255,0.8)', boxShadow: '0 0 15px rgb(0 0 0 / 20%)', borderRadius: 5, width: 130
+                background: 'rgb(255,255,255,0.8)', boxShadow: '0 0 15px rgb(0 0 0 / 20%)', borderRadius: 5, width: 220
             }}>
                 <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', width: 15, height: 15 }}>
@@ -95,15 +95,7 @@ const ColorLegend = (props: { Colors: Color[] }) =>  {
                             <path fill='black' d={symbol().type(symbolCross).size(100)()} transform={`translate(10,10)`} />
                         </svg>
                     </div>
-                    <span style={{ position: 'relative', left: 20 }}>Source</span>
-                </div>
-                <div style={{ position: 'relative' }}>
-                    <div style={{ position: 'absolute', width: 15, height: 15 }}>
-                        <svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>
-                            <path fill='black' d={symbol().type(symbolDiamond).size(100)()} transform={`translate(10,10)`} />
-                        </svg>
-                    </div>
-                    <span style={{ position: 'relative', left: 20 }}>Tie</span>
+                    <span style={{ position: 'relative', left: 20 }}>Substation CB</span>
                 </div>
                 <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', width: 15, height: 15 }}>
@@ -111,39 +103,15 @@ const ColorLegend = (props: { Colors: Color[] }) =>  {
                             <path fill='black' d={symbol().type(symbolSquare).size(100)()} transform={`translate(10,10)`} />
                         </svg>
                     </div>
-                    <span style={{ position: 'relative', left: 20 }}>Line PCR</span>
+                    <span style={{ position: 'relative', left: 20 }}>N.C. PCR</span>
                 </div>
                 <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', width: 15, height: 15 }}>
                         <svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>
-                            <path fill='black' d={symbol().type(symbolStar).size(100)()} transform={`translate(10,10)`} />
+                            <path fill='black' d={symbol().type(symbolSquare).size(100)()} transform={`translate(10,10)`} />
                         </svg>
                     </div>
-                    <span style={{ position: 'relative', left: 20 }}>46 kV</span>
-                </div>
-                <div style={{ position: 'relative' }}>
-                    <div style={{ position: 'absolute', width: 15, height: 15 }}>
-                        <svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>
-                            <path fill='black' d={symbol().type(symbolCircle).size(100)()} transform={`translate(10,10)`} />
-                        </svg>
-                    </div>
-                    <span style={{ position: 'relative', left: 20 }}>Self Tie</span>
-                </div>
-                <div style={{ position: 'relative' }}>
-                    <div style={{ position: 'absolute', width: 15, height: 15 }}>
-                        <svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>
-                            <path fill='black' d={symbol().type(symbolWye).size(100)()} transform={`translate(10,10)`} />
-                        </svg>
-                    </div>
-                    <span style={{ position: 'relative', left: 20 }}>MOS</span>
-                </div>
-                <div style={{ position: 'relative' }}>
-                    <div style={{ position: 'absolute', width: 15, height: 15 }}>
-                        <svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>
-                            <path fill='black' d={symbol().type(symbolTriangle).size(100)()} transform={`translate(10,10)`} />
-                        </svg>
-                    </div>
-                    <span style={{ position: 'relative', left: 20 }}>Other</span>
+                    <span style={{ position: 'relative', left: 20 }}>N.O. PCR</span>
                 </div>
                 {
                     props.Colors.map(color => (
@@ -158,56 +126,18 @@ const ColorLegend = (props: { Colors: Color[] }) =>  {
     );
 };
 
-interface MeasuredValue {
-    Name: string, M1: number, M2:number, M3: number, Units: string
-}
 const ViewWindow = (props: { SelectedPoint: SOEDataPoint }) => {
     const [show, setShow] = React.useState<boolean>(false);
-    const [measuredValues, setMeasuredValues] = React.useState<MeasuredValue[]>([]);
-    const [images, setImages] = React.useState<Image[]>([]);
 
     React.useEffect(() => {
-        if (props.SelectedPoint == null || props.SelectedPoint.EventID <= 0) return;
-
-        setShow(true);
-
-        let handle = $.ajax({
-            type: "GET",
-            url: `${homePath}api/NonLinearTimeline/MeasuredValues/${props.SelectedPoint.EventID}`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: true,
-            async: true
-        }) as JQuery.jqXHR<MeasuredValue[]>;
-
-        handle.done(d => {
-            setMeasuredValues(d);
-        })
-
-        let handle2 = $.ajax({
-            type: "GET",
-            url: `${homePath}api/NonLinearTimeline/Images/${props.SelectedPoint.EventID}`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: true,
-            async: true
-        }) as JQuery.jqXHR<Image[]>;
-
-        handle2.done(d => {
-            setImages(d);
-        })
-
-
-
-        return () => {
-            if (handle.abort != undefined) handle.abort();
-            if (handle2.abort != undefined) handle2.abort();
-
-        }
-
-
+        setShow(props.SelectedPoint != null && props.SelectedPoint.EventID > 0);
     }, [props.SelectedPoint]);
-    if (!show || props.SelectedPoint.EventID <= 0) return null;
+
+    if (!show)
+        return null;
+
+    const getPlotURL = () => `${homePath}api/NonLinearTimeline/Image/G7 State Change Plot/${props.SelectedPoint.EventID}`;
+
     return (
         <div className="leaflet-bottom leaflet-right">
             <div className='info color-legend leaflet-control' style={{
@@ -221,50 +151,28 @@ const ViewWindow = (props: { SelectedPoint: SOEDataPoint }) => {
                 </button>
                 <div>{props.SelectedPoint?.SensorName.split('.')[0]} / <a target='_blank' href={`${homePath}OpenSEE.cshtml?EventID=${props.SelectedPoint?.EventID}`}>{props.SelectedPoint?.EventID}</a> / {props.SelectedPoint?.Time}</div>
 
-                <div style={{width: 300, position: 'absolute'}}>
-                <table className='table' style={{ fontSize: 'smaller',marginBottom: 0 }}>
-                    <thead>
-                            <tr>
-                                <th style={{padding: 5}}>Time Slot</th>
-                                <th style={{padding: 5}}>mSec</th>
-                                <th style={{padding: 5}}>Cycles</th>
-                                <th style={{padding: 5}}>Seconds</th>
-                            </tr>
-                    </thead>
-                    <tbody>
-                            <tr>
-                                <td style={{padding: 5}}>{props.SelectedPoint?.TimeSlot}</td>
-                                <td style={{padding: 5}}>{props.SelectedPoint?.ElapsMS}</td>
-                                <td style={{padding: 5}}>{props.SelectedPoint?.CycleNum}</td>
-                                <td style={{padding: 5}}>{props.SelectedPoint?.ElapsSEC}</td>
-                            </tr>
-                    </tbody>
-                </table>
-                <table className='table' style={{fontSize: 'smaller'}}>
-                    <thead>
-                        <tr><th style={{padding: 5}}>Sensor</th><th style={{padding: 5}}>M1</th><th style={{padding: 5}}>M2</th><th style={{padding: 5}}>M3</th><th style={{padding: 5}}>Units</th></tr>
-                    </thead>
-                    <tbody>{
-                        measuredValues.map((mv, i) => (
-                            <tr key={props.SelectedPoint.EventID.toString() + i.toString() }>
-                                <td style={{padding: 5}}>{mv?.Name}</td>
-                                <td style={{padding: 5}}>{mv?.M1}</td>
-                                <td style={{padding: 5}}>{mv?.M2}</td>
-                                <td style={{padding: 5}}>{mv?.M3}</td>
-                                <td style={{padding: 5}}>{mv?.Units}</td>
-                            </tr>))
-                    }
-                        
-                    </tbody>
-                </table>
-                </div>
-                <div style={{ width: 150, position: 'absolute', left: 350 }}>
-                    <table className='table'>
-                        <thead><tr><th style={{ padding: 5 }}>Analysis Plots</th></tr></thead>
+                <div style={{width: 300}}>
+                    <table className='table' style={{ fontSize: 'smaller',marginBottom: 0 }}>
+                        <thead>
+                                <tr>
+                                    <th style={{padding: 5}}>Time Slot</th>
+                                    <th style={{padding: 5}}>mSec</th>
+                                    <th style={{padding: 5}}>Cycles</th>
+                                    <th style={{padding: 5}}>Seconds</th>
+                                </tr>
+                        </thead>
                         <tbody>
-                            {images.map(image => <tr key={image.ID}><td style={{ padding: 5 }}><a href={`${homePath}Image.html?imageID=${image.ID}` } target='_blank'>{image.DisplayText }</a></td></tr>)}
+                                <tr>
+                                    <td style={{padding: 5}}>{props.SelectedPoint?.TimeSlot}</td>
+                                    <td style={{padding: 5}}>{props.SelectedPoint?.ElapsMS}</td>
+                                    <td style={{padding: 5}}>{props.SelectedPoint?.CycleNum}</td>
+                                    <td style={{padding: 5}}>{props.SelectedPoint?.ElapsSEC}</td>
+                                </tr>
                         </tbody>
                     </table>
+                </div>
+                <div>
+                    <img style={{width: 480, cursor: 'pointer'}} src={getPlotURL()} onClick={() => window.open(getPlotURL())} />
                 </div>
             </div>
         </div>
@@ -274,84 +182,62 @@ const ViewWindow = (props: { SelectedPoint: SOEDataPoint }) => {
 const Meters = (props: { Meters: MapMeter[], SelectedPoint: SOEDataPoint }) => {
     const map = useMap();
     const [meters, setMeters] = React.useState<JSX.Element[]>([]);
+
     React.useEffect(() => {
         if (props.Meters.length == 0) return;
 
         let m = props.Meters.map(meter => {
-            return <MeterMarker key={meter.AssetKey+props.SelectedPoint?.SensorName} Meter={meter} SelectedPoint={props.SelectedPoint }/>
+            return <MeterMarker key={meter.AssetKey + props.SelectedPoint?.SensorName} Meter={meter} SelectedPoint={props.SelectedPoint} />
         })
 
         setMeters(m);
+    }, [props.Meters, props.SelectedPoint]);
+
+    React.useEffect(() => {
+        if (props.Meters.length == 0) return;
         let markers = props.Meters.map(meter => leaflet.marker([meter.Latitude, meter.Longitude]));
         let group = leaflet.featureGroup(markers);
-        map.setMaxBounds(group.getBounds());
-    }, [props.Meters, props.SelectedPoint])
+        map.panTo(group.getBounds().getCenter());
+    }, [props.Meters]);
 
     return <>{meters}</>;
 
 }
 
 const MeterMarker = (props: { Meter: MapMeter, SelectedPoint: SOEDataPoint }) => {
-    if (props.Meter.AssetKey.split('-')[0] === props.Meter.AssetKey.split('-')[1]) {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolCross, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
+    // Only display 12 kV meters on the nonlinear timeline
+    if (!(props.Meter.Voltage >= 12 && props.Meter.Voltage < 13))
+        return <></>;
 
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
-    else if (props.Meter.SourceAlternate === "none") {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolSquare, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
+    const symbol = (function(type) {
+        switch (type) {
+            case 'Substation CB': return symbolCross;
+            case 'N.C. PCR': return symbolSquare;
+            case 'N.O. PCR': return symbolSquare;
+            default: return null;
+        }
+    })(props.Meter.Type);
 
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
-    else if (props.Meter.SourceAlternate === props.Meter.SourcePreferred) {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolCircle, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
+    if (symbol === null)
+        return <></>;
 
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
-    else if (props.Meter.SourceAlternate !== props.Meter.SourcePreferred) {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolDiamond, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
+    const shape = Shape(symbol, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey);
+    const svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${shape}</svg>`;
+    const iconUrl = 'data:image/svg+xml;utf8,' + svg;
 
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
-    else if (props.Meter.Voltage == 4.6) {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolStar, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
+    const icon = leaflet.icon({
+        iconUrl: iconUrl,
+        iconSize: [20, 20],
+    });
 
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
-    else {
-        let svg = `<svg width="20" height="20" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'>${Shape(symbolTriangle, props.Meter.Color, props.SelectedPoint, props.Meter.AssetKey)}</svg>`;
-        let iconUrl = 'data:image/svg+xml;utf8,' + svg;
-
-        let icon = leaflet.icon({
-            iconUrl: iconUrl,
-            iconSize: [20, 20],
-        });
-        return <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}><Popup><div>{props.Meter.AssetKey}</div><div>{props.Meter.ColorText}</div></Popup></Marker>
-    }
+    return (
+        <Marker position={[props.Meter.Latitude, props.Meter.Longitude]} icon={icon} key={props.Meter.AssetKey}>
+            <Popup>
+                <div>{props.Meter.AssetKey}</div>
+                <div>{props.Meter.ColorText}</div>
+            </Popup>
+        </Marker>
+    );
 };
 
 const Shape = (shape: d3.SymbolType, fill: string, selectedPoint: SOEDataPoint, meterName: string) => `<path fill='${fill}' ${selectedPoint?.SensorName.indexOf(meterName) >= 0 ? 'stroke="black" stroke-width="3"' : ''} transform = 'translate(10,10)' d = '${symbol().type(shape).size(150)()}' />`

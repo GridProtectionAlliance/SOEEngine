@@ -25,20 +25,49 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using GSF.Data;
+using GSF.Data.Model;
+using log4net;
+using Newtonsoft.Json.Linq;
+using SOE.Model;
+using SOE.Model.Events;
 using SOEDataProcessing.DataAnalysis;
 using SOEDataProcessing.DataOperations;
 using SOEDataProcessing.DataResources;
 using SOEDataProcessing.DataSets;
-using GSF.Data;
-using GSF.Data.Model;
-using log4net;
-using SOE.Model;
 using AnalyticModel = SOE.Model.MATLABAnalytic;
 
 namespace SOE.MATLAB
 {
     public class MATLABAnalysisOperation : DataOperationBase<MeterDataSet>
     {
+        #region [ Members ]
+
+        // Nested Types
+        private delegate void TagHandler(AdoDataConnection connection, MATLABAnalyticTag analyticTag);
+
+        #endregion
+
+        #region [ Constructors ]
+
+        public MATLABAnalysisOperation()
+        {
+            TagHandlers = new Dictionary<string, TagHandler>()
+            {
+                { "SOELog", new TagHandler(HandleSOELogData) }
+            };
+        }
+
+        #endregion
+
+        #region [ Properties ]
+
+        private Dictionary<string, TagHandler> TagHandlers { get; }
+
+        #endregion
+
+        #region [ Methods ]
+
         public override void Execute(MeterDataSet meterDataSet)
         {
             CycleDataResource cycleDataResource = meterDataSet.GetResource<CycleDataResource>();
@@ -56,6 +85,10 @@ namespace SOE.MATLAB
                     DataGroup dataGroup = dataGroups[i];
                     VIDataGroup viDataGroup = viDataGroups[i];
                     Event evt = eventTable.GetEvent(meterDataSet.FileGroup, dataGroup);
+
+                    if (evt is null)
+                        continue;
+
                     List<AnalyticModel> analyticModelList = QueryAnalytics(connection);
                     List<MATLABAnalyticTag> allTags = new List<MATLABAnalyticTag>();
 
@@ -76,12 +109,25 @@ namespace SOE.MATLAB
 
                     foreach (MATLABAnalyticTag tag in allTags)
                     {
-                        EventTag eventTag = eventTagTable.GetOrAdd(tag.Name);
-                        EventEventTag eventEventTag = eventEventTagTable.NewRecord();
-                        eventEventTag.EventID = evt.ID;
-                        eventEventTag.EventTagID = eventTag.ID;
-                        eventEventTag.TagData = tag.JSONData;
-                        eventEventTagTable.AddNewRecord(eventEventTag);
+                        try
+                        {
+                            if (!(tag.Type is null) && TagHandlers.TryGetValue(tag.Type, out TagHandler handler))
+                            {
+                                handler(connection, tag);
+                                continue;
+                            }
+
+                            EventTag eventTag = eventTagTable.GetOrAdd(tag.Name);
+                            EventEventTag eventEventTag = eventEventTagTable.NewRecord();
+                            eventEventTag.EventID = evt.ID;
+                            eventEventTag.EventTagID = eventTag.ID;
+                            eventEventTag.TagData = tag.JSONData;
+                            eventEventTagTable.AddNewRecord(eventEventTag);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error($"Error occurred while loading event tag {tag.Name} from MATLAB analytics: {ex.Message}", ex);
+                        }
                     }
                 }
             }
@@ -90,9 +136,7 @@ namespace SOE.MATLAB
         private List<AnalyticModel> QueryAnalytics(AdoDataConnection connection)
         {
             TableOperations<AnalyticModel> matlabAnalyticTable = new TableOperations<AnalyticModel>(connection);
-
-            //MakeReplay should only be invoked via the WebUI
-            return matlabAnalyticTable.QueryRecordsWhere("MethodName != {0}", "MakeReplay").OrderBy(model => model.LoadOrder).ToList();
+            return matlabAnalyticTable.QueryRecords("LoadOrder").ToList();
         }
 
         private MATLABAnalytic ToAnalytic(AnalyticModel model)
@@ -129,9 +173,84 @@ namespace SOE.MATLAB
             }
         }
 
+        private void HandleSOELogData(AdoDataConnection connection, MATLABAnalyticTag soeLogTag)
+        {
+            JObject tagData = JObject.Parse(soeLogTag.JSONData);
+            string soeLogJSON = tagData.Value<string>("SOELog");
+
+            if (soeLogJSON is null)
+            {
+                Log.Error("Detected invalid format for SOELog data. Check debug log for details.");
+                Log.Debug($"Missing SOELog: {soeLogTag.JSONData}");
+                return;
+            }
+
+            TableOperations<SOELog> soeLogTable = new TableOperations<SOELog>(connection);
+            JArray soeLog = JArray.Parse(soeLogJSON);
+
+            foreach (JToken logRecord in soeLog)
+            {
+                int? eventID = logRecord.Value<int?>("EventID");
+                string circuit = logRecord.Value<string>("Circuit");
+                string deviceName = logRecord.Value<string>("DeviceName");
+                string channelName = logRecord.Value<string>("ChannelName");
+                DateTime? soeTime = logRecord.Value<DateTime?>("SOEdateTimeLocal");
+                string systemVoltage = logRecord.Value<string>("systemVoltage");
+                int? measurementNumber = logRecord.Value<int?>("mxNum");
+                int? measurementSampleNumber = logRecord.Value<int?>("mxHereSamp");
+                DateTime? measurementTime = logRecord.Value<DateTime?>("mxTimeLocal");
+                double? measurementValue = logRecord.Value<double?>("mxValue");
+                string measurementColor = logRecord.Value<string>("mxColor");
+                int? measurementColorID = logRecord.Value<int?>("mxColorMapInt");
+                string plotFileName = logRecord.Value<string>("PlotFileName");
+
+                bool isInvalid =
+                    eventID is null || measurementColorID is null || measurementColor is null ||
+                    circuit is null || deviceName is null || channelName is null ||
+                    soeTime is null || systemVoltage is null ||
+                    measurementNumber is null || measurementSampleNumber is null ||
+                    measurementTime is null || measurementValue is null ||
+                    plotFileName is null;
+
+                if (isInvalid)
+                {
+                    Log.Error("Detected invalid format for SOELog record. Check debug log for details.");
+                    Log.Debug($"Invalid SOELog record: {soeLogTag.JSONData}");
+                    continue;
+                }
+
+                SOELog dbRecord = new SOELog()
+                {
+                    EventID = eventID.GetValueOrDefault(),
+                    ColorIndexID = measurementColorID.GetValueOrDefault(),
+                    Circuit = circuit,
+                    DeviceName = deviceName,
+                    ChannelName = channelName,
+                    SOETime = soeTime.GetValueOrDefault(),
+                    SystemVoltage = systemVoltage,
+                    MeasurementNumber = measurementNumber.GetValueOrDefault(),
+                    MeasurementSampleNumber = measurementSampleNumber.GetValueOrDefault(),
+                    MeasurementTime = measurementTime.GetValueOrDefault(),
+                    MeasurementValue = measurementValue.GetValueOrDefault(),
+                    MeasurementColor = measurementColor,
+                    PlotFileName = plotFileName
+                };
+
+                soeLogTable.AddNewRecord(dbRecord);
+            }
+        }
+
+        #endregion
+
+        #region [ Static ]
+
+        // Static Fields
+        private static readonly ILog Log = LogManager.GetLogger(typeof(MATLABAnalysisOperation));
+
+        // Static Properties
         private static MATLABAnalysisFunctionFactory AnalysisFunctionFactory { get; }
             = new MATLABAnalysisFunctionFactory();
 
-        private static readonly ILog Log = LogManager.GetLogger(typeof(MATLABAnalysisOperation));
+        #endregion
     }
 }

@@ -21,14 +21,11 @@
 //
 //******************************************************************************************************
 
-using GSF.Data;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.Linq;
-using System.Web;
 using System.Web.Http;
+using GSF.Data;
 
 namespace SOEService.Controllers
 {
@@ -51,24 +48,63 @@ namespace SOEService.Controllers
                 end = start.AddYears(stepSize);
 
             using (AdoDataConnection connection = new AdoDataConnection("systemSettings")) {
-                DataTable table = connection.RetrieveData($@"
-                    SELECT 
-	                    SOE.ID, SOE.Name, SOE.StartTime,SOE.EndTime, System.Name as System, 
-	                    COUNT(DISTINCT Circuit.ID) as Circuits, COUNT(DISTINCT Meter.ID) as Devices, COUNT(DISTINCT Event.ID) as Waveforms,
-	                    CAST(DATEDIFF(MILLISECOND, SOE.StartTime, SOE.EndTime) as FLOAT)/1000 as Duration,SOE.Status, SOE.TimeWindows
-                    FROM 
-	                    SOE join 
-	                    soeincident on soe.id = soeincident.soeid JOIN
-	                    Incident ON SOEIncident.IncidentID = Incident.ID JOIN
-	                    Event ON Incident.ID = Event.IncidentID JOIN
-	                    Meter on Meter.ID = Incident.MeterID JOIn
-	                    Circuit ON Circuit.ID = Meter.CircuitID JOIN
-	                    System ON System.ID = Circuit.SystemID
-                    WHERE
-                        SOE.StartTime BETWEEN {{0}} AND {{1}} AND 
-                        SOE.EndTime BETWEEN {{0}} AND {{1}}
+                DataTable table = connection.RetrieveData(@"
+                WITH CircuitGrouping AS
+                (
+                    SELECT
+                        SOE.ID SOEID,
+                        Circuit.ID CircuitID,
+                        COUNT(DISTINCT Meter.ID) Devices,
+                        COUNT(DISTINCT Event.ID) Waveforms,
+                        COUNT(DISTINCT SOELog.ID) StateChanges
+                    FROM
+                        SOE JOIN
+                        SOEIncident ON SOE.id = SOEIncident.SOEID JOIN
+                        Incident ON SOEIncident.IncidentID = Incident.ID JOIN
+                        Event ON Incident.ID = Event.IncidentID JOIN
+                        Meter ON Meter.ID = Incident.MeterID LEFT OUTER JOIN
+                        Meter NormalParent ON Meter.ParentNormalID = NormalParent.ID LEFT OUTER JOIN
+                        Meter AlternateParent ON Meter.ParentAlternateID = AlternateParent.ID JOIN
+                        Circuit ON
+                            Meter.CircuitID = Circuit.ID OR
+                            NormalParent.CircuitID = Circuit.ID OR
+                            AlternateParent.CircuitID = Circuit.ID LEFT OUTER JOIN
+                        SOELog ON SOELog.EventID = Event.ID
                     GROUP BY
-                     SOE.ID, SOE.Name, SOE.StartTime,  SOE.EndTime, System.Name, CAST(DATEDIFF(MILLISECOND, SOE.StartTime, SOE.EndTime) as FLOAT)/1000,SOE.Status, SOE.TimeWindows
+                        SOE.ID,
+                        Circuit.ID
+                ),
+                SOEGrouping AS
+                (
+                    SELECT
+                        CircuitGrouping.SOEID,
+                        STRING_AGG(Circuit.Name, ', ') WITHIN GROUP(ORDER BY CircuitGrouping.StateChanges DESC) CircuitList,
+                        COUNT(*) Circuits,
+                        SUM(CircuitGrouping.Devices) Devices,
+                        SUM(CircuitGrouping.Waveforms) Waveforms
+                    FROM
+                        CircuitGrouping JOIN
+                        Circuit ON CircuitGrouping.CircuitID = Circuit.ID
+                    GROUP BY CircuitGrouping.SOEID
+                )
+                SELECT
+                    SOE.ID,
+                    SOE.Name,
+                    SOE.StartTime,
+                    SOE.EndTime,
+                    SOEGrouping.CircuitList,
+                    SOEGrouping.Circuits,
+                    SOEGrouping.Devices,
+                    SOEGrouping.Waveforms,
+                    DATEDIFF(MILLISECOND, SOE.StartTime, SOE.EndTime) / 1000.0 Duration,
+                    SOE.Status,
+                    SOE.TimeWindows
+                FROM
+                    SOEGrouping JOIN
+                    SOE ON SOEGrouping.SOEID = SOE.ID
+                WHERE
+                    SOE.StartTime BETWEEN {0} AND {1} AND
+                    SOE.EndTime BETWEEN {0} AND {1}
                 ", start, end);
                 return Ok(table);
             }

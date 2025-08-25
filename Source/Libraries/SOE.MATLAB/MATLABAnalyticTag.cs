@@ -31,33 +31,48 @@ namespace SOE.MATLAB
 {
     public class MATLABAnalyticTag
     {
+        public string Type { get; }
         public string Name { get; }
         public string JSONData { get; }
 
-        public MATLABAnalyticTag(string name, string jsonData)
+        public MATLABAnalyticTag(string type, string name, string jsonData)
         {
+            Type = type;
             Name = name;
             JSONData = jsonData;
         }
 
         public static MATLABAnalyticTag Create(MWStructArray structArray, int tagIndex)
         {
-            MWArray nameField = structArray.GetField("Name", tagIndex);
-            string name = nameField?.ToString();
+            string name;
 
-            if (name is null || !(nameField.IsCharArray || nameField.IsStringArray))
-                return null;
-
-            MWStructArray dataField = structArray.GetField("Data", tagIndex) as MWStructArray;
-
-            if (dataField is null)
-                return new MATLABAnalyticTag(name, null);
-
-            using (StringWriter stringWriter = new StringWriter())
+            using (MWArray nameField = structArray.GetField("Name", tagIndex))
             {
-                JsonTextWriter writer = new JsonTextWriter(stringWriter);
-                WriteJSON(writer, dataField);
-                return new MATLABAnalyticTag(name, stringWriter.ToString());
+                name = nameField?.ToString();
+
+                if (name is null || !(nameField.IsCharArray || nameField.IsStringArray))
+                    return null;
+            }
+
+            string type = null;
+
+            if (structArray.IsField("Type"))
+            {
+                using (MWArray typeField = structArray.GetField("Type", tagIndex))
+                    type = typeField?.ToString();
+            }
+
+            using (MWArray dataField = structArray.GetField("Data", tagIndex))
+            {
+                if (!(dataField is MWStructArray dataStructArray))
+                    return new MATLABAnalyticTag(type, name, null);
+
+                using (StringWriter stringWriter = new StringWriter())
+                {
+                    JsonTextWriter writer = new JsonTextWriter(stringWriter);
+                    WriteJSON(writer, dataStructArray);
+                    return new MATLABAnalyticTag(type, name, stringWriter.ToString());
+                }
             }
         }
 
@@ -83,18 +98,19 @@ namespace SOE.MATLAB
                 {
                     writer.WritePropertyName(fieldName);
 
-                    MWArray field = structArray.GetField(fieldName, i);
-
-                    if (field is MWStructArray childStructArray)
-                        WriteJSON(writer, childStructArray);
-                    else if (field is MWStringArray childStringArray)
-                        WriteJSON(writer, childStringArray);
-                    else if (field is MWCharArray childCharArray)
-                        WriteJSON(writer, childCharArray);
-                    else if (field is MWNumericArray childNumericArray)
-                        WriteJSON(writer, childNumericArray);
-                    else
-                        WriteEmptyObject();
+                    using (MWArray field = structArray.GetField(fieldName, i))
+                    {
+                        if (field is MWStructArray childStructArray)
+                            WriteJSON(writer, childStructArray);
+                        else if (field is MWStringArray childStringArray)
+                            WriteJSON(writer, childStringArray);
+                        else if (field is MWCharArray childCharArray)
+                            WriteJSON(writer, childCharArray);
+                        else if (field is MWNumericArray childNumericArray)
+                            WriteJSON(writer, childNumericArray);
+                        else
+                            WriteEmptyObject();
+                    }
                 }
             }
 

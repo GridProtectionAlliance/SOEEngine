@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  waveform.tsx - Gbtc
+//  AggregateWaveformViewerBySOE.tsx - Gbtc
 //
 //  Copyright © 2018, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -198,7 +198,7 @@ const TimeSpanButton = (props: { MeterIDs: number[], Index: number, OnClick: () 
 }
 
 interface SOEDevices {
-    IncidentID: number, System: string, PrefCkt: string, AltCkt: string, Order: number, Device: string, FaultType: string, Waveforms: number
+    IncidentID: number, PrefCkt: string, AltCkt: string, Order: number, Device: string, FaultType: string, Waveforms: number
 }
 
 const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOETools.Types.SOE) => void, soeID: number }) => {
@@ -214,7 +214,7 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
 
     const [deviceSortField, setDeviceSortField] = React.useState<keyof SOEDevices>('Order');
     const [deviceAscending, setDeviceAscending] = React.useState<boolean>(true);
-    const [othersSortField, setOthersSortField] = React.useState<keyof SOEDevices>('System');
+    const [othersSortField, setOthersSortField] = React.useState<keyof SOEDevices>('PrefCkt');
     const [othersAscending, setOthersAscending] = React.useState<boolean>(true);
 
 
@@ -290,7 +290,7 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
     }
 
 
-    function ChangeSOEStatus(status: 'Hide' | 'MakeReplay') {
+    function ChangeSOEStatus(status: 'Pending' | 'Complete') {
         return $.get(`api/SOE/${props.SOE.ID}/${status}`);
     }
 
@@ -388,7 +388,6 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                                     <table className='table table-responsive'>
                                         <thead><tr><th>Count</th><th>SOE Aggregated Waveform Viewer</th></tr></thead>
                                         <tbody>
-                                            <tr><td>{[...(new Set(devices.map(x => x.System)))].length}</td><td>Systems</td></tr>
                                             <tr><td>{[...(new Set(devices.map(x => x.PrefCkt)))].length}</td><td>Circuits</td></tr>
                                             <tr><td>{[...(new Set(devices.map(x => x.Device)))].length}</td><td>Devices</td></tr>
                                         </tbody>
@@ -398,7 +397,6 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                                     <table className='table table-responsive'>
                                         <thead><tr><th>Count</th><th>Additional Candidates</th></tr></thead>
                                         <tbody>
-                                            <tr><td>{[...(new Set(otherDevices.map(x => x.System)))].length}</td><td>Systems</td></tr>
                                             <tr><td>{[...(new Set(otherDevices.map(x => x.PrefCkt)))].length}</td><td>Circuits</td></tr>
                                             <tr><td>{[...(new Set(otherDevices.map(x => x.Device)))].length}</td><td>Devices</td></tr>
                                         </tbody>
@@ -412,7 +410,6 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%', height: 50 }}
                                         tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 670, height: window.innerHeight - 670, width: '100%' }}
                                         cols={[
-                                            { key: 'System', label: 'System', field: 'System',headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
                                             { key: 'PrefCkt', label: 'PrefCkt', field: 'PrefCkt', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
                                             { key: 'AltCkt', label: 'AltCkt', field: 'AltCkt',  headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, },
                                             {
@@ -455,7 +452,6 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                                         tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 670, height: window.innerHeight - 670, width: '100%' }}
                                         cols={[
                                             { key: null, label: '', headerStyle: { width: 60 }, rowStyle: { width: 60 }, content: (item, key, field,  style, index) => <button className='btn btn-link' onClick={() => MoveDeviceLeft(item, index)}>{LeftArrow}</button> },
-                                            { key: 'System', label: 'System', field: 'System', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
                                             { key: 'PrefCkt', label: 'PrefCkt', field: 'PrefCkt', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
                                             { key: 'AltCkt', label: 'AltCkt', field: 'AltCkt', headerStyle: { width: '15%' }, rowStyle: { width: '15%' } },
                                             { key: 'Device', label: 'Devices', field: 'Device', headerStyle: { width: '20%' }, rowStyle: { width: '20%' } },
@@ -482,20 +478,15 @@ const NameEditDialog = (props: { SOE: SOETools.Types.SOE, OnClose: (record: SOET
                         <div className="modal-footer">
                             <a type="button" className="btn btn-primary" onClick={() => {
                                 setShow(false);
-                                ChangeSOEStatus('MakeReplay').done(() => {
-                                    props.OnClose(soe)
-                                }).done(() => window.location.href = `${homePath}NonLinearTimeLine.cshtml?soeID=${props.soeID}`);
-                            }}>Make SOE Replay</a>
-                            <button type="button" className="btn btn-danger" onClick={() => {
-                                setShow(false);
-                                ChangeSOEStatus('Hide').done(() => props.OnClose(soe));
-                            }}>Hide SOE Replay</button>
-                            <button type="button" className="btn btn-primary" onClick={() => {
-                                UpdateSOE().done(() => UpdateSOEIncidents().done(() => {
+                                var soeHandle = UpdateSOE();
+                                var incidentsHandle = UpdateSOEIncidents();
+                                var statusHandle = ChangeSOEStatus('Complete');
+                                $.when(soeHandle, incidentsHandle, statusHandle).done(() => {
                                     props.OnClose(soe);
-                                    setShow(false)
-                                }));
-                            }}>Apply Changes & Show SOE AWV</button>
+                                    window.location.href = `${homePath}NonLinearTimeLine.cshtml?soeID=${props.soeID}`;
+                                });
+                            }}>Make SOE Replay</a>
+                            <button type="button" className="btn btn-primary" disabled={props.SOE.Status !== 'Complete'} onClick={() => window.open(`${homePath}NonLinearTimeLine.cshtml?soeID=${props.soeID}`)}>View SOE Replay</button>
                             <button type="button" className="btn btn-default" onClick={() => setShow(false)}>Close</button>
                         </div>
                     </div>

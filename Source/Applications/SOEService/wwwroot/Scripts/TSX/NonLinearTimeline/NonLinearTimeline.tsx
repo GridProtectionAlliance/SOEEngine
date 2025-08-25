@@ -143,6 +143,10 @@ const NonLinearTimeline = (props: {}) => {
 
     }, [tsx, soeID, replayIndex]);
 
+    const sensorLabelWidth = 250;
+    const timeLabelWidth = 120;
+    const scrollbarWidth = 20;
+
     React.useEffect(() => {
         if (times.length == 0) return;
 
@@ -153,29 +157,30 @@ const NonLinearTimeline = (props: {}) => {
         let svg = d3.select(axis.current).append("svg");
         svg.attr('width', width).attr('height', height);
 
+        let boxAreaWidth = width - sensorLabelWidth - scrollbarWidth;
         let timesExtent = d3.extent(times, (d, i, a) => d.TimeSlot);
-        let boxWidth = (width - 220) / times.length;
+        let boxWidth = boxAreaWidth / times.length;
 
         let xscale = d3.scaleLinear()
             .domain(timesExtent)
-            .range([0, width-220 - boxWidth]);
+            .range([0, boxAreaWidth - boxWidth]);
 
-
-        let steps = 12;
+        let steps = Math.floor(times.length / Math.floor(timeLabelWidth / boxWidth + 1));
         let min = timesExtent[0];
         let max = timesExtent[1];
         let stepValue = (max - min) / (steps - 1);
-        let tickValues = d3.range(min, max + stepValue, stepValue);
+        let tickValues = d3.range(min, max + stepValue / 2, stepValue);
         tickValues = tickValues.map(t => Math.round(t));
         let x_axis = d3.axisTop(xscale).tickValues(tickValues).tickFormat(t => times.find(time => time.TimeSlot == t)[timeField].toString());
+        let axisOffset = sensorLabelWidth + boxWidth / 2;
 
-        svg.on('click', evt => setReplayIndex(Math.round(xscale.invert(evt.clientX - 150))));
+        svg.on('click', evt => setReplayIndex(Math.round(xscale.invert(evt.clientX - axisOffset))));
 
         svg.append("g")
-            .attr("transform", `translate(${150 + boxWidth/2},45)`)
+            .attr("transform", `translate(${axisOffset}, 45)`)
             .call(x_axis);
 
-        svg.append("g").attr("transform", `translate(${150 + boxWidth / 2+ xscale(replayIndex)},5) rotate(180)`)
+        svg.append("g").attr("transform", `translate(${axisOffset + xscale(replayIndex)},5) rotate(180)`)
             .selectAll('path')
             .data([1])
             .enter()
@@ -271,11 +276,11 @@ const NonLinearTimeline = (props: {}) => {
                     
                 </div>
                 <div style={{ height: window.innerHeight - 500 - 60 - 50 - 50, maxHeight: window.innerHeight - 500 - 60 - 50-50, overflowY: 'scroll', width: window.innerWidth, position: 'relative' }}>
-                    <div id='sensors' style={{ width: 200, position: 'absolute', left: 0, height: filteredSensors.length * 20 }}>
-                        {filteredSensors.map(s => <div key={s} style={{ width: 200, height: 20 }}>{s}</div>)}
+                    <div id='sensors' style={{ width: sensorLabelWidth, position: 'absolute', left: 0, height: filteredSensors.length * 20 }}>
+                        {filteredSensors.map(s => <div key={s} style={{ width: sensorLabelWidth, height: 20 }}>{s}</div>)}
                     </div>
-                    <svg id='data' style={{ width: window.innerWidth - 200 - 20, position: 'absolute', left: 200, height: filteredSensors.length * 20 }}>
-                        {filteredSensors.map((s, i) => <NTLRow key={s + soeID + tsx + showVolts.toString()} SOEID={soeID as string} TSx={tsx} Sensor={s} Colors={colors} Height={20} Width={window.innerWidth - 200 - 20} NumSensors={filteredSensors.length} Row={i} ReplayIndex={replayIndex} SelectedPoint={selectedPoint} SelectPoint={setSelectedPoint }/>)}
+                    <svg id='data' style={{ width: window.innerWidth - sensorLabelWidth - scrollbarWidth, position: 'absolute', left: sensorLabelWidth, height: filteredSensors.length * 20 }}>
+                        {filteredSensors.map((s, i) => <NTLRow key={s + soeID + tsx + showVolts.toString()} SOEID={soeID as string} TSx={tsx} Sensor={s} Colors={colors} Height={20} Width={window.innerWidth - sensorLabelWidth - scrollbarWidth} NumSensors={filteredSensors.length} Row={i} ReplayIndex={replayIndex} SelectedPoint={selectedPoint} SelectPoint={setSelectedPoint }/>)}
                     </svg>
                 </div>
             </div>
